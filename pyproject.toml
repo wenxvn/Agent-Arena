@@ -1,7 +1,7 @@
 [project]
 name = "agent-arena"
 version = "0.1.0"
-description = "A deterministic environment for studying LLM agent behavior."
+description = "用于研究 LLM Agent 行为的确定性实验环境。"
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
 dependencies = [

@@ -6,4 +6,4 @@
 - `run` 通过 `ReactAgent`、`EpisodeRunner` 和 `write_episode_trace` 运行完整 episode。Spaceship Escape 环境位于 `arena/` 和 `worlds/`；benchmark 和 MemoryAgent 仍由后续 scope feature 实现。
 - 运行质量检查：`uv run ruff check .`、`uv run mypy src`、`uv run pytest`。
 
-_Drafted by /sync from the introducing change, worth a quick human pass._
+_此文件由 /sync 根据引入改动生成，建议人工快速检查。_

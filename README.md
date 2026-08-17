@@ -1,36 +1,74 @@
 # Agent Arena
 
-Agent Arena 是一个用于学习和比较 LLM Agent 行为的轻量实验环境。
+Agent Arena 是一个用于学习和比较 LLM Agent 行为的轻量实验环境。它让 Agent 在确定、部分可观测的飞船逃生世界中观察、调用工具、接收反馈，并记录每一步的运行结果。
 
-项目围绕一个确定性的 Spaceship Escape 世界，研究 Agent 如何在部分可观测环境中完成探索、工具调用、记忆和长程任务。完整设计见 [总纲.md](总纲.md)，开发顺序见 [docs/scope/scope.md](docs/scope/scope.md)。
+当前已完成 Release 1：确定性 Spaceship Escape 世界、ReactAgent、受步数限制的执行循环和每局 JSON 运行记录。下一阶段将研究 MemoryAgent 是否能减少重复探索和失败动作。
 
-## 第一阶段目标
+## 快速开始
 
-1. 做出一个人可以只使用公开工具完成通关的环境。
-2. 用规则测试固定环境行为。
-3. 接入最小 ReactAgent 和 Agent Loop。
-4. 记录每一局的 Episode Trace。
-5. 加入 MemoryAgent，并用 benchmark 比较两种 Agent。
-
-## 当前可运行入口
+安装依赖并运行默认的确定性演示：
 
 ```bash
 uv sync
 uv run agent-arena run
 ```
 
-`run` 默认使用 Fake provider，并在 `runs/` 写入一个不含密钥的 scaffold episode。它证明配置、CLI 与原子 JSON 持久化可用，尚不包含世界规则或 Agent Loop。
+默认使用 Fake provider，不需要网络或 API Key。它会稳定完成逃生，并显示类似结果：
 
-真实百炼配置验证需要本地 `.env`，并且必须显式调用：
+```text
+本局结果：成功逃离飞船
+已执行动作：20
+无效模型输出：0
+运行记录：runs/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.json
+```
+
+运行记录是 UTF-8 JSON 文件。房间描述、决策说明和动作结果使用中文；`tool`、`outcome`、房间 id 等英文值是程序和后续统计使用的固定标识。
+
+## 使用百炼模型
+
+真实模型调用必须显式指定，并且只在本机 `.env` 中保存密钥：
+
+```bash
+cp .env.example .env
+```
+
+在 `.env` 填入 `OPENAI_API_KEY` 或 `DASHSCOPE_API_KEY`。`OPENAI_BASE_URL` 和 `OPENAI_MODEL` 可保留示例值，或按你的百炼配置调整。密钥不能提交到 Git。
+
+先验证模型连接：
 
 ```bash
 bash scripts/verify_model.sh
 ```
 
-## 下一步
+再运行一局真实实验：
 
-先定义并测试环境契约：`WorldState`、`Action`、`Observation` 和 `Environment.step`。环境可以被手动控制并稳定通关后，再接入 LLM。这样后续的 Agent 实验才有可信的基线。
+```bash
+uv run agent-arena run --provider bailian --output-dir runs
+```
 
-## 明确暂不做
+真实模型每次决策可能不同，因此结果可能是“成功逃离飞船”，也可能是“达到步数上限，未完成逃生”。后者表示 Agent 的探索策略尚不足，并不一定是配置或接口错误。
 
-第一版不做 Multi Agent、RAG、Vector DB、MCP、数据库、用户系统或复杂前端。先把一个完整、可重复的 Agent Loop 做通。
+## 验收与检查
+
+```bash
+uv run ruff check .
+uv run mypy src
+uv run pytest
+```
+
+这三个工具的输出由第三方提供，仍是英文：
+
+- `All checks passed!`：代码规范检查通过。
+- `Success: no issues found`：类型检查通过。
+- `31 passed`：31 项自动测试全部通过。
+
+## 文档入口
+
+- [研究总纲](研究总纲.md)：项目目标、研究边界与阶段路线。
+- [开发进度](docs/scope/scope.md)：已完成工作和后续计划。
+- [架构摘要](docs/architecture.md)：模块职责和数据流。
+- [ReactAgent 与执行循环设计](docs/specs/0003-react-agent-loop/index.md)：Action、终止条件与 Trace 契约。
+
+## 当前边界
+
+首个版本不引入 LangChain、RAG、向量数据库、多 Agent 编排、数据库或复杂前端。环境规则、Agent 策略、模型调用和运行记录保持独立，确保实验结果可以追溯和比较。
