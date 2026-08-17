@@ -91,7 +91,7 @@ class EpisodeRunner:
                         event=TraceEvent.CORRECTION_REQUESTED,
                         observation=observation,
                         latency_ms=0,
-                        summary="A corrected structured decision was requested.",
+                        summary="已请求模型按规定格式重新输出决策。",
                     )
                 )
                 decision, latency_ms, provider_failed = self._request(observation, correction=True)
@@ -194,7 +194,7 @@ class EpisodeRunner:
             observation=observation,
             correction=correction,
             latency_ms=latency_ms,
-            summary="The provider response did not match the decision schema.",
+            summary="模型输出不符合决策格式。",
         )
 
     @staticmethod
@@ -209,7 +209,7 @@ class EpisodeRunner:
             observation=observation,
             correction=correction,
             latency_ms=latency_ms,
-            summary="The provider request failed.",
+            summary="模型服务请求失败。",
         )
 
     @staticmethod

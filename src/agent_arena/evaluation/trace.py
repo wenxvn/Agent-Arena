@@ -131,7 +131,7 @@ def write_episode_trace(trace: EpisodeTrace, output_dir: Path) -> Path:
             delete=False,
         ) as temporary_file:
             temporary_path = Path(temporary_file.name)
-            json.dump(serialized, temporary_file, ensure_ascii=True, indent=2)
+            json.dump(serialized, temporary_file, ensure_ascii=False, indent=2)
             temporary_file.write("\n")
             temporary_file.flush()
             os.fsync(temporary_file.fileno())

@@ -1,43 +1,43 @@
 {
   "world_id": "spaceship_escape_v1",
-  "version": "v1",
-  "goal": "Restore main power, retrieve the authorization code, and launch the escape pod.",
+  "version": "v2-zh",
+  "goal": "恢复主电源，读取逃生授权码，并启动逃生舱。",
   "start_room": "control_room",
   "authorization_code": "ALPHA-731",
   "rooms": [
     {
       "id": "control_room",
-      "description": "The main control center is dark, apart from emergency indicators.",
+      "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
       "exits": ["corridor"],
       "object_ids": ["control_terminal"]
     },
     {
       "id": "corridor",
-      "description": "A central corridor connects the ship's critical compartments.",
+      "description": "中央走廊连接着飞船的各个关键舱室。",
       "exits": ["control_room", "storage_room", "maintenance_room"],
       "object_ids": []
     },
     {
       "id": "storage_room",
-      "description": "The supply storage room has a sealed crate against one wall.",
+      "description": "补给储藏室的一侧放着一个密封箱。",
       "exits": ["corridor"],
       "object_ids": ["storage_crate"]
     },
     {
       "id": "maintenance_room",
-      "description": "Maintenance controls monitor the ship's failing systems.",
+      "description": "维修控制台正在监测飞船故障中的系统。",
       "exits": ["corridor", "reactor_room"],
       "object_ids": ["diagnostic_terminal"]
     },
     {
       "id": "reactor_room",
-      "description": "The reactor room contains the main power panel.",
+      "description": "反应堆舱内有主电源面板。",
       "exits": ["maintenance_room", "escape_pod"],
       "object_ids": ["reactor_panel", "damaged_fuse"]
     },
     {
       "id": "escape_pod",
-      "description": "The escape pod is ready for an authorized launch.",
+      "description": "逃生舱已准备就绪，等待有效授权后发射。",
       "exits": ["reactor_room"],
       "object_ids": ["escape_pod"]
     }
@@ -47,37 +47,37 @@
       "id": "control_terminal",
       "room_id": "control_room",
       "kind": "terminal",
-      "inspect_result": "The control terminal requires main power."
+      "inspect_result": "控制终端需要主电源才能工作。"
     },
     {
       "id": "storage_crate",
       "room_id": "storage_room",
       "kind": "container",
-      "inspect_result": "The crate contains a screwdriver and a replacement fuse."
+      "inspect_result": "密封箱内有一把螺丝刀和一枚备用保险丝。"
     },
     {
       "id": "diagnostic_terminal",
       "room_id": "maintenance_room",
       "kind": "terminal",
-      "inspect_result": "Diagnostics are available even without main power."
+      "inspect_result": "即使主电源未恢复，仍可读取诊断信息。"
     },
     {
       "id": "reactor_panel",
       "room_id": "reactor_room",
       "kind": "fixture",
-      "inspect_result": "The reactor panel is secured by screws."
+      "inspect_result": "反应堆面板由螺丝固定。"
     },
     {
       "id": "damaged_fuse",
       "room_id": "reactor_room",
       "kind": "fixture",
-      "inspect_result": "The damaged fuse must be replaced."
+      "inspect_result": "损坏的保险丝需要更换。"
     },
     {
       "id": "escape_pod",
       "room_id": "escape_pod",
       "kind": "fixture",
-      "inspect_result": "The escape pod needs an authorization code."
+      "inspect_result": "逃生舱需要授权码才能启动。"
     }
   ],
   "items": [

@@ -20,7 +20,7 @@ def settings(*, step_limit: int = 30) -> RuntimeSettings:
         {
             "provider": "fake",
             "world": "spaceship-escape",
-            "world_version": "spaceship-escape-v1",
+            "world_version": "spaceship-escape-v2-zh",
             "agent": "react",
             "seed": 0,
             "runs_dir": "runs",
@@ -150,4 +150,5 @@ def test_trace_writer_redacts_decision_and_provider_secret_like_text(tmp_path: P
 
     assert "decision-secret" not in contents
     assert "provider-secret" not in contents
+    assert "主控制中心" in contents
     assert parsed["steps"][0]["decision_reason"] == "OPENAI_API_KEY=[REDACTED]"

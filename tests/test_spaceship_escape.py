@@ -134,7 +134,7 @@ def test_manual_escape_path_uses_only_public_tools() -> None:
     move_to(environment, "corridor", "maintenance_room")
     result, _ = environment.step(action({"tool": "read_terminal", "target": "diagnostic_terminal"}))
     assert result.reason is ToolReason.DIAGNOSTIC_READ
-    assert "manually" in result.summary
+    assert "手动" in result.summary
     move_to(environment, "reactor_room")
     assert (
         step(environment, {"tool": "use", "item": "screwdriver", "target": "reactor_panel"})

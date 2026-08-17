@@ -1,7 +1,7 @@
 {
   "provider": "fake",
   "world": "spaceship-escape",
-  "world_version": "spaceship-escape-v1",
+  "world_version": "spaceship-escape-v2-zh",
   "agent": "react",
   "seed": 0,
   "runs_dir": "runs",

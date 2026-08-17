@@ -9,12 +9,12 @@ import typer
 
 from agent_arena.agents import ReactAgent
 from agent_arena.config import RuntimeSettings
-from agent_arena.evaluation import EpisodeRunner, write_episode_trace
+from agent_arena.evaluation import EpisodeOutcome, EpisodeRunner, write_episode_trace
 from agent_arena.llm import BailianDecisionProvider, DecisionProvider, FakeDecisionProvider
 from agent_arena.llm.bailian import BailianModelVerifier, ModelVerificationError
 from agent_arena.worlds import SpaceshipEscapeEnvironment
 
-app = typer.Typer(help="Run local Agent Arena experiments.", no_args_is_help=True)
+app = typer.Typer(help="运行本地 Agent Arena 实验。", no_args_is_help=True)
 
 
 def _load_settings(
@@ -37,13 +37,13 @@ def run(
     seed: Annotated[int | None, typer.Option("--seed")] = None,
     output_dir: Annotated[Path | None, typer.Option("--output-dir")] = None,
 ) -> None:
-    """Run and persist one bounded Spaceship Escape episode."""
+    """运行并保存一局受步数限制的飞船逃生实验。"""
 
     settings = _load_settings(provider=provider, seed=seed, runs_dir=output_dir)
     try:
         decision_provider = _create_decision_provider(settings)
     except ValueError:
-        typer.echo("Episode startup failed. Check provider configuration.", err=True)
+        typer.echo("实验启动失败，请检查模型服务配置。", err=True)
         raise typer.Exit(code=2) from None
 
     episode = EpisodeRunner(
@@ -52,33 +52,36 @@ def run(
         settings,
     ).run()
     episode_path = write_episode_trace(episode, settings.runs_dir)
-    typer.echo(f"Episode trace: {episode_path}")
+    typer.echo(f"本局结果：{_OUTCOME_LABELS[episode.outcome]}")
+    typer.echo(f"已执行动作：{episode.executed_action_count}")
+    typer.echo(f"无效模型输出：{episode.invalid_output_count}")
+    typer.echo(f"运行记录：{episode_path}")
 
 
 @app.command()
 def benchmark(
     episodes: Annotated[int, typer.Option("--episodes", min=1)] = 1,
 ) -> None:
-    """Reserve the benchmark command until Release 2 metrics are available."""
+    """基准测试将在 Release 2 提供。"""
 
     del episodes
-    typer.echo("Benchmark is scheduled for Release 2.", err=True)
+    typer.echo("基准测试计划在 Release 2 开发。", err=True)
     raise typer.Exit(code=2)
 
 
 @app.command(name="verify-model")
 def verify_model() -> None:
-    """Call Bailian explicitly and print only the model name and final text."""
+    """显式调用百炼，并只显示模型名和最终回复。"""
 
     try:
         settings = RuntimeSettings.load({"provider": "bailian"})
         verification = BailianModelVerifier(settings).verify()
     except (ModelVerificationError, ValueError):
-        typer.echo("Model verification failed. Check endpoint, credentials, and network.", err=True)
+        typer.echo("模型验证失败，请检查端点、密钥和网络。", err=True)
         raise typer.Exit(code=1) from None
 
-    typer.echo(f"Model: {verification.model}")
-    typer.echo(f"Response: {verification.text}")
+    typer.echo(f"模型：{verification.model}")
+    typer.echo(f"回复：{verification.text}")
 
 
 def _create_decision_provider(settings: RuntimeSettings) -> DecisionProvider:
@@ -114,8 +117,16 @@ def _default_fake_responses() -> list[object]:
     ]
     return [
         {
-            "decision_reason": "Use the public observation to advance the escape route.",
+            "decision_reason": "根据当前可见信息推进逃生路线。",
             "action": action,
         }
         for action in actions
     ]
+
+
+_OUTCOME_LABELS: dict[EpisodeOutcome, str] = {
+    EpisodeOutcome.SUCCESS: "成功逃离飞船",
+    EpisodeOutcome.STEP_LIMIT: "达到步数上限，未完成逃生",
+    EpisodeOutcome.INVALID_ACTION_LIMIT: "连续输出格式错误，实验已停止",
+    EpisodeOutcome.PROVIDER_ERROR: "模型服务请求失败，实验已停止",
+}

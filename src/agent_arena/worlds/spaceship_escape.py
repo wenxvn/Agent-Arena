@@ -220,11 +220,11 @@ class SpaceshipEscapeEnvironment(Environment):
             if self._state.main_power:
                 return self._success(
                     ToolReason.DIAGNOSTIC_READ,
-                    "Diagnostics report that main power is stable.",
+                    "诊断结果：主电源运行稳定。",
                 )
             return self._success(
                 ToolReason.DIAGNOSTIC_READ,
-                "Diagnostics report no main power. Repair the reactor manually.",
+                "诊断结果：主电源未恢复，请手动修复反应堆。",
             )
         if action.target == "control_terminal":
             if not self._state.main_power:
@@ -232,7 +232,7 @@ class SpaceshipEscapeEnvironment(Environment):
             self._state.authorization_code_read = True
             return self._success(
                 ToolReason.CODE_READ,
-                f"Authorization code: {self.definition.authorization_code}",
+                f"逃生授权码：{self.definition.authorization_code}",
             )
         return self._rejected(ToolReason.WRONG_TARGET)
 
@@ -250,25 +250,25 @@ class SpaceshipEscapeEnvironment(Environment):
 
 
 _SUMMARIES: dict[ToolReason, str] = {
-    ToolReason.LOOKED: "You examine the current room.",
-    ToolReason.MOVED: "You move to the requested room.",
-    ToolReason.INSPECTED: "You inspect the requested object.",
-    ToolReason.PICKED_UP: "You add the item to your inventory.",
-    ToolReason.PANEL_OPENED: "The reactor panel is now open.",
-    ToolReason.POWER_RESTORED: "Main power has been restored.",
-    ToolReason.DIAGNOSTIC_READ: "You read the diagnostic terminal.",
-    ToolReason.CODE_READ: "You read the control terminal authorization code.",
-    ToolReason.ESCAPED: "The escape pod launches successfully.",
-    ToolReason.ALREADY_COMPLETED: "The escape sequence is already complete.",
-    ToolReason.NOT_ADJACENT: "That room is not reachable from here.",
-    ToolReason.NOT_VISIBLE: "That target is not visible in the current room.",
-    ToolReason.NOT_REVEALED: "That item has not been revealed yet.",
-    ToolReason.NOT_PRESENT: "That item is not present in the current room.",
-    ToolReason.ALREADY_COLLECTED: "That item is already in your inventory.",
-    ToolReason.MISSING_ITEM: "You do not have the required item.",
-    ToolReason.WRONG_TARGET: "That item cannot be used on this target now.",
-    ToolReason.PANEL_CLOSED: "Open the reactor panel before replacing the fuse.",
-    ToolReason.CODE_UNREAD: "Read the authorization code before launching the pod.",
-    ToolReason.INCORRECT_CODE: "That authorization code is not accepted.",
-    ToolReason.NO_POWER: "The control terminal has no main power.",
+    ToolReason.LOOKED: "你查看了当前房间。",
+    ToolReason.MOVED: "你移动到了指定房间。",
+    ToolReason.INSPECTED: "你检查了指定对象。",
+    ToolReason.PICKED_UP: "你将物品放入了背包。",
+    ToolReason.PANEL_OPENED: "反应堆面板已打开。",
+    ToolReason.POWER_RESTORED: "主电源已恢复。",
+    ToolReason.DIAGNOSTIC_READ: "你读取了诊断终端。",
+    ToolReason.CODE_READ: "你读取了控制终端中的逃生授权码。",
+    ToolReason.ESCAPED: "逃生舱已成功发射。",
+    ToolReason.ALREADY_COMPLETED: "逃生程序已经完成。",
+    ToolReason.NOT_ADJACENT: "当前房间无法直接到达该地点。",
+    ToolReason.NOT_VISIBLE: "当前房间中看不到该目标。",
+    ToolReason.NOT_REVEALED: "该物品尚未被发现。",
+    ToolReason.NOT_PRESENT: "当前房间中没有该物品。",
+    ToolReason.ALREADY_COLLECTED: "该物品已经在背包中。",
+    ToolReason.MISSING_ITEM: "你没有所需物品。",
+    ToolReason.WRONG_TARGET: "当前不能将该物品用于这个目标。",
+    ToolReason.PANEL_CLOSED: "请先打开反应堆面板，再更换保险丝。",
+    ToolReason.CODE_UNREAD: "请先读取逃生授权码，再启动逃生舱。",
+    ToolReason.INCORRECT_CODE: "该逃生授权码不正确。",
+    ToolReason.NO_POWER: "控制终端没有主电源。",
 }

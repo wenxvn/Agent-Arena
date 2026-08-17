@@ -48,7 +48,7 @@ class BailianModelVerifier:
                 messages=[
                     {
                         "role": "user",
-                        "content": "Reply with: Agent Arena model configuration verified.",
+                        "content": "请只回复：Agent Arena 模型配置验证成功。",
                     }
                 ],
                 temperature=0,
@@ -103,9 +103,9 @@ class BailianDecisionProvider:
         if not isinstance(observation, BaseModel):
             raise DecisionProviderError("Bailian requires a structured observation.")
         correction_instruction = (
-            "The previous candidate was invalid. Return the required JSON shape only."
+            "上一条输出不符合格式。请只返回规定的 JSON 结构。"
             if correction
-            else "Return the required JSON shape only."
+            else "请只返回规定的 JSON 结构。"
         )
         response = self._client.chat.completions.create(
             model=self._settings.model_name,
@@ -114,7 +114,7 @@ class BailianDecisionProvider:
                 {
                     "role": "user",
                     "content": (
-                        f"Observation: {observation.model_dump_json()}\n{correction_instruction}"
+                        f"当前观察：{observation.model_dump_json()}\n{correction_instruction}"
                     ),
                 },
             ],

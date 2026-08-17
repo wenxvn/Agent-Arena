@@ -28,7 +28,7 @@ def test_run_writes_a_terminal_allowlisted_episode(monkeypatch, tmp_path: Path) 
             {
                 "provider": "fake",
                 "world": "spaceship-escape",
-                "world_version": "spaceship-escape-v1",
+                "world_version": "spaceship-escape-v2-zh",
                 "agent": "react",
                 "seed": 0,
                 "runs_dir": str(tmp_path / "runs"),
@@ -54,6 +54,7 @@ def test_run_writes_a_terminal_allowlisted_episode(monkeypatch, tmp_path: Path) 
     assert trace["outcome"] == "success"
     assert trace["executed_action_count"] == 20
     assert len(trace["steps"]) == 20
+    assert "本局结果：成功逃离飞船" in result.output
     assert "OPENAI_API_KEY" not in trace_paths[0].read_text(encoding="utf-8")
 
 
@@ -70,5 +71,5 @@ def test_verify_model_does_not_echo_provider_exception_content(monkeypatch) -> N
     result = runner.invoke(app, ["verify-model"])
 
     assert result.exit_code == 1
-    assert "Model verification failed" in result.output
+    assert "模型验证失败" in result.output
     assert "secret-like-response-body" not in result.output

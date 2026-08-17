@@ -48,7 +48,7 @@ success | step limit | third consecutive invalid | provider error -> persisted t
 
 ## Build Plan
 
-1. 定义 ReactAgent 决策模型和 `react_v1` prompt，并实现百炼结构化响应适配。
+1. 定义 ReactAgent 决策模型和 `react_v2` prompt，并实现百炼结构化响应适配。
 2. 实现 trace allowlist、脱敏原子写入和 Episode Runner 状态机。
 3. 用完整 Fake 响应序列驱动 Spaceship Escape，替换 CLI scaffold episode。
 4. 覆盖成功、修正、非法输出上限、环境拒绝、provider 失败、脱敏和 CLI 行为。
