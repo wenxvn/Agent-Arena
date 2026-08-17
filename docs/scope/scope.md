@@ -14,8 +14,8 @@
 | 3 | 环境规则测试 | Release 1 | done |
 | 4 | ReactAgent 与 Agent Loop | Release 1 | done |
 | 5 | Episode Trace 与终止控制 | Release 1 | done |
-| 6 | MemoryAgent | Release 2 | planned |
-| 7 | Benchmark 与指标 | Release 2 | planned |
+| 6 | MemoryAgent | Release 2 | done |
+| 7 | Benchmark 与指标 | Release 2 | done |
 | 8 | Streamlit 实验界面 | Release 3 | planned |
 | 9 | PlanningAgent 与 ReflectionAgent | Deferred | planned |
 
@@ -87,21 +87,33 @@ Done when: 每次运行都生成可复盘的 JSON trace，并能明确区分成�
 
 ## Release 2
 
-### 6. MemoryAgent · planned
+### 6. MemoryAgent · done
 
 在 ReactAgent 基础上加入规则驱动的结构化记忆，保存事实、访问位置、失败动作和未解决问题。
 
 Done when: MemoryAgent 能在后续决策中使用记忆，并且可以与无记忆基线做公平对比。
 
-- [ ] `/architect MemoryAgent`
+- [x] Design it (spec): [0004](../specs/0004-memory-agent/index.md)
+- [x] Build it: `/develop MemoryAgent`
+  - [x] 实现结构化记忆、脱敏、Action 标识和问题映射，覆盖 AC 1、AC 2、AC 5、AC 6
+  - [x] 实现 provider 请求、Agent 生命周期、MemoryAgent 和 Runner 更新，覆盖 AC 3、AC 4、AC 9、AC 11
+  - [x] 实现 trace 来源、CLI Agent 选择和公平对照测试，覆盖 AC 7、AC 8、AC 10
+- [x] Verify it: `/check verify MemoryAgent`
+- [x] Test it: `/test MemoryAgent`
+Spec [0004](../specs/0004-memory-agent/index.md) · code in `src/agent_arena/agents/`, `src/agent_arena/llm/`, `src/agent_arena/evaluation/`, and `src/agent_arena/safety.py`
 
-### 7. Benchmark 与指标 · planned
+### 7. Benchmark 与指标 · done
 
 重复运行固定世界和 Agent，统计成功率、平均步数、非法动作、重复动作和 token 使用量。
 
-Done when: 一条命令可以运行多局实验，输出 JSON 或 CSV，并比较 ReactAgent 与 MemoryAgent。
+Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比较 ReactAgent 与 MemoryAgent。
 
-- [ ] `/develop Benchmark 与指标`
+- [x] `/develop Benchmark 与指标`
+  - [x] 从持久化 Episode Trace 生成每局指标、JSON manifest 和 CSV 行
+  - [x] 支持 `--episodes`、`--provider`、`--agent react|memory|both` 和输出目录
+  - [x] 默认运行 ReactAgent 与 MemoryAgent 的同 seed 对照，并保持 `episode_index` 稳定
+- [x] `/check verify Benchmark 与指标`
+- [x] `/test Benchmark 与指标`
 
 ## Release 3
 
@@ -125,6 +137,6 @@ Done when: 计划和反思都有明确触发条件，并能通过 benchmark 验�
 
 ## First step
 
-Release 1 已完成。下一步是运行 `/architect MemoryAgent`，定义规则驱动的结构化记忆字段、更新时机和与 ReactAgent 的公平对照。MemoryAgent 设计确认后，再实现 Release 2 benchmark 与 JSON、CSV 指标输出。
+Release 2 已完成：ReactAgent、MemoryAgent 与同世界同 seed 的 benchmark 对照均可运行。下一步是在有稳定 benchmark 结果后设计 Release 3 的 Streamlit 实验界面。
 
-当前明确不开发 Streamlit、PlanningAgent 或 ReflectionAgent。它们要等 ReactAgent 与 MemoryAgent 的 benchmark 结果稳定后再排期。
+当前不开发 PlanningAgent 或 ReflectionAgent。Streamlit 需要先完成 `/architect Streamlit 实验界面`；Planning 与 Reflection 要等 benchmark 结果稳定后再排期。

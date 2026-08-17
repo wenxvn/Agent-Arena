@@ -52,6 +52,22 @@ class StepTrace(BaseModel):
     summary: str | None = Field(default=None, max_length=1_000)
 
 
+class ExperimentProvenance(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    model_name: str
+    temperature: float = 0
+    enable_thinking: bool
+    request_timeout_seconds: int
+    retry_count: int
+    retry_backoff_seconds: tuple[int, ...]
+    step_limit: int
+    provider_request_version: str
+    base_prompt_version: str
+    base_prompt_hash: str
+    memory_schema_version: str | None = None
+    memory_renderer_version: str | None = None
+
+
 class EpisodeTraceHeader(BaseModel):
     """Stable episode identity supplied before a terminal outcome exists."""
 
@@ -64,6 +80,7 @@ class EpisodeTraceHeader(BaseModel):
     agent: str
     prompt_version: str
     provider: str
+    provenance: ExperimentProvenance
 
 
 class EpisodeTrace(BaseModel):
@@ -78,6 +95,7 @@ class EpisodeTrace(BaseModel):
     agent: str
     prompt_version: str
     provider: str
+    provenance: ExperimentProvenance
     outcome: EpisodeOutcome
     executed_action_count: int = Field(ge=0)
     invalid_output_count: int = Field(ge=0)
@@ -94,6 +112,7 @@ class EpisodeTrace(BaseModel):
         agent: str,
         prompt_version: str,
         provider: str,
+        provenance: ExperimentProvenance,
     ) -> EpisodeTraceHeader:
         """Return stable header values for the runner while outcome is unknown."""
 
@@ -105,6 +124,7 @@ class EpisodeTrace(BaseModel):
             agent=agent,
             prompt_version=prompt_version,
             provider=provider,
+            provenance=provenance,
         )
 
 
@@ -141,6 +161,12 @@ def write_episode_trace(trace: EpisodeTrace, output_dir: Path) -> Path:
             temporary_path.unlink()
         raise
     return destination
+
+
+def read_episode_trace(path: Path) -> EpisodeTrace:
+    """Load and validate one persisted episode trace for evaluation."""
+
+    return EpisodeTrace.model_validate_json(path.read_text(encoding="utf-8"))
 
 
 def _redact_value(value: object) -> object:

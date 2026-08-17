@@ -60,7 +60,7 @@ class RuntimeSettings(BaseSettings):
     provider: Literal["fake", "bailian"]
     world: str
     world_version: str
-    agent: str
+    agent: Literal["react", "memory"]
     seed: int
     runs_dir: Path
     results_dir: Path

@@ -5,11 +5,13 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from time import sleep
+from typing import Any, cast
 
 from openai import APIConnectionError, APITimeoutError, InternalServerError, OpenAI, RateLimitError
 from pydantic import BaseModel
 
 from agent_arena.config import RuntimeSettings
+from agent_arena.llm.protocol import DecisionRequest, ProviderResponse
 
 
 class ModelVerificationError(RuntimeError):
@@ -77,12 +79,12 @@ class BailianDecisionProvider:
             max_retries=0,
         )
 
-    def decide(self, observation: object, prompt: str, correction: bool) -> object:
+    def decide(self, request: DecisionRequest) -> ProviderResponse:
         """Return parsed JSON only; raw provider responses never leave this adapter."""
 
         for attempt in range(self._settings.retry_count + 1):
             try:
-                return self._request_once(observation, prompt, correction)
+                return self._request_once(request)
             except (
                 APIConnectionError,
                 APITimeoutError,
@@ -99,25 +101,28 @@ class BailianDecisionProvider:
 
         raise AssertionError("Retry loop must return or raise.")
 
-    def _request_once(self, observation: object, prompt: str, correction: bool) -> object:
-        if not isinstance(observation, BaseModel):
+    def _request_once(self, request: DecisionRequest) -> ProviderResponse:
+        if not isinstance(request.observation, BaseModel):
             raise DecisionProviderError("Bailian requires a structured observation.")
         correction_instruction = (
             "上一条输出不符合格式。请只返回规定的 JSON 结构。"
-            if correction
+            if request.correction
             else "请只返回规定的 JSON 结构。"
         )
+        messages: list[dict[str, str]] = [
+            {"role": "system", "content": request.system_prompt},
+            {
+                "role": "user",
+                "content": (
+                    f"当前观察：{request.observation.model_dump_json()}\n{correction_instruction}"
+                ),
+            },
+        ]
+        if request.memory_data:
+            messages.append({"role": "user", "content": request.memory_data})
         response = self._client.chat.completions.create(
             model=self._settings.model_name,
-            messages=[
-                {"role": "system", "content": prompt},
-                {
-                    "role": "user",
-                    "content": (
-                        f"当前观察：{observation.model_dump_json()}\n{correction_instruction}"
-                    ),
-                },
-            ],
+            messages=cast(Any, messages),
             temperature=0,
             response_format={"type": "json_object"},
             extra_body={"enable_thinking": self._settings.enable_thinking},
@@ -126,6 +131,11 @@ class BailianDecisionProvider:
         if not content:
             raise DecisionProviderError("Bailian returned no decision.")
         try:
-            return json.loads(content)
+            usage = response.usage
+            return ProviderResponse(
+                candidate=json.loads(content),
+                input_tokens=usage.prompt_tokens if usage else None,
+                output_tokens=usage.completion_tokens if usage else None,
+            )
         except json.JSONDecodeError as exc:
             raise DecisionProviderError("Bailian returned malformed JSON.") from exc

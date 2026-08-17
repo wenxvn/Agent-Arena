@@ -3,7 +3,7 @@
 ## 当前状态
 
 - `0001-project-architecture` 架构 spec 已确认生效，状态为 `Accepted`。
-- Release 1 的确定性 Spaceship Escape、ReactAgent、Agent Loop、Episode Trace 和终止控制已完成；下一步是设计 Release 2 的 MemoryAgent，并以相同世界和预算建立公平对照。
+- Release 2 的确定性 Spaceship Escape、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 对照已完成；下一步是在结果稳定后设计 Release 3 的 Streamlit 实验界面。
 - `研究总纲.md` 是新对话和日常 workflow 的研究摘要；完整产品与研究参考保留在 `总纲.md`，需要追溯细节时再阅读。
 - 当前模块结构见 `docs/architecture.md`，交付顺序和进度见 `docs/scope/scope.md`。
 - 重要阶段、决策、验证和阻塞记录在 `docs/engineering-log.md`，它不替代 scope、spec 或 Git 历史。
@@ -17,6 +17,11 @@
 - **本地配置**：`.env` 只保留在本机。新机器从 `.env.example` 创建它。密钥不得提交、打印、写入源码、日志、trace、文档、测试或 prompt。
 - **环境变量**：`OPENAI_BASE_URL` 为百炼兼容地址，`OPENAI_API_KEY` 为运行时密钥，`DASHSCOPE_API_KEY` 为同一密钥的供应商别名，`OPENAI_MODEL` 为模型名。
 - **验证命令**：修改本地密钥、端点或模型后，运行 `bash scripts/verify_model.sh`。脚本只显示模型名和最终文本。
+
+## 语言约定
+
+- 面向使用者的 CLI 输出、世界描述、prompt、trace 摘要、scope、spec、工程记录和项目文档一律使用中文。
+- 代码标识、文件路径、命令、第三方 API 字段和无准确中文替代的标准术语保留英文。
 
 ## 开发策略
 

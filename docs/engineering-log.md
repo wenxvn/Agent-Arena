@@ -112,3 +112,31 @@
 下一步：设计 MemoryAgent，用结构化记忆降低重复观察和重复失败动作。
 
 关联提交：待提交。
+
+## 2026-08-17 Release 2 MemoryAgent 完成
+
+事件：完成规则驱动的结构化 MemoryAgent，并建立与 ReactAgent 的可复现单局对照。
+
+原因：在 benchmark 前先固定唯一实验变量，避免完整历史、隐藏状态或第二次模型调用影响结果。
+
+改动：增加公开记忆 reducer、脱敏、失败动作与问题映射、Agent 生命周期、结构化 provider 请求与响应、token 用量、trace 实验来源和 CLI `--agent` 选择。
+
+验证：Ruff、mypy 和 33 项 pytest 全部通过。ReactAgent 与 MemoryAgent 的 Fake CLI 均在 20 步成功逃生，Memory trace 包含版本化来源字段。
+
+下一步：实现 benchmark 命令，使用持久化 trace 输出 ReactAgent 和 MemoryAgent 的 JSON、CSV 指标对照。
+
+关联提交：待提交。
+
+## 2026-08-17 Release 2 Benchmark 与指标完成
+
+事件：完成多局 benchmark 命令，以及基于持久化 trace 的 JSON、CSV 指标输出。
+
+原因：MemoryAgent 需要与 ReactAgent 在相同世界、seed 和预算下进行可复现对照，才能解释后续实验结果。
+
+改动：新增 benchmark 行和聚合计算、原子 JSON/CSV 写入、trace 重读校验；CLI 支持单 Agent 或默认双 Agent 对照。
+
+验证：Ruff、mypy 和 36 项 pytest 通过。`agent-arena benchmark --episodes 1` 使用 Fake provider 生成两份 trace，CSV 按 React、Memory 顺序输出，JSON 聚合成功率为 1.0。
+
+下一步：在 benchmark 结果稳定后设计 Streamlit 实验界面。
+
+关联提交：待提交。

@@ -13,9 +13,11 @@ from agent_arena.evaluation.trace import (
     EpisodeOutcome,
     EpisodeTrace,
     EpisodeTraceHeader,
+    ExperimentProvenance,
     StepTrace,
     TraceEvent,
 )
+from agent_arena.llm.protocol import ProviderResponse
 
 
 class EpisodeRunner:
@@ -35,12 +37,26 @@ class EpisodeRunner:
         """Return a terminal trace for one reset world instance."""
 
         observation = self._environment.reset(self._settings.seed)
+        self._agent.reset(observation)
         trace_header = EpisodeTrace.start(
             world_version=self._settings.world_version,
             seed=self._settings.seed,
             agent=self._agent.name,
             prompt_version=self._agent.prompt_version,
             provider=self._settings.provider,
+            provenance=ExperimentProvenance(
+                model_name=self._settings.model_name,
+                enable_thinking=self._settings.enable_thinking,
+                request_timeout_seconds=self._settings.request_timeout_seconds,
+                retry_count=self._settings.retry_count,
+                retry_backoff_seconds=tuple(self._settings.retry_backoff_seconds),
+                step_limit=self._settings.step_limit,
+                provider_request_version="decision_request_v1",
+                base_prompt_version="react_v3",
+                base_prompt_hash=self._agent.base_prompt_hash,
+                memory_schema_version="memory_v1" if self._agent.name == "memory" else None,
+                memory_renderer_version="memory_v1" if self._agent.name == "memory" else None,
+            ),
         )
         steps: list[StepTrace] = []
         executed_actions = 0
@@ -50,7 +66,9 @@ class EpisodeRunner:
         total_latency_ms = 0
 
         while executed_actions < self._settings.step_limit:
-            decision, latency_ms, provider_failed = self._request(observation, correction=False)
+            decision, latency_ms, provider_failed, input_tokens, output_tokens = self._request(
+                observation, correction=False
+            )
             total_latency_ms += latency_ms
             if provider_failed:
                 steps.append(
@@ -74,7 +92,13 @@ class EpisodeRunner:
                 invalid_outputs += 1
                 consecutive_invalid += 1
                 steps.append(
-                    self._invalid_event(observation, correction=False, latency_ms=latency_ms)
+                    self._invalid_event(
+                        observation,
+                        correction=False,
+                        latency_ms=latency_ms,
+                        input_tokens=input_tokens,
+                        output_tokens=output_tokens,
+                    )
                 )
                 if consecutive_invalid == 3:
                     return self._complete(
@@ -94,7 +118,9 @@ class EpisodeRunner:
                         summary="已请求模型按规定格式重新输出决策。",
                     )
                 )
-                decision, latency_ms, provider_failed = self._request(observation, correction=True)
+                decision, latency_ms, provider_failed, input_tokens, output_tokens = self._request(
+                    observation, correction=True
+                )
                 total_latency_ms += latency_ms
                 if provider_failed:
                     steps.append(
@@ -117,7 +143,13 @@ class EpisodeRunner:
                     invalid_outputs += 1
                     consecutive_invalid += 1
                     steps.append(
-                        self._invalid_event(observation, correction=True, latency_ms=latency_ms)
+                        self._invalid_event(
+                            observation,
+                            correction=True,
+                            latency_ms=latency_ms,
+                            input_tokens=input_tokens,
+                            output_tokens=output_tokens,
+                        )
                     )
                     if consecutive_invalid == 3:
                         return self._complete(
@@ -134,6 +166,7 @@ class EpisodeRunner:
             consecutive_invalid = 0
             decision_observation = observation
             result, observation = self._environment.step(decision.action)
+            self._agent.observe(decision.action, result, observation)
             executed_actions += 1
             if result.status is ToolStatus.REJECTED:
                 rejected_actions += 1
@@ -148,6 +181,8 @@ class EpisodeRunner:
                     action=decision.action,
                     result=result,
                     latency_ms=latency_ms,
+                    input_tokens=input_tokens,
+                    output_tokens=output_tokens,
                 )
             )
             if self._environment.is_success():
@@ -176,24 +211,47 @@ class EpisodeRunner:
         observation: Observation,
         *,
         correction: bool,
-    ) -> tuple[AgentDecision | None, int, bool]:
+    ) -> tuple[AgentDecision | None, int, bool, int | None, int | None]:
         started_at = perf_counter()
         try:
-            candidate = self._agent.request(observation, correction=correction)
+            response = self._agent.request(observation, correction=correction)
         except Exception:
-            return None, _elapsed_ms(started_at), True
+            return None, _elapsed_ms(started_at), True, None, None
+        if not isinstance(response, ProviderResponse):
+            return None, _elapsed_ms(started_at), True, None, None
         try:
-            return agent_decision_adapter.validate_python(candidate), _elapsed_ms(started_at), False
+            return (
+                agent_decision_adapter.validate_python(response.candidate),
+                _elapsed_ms(started_at),
+                False,
+                response.input_tokens,
+                response.output_tokens,
+            )
         except ValidationError:
-            return None, _elapsed_ms(started_at), False
+            return (
+                None,
+                _elapsed_ms(started_at),
+                False,
+                response.input_tokens,
+                response.output_tokens,
+            )
 
     @staticmethod
-    def _invalid_event(observation: Observation, *, correction: bool, latency_ms: int) -> StepTrace:
+    def _invalid_event(
+        observation: Observation,
+        *,
+        correction: bool,
+        latency_ms: int,
+        input_tokens: int | None,
+        output_tokens: int | None,
+    ) -> StepTrace:
         return StepTrace(
             event=TraceEvent.ACTION_INVALID,
             observation=observation,
             correction=correction,
             latency_ms=latency_ms,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
             summary="模型输出不符合决策格式。",
         )
 
@@ -212,8 +270,8 @@ class EpisodeRunner:
             summary="模型服务请求失败。",
         )
 
-    @staticmethod
     def _complete(
+        self,
         header: EpisodeTraceHeader,
         outcome: EpisodeOutcome,
         executed_actions: int,
@@ -222,6 +280,7 @@ class EpisodeRunner:
         total_latency_ms: int,
         steps: list[StepTrace],
     ) -> EpisodeTrace:
+        self._agent.finish(outcome)
         return EpisodeTrace.model_validate(
             {
                 **header.model_dump(),

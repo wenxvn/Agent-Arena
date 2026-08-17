@@ -6,6 +6,8 @@ from collections import deque
 from collections.abc import Iterable
 from dataclasses import dataclass
 
+from agent_arena.llm.protocol import DecisionRequest, ProviderResponse
+
 
 class FakeProviderExhausted(RuntimeError):
     """Raised when a fixture did not provide enough provider responses."""
@@ -15,9 +17,7 @@ class FakeProviderExhausted(RuntimeError):
 class FakeProviderCall:
     """A record of one provider request for test assertions."""
 
-    observation: object
-    prompt: str
-    correction: bool
+    request: DecisionRequest
 
 
 class FakeDecisionProvider:
@@ -27,18 +27,14 @@ class FakeDecisionProvider:
         self._responses: deque[object] = deque(responses)
         self.calls: list[FakeProviderCall] = []
 
-    def decide(self, observation: object, prompt: str, correction: bool) -> object:
-        self.calls.append(
-            FakeProviderCall(
-                observation=observation,
-                prompt=prompt,
-                correction=correction,
-            )
-        )
+    def decide(self, request: DecisionRequest) -> ProviderResponse:
+        self.calls.append(FakeProviderCall(request=request))
         if not self._responses:
             raise FakeProviderExhausted("Fake provider response queue is exhausted.")
 
         response = self._responses.popleft()
         if isinstance(response, Exception):
             raise response
-        return response
+        if isinstance(response, ProviderResponse):
+            return response
+        return ProviderResponse(candidate=response)

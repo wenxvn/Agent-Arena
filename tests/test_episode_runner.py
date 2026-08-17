@@ -90,6 +90,10 @@ def test_runner_completes_the_public_escape_path_and_records_decision_observatio
     assert trace.steps[0].action.tool == "move"
     assert trace.steps[0].input_tokens is None
     assert trace.steps[0].output_tokens is None
+    assert trace.provenance.model_name == "qwen3.7-plus"
+    assert trace.provenance.step_limit == 30
+    assert len(trace.provenance.base_prompt_hash) == 64
+    assert trace.provenance.provider_request_version == "decision_request_v1"
 
 
 def test_runner_requests_one_correction_without_executing_the_invalid_candidate() -> None:
@@ -98,7 +102,7 @@ def test_runner_requests_one_correction_without_executing_the_invalid_candidate(
     assert trace.outcome is EpisodeOutcome.PROVIDER_ERROR
     assert trace.invalid_output_count == 1
     assert trace.executed_action_count == 1
-    assert [call.correction for call in provider.calls] == [False, True, False]
+    assert [call.request.correction for call in provider.calls] == [False, True, False]
     assert [step.event for step in trace.steps] == [
         TraceEvent.ACTION_INVALID,
         TraceEvent.CORRECTION_REQUESTED,
@@ -113,7 +117,7 @@ def test_runner_stops_after_three_consecutive_invalid_candidates() -> None:
     assert trace.outcome is EpisodeOutcome.INVALID_ACTION_LIMIT
     assert trace.invalid_output_count == 3
     assert trace.executed_action_count == 0
-    assert [call.correction for call in provider.calls] == [False, True, False]
+    assert [call.request.correction for call in provider.calls] == [False, True, False]
 
 
 def test_environment_rejection_is_a_valid_action_not_an_invalid_model_output() -> None:
