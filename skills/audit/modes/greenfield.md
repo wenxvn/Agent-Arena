@@ -1,0 +1,23 @@
+# Audit Mode: greenfield setup (Phase 1)
+
+Trigger: the preliminary check classified greenfield, including the workflow setup case (a stack spec exists but no root AGENTS.md, so the project is freshly scaffolded and still needs its standards), or Phase 0 → `New project`. There may already be a manifest and scaffold source; that is the scaffold, not an already existing codebase, so still ask the standards.
+
+Step 1, ask coding patterns AND tooling. The main thread asks, as decision panels, up to 4 per round, as many rounds as it takes. Every panel has exactly one option marked `(recommended)` and always ends with a free text custom input slot (Claude Code's picker adds that "Other" automatically; in a plain text fallback add it explicitly as the last option). Be thorough, not minimal; this is the one place conventions and tooling get set, so grill the engineer on every convention and tooling choice rather than assuming a default. First read the real scaffolded project (manifest, existing config, tools the scaffold installed), then tailor every question: skip one the stack already settles, list an already installed tool first as the recommended pick, phrase options for the actual language and framework. Answers are captured into `AGENTS.md`. `/audit` records the choices, installs nothing; installing (packages, config files, hooks that run before commit, CI) is the `/develop tooling` sub task that follows, but ask the tooling questions here where the choice is made and recorded.
+
+Architecture & code conventions:
+- Architecture style: present all four preset options without reading their files into context yet: Clean Architecture (`patterns/clean-architecture.md`), Functional (`patterns/functional.md`), Domain Driven Design (`patterns/domain-driven.md`), and SOLID OOP (`patterns/solid-oop.md`). At write time (Step 3) you read only the chosen preset file.
+- Type strictness (typed languages only; skip if untyped): `strict` (no `any`, exhaustive types) · `gradual` (strict for new code) · `loose`.
+- Module & folder structure: `folder-by-feature` (colocate by feature) · `by-layer` (controllers/services/repos) · match what the scaffold already set.
+- Additional code standards (multi select): documented public APIs · a consistent error handling pattern · validate env vars at startup · named exports only (no default exports) · consistent naming conventions · accessibility baseline on UI (WCAG AA) · conventional commit messages.
+
+Tooling (asked here, installed by `/develop tooling`):
+- Linting & formatting (adaptive): the standard linter + formatter for this stack (suggested; list an already installed one first) · a specific alternative · minimal for now.
+- Checks before commit: lint + format + typecheck on every commit (suggested) · format only · none.
+- Testing gate (captured as the convention, the runner is set up by `/test`): unit + integration with a framework (suggested) · typecheck + manual `/check verify` only · tests first (TDD).
+- Continuous integration: a basic CI check on push (lint, typecheck, test) (suggested) · not yet · already configured.
+
+Adapt the list: drop what doesn't apply (no CI question for a throwaway prototype, no type strictness for an untyped language); add any stack specific convention worth pinning.
+
+Step 2, resolve SELECTED_PATTERNS: a named pattern → the absolute path of the matching `patterns/*.md` file (path only, do not inline its contents). "Other" (free text) → the engineer's exact typed text, passed inline (no file).
+
+Step 3, run the Tool skills sweep (`modes/tool-skills.md`, whose web/registry discovery runs in a `researcher` subagent), then write the files yourself. Read `agent-prompt.md` and the selected pattern preset file now, and follow the GREENFIELD phase instructions to write root `AGENTS.md` + its `CLAUDE.md` pointer. The inputs to apply: `PHASE=greenfield`; `SELECTED_PATTERNS=<pattern file path, or the Other free text>`; `ADDITIONAL_STANDARDS=<all the other Step 1 selections: code standards, type strictness, folder structure, AND the tooling choices (lint/format, pre-commit, testing gate, CI)>`; `MONOREPO_OR_NO` (`yes, apps: web, api, …` if detected); plus the sweep's `INSTALLED_SKILLS` / `DECLINED_TOOLS` for the `## Agent skills` section (one bullet per skill with its location, per `agent-prompt.md`). Capture the tooling choices clearly (a short `## Tooling` note or explicit Rules lines) so `/develop tooling` installs exactly what was chosen. Per `agent-prompt.md`, seed `## Stack` from the architecture spec (the workflow setup case always has one), seed `## Build approach` from the scope header (else `<TBD, set by /scope>`), and add per workspace nested docs if `MONOREPO=yes`.
