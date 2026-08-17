@@ -3,7 +3,7 @@
 - 运行入口是 `agent_arena.cli:app`，本地命令使用 `uv run agent-arena`。
 - `config.py` 的 `RuntimeSettings` 是唯一公开配置模型。CLI 覆盖环境变量和本地 `.env`，环境变量再覆盖 `config/runtime.defaults.json`。
 - `llm/` 只能处理 provider 调用。`arena/`、`agents/`、`worlds/` 和 `evaluation/` 不得直接导入 OpenAI SDK。
-- 当前 `run` 只写入 scaffold episode。确定性世界、Agent Loop、完整 trace 和 benchmark 由后续 scope feature 实现。
+- 当前 `run` 只写入 scaffold episode。Spaceship Escape 环境位于 `arena/` 和 `worlds/`，Agent Loop、完整 trace 和 benchmark 仍由后续 scope feature 实现。
 - 运行质量检查：`uv run ruff check .`、`uv run mypy src`、`uv run pytest`。
 
 _Drafted by /sync from the introducing change, worth a quick human pass._

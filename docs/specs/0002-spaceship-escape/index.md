@@ -1,7 +1,7 @@
 # 0002. Spaceship Escape 环境
 
 **Date**: 2026-08-17
-**Status**: Proposed
+**Status**: Accepted
 
 ## Summary
 

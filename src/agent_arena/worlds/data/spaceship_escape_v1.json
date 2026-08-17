@@ -1,0 +1,93 @@
+{
+  "world_id": "spaceship_escape_v1",
+  "version": "v1",
+  "goal": "Restore main power, retrieve the authorization code, and launch the escape pod.",
+  "start_room": "control_room",
+  "authorization_code": "ALPHA-731",
+  "rooms": [
+    {
+      "id": "control_room",
+      "description": "The main control center is dark, apart from emergency indicators.",
+      "exits": ["corridor"],
+      "object_ids": ["control_terminal"]
+    },
+    {
+      "id": "corridor",
+      "description": "A central corridor connects the ship's critical compartments.",
+      "exits": ["control_room", "storage_room", "maintenance_room"],
+      "object_ids": []
+    },
+    {
+      "id": "storage_room",
+      "description": "The supply storage room has a sealed crate against one wall.",
+      "exits": ["corridor"],
+      "object_ids": ["storage_crate"]
+    },
+    {
+      "id": "maintenance_room",
+      "description": "Maintenance controls monitor the ship's failing systems.",
+      "exits": ["corridor", "reactor_room"],
+      "object_ids": ["diagnostic_terminal"]
+    },
+    {
+      "id": "reactor_room",
+      "description": "The reactor room contains the main power panel.",
+      "exits": ["maintenance_room", "escape_pod"],
+      "object_ids": ["reactor_panel", "damaged_fuse"]
+    },
+    {
+      "id": "escape_pod",
+      "description": "The escape pod is ready for an authorized launch.",
+      "exits": ["reactor_room"],
+      "object_ids": ["escape_pod"]
+    }
+  ],
+  "objects": [
+    {
+      "id": "control_terminal",
+      "room_id": "control_room",
+      "kind": "terminal",
+      "inspect_result": "The control terminal requires main power."
+    },
+    {
+      "id": "storage_crate",
+      "room_id": "storage_room",
+      "kind": "container",
+      "inspect_result": "The crate contains a screwdriver and a replacement fuse."
+    },
+    {
+      "id": "diagnostic_terminal",
+      "room_id": "maintenance_room",
+      "kind": "terminal",
+      "inspect_result": "Diagnostics are available even without main power."
+    },
+    {
+      "id": "reactor_panel",
+      "room_id": "reactor_room",
+      "kind": "fixture",
+      "inspect_result": "The reactor panel is secured by screws."
+    },
+    {
+      "id": "damaged_fuse",
+      "room_id": "reactor_room",
+      "kind": "fixture",
+      "inspect_result": "The damaged fuse must be replaced."
+    },
+    {
+      "id": "escape_pod",
+      "room_id": "escape_pod",
+      "kind": "fixture",
+      "inspect_result": "The escape pod needs an authorization code."
+    }
+  ],
+  "items": [
+    {
+      "id": "screwdriver",
+      "container_id": "storage_crate"
+    },
+    {
+      "id": "replacement_fuse",
+      "container_id": "storage_crate"
+    }
+  ]
+}

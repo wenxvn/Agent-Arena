@@ -10,7 +10,7 @@
 | # | Feature | Phase | Status |
 |---|---|---|---|
 | 1 | Python 项目骨架与命令入口 | Foundation | done |
-| 2 | Spaceship Escape 环境 | Release 1 | in-progress |
+| 2 | Spaceship Escape 环境 | Release 1 | done |
 | 3 | 环境规则测试 | Release 1 | planned |
 | 4 | ReactAgent 与 Agent Loop | Release 1 | planned |
 | 5 | Episode Trace 与终止控制 | Release 1 | planned |
@@ -38,21 +38,22 @@ Spec 0001 · code in `src/agent_arena/`
 
 ## Release 1
 
-### 2. Spaceship Escape 环境 · in-progress
+### 2. Spaceship Escape 环境 · done
 
 实现六个房间、物品、能源修复和逃生授权组成的确定性部分可观测世界。Agent 只能通过工具获得观察结果。
 
 Done when: 人可以只使用公开工具完成通关，环境不会暴露完整 WorldState。
 
 - [x] Design it (spec): `/architect Spaceship Escape 环境`
-- [ ] Build it: `/develop Spaceship Escape 环境`
-  - [ ] 定义世界模型与 `spaceship_escape_v1` 配置，覆盖 AC-1、AC-2、AC-3、AC-9
-  - [ ] 实现导航、观察、储物箱和拾取规则，覆盖 AC-3、AC-4、AC-5、AC-8
-  - [ ] 实现诊断、反应堆修复、授权码和逃生状态，覆盖 AC-6、AC-7、AC-8
-  - [ ] 固定环境规则测试和手动通关验证，覆盖 AC-1 至 AC-9
-- [ ] Verify it: `/check verify Spaceship Escape 环境`
-- [ ] Test it: `/test Spaceship Escape 环境`
+- [x] Build it: `/develop Spaceship Escape 环境`
+  - [x] 定义世界模型与 `spaceship_escape_v1` 配置，覆盖 AC-1、AC-2、AC-3、AC-9
+  - [x] 实现导航、观察、储物箱和拾取规则，覆盖 AC-3、AC-4、AC-5、AC-8
+  - [x] 实现诊断、反应堆修复、授权码和逃生状态，覆盖 AC-6、AC-7、AC-8
+  - [x] 固定环境规则测试和手动通关验证，覆盖 AC-1 至 AC-9
+- [x] Verify it: `/check verify Spaceship Escape 环境`
+- [x] Test it: `/test Spaceship Escape 环境`
 Spec [0002](../specs/0002-spaceship-escape/index.md)
+Code in `src/agent_arena/arena/`, `src/agent_arena/worlds/`, and `tests/test_spaceship_escape.py`
 
 ### 3. 环境规则测试 · planned
 

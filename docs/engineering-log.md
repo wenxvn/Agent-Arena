@@ -70,3 +70,17 @@
 下一步：运行 `/develop Spaceship Escape 环境`，实现配置、Environment 和规则测试。
 
 关联提交：待提交。
+
+## 2026-08-17 Spaceship Escape 环境完成
+
+事件：完成第一个可手动通关的确定性 Spaceship Escape 环境。
+
+原因：为后续 Agent Loop、Episode Trace 和 benchmark 建立可重复的环境基线。
+
+改动：新增严格 Action 与 Observation 契约、六房间 JSON 定义、环境状态转换和规则测试。
+
+验证：`uv run ruff check .`、`uv run mypy src` 和 25 项 pytest 通过，公开工具路径在 20 步内完成逃生。
+
+下一步：设计 ReactAgent 与 Agent Loop。
+
+关联提交：待提交。
