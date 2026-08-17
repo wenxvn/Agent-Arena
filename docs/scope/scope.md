@@ -3,13 +3,13 @@
 **Product:** 一个用于学习和比较 LLM Agent 行为的轻量实验环境。
 **Build approach:** Skateboard，先交付一个从环境到结果完整可用的最小版本，再逐步增加 Agent 能力。
 **Workflow:** Medium，开发后运行验证和测试，保证环境规则与实验指标可信。
-**Source:** `总纲.md`
+**Source:** `研究总纲.md`（日常摘要），完整参考为 `总纲.md`
 
 ## At a glance
 
 | # | Feature | Phase | Status |
 |---|---|---|---|
-| 1 | Python 项目骨架与命令入口 | Foundation | planned |
+| 1 | Python 项目骨架与命令入口 | Foundation | in-progress |
 | 2 | Spaceship Escape 环境 | Release 1 | planned |
 | 3 | 环境规则测试 | Release 1 | planned |
 | 4 | ReactAgent 与 Agent Loop | Release 1 | planned |
@@ -21,13 +21,19 @@
 
 ## Foundation
 
-### 1. Python 项目骨架与命令入口 · planned
+### 1. Python 项目骨架与命令入口 · in-progress
 
 建立清晰的模块边界和最小运行入口，让环境、Agent、实验执行彼此独立。
 
 Done when: 可以安装依赖，运行一个命令，并从固定配置创建一个 episode。
 
-- [ ] `/architect 项目技术架构`，确定 Python 版本、依赖管理、模型接口和模块边界
+- [x] Decide the stack (spec): [0001](../specs/0001-project-architecture/index.md)
+- [ ] Build it: `/develop scaffold Python 项目骨架与命令入口`
+  - [ ] 创建 `pyproject.toml`、`uv.lock` 和 `src/agent_arena`
+  - [ ] 创建 RuntimeSettings、CLI 和 Fake provider
+  - [ ] 配置 pytest、Ruff、mypy 和 GitHub Actions
+- [ ] Verify it: `/check verify Python 项目骨架与命令入口`
+- [ ] Test it: `/test Python 项目骨架与命令入口`
 
 ## Release 1
 

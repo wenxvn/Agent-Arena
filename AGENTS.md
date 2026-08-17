@@ -2,14 +2,15 @@
 
 ## 当前状态
 
-- 项目处于规划阶段，尚未创建应用代码和技术架构 spec。
-- 产品总设计在 `总纲.md`，仅在需要追溯完整需求时阅读，不作为每次对话的必读文件。
+- `0001-project-architecture` 架构 spec 已确认生效，状态为 `Accepted`。
+- 项目尚无业务源代码；下一步是按架构 spec 完成 Foundation scaffold，再实现可手动通关的确定性 Spaceship Escape 环境。
+- `研究总纲.md` 是新对话和日常 workflow 的研究摘要；完整产品与研究参考保留在 `总纲.md`，需要追溯细节时再阅读。
 - 当前模块结构见 `docs/architecture.md`，交付顺序和进度见 `docs/scope/scope.md`。
-- 当前第一项任务是 `/architect 项目技术架构`。完成技术决策后，先实现并测试可手动通关的确定性 Spaceship Escape 环境，再接入 LLM。
 
 ## 技术与模型配置
 
-- **语言与运行时**：Python，具体版本和依赖管理方式由项目技术架构 spec 决定。
+- **语言与运行时**：Python 3.13，使用 uv、`pyproject.toml` 和 `uv.lock` 管理项目。
+- **核心依赖**：Pydantic v2、pydantic-settings、Typer、OpenAI Python SDK、pytest、Ruff 和 mypy。
 - **LLM 平台**：阿里云百炼，使用 OpenAI 兼容 API。
 - **默认模型**：`qwen3.7-plus`。
 - **本地配置**：`.env` 只保留在本机。新机器从 `.env.example` 创建它。密钥不得提交、打印、写入源码、日志、trace、文档、测试或 prompt。
@@ -27,10 +28,11 @@ Skateboard。先交付一个真正可运行的最小闭环：确定性环境、�
 ### 新对话必读
 
 1. `AGENTS.md`
-2. `docs/architecture.md`
-3. `docs/scope/scope.md`
-4. 当前任务对应的 `docs/specs/` 文件，没有 spec 时只读取与任务直接相关的需求段落
-5. `git status --short --branch`，以及当前改动的文件列表和 diff 摘要
+2. `研究总纲.md`
+3. `docs/architecture.md`
+4. `docs/scope/scope.md`
+5. 当前任务对应的 `docs/specs/` 文件，没有 spec 时只读取与任务直接相关的需求段落
+6. `git status --short --branch`，以及当前改动的文件列表和 diff 摘要
 
 ### 按需读取代码
 
@@ -38,6 +40,16 @@ Skateboard。先交付一个真正可运行的最小闭环：确定性环境、�
 - 使用 `rg` 精确定位符号和调用点，先读小范围上下文，再按调用链向外扩展。
 - 不因熟悉项目而读取全部源文件、全部测试、全部历史或 `总纲.md`。
 - 只有以下情况可以进行全仓库扫描：`/audit`、跨模块架构重构、无法从架构文档判断责任边界，或用户明确要求。
+
+### 文档权威顺序
+
+1. `AGENTS.md`：工程工作流和持久约定。
+2. `研究总纲.md`：日常研究摘要和阶段边界。
+3. `总纲.md`：完整产品与研究蓝图，按需追溯。
+4. `docs/scope/`：路线、里程碑和当前进度。
+5. `docs/specs/`：已确认的技术决策和验收条件。
+6. `docs/architecture.md`：稳定模块边界和数据流。
+7. 代码和测试：实际运行行为。
 
 ### 任务结束时写回状态
 
@@ -64,7 +76,7 @@ Skateboard。先交付一个真正可运行的最小闭环：确定性环境、�
 
 ## 默认流程
 
-新功能：`/scope` → 有关键决策时 `/architect` → `/develop` → `/check verify` → `/test` → 重要改动运行 `/check review` → `/sync` → commit 和 push。
+新功能：`/scope` → 有关键决策时 `/architect` → `/develop` → `/test` → `/check verify` → 重要改动运行 `/check review` → `/sync` → commit 和 push。
 
 缺陷：`/debug` → `/test` → `/check verify` → `/sync`。只写变更说明时，在已有 commit 或 diff 后运行 `/document`。
 
@@ -77,5 +89,9 @@ Skateboard。先交付一个真正可运行的最小闭环：确定性环境、�
 - 每局运行保存一个 JSON Episode Trace，trace 中不能包含密钥或完整思维链。
 - 首个 MVP 不引入 LangChain、向量数据库、多 Agent 编排、RAG、数据库存储或复杂 UI。
 - `runs/` 和 `results/` 是本地生成物，默认不纳入 Git，除非未来 scope 明确改变该规则。
+
+## 辅助工具建议
+
+Foundation 稳定后按需引入 `pytest-cov`、Hypothesis、pre-commit 和 Rich；它们不是当前架构的必需依赖。当前不安装 MCP、LangChain、RAG、向量数据库或额外 Agent 编排工具。
 
 _这是新 Agent 和新对话的持久入口。工程级事实改变时，用 `/audit` 或 `/sync` 更新本文件。_
