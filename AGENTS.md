@@ -6,6 +6,7 @@
 - 项目尚无业务源代码；下一步是按架构 spec 完成 Foundation scaffold，再实现可手动通关的确定性 Spaceship Escape 环境。
 - `研究总纲.md` 是新对话和日常 workflow 的研究摘要；完整产品与研究参考保留在 `总纲.md`，需要追溯细节时再阅读。
 - 当前模块结构见 `docs/architecture.md`，交付顺序和进度见 `docs/scope/scope.md`。
+- 重要阶段、决策、验证和阻塞记录在 `docs/engineering-log.md`，它不替代 scope、spec 或 Git 历史。
 
 ## 技术与模型配置
 
@@ -33,6 +34,7 @@ Skateboard。先交付一个真正可运行的最小闭环：确定性环境、�
 4. `docs/scope/scope.md`
 5. 当前任务对应的 `docs/specs/` 文件，没有 spec 时只读取与任务直接相关的需求段落
 6. `git status --short --branch`，以及当前改动的文件列表和 diff 摘要
+7. `docs/engineering-log.md` 的最近记录，用于恢复重要历史和上次验证结果
 
 ### 按需读取代码
 
@@ -57,6 +59,7 @@ Skateboard。先交付一个真正可运行的最小闭环：确定性环境、�
 - 技术决策写入 `docs/specs/`，由 `/architect` 创建或更新。
 - 稳定模块边界和数据流变化写入 `docs/architecture.md`，不记录易变的实现细节。
 - 全局约定写入本文件，由 `/audit` 或 `/sync` 维护。
+- 重要工程事件追加到 `docs/engineering-log.md`，由执行该事件的 workflow 负责填写。
 - 每次完成后运行适用的验证和 `/sync`，再提交和推送预期文件。新对话只依赖这些持久文件，不依赖聊天记录。
 
 ## 9 个 Skill 的调用规则
@@ -79,6 +82,14 @@ Skateboard。先交付一个真正可运行的最小闭环：确定性环境、�
 新功能：`/scope` → 有关键决策时 `/architect` → `/develop` → `/test` → `/check verify` → 重要改动运行 `/check review` → `/sync` → commit 和 push。
 
 缺陷：`/debug` → `/test` → `/check verify` → `/sync`。只写变更说明时，在已有 commit 或 diff 后运行 `/document`。
+
+### 重要事件记录流程
+
+不是每次小改动都要写日志。满足以下任一条件时追加一条记录：阶段开始或完成、架构决策确认或修改、重要验证通过或失败、阻塞及解决、开发优先级调整。
+
+记录应简短回答六个问题：发生了什么、为什么做、改了什么、如何验证、下一步是什么、关联哪个 commit。代码细节和完整测试输出留在 Git、测试结果或 trace 中，不复制到日志。
+
+完成顺序是：实现 → 测试和验证 → `/sync` → 追加工程事件记录 → commit 和 push。若验证失败，记录失败和当前阻塞，不把功能写成已完成。
 
 ## 项目约束
 
