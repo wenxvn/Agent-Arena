@@ -56,3 +56,17 @@
 验证：`git diff --check` 已通过，工作区只包含预期的 `AGENTS.md` 和本文件改动。
 
 下一步：后续每个重要阶段完成时追加一条简短记录。
+
+## 2026-08-17 Spaceship Escape 环境设计确认
+
+事件：确认第一个确定性世界的地图、公开工具、信息边界、谜题状态和逃生条件。
+
+原因：环境规则必须先稳定，后续 Agent Loop、trace 和 benchmark 才有可信对照。
+
+改动：新增 `docs/specs/0002-spaceship-escape/`，并将 scope 中的 Spaceship Escape 环境改为设计完成和实现中。
+
+验证：完成设计访谈与独立只读交叉检查。九项契约空白已补齐，`git diff --check` 通过。
+
+下一步：运行 `/develop Spaceship Escape 环境`，实现配置、Environment 和规则测试。
+
+关联提交：待提交。
