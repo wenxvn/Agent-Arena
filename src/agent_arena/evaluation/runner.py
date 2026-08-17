@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from time import perf_counter
 
 from pydantic import ValidationError
@@ -28,10 +29,14 @@ class EpisodeRunner:
         environment: Environment,
         agent: ReactAgent,
         settings: RuntimeSettings,
+        on_decision_start: Callable[[int, bool], None] | None = None,
+        on_step_complete: Callable[[StepTrace], None] | None = None,
     ) -> None:
         self._environment = environment
         self._agent = agent
         self._settings = settings
+        self._on_decision_start = on_decision_start
+        self._on_step_complete = on_step_complete
 
     def run(self) -> EpisodeTrace:
         """Return a terminal trace for one reset world instance."""
@@ -45,14 +50,14 @@ class EpisodeRunner:
             prompt_version=self._agent.prompt_version,
             provider=self._settings.provider,
             provenance=ExperimentProvenance(
-                model_name=self._settings.model_name,
+                model_name=self._settings.selected_model_name,
                 enable_thinking=self._settings.enable_thinking,
                 request_timeout_seconds=self._settings.request_timeout_seconds,
                 retry_count=self._settings.retry_count,
                 retry_backoff_seconds=tuple(self._settings.retry_backoff_seconds),
                 step_limit=self._settings.step_limit,
                 provider_request_version="decision_request_v1",
-                base_prompt_version="react_v3",
+                base_prompt_version=self._agent.base_prompt_version,
                 base_prompt_hash=self._agent.base_prompt_hash,
                 memory_schema_version="memory_v1" if self._agent.name == "memory" else None,
                 memory_renderer_version="memory_v1" if self._agent.name == "memory" else None,
@@ -66,6 +71,8 @@ class EpisodeRunner:
         total_latency_ms = 0
 
         while executed_actions < self._settings.step_limit:
+            if self._on_decision_start:
+                self._on_decision_start(executed_actions + 1, False)
             decision, latency_ms, provider_failed, input_tokens, output_tokens = self._request(
                 observation, correction=False
             )
@@ -118,6 +125,8 @@ class EpisodeRunner:
                         summary="已请求模型按规定格式重新输出决策。",
                     )
                 )
+                if self._on_decision_start:
+                    self._on_decision_start(executed_actions + 1, True)
                 decision, latency_ms, provider_failed, input_tokens, output_tokens = self._request(
                     observation, correction=True
                 )
@@ -173,18 +182,19 @@ class EpisodeRunner:
                 event = TraceEvent.ACTION_REJECTED
             else:
                 event = TraceEvent.ACTION_VALIDATED
-            steps.append(
-                StepTrace(
-                    event=event,
-                    observation=decision_observation,
-                    decision_reason=decision.decision_reason,
-                    action=decision.action,
-                    result=result,
-                    latency_ms=latency_ms,
-                    input_tokens=input_tokens,
-                    output_tokens=output_tokens,
-                )
+            completed_step = StepTrace(
+                event=event,
+                observation=decision_observation,
+                decision_reason=decision.decision_reason,
+                action=decision.action,
+                result=result,
+                latency_ms=latency_ms,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
             )
+            steps.append(completed_step)
+            if self._on_step_complete:
+                self._on_step_complete(completed_step)
             if self._environment.is_success():
                 return self._complete(
                     trace_header,

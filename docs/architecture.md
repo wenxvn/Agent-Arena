@@ -40,9 +40,9 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 - `Action` 是 Agent 到 Environment 的唯一命令载体。
 - `Observation` 是 Environment 到 Agent 的唯一信息载体。
 - `Environment.step(action)` 返回结果和新的 Observation，不泄露完整 WorldState。
-- Runner 通过 `DecisionProvider` Protocol 注入 Fake 或百炼实现，Agent 和 Environment 不直接依赖 OpenAI SDK。
+- Runner 通过 `DecisionProvider` Protocol 注入 Fake、百炼或本地 Ollama 实现，Agent 和 Environment 不直接依赖 OpenAI SDK。
 - Trace 记录简短 `decision_reason`、Action、结果、token 和延迟，不保存完整思维链或密钥。
-- `RuntimeSettings` 从 CLI、环境变量/`.env` 和 `config/runtime.defaults.json` 合并运行配置；模型默认值为 `qwen3.7-plus`。
+- `RuntimeSettings` 从 CLI、环境变量/`.env` 和 `config/runtime.defaults.json` 合并运行配置；Ollama 默认使用 `qwen3:4b`，百炼保留 `qwen3.7-plus` 配置。
 - 第一版只提供本地 CLI 与 JSON/CSV 文件输出；Streamlit 延后到 Release 3。
 
 ## 更新规则

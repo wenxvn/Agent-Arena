@@ -29,7 +29,8 @@ class ReactAgent:
     """Request candidate decisions without accessing environment internals."""
 
     name = "react"
-    prompt_version = "react_v3"
+    prompt_version = "react_v4"
+    base_prompt_version = "react_v4"
 
     def __init__(self, provider: DecisionProvider, prompt_path: Path | None = None) -> None:
         self._provider = provider

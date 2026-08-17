@@ -138,7 +138,11 @@ def write_episode_trace(trace: EpisodeTrace, output_dir: Path) -> Path:
     """Write a redacted JSON trace through a sibling temporary file."""
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    destination = output_dir / f"{trace.episode_id}.json"
+    timestamp = trace.created_at.astimezone(UTC).strftime("%Y%m%dT%H%M%SZ")
+    short_id = str(trace.episode_id).split("-", maxsplit=1)[0]
+    destination = output_dir / (
+        f"episode_{timestamp}_{trace.agent}_seed-{trace.seed}_{short_id}.json"
+    )
     temporary_path: Path | None = None
     serialized = _redact_value(trace.model_dump(mode="json"))
     try:

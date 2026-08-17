@@ -93,6 +93,7 @@ def test_runner_completes_the_public_escape_path_and_records_decision_observatio
     assert trace.provenance.model_name == "qwen3.7-plus"
     assert trace.provenance.step_limit == 30
     assert len(trace.provenance.base_prompt_hash) == 64
+    assert trace.provenance.base_prompt_version == "react_v4"
     assert trace.provenance.provider_request_version == "decision_request_v1"
 
 
@@ -138,6 +139,23 @@ def test_runner_stops_at_the_configured_environment_step_limit() -> None:
     assert trace.outcome is EpisodeOutcome.STEP_LIMIT
     assert trace.executed_action_count == 3
     assert trace.invalid_output_count == 0
+
+
+def test_runner_reports_each_new_decision_request() -> None:
+    reported_steps: list[tuple[int, bool]] = []
+    provider = FakeDecisionProvider(
+        [{}, decision({"tool": "look"}), RuntimeError()]
+    )
+    trace = EpisodeRunner(
+        SpaceshipEscapeEnvironment(),
+        ReactAgent(provider),
+        settings(),
+        on_decision_start=lambda step, correction: reported_steps.append((step, correction)),
+    )
+    trace = trace.run()
+
+    assert trace.outcome is EpisodeOutcome.PROVIDER_ERROR
+    assert reported_steps == [(1, False), (1, True), (2, False)]
 
 
 def test_trace_writer_redacts_decision_and_provider_secret_like_text(tmp_path: Path) -> None:

@@ -13,6 +13,7 @@ def test_react_prompt_requires_flat_action_arguments_for_every_tool() -> None:
 
     prompt = provider.calls[0].request.system_prompt
     assert "绝对不要使用 args、arguments、parameters" in prompt
+    assert "优先探索当前观察中尚未尝试的出口" in prompt
     assert '"action":{"tool":"move","destination":"corridor"}' in prompt
     assert '"action":{"tool":"inspect","target":"storage_crate"}' in prompt
     assert '"action":{"tool":"pickup","item":"screwdriver"}' in prompt

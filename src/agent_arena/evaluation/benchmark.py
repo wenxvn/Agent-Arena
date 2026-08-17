@@ -6,6 +6,7 @@ import csv
 import json
 import os
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from uuid import uuid4
@@ -53,8 +54,15 @@ def row_from_trace(trace: EpisodeTrace, benchmark_id: str, episode_index: int) -
 def write_benchmark(rows: list[BenchmarkRow], output_dir: Path) -> tuple[Path, Path]:
     benchmark_id = rows[0].benchmark_id if rows else str(uuid4())
     output_dir.mkdir(parents=True, exist_ok=True)
-    json_path = output_dir / f"{benchmark_id}.json"
-    csv_path = output_dir / f"{benchmark_id}.csv"
+    timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    agents = "-".join(dict.fromkeys(row.agent for row in rows)) or "none"
+    seed_count = len({row.seed for row in rows})
+    short_id = benchmark_id.split("-", maxsplit=1)[0]
+    stem = (
+        f"benchmark_{timestamp}_{agents}_{seed_count}-seeds_{len(rows)}-episodes_{short_id}"
+    )
+    json_path = output_dir / f"{stem}.json"
+    csv_path = output_dir / f"{stem}.csv"
     attempted = len(rows)
     succeeded = sum(row.outcome == EpisodeOutcome.SUCCESS.value for row in rows)
     payload = {

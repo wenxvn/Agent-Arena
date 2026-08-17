@@ -145,6 +145,7 @@ class MemoryReducer:
 class MemoryAgent(ReactAgent):
     name = "memory"
     prompt_version = "memory_v1"
+    base_prompt_version = "react_v4"
 
     def __init__(self, provider: DecisionProvider, prompt_path: Path | None = None) -> None:
         super().__init__(provider, prompt_path)
@@ -152,7 +153,7 @@ class MemoryAgent(ReactAgent):
         self._memory: MemoryState | None = None
 
     def _default_prompt_path(self) -> Path:
-        return Path(__file__).resolve().parents[3] / "prompts" / "react_v3.txt"
+        return Path(__file__).resolve().parents[3] / "prompts" / "react_v4.txt"
 
     def reset(self, observation: Observation) -> None:
         self._memory = self._reducer.initialize(observation)

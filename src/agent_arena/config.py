@@ -57,7 +57,7 @@ class RuntimeSettings(BaseSettings):
 
     defaults_file: ClassVar[Path] = Path("config/runtime.defaults.json")
 
-    provider: Literal["fake", "bailian"]
+    provider: Literal["fake", "bailian", "ollama"]
     world: str
     world_version: str
     agent: Literal["react", "memory"]
@@ -81,6 +81,14 @@ class RuntimeSettings(BaseSettings):
     dashscope_api_key: SecretStr | None = Field(
         default=None,
         validation_alias=AliasChoices("DASHSCOPE_API_KEY", "dashscope_api_key"),
+    )
+    ollama_base_url: str = Field(
+        default="http://127.0.0.1:11434/v1",
+        validation_alias=AliasChoices("OLLAMA_BASE_URL", "ollama_base_url"),
+    )
+    ollama_model: str = Field(
+        default="qwen3:4b",
+        validation_alias=AliasChoices("OLLAMA_MODEL", "ollama_model"),
     )
 
     @classmethod
@@ -144,3 +152,9 @@ class RuntimeSettings(BaseSettings):
         if not self.base_url:
             raise ValueError("Bailian requires OPENAI_BASE_URL.")
         return self.base_url, self.api_key_for_bailian()
+
+    @property
+    def selected_model_name(self) -> str:
+        """Return the selected model name without exposing credentials."""
+
+        return self.ollama_model if self.provider == "ollama" else self.model_name

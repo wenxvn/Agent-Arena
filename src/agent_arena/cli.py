@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
 from typing import Annotated
 from uuid import uuid4
@@ -14,12 +15,20 @@ from agent_arena.evaluation import (
     BenchmarkRow,
     EpisodeOutcome,
     EpisodeRunner,
+    StepTrace,
+    TraceEvent,
     read_episode_trace,
     row_from_trace,
     write_benchmark,
     write_episode_trace,
 )
-from agent_arena.llm import BailianDecisionProvider, DecisionProvider, FakeDecisionProvider
+from agent_arena.llm import (
+    BailianDecisionProvider,
+    DecisionProvider,
+    FakeDecisionProvider,
+    OllamaDecisionProvider,
+    OllamaModelVerifier,
+)
 from agent_arena.llm.bailian import BailianModelVerifier, ModelVerificationError
 from agent_arena.worlds import SpaceshipEscapeEnvironment
 
@@ -58,10 +67,17 @@ def run(
         typer.echo("实验启动失败，请检查模型服务配置。", err=True)
         raise typer.Exit(code=2) from None
 
+    if settings.provider in {"bailian", "ollama"}:
+        typer.echo(
+            f"真实模型实验开始：Agent={settings.agent}，seed={settings.seed}，"
+            f"每局最多 {settings.step_limit} 步。"
+        )
     episode = EpisodeRunner(
         SpaceshipEscapeEnvironment(seed=settings.seed),
         _create_agent(settings.agent, decision_provider),
         settings,
+        on_decision_start=_real_model_step_report(settings),
+        on_step_complete=_step_report(),
     ).run()
     episode_path = write_episode_trace(episode, settings.runs_dir)
     typer.echo(f"本局结果：{_OUTCOME_LABELS[episode.outcome]}")
@@ -86,20 +102,46 @@ def benchmark(
     benchmark_id = str(uuid4())
     rows: list[BenchmarkRow] = []
     try:
-        selected_agents = ("react", "memory") if agent in {None, "both"} else (agent,)
+        selected_agents: tuple[str, ...]
+        if agent in {None, "both"}:
+            selected_agents = ("react", "memory")
+        else:
+            assert agent is not None
+            selected_agents = (agent,)
+        total_episodes = len(selected_agents) * episodes
+        typer.echo(
+            f"基准测试开始：共 {total_episodes} 局，Agent={','.join(selected_agents)}，"
+            f"每局最多 {settings.step_limit} 步。"
+        )
         for selected_agent in selected_agents:
             for seed_offset in range(episodes):
                 episode_settings = settings.model_copy(
                     update={"agent": selected_agent, "seed": settings.seed + seed_offset}
+                )
+                episode_number = len(rows) + 1
+                typer.echo(
+                    f"[{episode_number}/{total_episodes}] 开始："
+                    f"Agent={selected_agent}，seed={episode_settings.seed}。"
                 )
                 decision_provider = _create_decision_provider(episode_settings)
                 trace = EpisodeRunner(
                     SpaceshipEscapeEnvironment(seed=episode_settings.seed),
                     _create_agent(episode_settings.agent, decision_provider),
                     episode_settings,
+                    on_decision_start=_real_model_step_report(
+                        episode_settings,
+                        prefix=f"[{episode_number}/{total_episodes}] ",
+                    ),
+                    on_step_complete=_step_report(prefix=f"[{episode_number}/{total_episodes}] "),
                 ).run()
                 trace_path = write_episode_trace(trace, episode_settings.runs_dir)
                 rows.append(row_from_trace(read_episode_trace(trace_path), benchmark_id, len(rows)))
+                typer.echo(
+                    f"[{episode_number}/{total_episodes}] 完成："
+                    f"{_OUTCOME_LABELS[trace.outcome]}，已执行 {trace.executed_action_count} 步，"
+                    f"模型请求耗时 {trace.latency_ms} ms。"
+                )
+                typer.echo(f"[{episode_number}/{total_episodes}] 运行记录：{trace_path}")
     except ValueError:
         typer.echo("基准测试启动失败，请检查模型服务配置。", err=True)
         raise typer.Exit(code=2) from None
@@ -111,14 +153,26 @@ def benchmark(
 
 
 @app.command(name="verify-model")
-def verify_model() -> None:
-    """显式调用百炼，并只显示模型名和最终回复。"""
+def verify_model(
+    provider: Annotated[str, typer.Option("--provider")] = "bailian",
+) -> None:
+    """显式验证百炼或 Ollama，并只显示模型名和最终回复。"""
 
+    if provider not in {"bailian", "ollama"}:
+        typer.echo("验证 provider 必须是 ollama 或 bailian。", err=True)
+        raise typer.Exit(code=2)
     try:
-        settings = RuntimeSettings.load({"provider": "bailian"})
-        verification = BailianModelVerifier(settings).verify()
+        settings = RuntimeSettings.load({"provider": provider})
+        verification = (
+            OllamaModelVerifier(settings).verify()
+            if settings.provider == "ollama"
+            else BailianModelVerifier(settings).verify()
+        )
     except (ModelVerificationError, ValueError):
-        typer.echo("模型验证失败，请检查端点、密钥和网络。", err=True)
+        if provider == "ollama":
+            typer.echo("Ollama 模型验证失败，请检查服务、模型名称和网络。", err=True)
+        else:
+            typer.echo("模型验证失败，请检查端点、密钥和网络。", err=True)
         raise typer.Exit(code=1) from None
 
     typer.echo(f"模型：{verification.model}")
@@ -128,6 +182,8 @@ def verify_model() -> None:
 def _create_decision_provider(settings: RuntimeSettings) -> DecisionProvider:
     if settings.provider == "bailian":
         return BailianDecisionProvider(settings)
+    if settings.provider == "ollama":
+        return OllamaDecisionProvider(settings)
     return FakeDecisionProvider(_default_fake_responses())
 
 
@@ -135,6 +191,51 @@ def _create_agent(agent: str, provider: DecisionProvider) -> ReactAgent:
     if agent == "memory":
         return MemoryAgent(provider)
     return ReactAgent(provider)
+
+
+def _real_model_step_report(
+    settings: RuntimeSettings,
+    *,
+    prefix: str = "",
+) -> Callable[[int, bool], None] | None:
+    if settings.provider not in {"bailian", "ollama"}:
+        return None
+
+    def report(step: int, correction: bool) -> None:
+        phase = "格式修正" if correction else "决策"
+        typer.echo(
+            f"{prefix}正在请求第 {step}/{settings.step_limit} 步{phase}："
+            f"Agent={settings.agent}，seed={settings.seed}。"
+        )
+
+    return report
+
+
+def _step_report(*, prefix: str = "") -> Callable[[StepTrace], None]:
+    executed_actions = 0
+
+    def report(step: StepTrace) -> None:
+        nonlocal executed_actions
+        if step.action is not None and step.result is not None:
+            executed_actions += 1
+            reason = step.decision_reason or "未提供简短理由"
+            typer.echo(
+                f"{prefix}第 {executed_actions} 步 | 理由：{reason} | "
+                f"动作：{_format_action(step)} | "
+                f"结果：{step.result.status}/{step.result.reason}，{step.result.summary}"
+            )
+        elif step.event in {TraceEvent.ACTION_INVALID, TraceEvent.PROVIDER_ERROR}:
+            typer.echo(f"{prefix}步骤事件：{step.summary}")
+
+    return report
+
+
+def _format_action(step: StepTrace) -> str:
+    assert step.action is not None
+    action = step.action.model_dump(mode="json")
+    tool = action.pop("tool")
+    arguments = "，".join(f"{name}={value}" for name, value in action.items())
+    return f"{tool}({arguments})" if arguments else f"{tool}()"
 
 
 def _default_fake_responses() -> list[object]:

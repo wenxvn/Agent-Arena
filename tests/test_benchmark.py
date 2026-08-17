@@ -60,6 +60,9 @@ def test_benchmark_writes_two_memory_episodes_in_stable_order(monkeypatch, tmp_p
 
     assert result.exit_code == 0
     manifest, csv_rows = _benchmark_files(output_dir)
+    output_names = {path.name for path in output_dir.iterdir()}
+    assert any(name.startswith("benchmark_") and name.endswith(".json") for name in output_names)
+    assert any(name.startswith("benchmark_") and name.endswith(".csv") for name in output_names)
     assert [row["agent"] for row in csv_rows] == ["memory", "memory"]
     assert [row["episode_index"] for row in csv_rows] == ["0", "1"]
     assert [row["seed"] for row in csv_rows] == ["10", "11"]
@@ -89,6 +92,9 @@ def test_benchmark_defaults_to_react_and_memory_comparison(monkeypatch, tmp_path
     assert [row["seed"] for row in csv_rows] == ["10", "10"]
     assert manifest["aggregates"]["attempted"] == 2
     assert manifest["aggregates"]["success_rate"] == 1.0
+    assert "基准测试开始：共 2 局" in result.output
+    assert "[2/2] 完成：成功逃离飞船" in result.output
+    assert "[2/2] 运行记录：" in result.output
 
 
 def test_benchmark_rejects_unknown_agent(tmp_path: Path) -> None:

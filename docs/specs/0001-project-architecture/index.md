@@ -6,7 +6,7 @@
 
 ## Summary
 
-Agent Arena 采用 Python 3.13 的本地单体结构，使用 uv 管理依赖，代码放在 `src/agent_arena` 包中。第一版只提供本地 CLI 和文件输出，先完成确定性的 Spaceship Escape 环境，再接入阿里云百炼的 OpenAI 兼容接口。环境、Agent、模型客户端、运行器、评估和提示词保持独立边界，所有模型输出先经过严格的数据校验。
+Agent Arena 采用 Python 3.13 的本地单体结构，使用 uv 管理依赖，代码放在 `src/agent_arena` 包中。第一版只提供本地 CLI 和文件输出，先完成确定性的 Spaceship Escape 环境，再接入本地 Ollama 或阿里云百炼的 OpenAI 兼容接口。环境、Agent、模型客户端、运行器、评估和提示词保持独立边界，所有模型输出先经过严格的数据校验。
 
 ## Context
 
@@ -29,11 +29,11 @@ Agent Arena 采用 Python 3.13 的本地单体结构，使用 uv 管理依赖，
 | Dependency management | uv with `pyproject.toml` and `uv.lock` | uv gives one fast, reproducible workflow for environment creation, dependency resolution, and command execution. |
 | Package layout | `src/agent_arena` | The source layout prevents accidental imports from the repository root and makes installed package behavior match normal use. |
 | Data contracts | Pydantic v2 models | Strict models provide one validation boundary for Actions, Observations, world configuration, settings, and trace records. |
-| Model client | OpenAI Python SDK behind an `llm/` adapter | The SDK supports the OpenAI compatible Bailian endpoint, while the adapter keeps provider details out of Agent and Environment code. |
+| Model client | OpenAI Python SDK behind an `llm/` adapter | The SDK supports OpenAI-compatible Ollama and Bailian endpoints, while the adapter keeps provider details out of Agent and Environment code. |
 | Model configuration | `pydantic-settings`, local `.env`, and checked in `config/runtime.defaults.json` | A single validated settings model and explicit source precedence make endpoint, model, timeout, retry, and key configuration reproducible without putting secrets in source. |
-| Default model behavior | `qwen3.7-plus` with reasoning disabled | The first benchmark needs comparable structured decisions, short `decision_reason` values, and no stored chain of thought. |
+| Default model behavior | Ollama `qwen3:4b`; Bailian `qwen3.7-plus`; reasoning disabled | The first benchmark needs comparable structured decisions, short `decision_reason` values, and no stored chain of thought. |
 | Prompt storage | Versioned text files under `prompts/` | Prompts can be reviewed, diffed, and reproduced independently from Python implementation code. |
-| Decision provider interface | `DecisionProvider` protocol with Bailian and Fake implementations | The Runner receives one injected decision provider, so the same Agent Loop supports deterministic tests and explicit real model runs. |
+| Decision provider interface | `DecisionProvider` protocol with Ollama, Bailian and Fake implementations | The Runner receives one injected decision provider, so the same Agent Loop supports deterministic tests and explicit real model runs. |
 | World configuration | Versioned JSON with an explicit seed | A named world version and seed make episodes reproducible even though the first world is deterministic. |
 | Episode runner | A bounded local runner | Each episode has a maximum of 30 steps and a 30 second request timeout, which keeps experiments finite and debuggable. |
 | Retry policy | At most 2 retries for network errors, 429, and 5xx, with exponential backoff | Transient provider failures can recover without creating unbounded latency or duplicate episode actions. |
@@ -62,7 +62,7 @@ Agent Arena 采用 Python 3.13 的本地单体结构，使用 uv 管理依赖，
 
 1. `Environment.step(action)` accepts the only command type an Agent may send and returns an execution result plus a new Observation.
 2. An Agent receives an Observation, not the complete WorldState.
-3. `DecisionProvider.decide(observation, prompt, correction)` returns a structured decision candidate. The Runner injects either `BailianDecisionProvider` or `FakeDecisionProvider`; no Environment or Agent policy imports the OpenAI SDK.
+3. `DecisionProvider.decide(observation, prompt, correction)` returns a structured decision candidate. The Runner injects `OllamaDecisionProvider`、`BailianDecisionProvider` or `FakeDecisionProvider`; no Environment or Agent policy imports the OpenAI SDK.
 4. `FakeDecisionProvider` consumes an ordered, test supplied queue of valid Actions, malformed payloads, provider errors, or delays. It also records the Observation and correction flag passed to it. An exhausted queue is an explicit test failure, never an implicit real model fallback.
 5. Every Action is validated before execution. The first invalid output gets one correction attempt. Three consecutive invalid outputs end the episode with an explicit failure reason.
 6. A trace records the episode id, world version, seed, step number, allowlisted Observation fields, short `decision_reason`, validated Action, tool result, status, token usage when available, and latency. It never records API keys, raw requests, raw responses, exception bodies, or full reasoning content.
@@ -75,11 +75,13 @@ Agent Arena 采用 Python 3.13 的本地单体结构，使用 uv 管理依赖，
 
 | Command | Provider behavior | Required inputs | Defaults and output | Exit code |
 |---|---|---|---|---|
-| `run` | `--provider fake` is the default. `--provider bailian` is explicit. | No positional input in the first version. | Defaults to `spaceship-escape`, `react`, seed `0`, and `runs/`. It writes one episode JSON file. | `0` after a trace is written, even for a task failure. Configuration or runner failures return nonzero. |
-| `benchmark` | `--provider fake` 默认为 Fake；必须显式指定 `--provider bailian`。 | 局数必须为正数。 | 默认在 `spaceship-escape` 中以相同 seed 运行 `react` 与 `memory` 对照；seed 从 `0` 确定性递增，结果写入 `results/`。`--agent react` 或 `--agent memory` 可选择单一 Agent。输出一个 benchmark JSON 和一个 CSV。 | 所有请求 outcome 持久化后返回 `0`。配置无效或无法启动时返回非零。 |
-| `verify-model` | Always uses Bailian and never falls back to Fake. | A valid Bailian endpoint and API key. | Prints only the configured model name and final text. | `0` only for a successful compatible response. Configuration, authentication, network, or protocol failure returns nonzero without printing sensitive content. |
+| `run` | `--provider fake` is the default. `--provider ollama` or `--provider bailian` is explicit. | No positional input in the first version. | Defaults to `spaceship-escape`, `react`, seed `0`, and `runs/`. It writes one episode JSON file. | `0` after a trace is written, even for a task failure. Configuration or runner failures return nonzero. |
+| `benchmark` | `--provider fake` 默认为 Fake；必须显式指定 `--provider ollama` 或 `--provider bailian`。 | 局数必须为正数。 | 默认在 `spaceship-escape` 中以相同 seed 运行 `react` 与 `memory` 对照；seed 从 `0` 确定性递增，结果写入 `results/`。`--agent react` 或 `--agent memory` 可选择单一 Agent。输出一个 benchmark JSON 和一个 CSV。 | 所有请求 outcome 持久化后返回 `0`。配置无效或无法启动时返回非零。 |
+| `verify-model` | `--provider ollama` 或 `--provider bailian`，不会回退为 Fake。 | Ollama 本地服务和模型，或有效的百炼端点和 API key。 | Prints only the configured model name and final text. | `0` only for a successful compatible response. Configuration, authentication, network, or protocol failure returns nonzero without printing sensitive content. |
 
 `--provider bailian` requires `OPENAI_BASE_URL` and one API key. `OPENAI_API_KEY` is used when it is present. `DASHSCOPE_API_KEY` is used only as a fallback. If both exist and differ, startup fails instead of choosing silently. If both exist and match, `OPENAI_API_KEY` is used. `OPENAI_MODEL` defaults to `qwen3.7-plus` when omitted. Fake runs require no endpoint or key.
+
+`--provider ollama` uses `OLLAMA_BASE_URL`, defaulting to `http://127.0.0.1:11434/v1`, and `OLLAMA_MODEL`, defaulting to `qwen3:4b`. It does not read or require an API key and must not fall back to a configured Bailian endpoint.
 
 ### Model response and invalid Action state machine
 
