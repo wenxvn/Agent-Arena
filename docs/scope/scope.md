@@ -9,7 +9,7 @@
 
 | # | Feature | Phase | Status |
 |---|---|---|---|
-| 1 | Python 项目骨架与命令入口 | Foundation | in-progress |
+| 1 | Python 项目骨架与命令入口 | Foundation | done |
 | 2 | Spaceship Escape 环境 | Release 1 | planned |
 | 3 | 环境规则测试 | Release 1 | planned |
 | 4 | ReactAgent 与 Agent Loop | Release 1 | planned |
@@ -21,19 +21,20 @@
 
 ## Foundation
 
-### 1. Python 项目骨架与命令入口 · in-progress
+### 1. Python 项目骨架与命令入口 · done
 
 建立清晰的模块边界和最小运行入口，让环境、Agent、实验执行彼此独立。
 
 Done when: 可以安装依赖，运行一个命令，并从固定配置创建一个 episode。
 
 - [x] Decide the stack (spec): [0001](../specs/0001-project-architecture/index.md)
-- [ ] Build it: `/develop scaffold Python 项目骨架与命令入口`
-  - [ ] 创建 `pyproject.toml`、`uv.lock` 和 `src/agent_arena`
-  - [ ] 创建 RuntimeSettings、CLI 和 Fake provider
-  - [ ] 配置 pytest、Ruff、mypy 和 GitHub Actions
-- [ ] Verify it: `/check verify Python 项目骨架与命令入口`
-- [ ] Test it: `/test Python 项目骨架与命令入口`
+- [x] Build it: `/develop scaffold Python 项目骨架与命令入口`
+  - [x] 创建 `pyproject.toml`、`uv.lock` 和 `src/agent_arena`
+  - [x] 创建 RuntimeSettings、CLI 和 Fake provider
+  - [x] 配置 pytest、Ruff、mypy 和 GitHub Actions
+- [x] Verify it: `/check verify Python 项目骨架与命令入口`
+- [x] Test it: `/test Python 项目骨架与命令入口`
+Spec 0001 · code in `src/agent_arena/`
 
 ## Release 1
 
@@ -109,4 +110,11 @@ Done when: 计划和反思都有明确触发条件，并能通过 benchmark 验�
 
 ## First step
 
-先执行第 1 项的架构决策，然后只实现一个能手动通关的环境切片。建议顺序是：定义 `WorldState`、`Action`、`Observation` 和 `Environment.step`，写规则测试，再接入模型。不要先写 Memory、UI 或多 Agent。
+Foundation 已完成。下一步是运行 `/architect Spaceship Escape 环境`，固化六个房间、公开工具、非法动作和胜利条件。建议后续顺序是：
+
+1. 用 `/develop Spaceship Escape 环境` 实现 `WorldState`、`Action`、`Observation` 和 `Environment.step`。
+2. 用 `/develop 环境规则测试` 固定手动通关路径、供电、物品与逃生授权规则。
+3. 用 `/architect ReactAgent 与 Agent Loop` 定义结构化决策、修正流程和受限步数循环。
+4. 实现 Agent Loop、Episode Trace 和终止控制，完成 Release 1 的可重复闭环。
+
+当前明确不开发 MemoryAgent、Benchmark、Streamlit、PlanningAgent 或 ReflectionAgent。它们要等 Release 1 闭环产生可重复 trace 后再排期。

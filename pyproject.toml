@@ -1,0 +1,41 @@
+[project]
+name = "agent-arena"
+version = "0.1.0"
+description = "A deterministic environment for studying LLM agent behavior."
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "openai>=1.109.0,<2.0.0",
+    "pydantic>=2.11.0,<3.0.0",
+    "pydantic-settings>=2.10.0,<3.0.0",
+    "typer>=0.16.0,<1.0.0",
+]
+
+[project.scripts]
+agent-arena = "agent_arena.cli:app"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.17.0,<2.0.0",
+    "pytest>=8.4.0,<9.0.0",
+    "ruff>=0.12.0,<1.0.0",
+]
+
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+packages = ["agent_arena"]

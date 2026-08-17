@@ -1,0 +1,15 @@
+{
+  "provider": "fake",
+  "world": "spaceship-escape",
+  "world_version": "spaceship-escape-v1",
+  "agent": "react",
+  "seed": 0,
+  "runs_dir": "runs",
+  "results_dir": "results",
+  "step_limit": 30,
+  "request_timeout_seconds": 30,
+  "retry_count": 2,
+  "retry_backoff_seconds": [1, 2],
+  "enable_thinking": false,
+  "model_name": "qwen3.7-plus"
+}

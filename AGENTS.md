@@ -95,3 +95,7 @@ Skateboard。先交付一个真正可运行的最小闭环：确定性环境、�
 Foundation 稳定后按需引入 `pytest-cov`、Hypothesis、pre-commit 和 Rich；它们不是当前架构的必需依赖。当前不安装 MCP、LangChain、RAG、向量数据库或额外 Agent 编排工具。
 
 _这是新 Agent 和新对话的持久入口。工程级事实改变时，用 `/audit` 或 `/sync` 更新本文件。_
+
+## Context files
+
+- [src/agent_arena/AGENTS.md](src/agent_arena/AGENTS.md)：应用包的局部模块边界、运行入口和质量检查。

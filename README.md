@@ -12,7 +12,22 @@ Agent Arena 是一个用于学习和比较 LLM Agent 行为的轻量实验环境
 4. 记录每一局的 Episode Trace。
 5. 加入 MemoryAgent，并用 benchmark 比较两种 Agent。
 
-## 第一件事
+## 当前可运行入口
+
+```bash
+uv sync
+uv run agent-arena run
+```
+
+`run` 默认使用 Fake provider，并在 `runs/` 写入一个不含密钥的 scaffold episode。它证明配置、CLI 与原子 JSON 持久化可用，尚不包含世界规则或 Agent Loop。
+
+真实百炼配置验证需要本地 `.env`，并且必须显式调用：
+
+```bash
+bash scripts/verify_model.sh
+```
+
+## 下一步
 
 先定义并测试环境契约：`WorldState`、`Action`、`Observation` 和 `Environment.step`。环境可以被手动控制并稳定通关后，再接入 LLM。这样后续的 Agent 实验才有可信的基线。
 
