@@ -7,9 +7,12 @@ from typing import Annotated
 
 import typer
 
+from agent_arena.agents import ReactAgent
 from agent_arena.config import RuntimeSettings
-from agent_arena.evaluation import ScaffoldEpisode, write_scaffold_episode
+from agent_arena.evaluation import EpisodeRunner, write_episode_trace
+from agent_arena.llm import BailianDecisionProvider, DecisionProvider, FakeDecisionProvider
 from agent_arena.llm.bailian import BailianModelVerifier, ModelVerificationError
+from agent_arena.worlds import SpaceshipEscapeEnvironment
 
 app = typer.Typer(help="Run local Agent Arena experiments.", no_args_is_help=True)
 
@@ -34,18 +37,21 @@ def run(
     seed: Annotated[int | None, typer.Option("--seed")] = None,
     output_dir: Annotated[Path | None, typer.Option("--output-dir")] = None,
 ) -> None:
-    """Persist a scaffold episode using the safe Fake provider default."""
+    """Run and persist one bounded Spaceship Escape episode."""
 
     settings = _load_settings(provider=provider, seed=seed, runs_dir=output_dir)
-    if settings.provider != "fake":
-        typer.echo(
-            "Bailian episodes require the ReactAgent and Episode Runner, which are not built yet.",
-            err=True,
-        )
-        raise typer.Exit(code=2)
+    try:
+        decision_provider = _create_decision_provider(settings)
+    except ValueError:
+        typer.echo("Episode startup failed. Check provider configuration.", err=True)
+        raise typer.Exit(code=2) from None
 
-    episode = ScaffoldEpisode.from_settings(settings)
-    episode_path = write_scaffold_episode(episode, settings.runs_dir)
+    episode = EpisodeRunner(
+        SpaceshipEscapeEnvironment(seed=settings.seed),
+        ReactAgent(decision_provider),
+        settings,
+    ).run()
+    episode_path = write_episode_trace(episode, settings.runs_dir)
     typer.echo(f"Episode trace: {episode_path}")
 
 
@@ -73,3 +79,43 @@ def verify_model() -> None:
 
     typer.echo(f"Model: {verification.model}")
     typer.echo(f"Response: {verification.text}")
+
+
+def _create_decision_provider(settings: RuntimeSettings) -> DecisionProvider:
+    if settings.provider == "bailian":
+        return BailianDecisionProvider(settings)
+    return FakeDecisionProvider(_default_fake_responses())
+
+
+def _default_fake_responses() -> list[object]:
+    """Provide a deterministic baseline path for a safe local CLI demonstration."""
+
+    actions = [
+        {"tool": "move", "destination": "corridor"},
+        {"tool": "move", "destination": "storage_room"},
+        {"tool": "inspect", "target": "storage_crate"},
+        {"tool": "pickup", "item": "screwdriver"},
+        {"tool": "pickup", "item": "replacement_fuse"},
+        {"tool": "move", "destination": "corridor"},
+        {"tool": "move", "destination": "maintenance_room"},
+        {"tool": "read_terminal", "target": "diagnostic_terminal"},
+        {"tool": "move", "destination": "reactor_room"},
+        {"tool": "use", "item": "screwdriver", "target": "reactor_panel"},
+        {"tool": "use", "item": "replacement_fuse", "target": "damaged_fuse"},
+        {"tool": "move", "destination": "maintenance_room"},
+        {"tool": "move", "destination": "corridor"},
+        {"tool": "move", "destination": "control_room"},
+        {"tool": "read_terminal", "target": "control_terminal"},
+        {"tool": "move", "destination": "corridor"},
+        {"tool": "move", "destination": "maintenance_room"},
+        {"tool": "move", "destination": "reactor_room"},
+        {"tool": "move", "destination": "escape_pod"},
+        {"tool": "use", "item": "ALPHA-731", "target": "escape_pod"},
+    ]
+    return [
+        {
+            "decision_reason": "Use the public observation to advance the escape route.",
+            "action": action,
+        }
+        for action in actions
+    ]

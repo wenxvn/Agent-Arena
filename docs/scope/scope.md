@@ -11,9 +11,9 @@
 |---|---|---|---|
 | 1 | Python 项目骨架与命令入口 | Foundation | done |
 | 2 | Spaceship Escape 环境 | Release 1 | done |
-| 3 | 环境规则测试 | Release 1 | planned |
-| 4 | ReactAgent 与 Agent Loop | Release 1 | planned |
-| 5 | Episode Trace 与终止控制 | Release 1 | planned |
+| 3 | 环境规则测试 | Release 1 | done |
+| 4 | ReactAgent 与 Agent Loop | Release 1 | done |
+| 5 | Episode Trace 与终止控制 | Release 1 | done |
 | 6 | MemoryAgent | Release 2 | planned |
 | 7 | Benchmark 与指标 | Release 2 | planned |
 | 8 | Streamlit 实验界面 | Release 3 | planned |
@@ -55,29 +55,35 @@ Done when: 人可以只使用公开工具完成通关，环境不会暴露完整
 Spec [0002](../specs/0002-spaceship-escape/index.md)
 Code in `src/agent_arena/arena/`, `src/agent_arena/worlds/`, and `tests/test_spaceship_escape.py`
 
-### 3. 环境规则测试 · planned
+### 3. 环境规则测试 · done
 
 用测试固定世界规则，保证 benchmark 的结果来自 Agent 行为，而不是环境 bug。
 
 Done when: 覆盖无电不能读终端、工具使用条件、修复反应堆恢复供电、逃生授权和非法动作。
 
-- [ ] `/develop 环境规则测试`
+- [x] `/develop 环境规则测试`
 
-### 4. ReactAgent 与 Agent Loop · planned
+### 4. ReactAgent 与 Agent Loop · done
 
 实现一个只依赖简短决策说明和结构化 Action 的基线 Agent，并驱动观察、决策、执行循环。
 
 Done when: Agent 可以读取 observation，选择工具，处理工具反馈，并在限制步数内尝试完成任务。
 
-- [ ] `/architect ReactAgent 与 Agent Loop`
+- [x] Design it (spec): [0003](../specs/0003-react-agent-loop/index.md)
+- [x] Build it: `/develop ReactAgent 与 Agent Loop`
+- [x] Verify it: `/check verify ReactAgent 与 Agent Loop`
+- [x] Test it: `/test ReactAgent 与 Agent Loop`
 
-### 5. Episode Trace 与终止控制 · planned
+### 5. Episode Trace 与终止控制 · done
 
 记录每一步的 observation、decision、action、result 和资源消耗，并处理成功、超步数、连续非法输出等终止条件。
 
 Done when: 每次运行都生成可复盘的 JSON trace，并能明确区分成功、失败和系统错误。
 
-- [ ] `/develop Episode Trace 与终止控制`
+- [x] Design it (spec): [0003](../specs/0003-react-agent-loop/index.md)
+- [x] Build it: `/develop Episode Trace 与终止控制`
+- [x] Verify it: `/check verify Episode Trace 与终止控制`
+- [x] Test it: `/test Episode Trace 与终止控制`
 
 ## Release 2
 
@@ -119,11 +125,6 @@ Done when: 计划和反思都有明确触发条件，并能通过 benchmark 验�
 
 ## First step
 
-Foundation 已完成。下一步是运行 `/architect Spaceship Escape 环境`，固化六个房间、公开工具、非法动作和胜利条件。建议后续顺序是：
+Release 1 已完成。下一步是运行 `/architect MemoryAgent`，定义规则驱动的结构化记忆字段、更新时机和与 ReactAgent 的公平对照。MemoryAgent 设计确认后，再实现 Release 2 benchmark 与 JSON、CSV 指标输出。
 
-1. 用 `/develop Spaceship Escape 环境` 实现 `WorldState`、`Action`、`Observation` 和 `Environment.step`。
-2. 用 `/develop 环境规则测试` 固定手动通关路径、供电、物品与逃生授权规则。
-3. 用 `/architect ReactAgent 与 Agent Loop` 定义结构化决策、修正流程和受限步数循环。
-4. 实现 Agent Loop、Episode Trace 和终止控制，完成 Release 1 的可重复闭环。
-
-当前明确不开发 MemoryAgent、Benchmark、Streamlit、PlanningAgent 或 ReflectionAgent。它们要等 Release 1 闭环产生可重复 trace 后再排期。
+当前明确不开发 Streamlit、PlanningAgent 或 ReflectionAgent。它们要等 ReactAgent 与 MemoryAgent 的 benchmark 结果稳定后再排期。

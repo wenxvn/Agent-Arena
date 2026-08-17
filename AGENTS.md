@@ -3,7 +3,7 @@
 ## 当前状态
 
 - `0001-project-architecture` 架构 spec 已确认生效，状态为 `Accepted`。
-- Foundation 和确定性 Spaceship Escape 环境已完成；下一步是设计 ReactAgent 与 Agent Loop，继续完成 Release 1 闭环。
+- Release 1 的确定性 Spaceship Escape、ReactAgent、Agent Loop、Episode Trace 和终止控制已完成；下一步是设计 Release 2 的 MemoryAgent，并以相同世界和预算建立公平对照。
 - `研究总纲.md` 是新对话和日常 workflow 的研究摘要；完整产品与研究参考保留在 `总纲.md`，需要追溯细节时再阅读。
 - 当前模块结构见 `docs/architecture.md`，交付顺序和进度见 `docs/scope/scope.md`。
 - 重要阶段、决策、验证和阻塞记录在 `docs/engineering-log.md`，它不替代 scope、spec 或 Git 历史。

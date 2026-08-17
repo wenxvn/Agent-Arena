@@ -21,7 +21,7 @@ def test_cli_exposes_foundation_commands() -> None:
     assert "verify-model" in result.output
 
 
-def test_run_writes_an_allowlisted_scaffold_episode(monkeypatch, tmp_path: Path) -> None:
+def test_run_writes_a_terminal_allowlisted_episode(monkeypatch, tmp_path: Path) -> None:
     defaults_file = tmp_path / "runtime.defaults.json"
     defaults_file.write_text(
         json.dumps(
@@ -51,16 +51,10 @@ def test_run_writes_an_allowlisted_scaffold_episode(monkeypatch, tmp_path: Path)
     trace_paths = list((tmp_path / "runs").glob("*.json"))
     assert len(trace_paths) == 1
     trace = json.loads(trace_paths[0].read_text(encoding="utf-8"))
-    assert trace["outcome"] == "scaffold_pending"
-    assert trace["steps"] == []
+    assert trace["outcome"] == "success"
+    assert trace["executed_action_count"] == 20
+    assert len(trace["steps"]) == 20
     assert "OPENAI_API_KEY" not in trace_paths[0].read_text(encoding="utf-8")
-
-
-def test_run_rejects_bailian_until_the_episode_runner_exists() -> None:
-    result = runner.invoke(app, ["run", "--provider", "bailian"])
-
-    assert result.exit_code == 2
-    assert "not built yet" in result.output
 
 
 def test_verify_model_does_not_echo_provider_exception_content(monkeypatch) -> None:
