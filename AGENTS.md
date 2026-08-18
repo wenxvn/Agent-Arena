@@ -12,10 +12,10 @@
 
 - **语言与运行时**：Python 3.13，使用 uv、`pyproject.toml` 和 `uv.lock` 管理项目。
 - **核心依赖**：Pydantic v2、pydantic-settings、Typer、OpenAI Python SDK、pytest、Ruff 和 mypy。
-- **LLM 平台**：默认使用本地 Ollama 的 OpenAI 兼容 API；阿里云百炼保留为可选的远程 provider。
-- **默认模型**：Ollama `qwen3:4b`；百炼配置默认值为 `qwen3.7-plus`。
+- **LLM 平台**：默认使用本地 Ollama 原生 API；阿里云百炼保留为可选的远程 provider。
+- **默认模型**：Ollama `qwen2.5:7b`；百炼配置默认值为 `qwen3.7-plus`。
 - **本地配置**：`.env` 只保留在本机。新机器从 `.env.example` 创建它。密钥不得提交、打印、写入源码、日志、trace、文档、测试或 prompt。
-- **环境变量**：Ollama 使用 `OLLAMA_BASE_URL` 和 `OLLAMA_MODEL`，默认地址为 `http://127.0.0.1:11434/v1`。百炼使用 `OPENAI_BASE_URL`、`OPENAI_API_KEY` 或 `DASHSCOPE_API_KEY`、`OPENAI_MODEL`。
+- **环境变量**：Ollama 使用 `OLLAMA_BASE_URL` 和 `OLLAMA_MODEL`，默认地址为 `http://127.0.0.1:11434`。百炼使用 `OPENAI_BASE_URL`、`OPENAI_API_KEY` 或 `DASHSCOPE_API_KEY`、`OPENAI_MODEL`。
 - **验证命令**：修改本地模型后，运行 `uv run agent-arena verify-model --provider ollama`。百炼仍可用 `bash scripts/verify_model.sh` 验证。
 
 ## 语言约定

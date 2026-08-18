@@ -12,6 +12,7 @@
   "retry_backoff_seconds": [1, 2],
   "enable_thinking": false,
   "model_name": "qwen3.7-plus",
-  "ollama_base_url": "http://127.0.0.1:11434/v1",
-  "ollama_model": "qwen3:4b"
+  "ollama_base_url": "http://127.0.0.1:11434",
+  "ollama_model": "qwen2.5:7b",
+  "ollama_max_output_tokens": 512
 }

@@ -64,8 +64,8 @@ def test_fake_provider_does_not_require_bailian_credentials(isolated_defaults: P
 def test_ollama_uses_its_own_default_endpoint_and_model(isolated_defaults: Path) -> None:
     settings = RuntimeSettings.load({"provider": "ollama"}, env_file=None)
 
-    assert settings.ollama_base_url == "http://127.0.0.1:11434/v1"
-    assert settings.selected_model_name == "qwen3:4b"
+    assert settings.ollama_base_url == "http://127.0.0.1:11434"
+    assert settings.selected_model_name == "qwen2.5:7b"
 
 
 def test_conflicting_bailian_keys_are_rejected_when_used(

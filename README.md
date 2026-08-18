@@ -26,10 +26,10 @@ uv run agent-arena run
 
 ## 使用 Ollama 本地模型
 
-项目的本地实验工作流使用 Ollama 的 `qwen3:4b`，不需要 API Key。先确保 Ollama 服务已启动且模型已下载：
+项目的本地实验工作流使用 Ollama 的 `qwen2.5:7b`，不需要 API Key。先确保 Ollama 服务已启动且模型已下载：
 
 ```bash
-ollama pull qwen3:4b
+ollama pull qwen2.5:7b
 ollama list
 uv run agent-arena verify-model --provider ollama
 ```
@@ -45,8 +45,8 @@ uv run agent-arena run --provider ollama --agent memory --output-dir runs
 可通过本机 `.env` 改写默认地址或模型名：
 
 ```dotenv
-OLLAMA_BASE_URL=http://127.0.0.1:11434/v1
-OLLAMA_MODEL=qwen3:4b
+OLLAMA_BASE_URL=http://127.0.0.1:11434
+OLLAMA_MODEL=qwen2.5:7b
 ```
 
 ## 使用百炼模型

@@ -83,12 +83,17 @@ class RuntimeSettings(BaseSettings):
         validation_alias=AliasChoices("DASHSCOPE_API_KEY", "dashscope_api_key"),
     )
     ollama_base_url: str = Field(
-        default="http://127.0.0.1:11434/v1",
+        default="http://127.0.0.1:11434",
         validation_alias=AliasChoices("OLLAMA_BASE_URL", "ollama_base_url"),
     )
     ollama_model: str = Field(
-        default="qwen3:4b",
+        default="qwen2.5:7b",
         validation_alias=AliasChoices("OLLAMA_MODEL", "ollama_model"),
+    )
+    ollama_max_output_tokens: int = Field(
+        default=512,
+        gt=0,
+        validation_alias=AliasChoices("OLLAMA_MAX_OUTPUT_TOKENS", "ollama_max_output_tokens"),
     )
 
     @classmethod
@@ -158,3 +163,10 @@ class RuntimeSettings(BaseSettings):
         """Return the selected model name without exposing credentials."""
 
         return self.ollama_model if self.provider == "ollama" else self.model_name
+
+    @property
+    def ollama_native_base_url(self) -> str:
+        """Return the local service root for Ollama's native API."""
+
+        base_url = self.ollama_base_url.rstrip("/")
+        return base_url.removesuffix("/v1")

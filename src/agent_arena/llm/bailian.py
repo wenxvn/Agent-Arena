@@ -109,17 +109,17 @@ class BailianDecisionProvider:
             if request.correction
             else "请只返回规定的 JSON 结构。"
         )
-        messages: list[dict[str, str]] = [
-            {"role": "system", "content": request.system_prompt},
+        messages: list[dict[str, str]] = [{"role": "system", "content": request.system_prompt}]
+        if request.memory_data:
+            messages.append({"role": "user", "content": request.memory_data})
+        messages.append(
             {
                 "role": "user",
                 "content": (
                     f"当前观察：{request.observation.model_dump_json()}\n{correction_instruction}"
                 ),
-            },
-        ]
-        if request.memory_data:
-            messages.append({"role": "user", "content": request.memory_data})
+            }
+        )
         response = self._client.chat.completions.create(
             model=self._settings.model_name,
             messages=cast(Any, messages),

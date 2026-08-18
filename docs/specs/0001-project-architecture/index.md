@@ -31,7 +31,7 @@ Agent Arena 采用 Python 3.13 的本地单体结构，使用 uv 管理依赖，
 | Data contracts | Pydantic v2 models | Strict models provide one validation boundary for Actions, Observations, world configuration, settings, and trace records. |
 | Model client | OpenAI Python SDK behind an `llm/` adapter | The SDK supports OpenAI-compatible Ollama and Bailian endpoints, while the adapter keeps provider details out of Agent and Environment code. |
 | Model configuration | `pydantic-settings`, local `.env`, and checked in `config/runtime.defaults.json` | A single validated settings model and explicit source precedence make endpoint, model, timeout, retry, and key configuration reproducible without putting secrets in source. |
-| Default model behavior | Ollama `qwen3:4b`; Bailian `qwen3.7-plus`; reasoning disabled | The first benchmark needs comparable structured decisions, short `decision_reason` values, and no stored chain of thought. |
+| Default model behavior | Ollama `qwen2.5:7b`; Bailian `qwen3.7-plus`; reasoning disabled | The first benchmark needs comparable structured decisions, short `decision_reason` values, and no stored chain of thought. |
 | Prompt storage | Versioned text files under `prompts/` | Prompts can be reviewed, diffed, and reproduced independently from Python implementation code. |
 | Decision provider interface | `DecisionProvider` protocol with Ollama, Bailian and Fake implementations | The Runner receives one injected decision provider, so the same Agent Loop supports deterministic tests and explicit real model runs. |
 | World configuration | Versioned JSON with an explicit seed | A named world version and seed make episodes reproducible even though the first world is deterministic. |
@@ -81,7 +81,7 @@ Agent Arena 采用 Python 3.13 的本地单体结构，使用 uv 管理依赖，
 
 `--provider bailian` requires `OPENAI_BASE_URL` and one API key. `OPENAI_API_KEY` is used when it is present. `DASHSCOPE_API_KEY` is used only as a fallback. If both exist and differ, startup fails instead of choosing silently. If both exist and match, `OPENAI_API_KEY` is used. `OPENAI_MODEL` defaults to `qwen3.7-plus` when omitted. Fake runs require no endpoint or key.
 
-`--provider ollama` uses `OLLAMA_BASE_URL`, defaulting to `http://127.0.0.1:11434/v1`, and `OLLAMA_MODEL`, defaulting to `qwen3:4b`. It does not read or require an API key and must not fall back to a configured Bailian endpoint.
+`--provider ollama` uses `OLLAMA_BASE_URL`, defaulting to `http://127.0.0.1:11434`, and `OLLAMA_MODEL`, defaulting to `qwen2.5:7b`. It calls Ollama's native `/api/chat` endpoint, sends `think: false` and a JSON Schema, does not read or require an API key, and must not fall back to a configured Bailian endpoint. The current local smoke test confirms protocol compatibility, but the 7B model did not complete the 30-step escape policy benchmark.
 
 ### Model response and invalid Action state machine
 

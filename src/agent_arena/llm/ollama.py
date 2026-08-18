@@ -1,112 +1,210 @@
-"""Ollama's local OpenAI-compatible decision and verification adapters."""
+"""Ollama native API adapters with JSON-constrained, non-thinking decisions."""
 
 from __future__ import annotations
 
 import json
 from time import sleep
-from typing import Any, cast
-
-from openai import APIConnectionError, APITimeoutError, InternalServerError, OpenAI, RateLimitError
-from pydantic import BaseModel
+from typing import Any
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 from agent_arena.config import RuntimeSettings
 from agent_arena.llm.bailian import DecisionProviderError, ModelVerification, ModelVerificationError
 from agent_arena.llm.protocol import DecisionRequest, ProviderResponse
 
 
+class _OllamaClient:
+    def __init__(self, settings: RuntimeSettings) -> None:
+        self._settings = settings
+
+    def chat(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        response_schema: dict[str, Any],
+    ) -> dict[str, Any]:
+        payload = {
+            "model": self._settings.ollama_model,
+            "messages": messages,
+            "stream": False,
+            "think": False,
+            "format": response_schema,
+            "options": {
+                "temperature": 0,
+                "num_predict": self._settings.ollama_max_output_tokens,
+            },
+        }
+        for attempt in range(self._settings.retry_count + 1):
+            try:
+                request = Request(
+                    f"{self._settings.ollama_native_base_url}/api/chat",
+                    data=json.dumps(payload).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                with urlopen(request, timeout=self._settings.request_timeout_seconds) as response:
+                    parsed = json.load(response)
+                if not isinstance(parsed, dict):
+                    raise DecisionProviderError("Ollama returned an invalid response.")
+                return parsed
+            except HTTPError as exc:
+                if exc.code != 429 and exc.code < 500:
+                    raise DecisionProviderError("Ollama request failed.") from exc
+            except (URLError, OSError, TimeoutError):
+                pass
+            if attempt == self._settings.retry_count:
+                raise DecisionProviderError("Ollama request failed.")
+            sleep(self._settings.retry_backoff_seconds[attempt])
+        raise AssertionError("Retry loop must return or raise.")
+
+
 class OllamaModelVerifier:
-    """Verify a locally installed Ollama model without using an API key."""
+    """Verify a locally installed Ollama model through the native JSON API."""
 
     def __init__(self, settings: RuntimeSettings) -> None:
         self._settings = settings
-        self._client = OpenAI(
-            api_key="ollama",
-            base_url=settings.ollama_base_url,
-            timeout=settings.request_timeout_seconds,
-            max_retries=0,
-        )
+        self._client = _OllamaClient(settings)
 
     def verify(self) -> ModelVerification:
         try:
-            response = self._client.chat.completions.create(
-                model=self._settings.ollama_model,
-                messages=[{"role": "user", "content": "请只回复：Agent Arena 模型配置验证成功。"}],
-                temperature=0,
-                max_tokens=32,
+            response = self._client.chat(
+                [
+                    {
+                        "role": "system",
+                        "content": "只返回 JSON 对象，格式为 {\"text\":\"...\"}。",
+                    },
+                    {
+                        "role": "user",
+                        "content": "text 的值必须是：Agent Arena 模型配置验证成功。",
+                    },
+                ],
+                response_schema={
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["text"],
+                    "properties": {"text": {"type": "string"}},
+                },
             )
-        except Exception as exc:
+            text = _json_content(response).get("text")
+        except (DecisionProviderError, ValueError, TypeError) as exc:
             raise ModelVerificationError("Ollama model verification request failed.") from exc
-        text = response.choices[0].message.content if response.choices else None
-        if not text:
+        if not isinstance(text, str) or not text:
             raise ModelVerificationError("Ollama model verification returned no final text.")
-        return ModelVerification(model=response.model or self._settings.ollama_model, text=text)
+        model = response.get("model") or self._settings.ollama_model
+        return ModelVerification(model=model, text=text)
 
 
 class OllamaDecisionProvider:
-    """Request JSON decisions from a local Ollama model with bounded retries."""
+    """Request JSON decisions from Ollama without generating model reasoning."""
 
     def __init__(self, settings: RuntimeSettings) -> None:
-        self._settings = settings
-        self._client = OpenAI(
-            api_key="ollama",
-            base_url=settings.ollama_base_url,
-            timeout=settings.request_timeout_seconds,
-            max_retries=0,
-        )
+        self._client = _OllamaClient(settings)
 
     def decide(self, request: DecisionRequest) -> ProviderResponse:
-        for attempt in range(self._settings.retry_count + 1):
-            try:
-                return self._request_once(request)
-            except (
-                APIConnectionError,
-                APITimeoutError,
-                InternalServerError,
-                RateLimitError,
-            ) as exc:
-                if attempt == self._settings.retry_count:
-                    raise DecisionProviderError("Ollama request failed.") from exc
-                sleep(self._settings.retry_backoff_seconds[attempt])
-            except DecisionProviderError:
-                raise
-            except Exception as exc:
-                raise DecisionProviderError("Ollama request failed.") from exc
-        raise AssertionError("Retry loop must return or raise.")
-
-    def _request_once(self, request: DecisionRequest) -> ProviderResponse:
-        if not isinstance(request.observation, BaseModel):
-            raise DecisionProviderError("Ollama requires a structured observation.")
         correction_instruction = (
             "上一条输出不符合格式。请只返回规定的 JSON 结构。"
             if request.correction
             else "请只返回规定的 JSON 结构。"
         )
-        messages: list[dict[str, str]] = [
-            {"role": "system", "content": request.system_prompt},
+        messages = [{"role": "system", "content": request.system_prompt}]
+        if request.memory_data:
+            messages.append({"role": "user", "content": request.memory_data})
+        messages.append(
             {
                 "role": "user",
                 "content": (
-                    f"当前观察：{request.observation.model_dump_json()}\n{correction_instruction}"
+                    f"当前观察：{_observation_json(request.observation)}\n{correction_instruction}"
                 ),
-            },
-        ]
-        if request.memory_data:
-            messages.append({"role": "user", "content": request.memory_data})
-        response = self._client.chat.completions.create(
-            model=self._settings.ollama_model,
-            messages=cast(Any, messages),
-            temperature=0,
-            response_format={"type": "json_object"},
+            }
         )
-        content = response.choices[0].message.content if response.choices else None
-        if not content:
-            raise DecisionProviderError("Ollama returned no decision.")
-        try:
-            usage = response.usage
-            return ProviderResponse(
-                candidate=json.loads(content),
-                input_tokens=usage.prompt_tokens if usage else None,
-                output_tokens=usage.completion_tokens if usage else None,
-            )
-        except json.JSONDecodeError as exc:
-            raise DecisionProviderError("Ollama returned malformed JSON.") from exc
+        response = self._client.chat(messages, response_schema=ACTION_RESPONSE_SCHEMA)
+        content = _json_content(response)
+        return ProviderResponse(
+            candidate=content,
+            input_tokens=_non_negative_int(response.get("prompt_eval_count")),
+            output_tokens=_non_negative_int(response.get("eval_count")),
+        )
+
+
+def _observation_json(observation: object) -> str:
+    model_dump_json = getattr(observation, "model_dump_json", None)
+    if not callable(model_dump_json):
+        raise DecisionProviderError("Ollama requires a structured observation.")
+    value = model_dump_json()
+    if not isinstance(value, str):
+        raise DecisionProviderError("Ollama requires a structured observation.")
+    return value
+
+
+def _json_content(response: dict[str, Any]) -> dict[str, Any]:
+    message = response.get("message")
+    if not isinstance(message, dict):
+        raise DecisionProviderError("Ollama returned no message.")
+    content = message.get("content")
+    if not isinstance(content, str) or not content:
+        raise DecisionProviderError("Ollama returned no final content.")
+    parsed = json.loads(content)
+    if not isinstance(parsed, dict):
+        raise DecisionProviderError("Ollama returned non-object JSON.")
+    return parsed
+
+
+def _non_negative_int(value: object) -> int | None:
+    return value if isinstance(value, int) and value >= 0 else None
+
+
+ACTION_RESPONSE_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["decision_reason", "action"],
+    "properties": {
+        "decision_reason": {"type": "string"},
+        "action": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["tool"],
+                    "properties": {"tool": {"const": "look"}},
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["tool", "destination"],
+                    "properties": {
+                        "tool": {"const": "move"},
+                        "destination": {"type": "string"},
+                    },
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["tool", "target"],
+                    "properties": {
+                        "tool": {"enum": ["inspect", "read_terminal"]},
+                        "target": {"type": "string"},
+                    },
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["tool", "item"],
+                    "properties": {
+                        "tool": {"const": "pickup"},
+                        "item": {"type": "string"},
+                    },
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["tool", "item", "target"],
+                    "properties": {
+                        "tool": {"const": "use"},
+                        "item": {"type": "string"},
+                        "target": {"type": "string"},
+                    },
+                },
+            ]
+        },
+    },
+}
