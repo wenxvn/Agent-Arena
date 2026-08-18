@@ -93,7 +93,7 @@ def test_runner_completes_the_public_escape_path_and_records_decision_observatio
     assert trace.provenance.model_name == "qwen3.7-plus"
     assert trace.provenance.step_limit == 30
     assert len(trace.provenance.base_prompt_hash) == 64
-    assert trace.provenance.base_prompt_version == "react_v9"
+    assert trace.provenance.base_prompt_version == "react_v11"
     assert trace.provenance.provider_request_version == "decision_request_v1"
 
 

@@ -60,8 +60,12 @@ class EpisodeRunner:
                 provider_request_version="decision_request_v1",
                 base_prompt_version=self._agent.base_prompt_version,
                 base_prompt_hash=self._agent.base_prompt_hash,
-                memory_schema_version="memory_v1" if self._agent.name == "memory" else None,
-                memory_renderer_version="memory_v1" if self._agent.name == "memory" else None,
+                memory_schema_version=(
+                    "memory_v1" if self._agent.name in {"memory", "planner_assisted"} else None
+                ),
+                memory_renderer_version=(
+                    "memory_v1" if self._agent.name in {"memory", "planner_assisted"} else None
+                ),
             ),
         )
         steps: list[StepTrace] = []

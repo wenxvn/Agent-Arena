@@ -1,100 +1,159 @@
-# 本地模型通关现状与解决方案
+# 本地模型通关现状与复现记录
 
 更新时间：2026-08-18
 
-## 一句话结论
+## 结论
 
-Agent Arena 的程序链路已经通过验收，但真实本地模型尚未稳定完成 Spaceship Escape。
+`qwen2.5:7b` 已经可以在本地 Ollama 中稳定完成 Spaceship Escape。当前成功模式是 `planner_assisted`，不是纯模型自由规划：模型真实返回每一步 Action，确定性规划器根据公开信息提供阶段和下一动作建议。
 
-这不是 Ollama 安装、模型连接、JSON 格式或环境规则失效，而是本地模型在多步任务中会重复已经完成或没有进展的动作。
+因此，下面的结果可以称为“真实本地模型的规划辅助通关”，不能称为“纯模型自主规划通关”。
 
-## 当前现状
+## 两次本机复验
 
-### 已通过
+用户使用同一命令运行两次：
 
-- Spaceship Escape 是确定性的，人工公开动作路径和 Fake provider 基线可以稳定通关。
-- Agent 只能接收 `Observation`，不能读取 `WorldState`。
-- Ollama、Action JSON 校验、Episode Runner、MemoryAgent、Trace 和 benchmark 链路均可工作。
-- `qwen2.5:7b` 与 `qwen2.5:14b` 都通过模型连接验证。
-- Ruff、mypy 和 45 个自动测试均通过。
+```bash
+OLLAMA_MODEL=qwen2.5:7b uv run agent-arena run \
+  --provider ollama \
+  --agent planner_assisted \
+  --seed 0 \
+  --output-dir runs
+```
 
-### 未通过
+两次结果都为：
 
-- `qwen2.5:7b` + MemoryAgent：在 30 步和放宽到 40 步的实验中都没有完成逃生。
-- `qwen2.5:14b` + MemoryAgent：固定 `seed=0`、30 步实验中，前 14 步已拿到工具并恢复主电源，之后重复读取诊断终端，最终为 `step_limit`。
-- 因此当前没有真实本地 LLM Agent 的成功逃生 trace。
+| 项目 | 结果 |
+|---|---|
+| Provider | 本地 Ollama |
+| Model | `qwen2.5:7b` |
+| Agent | `planner_assisted_v2` |
+| Outcome | `success` |
+| 已执行 Action | 19 |
+| 非法模型输出 | 0 |
+| 环境拒绝 | 0 |
+| trace | `runs/episode_20260818T082202Z_planner_assisted_seed-0_ad890530.json`、`runs/episode_20260818T082330Z_planner_assisted_seed-0_236c523b.json` |
 
-## 已经尝试的轻量化措施
+两份 trace 都记录了 `action_validated`，最终 Action 是模型返回的：
 
-- 默认模型保持 `qwen2.5:7b`，避免 14B 在 16G Mac 上长期占用大量内存。
-- Ollama 输出上限从 512 调整为 256 token，并关闭思考输出。
-- 使用更短的 `react_v9` 提示词，强调合法动作、终端专用工具和避免重复。
-- 使用 MemoryAgent 保存公开地点、背包、事实、失败动作和未解决问题。
-- 新增公开循环检测：它只读取 Observation、Action 和 ToolResult，并向下一次模型请求发送提醒。
-- 已完成的部分对象会从 Observation 中隐藏，例如拿完物品后的密封箱、打开后的反应堆面板和修好后的保险丝。
+```json
+{"tool":"use","item":"ALPHA-731","target":"escape_pod"}
+```
 
-这些措施改善了前半段探索，但不能强迫模型在收到提醒后改变动作。
+## 到底是不是规则写死
 
-## 什么才算 Agent 通关
+不是程序直接执行写死路线。执行链路是：
 
-判断标准是：**每个真正执行的 Action 是否仍由 Agent 选择。**
+```text
+公开 Observation
+-> PlannerAssistedAgent 生成公开建议
+-> Ollama qwen2.5:7b 返回 JSON Action
+-> Action schema 校验
+-> Environment.step(Action)
+-> 下一条 Observation
+```
 
-| 方案 | 谁选择下一步 | 是否可称为 Agent 通关 | 说明 |
-|---|---|---|---|
-| 纯模型模式 | 模型 | 是 | 最能测量模型自主规划能力；当前本地模型失败是有效实验结果。 |
-| 公开规则保护模式 | 模型 | 是 | 环境隐藏已完成目标，Runner 拒绝明显重复动作并要求模型重选；系统不替模型选 Action。 |
-| 规划器辅助模式 | 确定性程序和模型 | 不算纯 Agent 通关 | 程序提供阶段或路线，模型只负责局部动作；适合演示，但必须明确标记为辅助结果。 |
+代码中的 `PlannerAssistedAgent` 没有调用 `Environment.step`，也没有在模型失败后自动移动、拾取或使用物品。模型每一步仍然要返回 Action，Runner 才会执行它。
 
-不能接受的做法是：模型卡住后，由程序自动替它移动、拾取物品或执行正确工具动作，再把结果写成“模型通关”。
-
-## 推荐的解决顺序
-
-### 1. 先完善公开规则保护模式
-
-这是最小、最诚实的改动，优先级最高。
-
-- 诊断终端成功读取一次后，从当前 Observation 中隐藏，避免模型连续读取相同终端。
-- 同一公开状态下连续两次选择相同无进展 Action 时，不执行第三次；向模型发起一次重新选择请求。
-- 重新选择请求只提供公开轨迹，不提供隐藏状态，也不指定正确的下一步。
-- 将此模式单独记录为 `guarded`，与纯模型模式的 trace 和 benchmark 分开比较。
-
-在这个模式中，模型仍可选择错误路线或失败；系统只阻止它无限重复同一行为。因此成功仍可归因于 Agent。
-
-### 2. 用实验确认是否真正改善
-
-固定世界版本、seed、步数上限和模型设置，至少比较：
-
-1. 纯模型 `qwen2.5:7b`。
-2. 公开规则保护模式 `qwen2.5:7b`。
-3. 纯模型 `qwen2.5:14b`。
-4. 公开规则保护模式 `qwen2.5:14b`。
-
-每组至少运行 5 局。记录成功率、平均步数、重复动作次数、拒绝次数、最大进度和总延迟。
-
-14B 只应作为短时间对照实验模型，不建议设为 16G Mac 的日常默认模型。
-
-### 3. 若仍失败，再引入规划器辅助模式
-
-将任务显式划分为公开阶段：
+但路线也不是完全自由的。规划器包含公开房间路线和四个阶段：
 
 ```text
 收集修理工具
--> 修复反应堆
+-> 恢复主电源
 -> 读取授权码
 -> 启动逃生舱
 ```
 
-规划器只能从公开 Observation 和 ToolResult 推导当前阶段，并把阶段作为额外提示提供给模型。它不能直接执行 Action，也不能读取 WorldState。
+规划器把“建议下一动作”放进当前请求的公开反馈中，模型通常会遵循。因此准确的说法是：**真实本地模型执行，确定性公开规划辅助**。
 
-这能显著提高演示稳定性，但评估结果必须写为“规划器辅助 Agent”，不能与纯模型 baseline 混在一起。
+需要进一步说明：如果模型每次都照抄规划器给出的唯一建议，那么“路线选择”事实上已经被规划器写死了。此时模型仍然真实调用了 Ollama、生成了 JSON、通过了 Action 校验，但它证明的是端到端辅助系统能通关，不是模型具有自主规划能力。要研究模型判断力，必须只提供阶段和约束，或提供多个合法候选，让模型自行选择，并单独统计它是否拒绝不合理建议。
 
-## 不建议继续做的事情
+## 遇到的问题
 
-- 不要继续把具体谜题攻略塞进 prompt，例如强制某个房间的固定动作顺序。
-- 不要把 14B 设为默认模型，希望仅靠模型规模解决循环问题。
-- 不要让程序自动执行模型没有选择的 Action，再宣称模型通关。
-- 不要把纯模型失败隐去；它正是 Agent Arena 可以测量和解释的研究结果。
+1. 纯 `ReactAgent` 和 `MemoryAgent` 会重复移动、重复读取诊断终端，30 或 40 步后 `step_limit`。
+2. 旧 prompt 要求所有 `use.item` 都必须在 `inventory`，但授权码来自控制终端结果，不在背包中；这与最终逃生规则冲突。
+3. ReactAgent 没有跨步保存授权码的能力，离开控制室后无法仅靠当前 Observation 得到授权码。
+4. 早期规划器在储物室先建议重复 `inspect`，没有优先拾取已经出现的物品，因此也会循环。
+5. 当前 `PublicLoopDetector` 的公开状态键还没有包含 `available_exits` 和 `last_action_result`，可能把合法的回程动作误报为循环。这不影响本次 19 步通关，但仍是待修复问题。
 
-## 当前建议
+## 解决过程
 
-下一项实现应是“公开规则保护模式”：隐藏已成功读取的诊断终端，并在重复无进展动作后要求模型重新选择。完成后以独立 trace 和 benchmark 验证，再决定是否需要规划器辅助模式。
+1. 检查环境规则、Runner、Agent、Ollama provider 和已有 trace，确认连接、JSON 校验和环境规则都正常，失败来自决策循环。
+2. 做单状态模型实验，确认模型在获得明确阶段信息时可以选择正确动作。
+3. 修正 prompt 契约，区分维修物品和公开读取的授权码，删除基础 prompt 中的真实谜底。
+4. 将储物室逻辑改为“先拾取 visible_objects 中尚未拥有的物品，只有物品未出现时才 inspect 容器”。
+5. 新增独立 `planner_assisted` Agent。它只读取公开 Observation、ToolResult 和 Memory，维护阶段标志，并把公开建议放入最新请求。
+6. 在 trace 中单独记录 `planner_assisted_v2`，不把辅助结果混入纯 ReactAgent/MemoryAgent benchmark。
+7. 用 Fake provider、48 项自动测试和真实 Ollama 多局运行验证。
+
+## 最终通关路线
+
+真实 v11 路线为 19 步：
+
+```text
+1  move corridor
+2  move storage_room
+3  inspect storage_crate
+4  pickup screwdriver
+5  pickup replacement_fuse
+6  move corridor
+7  move maintenance_room
+8  move reactor_room
+9  use screwdriver -> reactor_panel
+10 use replacement_fuse -> damaged_fuse
+11 move maintenance_room
+12 move corridor
+13 move control_room
+14 read_terminal control_terminal
+15 move corridor
+16 move maintenance_room
+17 move reactor_room
+18 move escape_pod
+19 use 公开读取的授权码 -> escape_pod
+```
+
+## 可复现实验
+
+单局：
+
+```bash
+OLLAMA_MODEL=qwen2.5:7b uv run agent-arena run \
+  --provider ollama \
+  --agent planner_assisted \
+  --seed 0 \
+  --output-dir runs
+```
+
+三局 benchmark：
+
+```bash
+OLLAMA_MODEL=qwen2.5:7b uv run agent-arena benchmark \
+  --provider ollama \
+  --agent planner_assisted \
+  --episodes 3 \
+  --output-dir results
+```
+
+已完成的三局真实 benchmark：seed 0/1/2 均成功，平均 19 步，0 次非法输出，0 次环境拒绝。结果文件位于 `/tmp/agent-arena-planner-v11-benchmark/`。
+
+## 已完成的功能
+
+- 确定性的六房间 Spaceship Escape 环境和公开工具。
+- 严格 Action schema 和 Observation 边界，Agent 不读取 WorldState。
+- ReactAgent、MemoryAgent、Ollama/Fake/Bailian provider。
+- 有步数限制的 Episode Runner、终止状态和脱敏 JSON trace。
+- benchmark 的 JSON/CSV 指标输出。
+- `planner_assisted` 公开规划辅助模式和独立 trace 标记。
+- 本地 `qwen2.5:7b` 规划辅助通关。
+
+## 仍需完成的任务
+
+- 修正 `PublicLoopDetector` 的状态键和误报测试，避免合法回程被当成重复动作。
+- 单独实现并评估真正的公开规则保护模式 `guarded`，与规划辅助模式分开比较。
+- 继续测量纯 ReactAgent/MemoryAgent 的失败率，不把辅助结果当成纯模型能力。
+- 完成 Release 3 的 Streamlit 实验界面。
+- 后续再考虑独立的 PlanningAgent、ReflectionAgent、多世界和更多模型对照。
+
+## 相关决策
+
+- 规划辅助模式的边界和验收条件：`docs/specs/0005-planner-assisted-agent/index.md`
+- 当前工程事件：`docs/engineering-log.md`

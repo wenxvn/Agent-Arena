@@ -9,7 +9,7 @@ from uuid import uuid4
 
 import typer
 
-from agent_arena.agents import MemoryAgent, ReactAgent
+from agent_arena.agents import MemoryAgent, PlannerAssistedAgent, ReactAgent
 from agent_arena.config import RuntimeSettings
 from agent_arena.evaluation import (
     BenchmarkRow,
@@ -95,8 +95,8 @@ def benchmark(
 ) -> None:
     """重复运行 Agent 对照，并写入 JSON、CSV 指标。"""
 
-    if agent is not None and agent not in {"react", "memory", "both"}:
-        typer.echo("Agent 必须是 react、memory 或 both。", err=True)
+    if agent is not None and agent not in {"react", "memory", "planner_assisted", "both"}:
+        typer.echo("Agent 必须是 react、memory、planner_assisted 或 both。", err=True)
         raise typer.Exit(code=2)
     settings = _load_settings(provider=provider)
     benchmark_id = str(uuid4())
@@ -190,6 +190,8 @@ def _create_decision_provider(settings: RuntimeSettings) -> DecisionProvider:
 def _create_agent(agent: str, provider: DecisionProvider) -> ReactAgent:
     if agent == "memory":
         return MemoryAgent(provider)
+    if agent == "planner_assisted":
+        return PlannerAssistedAgent(provider)
     return ReactAgent(provider)
 
 

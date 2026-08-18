@@ -115,6 +115,57 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 - [x] `/check verify Benchmark 与指标`
 - [x] `/test Benchmark 与指标`
 
+补充实验：`planner_assisted` 作为独立的公开规划辅助模式完成本地 `qwen2.5:7b` 通关验证。它不替模型执行 Action，结果不并入纯 ReactAgent/MemoryAgent benchmark；技术决策见 [0005](../specs/0005-planner-assisted-agent/index.md)。
+
+## 当前研究与交付清单
+
+下面的清单把“已经能通关”与“还没有证明”的问题分开。`planner_assisted` 的成功只能证明真实本地模型能在公开规划建议下执行一条合法路线，不能代表模型已经具备纯自主规划能力。
+
+### A. 原计划尚未完成
+
+- [ ] **Streamlit 实验界面**：选择 provider、模型、Agent、world 和 seed，启动单局或 benchmark，并查看逐步 Observation、Action、ToolResult、trace 和聚合指标。
+  - 验收：UI 明确显示 Agent 类型和辅助来源；不能把 `planner_assisted` 标成纯 ReactAgent/MemoryAgent；失败、超步数和非法输出都有可见状态。
+- [ ] **PlanningAgent**：实现高层阶段规划和阶段切换，规划本身不直接调用环境、不绕过 Action schema。
+  - 验收：规划版本、阶段变化和实际 Action 可复盘；与基线在相同 seed、预算和模型下进行对照。
+- [ ] **ReflectionAgent**：只在明确触发条件下根据失败或循环进行反思和重规划。
+  - 验收：反思触发次数、输入摘要和后续动作可追踪；证明它减少失败或重复动作，而不是只增加 token。
+- [ ] **多世界、多模型对照**：至少加入第二个 world version 和第二种模型规模，避免结论只适用于单一地图和 `qwen2.5:7b`。
+  - 验收：固定实验矩阵、统一指标和可重放 trace。
+
+### B. 纯模型自主规划通关（当前最高优先级）
+
+- [ ] ReactAgent + Ollama `qwen2.5:7b`，不使用 planner feedback、不使用 guarded 公开规则保护。
+- [ ] MemoryAgent + Ollama `qwen2.5:7b`，保持与 ReactAgent 相同的 prompt、seed、步数和 provider 条件。
+- [ ] ReactAgent、MemoryAgent + `qwen2.5:14b`，记录模型规模变化带来的影响。
+- [ ] 每个配置至少运行 5 局；稳定后扩展到 10 局或更多。
+- [ ] 每局记录并比较：成功率、步数、重复动作数、非法输出数、环境拒绝数、输入/输出 token、总耗时和每步延迟。
+- [ ] 单独标记 `planner_assisted`、`guarded` 和纯模型三类结果；不得把辅助模式的成功率并入纯模型结论。
+
+### C. 尚未测试的行为
+
+- [ ] `guarded` 公开规则保护模式：验证它只提供公开规则反馈，不替模型选择或执行 Action。
+- [ ] 规划建议被模型拒绝、偏离或返回非法 Action 时，Runner 是否正确继续、重试或终止。
+- [ ] planner 的阶段转换：覆盖 `POWER_RESTORED`、`CODE_READ`、回到控制终端和最终 `finish`。
+- [ ] `reset`、`finish` 以及跨 episode 的 Memory、阶段和循环检测状态清理。
+- [ ] 14B 模型的 planner/guarded 对照，以及非 Ollama provider 的 `planner_assisted` 行为。
+- [ ] 不同 seed、world version 和模型温度下的路线稳定性；确认 19 步不是规则或测试桩写死的固定结果。
+- [ ] 完整回归：所有 planner 路线表项都必须是当前 Observation 中的合法出口，且公开反馈不能泄漏 WorldState 或密钥。
+
+### D. 建议新增或修改
+
+- [ ] 修正 `PublicLoopDetector`：公开状态应包含 `available_exits`、`last_action_result` 或公开阶段 epoch，避免授权码读取后合法回程被误报为循环。
+- [ ] 将每步 planner feedback 以长度受限文本或 hash 写入 trace，支持复盘且不记录完整思维链或密钥。
+- [ ] 增加 guidance 偏离率指标：比较 planner 建议与模型实际 Action，并统计模型拒绝建议后的成功率。
+- [ ] 做提示消融：仅公开阶段提示、阶段提示加多个候选动作、阶段提示加唯一下一动作建议，分别 benchmark。
+- [ ] 将公开规则保护与规划器辅助拆成独立实验变量；报告中同时给出“模型自主性”和“通关可靠性”两个维度。
+- [ ] 补充真实模型回归测试和最小可重复实验脚本，固定模型标签、prompt 版本、world 版本、seed 和输出目录格式。
+
+### E. 完成判定
+
+- [ ] 纯模型至少有一组可重复的成功结果，并公开失败样本，不能只报告成功局。
+- [ ] 辅助模式与纯模型模式有独立 trace、独立指标和独立结论。
+- [ ] 关键技术债和未测试项关闭后，再将 Streamlit 和 Planning/Reflection 结果纳入下一版研究总结。
+
 ## Release 3
 
 ### 8. Streamlit 实验界面 · planned
@@ -135,8 +186,6 @@ Done when: 计划和反思都有明确触发条件，并能通过 benchmark 验�
 
 - [ ] `/architect PlanningAgent 与 ReflectionAgent`
 
-## First step
+## 当前下一步
 
-Release 2 已完成：ReactAgent、MemoryAgent 与同世界同 seed 的 benchmark 对照均可运行。下一步是在有稳定 benchmark 结果后设计 Release 3 的 Streamlit 实验界面。
-
-当前不开发 PlanningAgent 或 ReflectionAgent。Streamlit 需要先完成 `/architect Streamlit 实验界面`；Planning 与 Reflection 要等 benchmark 结果稳定后再排期。
+Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。当前首先完成 **B. 纯模型自主规划通关** 和 **C/D. 尚未测试与技术债**，再进入 Release 3 的 Streamlit 设计；PlanningAgent 与 ReflectionAgent 仍按 Deferred 排在可重复基线之后。

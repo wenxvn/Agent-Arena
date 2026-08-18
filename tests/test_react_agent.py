@@ -22,3 +22,5 @@ def test_react_prompt_requires_flat_action_arguments_for_every_tool() -> None:
     assert '"action":{"tool":"inspect","target":"storage_crate"}' in prompt
     assert '"action":{"tool":"pickup","item":"screwdriver"}' in prompt
     assert '"action":{"tool":"use","item":"screwdriver","target":"reactor_panel"}' in prompt
+    assert "授权码不会出现在 inventory" in prompt
+    assert "ALPHA-731" not in prompt

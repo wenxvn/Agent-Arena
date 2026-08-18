@@ -71,6 +71,34 @@
 
 关联提交：待提交。
 
+## 2026-08-18 本地模型规划辅助通关验证
+
+事件：在保留纯模型失败基线的前提下，完成 `qwen2.5:7b` 的 `planner_assisted` 公开规划辅助通关。
+
+原因：纯 ReactAgent 和 MemoryAgent 在收集工具、恢复电源后会重复公开动作；同时旧 prompt 错误要求所有 `use.item` 必须在背包，和控制终端返回授权码后使用授权码的环境规则冲突。用户目标是让 agent 实际完成逃生，因此需要验证公开辅助是否能稳定解决循环，同时不能把辅助结果伪装成纯模型结果。
+
+改动：新增 `react_v11` prompt，区分维修物品与公开读取的授权码；新增独立的 `PlannerAssistedAgent` 和 CLI `--agent planner_assisted`。规划器只使用公开 Observation、ToolResult 和结构化 Memory 生成阶段/下一动作建议，模型仍选择并返回每个 Action；授权码仅在收到公开 `CODE_READ` 结果后提取。储物室规划优先拾取已出现物品，阶段建议放入最新公开请求，并在 trace 中用独立 agent/prompt 版本标记。
+
+验证：Ruff、mypy 和 48 项 pytest 通过。`qwen2.5:7b`、`planner_assisted_v2`、seed 0/1/2 的 Ollama benchmark 为 3/3 成功，平均 19 步、0 次非法输出、0 次环境拒绝；结果文件为 `/tmp/agent-arena-planner-v11-benchmark/benchmark_20260818T080152Z_planner_assisted_3-seeds_3-episodes_defcc08a.json`。纯模型 MemoryAgent 的失败结果仍保持为独立基线。
+
+下一步：规划辅助结果只用于稳定通关和演示，继续与纯 React/Memory 对照分开统计；若研究需要纯模型成功率，应单独研究更强模型或公开循环保护，不得把规划建议视为模型自主规划。
+
+关联提交：待提交。
+
+## 2026-08-18 用户本机复验与通关记录补充
+
+事件：用户使用 `OLLAMA_MODEL=qwen2.5:7b` 和 `--agent planner_assisted` 在本机连续运行两次，均以 19 步成功逃生。
+
+原因：确认前一轮实验不是临时环境或 Fake provider 结果，并为后续复现明确区分真实模型执行与规划器辅助。
+
+改动：将完整问题、排查步骤、最终路线、复现命令、已完成能力和待办写入 `docs/model-passage-options.md`。确认两份 trace 的模型为 `qwen2.5:7b`、Agent 为 `planner_assisted_v2`，每个执行 Action 都经过模型响应和环境校验；没有程序代替模型执行动作。
+
+验证：两份用户 trace 均为 `success`、19 个 `action_validated`、0 次非法输出、0 次环境拒绝。复核发现 `PublicLoopDetector` 仍可能因状态键缺少 `available_exits` 和 `last_action_result` 而误报合法回程，该问题列入后续任务，不影响本次通关结果。
+
+下一步：先修复循环检测状态键并增加回归测试，再独立实现 `guarded` 模式；继续将纯模型、规则保护和规划辅助结果分开统计。
+
+关联提交：待提交。
+
 ## 2026-08-18 本地模型策略验收
 
 事件：完成 Ollama 原生 `/api/chat`、关闭思考、JSON Schema、逐步终端回显和本地模型对照验收。
