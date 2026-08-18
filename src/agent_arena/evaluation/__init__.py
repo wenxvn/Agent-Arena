@@ -1,6 +1,7 @@
 """Episode persistence and evaluation support."""
 
 from agent_arena.evaluation.benchmark import BenchmarkRow, row_from_trace, write_benchmark
+from agent_arena.evaluation.loop import PublicLoopDetector
 from agent_arena.evaluation.runner import EpisodeRunner
 from agent_arena.evaluation.trace import (
     EpisodeOutcome,
@@ -17,6 +18,7 @@ __all__ = [
     "EpisodeOutcome",
     "ExperimentProvenance",
     "EpisodeRunner",
+    "PublicLoopDetector",
     "BenchmarkRow",
     "row_from_trace",
     "write_benchmark",

@@ -18,11 +18,11 @@
 
 1. **AC-1**: `spaceship_escape_v1` 定义六个固定房间、固定对象和双向出口。初始位置是 `control_room`，任意整数 seed 和每次 reset 都产生相同世界内容。
 2. **AC-2**: `Action` 是一个按 `tool` 判别的严格 Pydantic 联合，只允许 `look`、`move`、`inspect`、`pickup`、`use` 和 `read_terminal` 及其指定参数。
-3. **AC-3**: Agent 只接收 `Observation`。它只包含当前房间、描述、可见对象、可达出口、背包和上次工具结果，绝不包含 `WorldState`、房间未发现内容或内部标记。
-4. **AC-4**: `look`、相邻 `move`、当前房间 `inspect` 和已揭示物品的 `pickup` 都有确定结果。所有 schema 有效的 Action 都计入一步，无法执行时返回带稳定 `reason` 的拒绝结果且不改变谜题状态。
+3. **AC-3**: Agent 只接收 `Observation`。它只包含当前房间、描述、可见对象、可达出口、背包和上次工具结果，绝不包含 `WorldState`、房间未发现内容或内部标记。已完成或暂时无效的目标可以从公开可见对象中隐藏。
+4. **AC-4**: `look`、相邻 `move`、当前房间 `inspect` 和已揭示物品的 `pickup` 都有确定结果。终端必须使用 `read_terminal`；对终端调用 `inspect` 会返回稳定拒绝结果。所有 schema 有效的 Action 都计入一步。
 5. **AC-5**: inspect 前，Storage Room 的 `look` 只显示 `storage_crate`。`inspect("storage_crate")` 后，`look` 显示 crate、screwdriver 和 replacement fuse，之后可分别 pickup。
-6. **AC-6**: Maintenance Room 的 diagnostic terminal 在无主电源时可读，并提示手动修复。只有持有 screwdriver 时，`use("screwdriver", "reactor_panel")` 才打开 panel。只有 panel 已打开且持有 replacement fuse 时，`use("replacement_fuse", "damaged_fuse")` 才恢复主电源。
-7. **AC-7**: Control Room terminal 在无电时拒绝读取，在有电时返回固定 `ALPHA-731` 并记录授权码已读。只有在 Escape Pod 且已读到授权码时，`use("ALPHA-731", "escape_pod")` 才使 `escaped` 为真。
+6. **AC-6**: Maintenance Room 的 diagnostic terminal 在无主电源时可读，并提示手动修复。只有持有 screwdriver 时，`use("screwdriver", "reactor_panel")` 才打开 panel。只有 panel 已打开且持有 replacement fuse 时，`use("replacement_fuse", "damaged_fuse")` 才恢复主电源。面板打开后隐藏已完成的面板目标。
+7. **AC-7**: Control Room terminal 在无电时拒绝读取，在有电时返回固定 `ALPHA-731` 并记录授权码已读。授权码读取前，Reactor Room 不公开 `escape_pod` 出口；只有在 Escape Pod 且已读到授权码时，`use("ALPHA-731", "escape_pod")` 才使 `escaped` 为真。
 8. **AC-8**: 重复、目标错误、物品缺失和房间错误的有效 Action 返回稳定拒绝结果。未知工具或参数缺失不进入 Environment，由后续 Runner 在调用前按 Action schema 处理。
 9. **AC-9**: Environment 记录已执行步数并报告成功状态。后续 Episode Runner 负责 30 步限制、非法模型输出修正与失败终止。
 
@@ -42,7 +42,7 @@
 | `RoomDefinition` | `id`、`description`、`exits`、`object_ids` | `id` 唯一，所有出口均有反向出口 |
 | `ObjectDefinition` | `id`、`room_id`、`kind`、`inspect_result` | 固定对象包括 `storage_crate`、两个 terminal、`reactor_panel` 和 `escape_pod` |
 | `ItemDefinition` | `id`、`container_id` | 初始内容为 screwdriver 与 replacement fuse，均属于 `storage_crate` |
-| `WorldState` | `seed`、`current_room`、`inventory`、`revealed_items`、`step_count`、`reactor_panel_open`、`main_power`、`authorization_code_read`、`escaped` | 每局内存状态，reset 恢复全部初始值 |
+| `WorldState` | `seed`、`current_room`、`inventory`、`revealed_items`、`blocked_objects`、`step_count`、`reactor_panel_open`、`main_power`、`authorization_code_read`、`escaped` | 每局内存状态，reset 恢复全部初始值 |
 | `Observation` | `current_room`、`description`、`visible_objects`、`available_exits`、`inventory`、`last_action_result` | Agent 唯一可读状态，reset 后 `last_action_result` 为 `None` |
 | `ToolResult` | `status`、`reason`、`summary` | `status` 只为 `success` 或 `rejected`，`reason` 为稳定枚举值 |
 

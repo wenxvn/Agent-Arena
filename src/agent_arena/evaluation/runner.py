@@ -10,6 +10,7 @@ from pydantic import ValidationError
 from agent_arena.agents.react import AgentDecision, ReactAgent, agent_decision_adapter
 from agent_arena.arena import Environment, Observation, ToolStatus
 from agent_arena.config import RuntimeSettings
+from agent_arena.evaluation.loop import PublicLoopDetector
 from agent_arena.evaluation.trace import (
     EpisodeOutcome,
     EpisodeTrace,
@@ -69,12 +70,15 @@ class EpisodeRunner:
         consecutive_invalid = 0
         rejected_actions = 0
         total_latency_ms = 0
+        loop_detector = PublicLoopDetector()
+        loop_detector.initialize(observation)
+        runtime_feedback: str | None = None
 
         while executed_actions < self._settings.step_limit:
             if self._on_decision_start:
                 self._on_decision_start(executed_actions + 1, False)
             decision, latency_ms, provider_failed, input_tokens, output_tokens = self._request(
-                observation, correction=False
+                observation, correction=False, runtime_feedback=runtime_feedback
             )
             total_latency_ms += latency_ms
             if provider_failed:
@@ -128,7 +132,7 @@ class EpisodeRunner:
                 if self._on_decision_start:
                     self._on_decision_start(executed_actions + 1, True)
                 decision, latency_ms, provider_failed, input_tokens, output_tokens = self._request(
-                    observation, correction=True
+                    observation, correction=True, runtime_feedback=runtime_feedback
                 )
                 total_latency_ms += latency_ms
                 if provider_failed:
@@ -176,6 +180,9 @@ class EpisodeRunner:
             decision_observation = observation
             result, observation = self._environment.step(decision.action)
             self._agent.observe(decision.action, result, observation)
+            runtime_feedback = loop_detector.observe(
+                decision_observation, decision.action, result, observation
+            )
             executed_actions += 1
             if result.status is ToolStatus.REJECTED:
                 rejected_actions += 1
@@ -191,6 +198,7 @@ class EpisodeRunner:
                 latency_ms=latency_ms,
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
+                runtime_feedback=runtime_feedback,
             )
             steps.append(completed_step)
             if self._on_step_complete:
@@ -221,10 +229,13 @@ class EpisodeRunner:
         observation: Observation,
         *,
         correction: bool,
+        runtime_feedback: str | None,
     ) -> tuple[AgentDecision | None, int, bool, int | None, int | None]:
         started_at = perf_counter()
         try:
-            response = self._agent.request(observation, correction=correction)
+            response = self._agent.request(
+                observation, correction=correction, runtime_feedback=runtime_feedback
+            )
         except Exception:
             return None, _elapsed_ms(started_at), True, None, None
         if not isinstance(response, ProviderResponse):

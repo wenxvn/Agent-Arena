@@ -93,7 +93,7 @@ def test_runner_completes_the_public_escape_path_and_records_decision_observatio
     assert trace.provenance.model_name == "qwen3.7-plus"
     assert trace.provenance.step_limit == 30
     assert len(trace.provenance.base_prompt_hash) == 64
-    assert trace.provenance.base_prompt_version == "react_v8"
+    assert trace.provenance.base_prompt_version == "react_v9"
     assert trace.provenance.provider_request_version == "decision_request_v1"
 
 
@@ -128,6 +128,23 @@ def test_environment_rejection_is_a_valid_action_not_an_invalid_model_output() -
     assert trace.rejected_action_count == 1
     assert trace.invalid_output_count == 0
     assert trace.steps[0].event is TraceEvent.ACTION_REJECTED
+
+
+def test_runner_passes_public_repeat_failure_feedback_to_the_next_request() -> None:
+    trace, provider = run(
+        [
+            decision({"tool": "move", "destination": "escape_pod"}),
+            decision({"tool": "move", "destination": "escape_pod"}),
+            RuntimeError(),
+        ]
+    )
+
+    assert trace.outcome is EpisodeOutcome.PROVIDER_ERROR
+    assert provider.calls[0].request.runtime_feedback is None
+    assert provider.calls[1].request.runtime_feedback is None
+    assert provider.calls[2].request.runtime_feedback is not None
+    assert "已完成的动作" in provider.calls[2].request.runtime_feedback
+    assert trace.steps[1].runtime_feedback == provider.calls[2].request.runtime_feedback
 
 
 def test_runner_stops_at_the_configured_environment_step_limit() -> None:

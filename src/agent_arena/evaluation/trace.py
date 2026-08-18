@@ -49,6 +49,7 @@ class StepTrace(BaseModel):
     latency_ms: int = Field(ge=0)
     input_tokens: int | None = Field(default=None, ge=0)
     output_tokens: int | None = Field(default=None, ge=0)
+    runtime_feedback: str | None = Field(default=None, max_length=500)
     summary: str | None = Field(default=None, max_length=1_000)
 
 

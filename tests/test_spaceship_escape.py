@@ -100,6 +100,22 @@ def test_storage_visibility_and_pickup_rules() -> None:
     assert result.reason is ToolReason.ALREADY_COLLECTED
     assert observation.inventory == ("screwdriver",)
 
+    assert step(environment, {"tool": "pickup", "item": "replacement_fuse"}) is ToolReason.PICKED_UP
+    _, observation = environment.step(action({"tool": "look"}))
+    assert observation.visible_objects == ()
+
+
+def test_terminal_requires_the_dedicated_read_tool() -> None:
+    environment = SpaceshipEscapeEnvironment()
+    result, observation = environment.step(
+        action({"tool": "inspect", "target": "control_terminal"})
+    )
+    assert result.status is ToolStatus.REJECTED
+    assert result.reason is ToolReason.READ_TERMINAL_REQUIRED
+    assert "read_terminal" in result.summary
+    assert observation.visible_objects == ()
+    assert observation.current_room == "control_room"
+
 
 def test_reactor_panel_reveals_the_damaged_fuse_only_after_opening() -> None:
     environment = SpaceshipEscapeEnvironment()
@@ -116,7 +132,8 @@ def test_reactor_panel_reveals_the_damaged_fuse_only_after_opening() -> None:
         is ToolReason.PANEL_OPENED
     )
     _, observation = environment.step(action({"tool": "look"}))
-    assert observation.visible_objects == ("reactor_panel", "damaged_fuse")
+    assert observation.visible_objects == ("damaged_fuse",)
+    assert "escape_pod" not in observation.available_exits
 
 
 def test_manual_escape_path_uses_only_public_tools() -> None:
@@ -159,9 +176,12 @@ def test_manual_escape_path_uses_only_public_tools() -> None:
 def test_power_and_escape_rejections_do_not_change_puzzle_state() -> None:
     environment = SpaceshipEscapeEnvironment()
 
-    result, _ = environment.step(action({"tool": "read_terminal", "target": "control_terminal"}))
+    result, observation = environment.step(
+        action({"tool": "read_terminal", "target": "control_terminal"})
+    )
     assert result.reason is ToolReason.NO_POWER
     assert not environment._state.main_power
+    assert observation.visible_objects == ()
 
     move_to(environment, "corridor", "maintenance_room", "reactor_room")
     result, _ = environment.step(
@@ -182,11 +202,8 @@ def test_power_and_escape_rejections_do_not_change_puzzle_state() -> None:
     assert result.reason is ToolReason.PANEL_CLOSED
     assert not environment._state.main_power
 
-    move_to(environment, "escape_pod")
-    result, _ = environment.step(
-        action({"tool": "use", "item": "ALPHA-731", "target": "escape_pod"})
-    )
-    assert result.reason is ToolReason.CODE_UNREAD
+    result, _ = environment.step(action({"tool": "move", "destination": "escape_pod"}))
+    assert result.reason is ToolReason.NOT_ADJACENT
     assert not environment.is_success()
 
 

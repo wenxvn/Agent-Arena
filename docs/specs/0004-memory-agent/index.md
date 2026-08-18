@@ -47,7 +47,7 @@ MemoryAgent 使用有类型的内存状态、确定性 reducer 和数据消息�
 | `FailedAction` | `identity: str`，`action: Action`，`result_summary: str` | 每个 Action 标识仅保留一条。 |
 | `OpenQuestion` | `key: str`，`text: str` | 每个问题键仅保留一条。 |
 | `MemoryReducer` | `initialize(observation)`，`apply(state, action, result, observation)` | 纯函数，只接收公开值。 |
-| `DecisionRequest` | `observation`，`system_prompt`，`memory_data`，`correction` | ReactAgent 的 `memory_data` 不存在。 |
+| `DecisionRequest` | `observation`，`system_prompt`，`memory_data`，`correction`，`runtime_feedback` | `runtime_feedback` 只来自公开轨迹；ReactAgent 的 `memory_data` 不存在。 |
 | `ProviderResponse` | `candidate: object`，`input_tokens`，`output_tokens` | provider 边界结果，存在时 token 为非负数。 |
 | `ExperimentProvenance` | Agent、请求版本、模型配置、重试配置、步数上限、基础 prompt 和 memory 元数据 | 冻结的非敏感 trace 字段。 |
 

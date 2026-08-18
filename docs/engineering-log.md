@@ -79,9 +79,23 @@
 
 改动：将 Ollama 默认模型更新为 `qwen2.5:7b`；新增原生请求回归测试；调整 Memory 消息顺序；提示词升级到 `react_v8`，明确公开环境中的关键前置条件和重复动作限制。
 
-验证：`qwen3:8b` 与 `qwen2.5:7b` 的 `verify-model --provider ollama` 均通过，40 项 pytest、Ruff、mypy 通过。`qwen3:8b` 和 `qwen2.5:7b` 均能输出合法动作，但在关闭思考时单局 30 步都未完成逃生；7B 在 `react_v8` 下能走到存储室并发现物品，随后仍会重复移动。14B 下载因长时间网络停滞中止，未注册使用。
+验证：`qwen3:8b` 与 `qwen2.5:7b` 的 `verify-model --provider ollama` 均通过，40 项 pytest、Ruff、mypy 通过。`qwen3:8b` 和 `qwen2.5:7b` 均能输出合法动作，但在关闭思考时单局 30 步都未完成逃生；7B 在 `react_v8` 下能走到存储室并发现物品，随后仍会重复移动。当时 14B 下载因长时间网络停滞中止；后续已完成安装，结果见 2026-08-18 的复验记录。
 
 下一步：当前验收结论为本地链路和可观测性通过，自动逃生策略未通过；后续应优先改进 Agent Loop 的重复动作约束或采用已验证的更强本地模型，而不是把失败局写成成功。
+
+关联提交：待提交。
+
+## 2026-08-18 轻量化链路与 14B 复验
+
+事件：完成紧凑提示词、公开循环检测、运行时提醒、MemoryAgent 请求接入和 Spaceship Escape 无效目标收敛；随后复验已安装的 `qwen2.5:14b`。
+
+原因：用户希望降低 16G Mac 的运行压力，同时确认 14B 是否能解决 7B 的长程循环问题。
+
+改动：新增 `react_v9`，默认 Ollama 输出上限调整为 256 token；`DecisionRequest`、Runner、两种 provider 和 trace 增加公开运行时提醒；Environment 在终端误用、目标完成和授权码前置条件不满足时减少无效观察目标；新增循环检测及回归测试。
+
+验证：`uv run ruff check .`、`uv run mypy src` 和 45 项 pytest 全部通过；`qwen2.5:14b` 的 `verify-model` 通过。固定 seed=0、MemoryAgent、30 步真实运行执行 30 步、0 次非法模型输出，但在恢复主电源后重复读取诊断终端，结果为 `step_limit`，未完成逃生。
+
+下一步：将当前结果作为诚实的失败基线；若产品必须保证通关，应另行设计确定性任务阶段/Action Guard，不能继续只堆提示词规则。默认开发模型保持 `qwen2.5:7b`，14B 仅作对照。
 
 关联提交：待提交。
 

@@ -4,6 +4,12 @@
 > 项目：Agent Arena  
 > 更新日期：2026-08-18
 
+### 最新实测（2026-08-18）
+
+已完成 `qwen2.5:14b` 安装和连接验证。固定 `seed=0`、`MemoryAgent`、30 步的真实运行中，14B 在第 14 步恢复主电源后，仍连续重复读取诊断终端，最终为 `step_limit`；没有产生成功逃生 trace。结论是：14B 可用，但当前 Agent Loop 仍不能保证长程任务通关。
+
+本轮实现的轻量化措施包括：`react_v9` 紧凑提示词、`MemoryAgent`、公开循环检测和运行时提醒、完成目标后隐藏部分观察对象，以及终端必须使用 `read_terminal`。这些措施改善了早期探索和信息边界，但没有消除模型循环。
+
 ## 1. 当前结论
 
 Agent Arena 当前的主要问题已经不是基础设施是否可用，而是：
@@ -29,6 +35,7 @@ Agent Arena 当前的主要问题已经不是基础设施是否可用，而是�
 - `qwen3:4b`
 - `qwen3:8b`
 - `qwen2.5:7b`
+- `qwen2.5:14b`
 
 典型失败行为包括：
 
@@ -482,9 +489,9 @@ runtime loop detection
 
 ---
 
-### B. Qwen3 14B
+### B. 同家族更大模型（已实测 Qwen2.5 14B）
 
-如果机器资源允许，这是最优先尝试的下一档。
+如果机器资源允许，这是最优先尝试的下一档。当前 `qwen2.5:14b` 已完成安装和连接验证，但单局 30 步仍失败。
 
 原因不是要寻找“最好模型”，而是：
 
@@ -506,7 +513,7 @@ same temperature
 same max steps
 ```
 
-只改变模型规模。
+只改变模型规模。若机器在运行 14B 时明显卡顿，不建议把它设为默认开发模型；默认仍使用 `qwen2.5:7b`，14B 只用于对照实验。
 
 ---
 
@@ -730,8 +737,8 @@ Maximum Progress
 固定最佳 architecture：
 
 ```text
-qwen3:8b
-qwen3:14b
+qwen2.5:7b
+qwen2.5:14b
 gemma3:12b
 ```
 
@@ -791,7 +798,7 @@ loop detection
 ### Test B
 
 ```text
-Qwen3 14B
+Qwen2.5 14B
 same architecture
 ```
 
@@ -817,7 +824,7 @@ same architecture
 
 这不是项目失败。
 
-这是非常合理的工程边界。
+这是非常合理的工程边界。当前 14B 已经给出这一判断的证据：连接正常、动作合法，但在任务中段发生公开可见的重复循环。
 
 不要继续花几天时间寻找：
 
@@ -1031,7 +1038,7 @@ After diagnostic terminal says X, go to reactor_room.
         ↓
 6. 分析 trace
         ↓
-7. qwen3:14b × 5
+7. qwen2.5:14b × 5
         ↓
 8. 第二模型家族 × 5
         ↓

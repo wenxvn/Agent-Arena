@@ -112,14 +112,11 @@ class BailianDecisionProvider:
         messages: list[dict[str, str]] = [{"role": "system", "content": request.system_prompt}]
         if request.memory_data:
             messages.append({"role": "user", "content": request.memory_data})
-        messages.append(
-            {
-                "role": "user",
-                "content": (
-                    f"当前观察：{request.observation.model_dump_json()}\n{correction_instruction}"
-                ),
-            }
-        )
+        request_content = f"当前观察：{request.observation.model_dump_json()}\n"
+        if request.runtime_feedback:
+            request_content += f"运行时提醒（仅来自公开轨迹）：{request.runtime_feedback}\n"
+        request_content += correction_instruction
+        messages.append({"role": "user", "content": request_content})
         response = self._client.chat.completions.create(
             model=self._settings.model_name,
             messages=cast(Any, messages),
@@ -127,13 +124,13 @@ class BailianDecisionProvider:
             response_format={"type": "json_object"},
             extra_body={"enable_thinking": self._settings.enable_thinking},
         )
-        content = response.choices[0].message.content if response.choices else None
-        if not content:
+        response_content = response.choices[0].message.content if response.choices else None
+        if not response_content:
             raise DecisionProviderError("Bailian returned no decision.")
         try:
             usage = response.usage
             return ProviderResponse(
-                candidate=json.loads(content),
+                candidate=json.loads(response_content),
                 input_tokens=usage.prompt_tokens if usage else None,
                 output_tokens=usage.completion_tokens if usage else None,
             )

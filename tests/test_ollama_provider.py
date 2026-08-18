@@ -80,3 +80,43 @@ def test_ollama_decision_uses_native_non_thinking_json_request(monkeypatch) -> N
     }
     assert response.input_tokens == 12
     assert response.output_tokens == 8
+
+
+def test_ollama_decision_includes_public_runtime_feedback(monkeypatch) -> None:
+    captured: dict[str, Any] = {}
+
+    def fake_urlopen(request: Any, *, timeout: int) -> _FakeResponse:
+        captured["payload"] = json.loads(request.data.decode("utf-8"))
+        return _FakeResponse(
+            {
+                "message": {
+                    "content": json.dumps(
+                        {"decision_reason": "继续探索。", "action": {"tool": "look"}}
+                    )
+                }
+            }
+        )
+
+    monkeypatch.setattr("agent_arena.llm.ollama.urlopen", fake_urlopen)
+    settings = RuntimeSettings.load({"provider": "ollama"}, env_file=None)
+    observation = Observation(
+        current_room="bridge",
+        description="控制台前方有一条通道。",
+        visible_objects=("console",),
+        available_exits=("corridor",),
+        inventory=(),
+        last_action_result=None,
+    )
+
+    OllamaDecisionProvider(settings).decide(
+        DecisionRequest(
+            observation=observation,
+            system_prompt="按格式返回动作。",
+            correction=False,
+            runtime_feedback="不要重复刚才失败的动作。",
+        )
+    )
+
+    assert "运行时提醒（仅来自公开轨迹）：不要重复刚才失败的动作。" in captured["payload"][
+        "messages"
+    ][-1]["content"]

@@ -9,7 +9,7 @@ Release 1 将 ReactAgent、受限 Episode Runner 和 JSON Episode Trace 作为�
 
 ## Requirements
 
-1. **AC-1**: `ReactAgent` 只向 provider 传递 `Observation`、版本化 prompt 和 `correction` 标记；它不读取 `WorldState`，也不直接调用 Environment。
+1. **AC-1**: `ReactAgent` 只向 provider 传递 `Observation`、版本化 prompt、`correction` 标记和来自公开轨迹的可选运行时提醒；它不读取 `WorldState`，也不直接调用 Environment。
 2. **AC-2**: 有效决策是严格对象 `{ "decision_reason": str, "action": Action }`。工具参数必须直接位于 `action` 对象内，不能使用 `args`、`parameters` 或其他包装字段；`decision_reason` 最长 280 字符，未知字段、缺少字段或无效 Action 都视为非法模型输出。
 3. **AC-3**: Runner reset 世界后循环请求决策、验证 Action、调用 `Environment.step`，在环境成功、达到 `step_limit`、连续三次非法输出或 provider 错误时终止。环境拒绝是正常一步，不计为非法输出。
 4. **AC-4**: 首次非法输出只针对同一 Observation 请求一次修正；修正仍非法时开始新的决策周期。仅有效 Action 才将连续非法计数清零。
@@ -28,7 +28,7 @@ Release 1 将 ReactAgent、受限 Episode Runner 和 JSON Episode Trace 作为�
 | 类型 | 字段或行为 |
 |---|---|
 | `AgentDecision` | `decision_reason: str`，`action: Action`；严格校验 |
-| `ReactAgent.request` | 输入 `Observation` 与 correction，返回 provider 的原始候选；不做世界操作 |
+| `ReactAgent.request` | 输入 `Observation`、correction 和可选公开运行时提醒，返回 provider 的原始候选；不做世界操作 |
 | `EpisodeRunner.run` | reset、处理每轮请求/修正、执行有效 Action，并返回 `EpisodeTrace` |
 | `EpisodeOutcome` | `success`、`step_limit`、`invalid_action_limit`、`provider_error` |
 | `EpisodeTrace` | episode header、计数、总延迟与 `StepTrace` 列表 |

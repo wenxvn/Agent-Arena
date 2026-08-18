@@ -109,18 +109,15 @@ class OllamaDecisionProvider:
         messages = [{"role": "system", "content": request.system_prompt}]
         if request.memory_data:
             messages.append({"role": "user", "content": request.memory_data})
-        messages.append(
-            {
-                "role": "user",
-                "content": (
-                    f"当前观察：{_observation_json(request.observation)}\n{correction_instruction}"
-                ),
-            }
-        )
+        request_content = f"当前观察：{_observation_json(request.observation)}\n"
+        if request.runtime_feedback:
+            request_content += f"运行时提醒（仅来自公开轨迹）：{request.runtime_feedback}\n"
+        request_content += correction_instruction
+        messages.append({"role": "user", "content": request_content})
         response = self._client.chat(messages, response_schema=ACTION_RESPONSE_SCHEMA)
-        content = _json_content(response)
+        response_content = _json_content(response)
         return ProviderResponse(
-            candidate=content,
+            candidate=response_content,
             input_tokens=_non_negative_int(response.get("prompt_eval_count")),
             output_tokens=_non_negative_int(response.get("eval_count")),
         )

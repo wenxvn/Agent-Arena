@@ -29,20 +29,29 @@ class ReactAgent:
     """Request candidate decisions without accessing environment internals."""
 
     name = "react"
-    prompt_version = "react_v8"
-    base_prompt_version = "react_v8"
+    prompt_version = "react_v9"
+    base_prompt_version = "react_v9"
 
     def __init__(self, provider: DecisionProvider, prompt_path: Path | None = None) -> None:
         self._provider = provider
         path = prompt_path or self._default_prompt_path()
         self._prompt = path.read_text(encoding="utf-8")
 
-    def request(self, observation: Observation, *, correction: bool) -> ProviderResponse:
+    def request(
+        self,
+        observation: Observation,
+        *,
+        correction: bool,
+        runtime_feedback: str | None = None,
+    ) -> ProviderResponse:
         """Return the provider candidate for the current public observation."""
 
         return self._provider.decide(
             DecisionRequest(
-                observation=observation, system_prompt=self._prompt, correction=correction
+                observation=observation,
+                system_prompt=self._prompt,
+                correction=correction,
+                runtime_feedback=runtime_feedback,
             )
         )
 

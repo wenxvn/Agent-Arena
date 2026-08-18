@@ -97,7 +97,7 @@ class SpaceshipEscapeEnvironment(Environment):
             current_room=room.id,
             description=room.description,
             visible_objects=self._visible_objects(),
-            available_exits=room.exits,
+            available_exits=self._available_exits(),
             inventory=tuple(sorted(self._state.inventory)),
             last_action_result=self._state.last_action_result,
         )
@@ -133,20 +133,39 @@ class SpaceshipEscapeEnvironment(Environment):
     def _current_room(self) -> RoomDefinition:
         return self._rooms[self._state.current_room]
 
+    def _available_exits(self) -> tuple[str, ...]:
+        exits = self._current_room().exits
+        if self._state.current_room == "reactor_room" and not self._state.authorization_code_read:
+            return tuple(destination for destination in exits if destination != "escape_pod")
+        return exits
+
     def _visible_objects(self) -> tuple[str, ...]:
         visible = list(self._current_room().object_ids)
+        if self._state.current_room == "storage_room" and all(
+            item_id in self._state.inventory for item_id in self._items
+        ):
+            visible = [object_id for object_id in visible if object_id != "storage_crate"]
         if self._state.current_room == "storage_room":
             visible.extend(
                 item_id
                 for item_id in sorted(self._state.revealed_items)
                 if item_id not in self._state.inventory
             )
+        if self._state.control_terminal_blocked:
+            visible = [object_id for object_id in visible if object_id != "control_terminal"]
+        visible = [
+            object_id for object_id in visible if object_id not in self._state.blocked_objects
+        ]
         if not self._state.reactor_panel_open:
+            visible = [object_id for object_id in visible if object_id != "damaged_fuse"]
+        else:
+            visible = [object_id for object_id in visible if object_id != "reactor_panel"]
+        if self._state.main_power:
             visible = [object_id for object_id in visible if object_id != "damaged_fuse"]
         return tuple(visible)
 
     def _move(self, action: MoveAction) -> ToolResult:
-        if action.destination not in self._current_room().exits:
+        if action.destination not in self._available_exits():
             return self._rejected(ToolReason.NOT_ADJACENT)
         self._state.current_room = action.destination
         return self._success(ToolReason.MOVED)
@@ -154,6 +173,9 @@ class SpaceshipEscapeEnvironment(Environment):
     def _inspect(self, action: InspectAction) -> ToolResult:
         if action.target not in self._visible_objects() or action.target not in self._objects:
             return self._rejected(ToolReason.NOT_VISIBLE)
+        if self._objects[action.target].kind == "terminal":
+            self._state.blocked_objects.add(action.target)
+            return self._rejected(ToolReason.READ_TERMINAL_REQUIRED)
         if action.target == "storage_crate":
             self._state.revealed_items.update(self._items)
         return self._success(ToolReason.INSPECTED, self._objects[action.target].inspect_result)
@@ -201,6 +223,8 @@ class SpaceshipEscapeEnvironment(Environment):
         if self._state.main_power:
             return self._rejected(ToolReason.WRONG_TARGET)
         self._state.main_power = True
+        self._state.control_terminal_blocked = False
+        self._state.blocked_objects.discard("control_terminal")
         return self._success(ToolReason.POWER_RESTORED)
 
     def _launch_escape_pod(self, action: UseAction) -> ToolResult:
@@ -228,6 +252,8 @@ class SpaceshipEscapeEnvironment(Environment):
             )
         if action.target == "control_terminal":
             if not self._state.main_power:
+                self._state.control_terminal_blocked = True
+                self._state.blocked_objects.add("control_terminal")
                 return self._rejected(ToolReason.NO_POWER)
             self._state.authorization_code_read = True
             return self._success(
@@ -267,6 +293,7 @@ _SUMMARIES: dict[ToolReason, str] = {
     ToolReason.ALREADY_COLLECTED: "该物品已经在背包中。",
     ToolReason.MISSING_ITEM: "你没有所需物品。",
     ToolReason.WRONG_TARGET: "当前不能将该物品用于这个目标。",
+    ToolReason.READ_TERMINAL_REQUIRED: "终端请使用 read_terminal 工具读取。",
     ToolReason.PANEL_CLOSED: "请先打开反应堆面板，再更换保险丝。",
     ToolReason.CODE_UNREAD: "请先读取逃生授权码，再启动逃生舱。",
     ToolReason.INCORRECT_CODE: "该逃生授权码不正确。",

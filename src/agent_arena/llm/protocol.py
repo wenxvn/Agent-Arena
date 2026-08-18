@@ -12,6 +12,7 @@ class DecisionRequest:
     system_prompt: str
     correction: bool
     memory_data: str | None = None
+    runtime_feedback: str | None = None
 
 
 @dataclass(frozen=True)

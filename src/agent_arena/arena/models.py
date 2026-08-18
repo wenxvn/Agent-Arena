@@ -74,6 +74,7 @@ class ToolReason(StrEnum):
     ALREADY_COLLECTED = "already_collected"
     MISSING_ITEM = "missing_item"
     WRONG_TARGET = "wrong_target"
+    READ_TERMINAL_REQUIRED = "read_terminal_required"
     PANEL_CLOSED = "panel_closed"
     CODE_UNREAD = "code_unread"
     INCORRECT_CODE = "incorrect_code"
@@ -110,9 +111,11 @@ class WorldState(BaseModel):
     current_room: str
     inventory: set[str] = Field(default_factory=set)
     revealed_items: set[str] = Field(default_factory=set)
+    blocked_objects: set[str] = Field(default_factory=set)
     step_count: int = Field(default=0, ge=0)
     reactor_panel_open: bool = False
     main_power: bool = False
     authorization_code_read: bool = False
+    control_terminal_blocked: bool = False
     escaped: bool = False
     last_action_result: ToolResult | None = None
