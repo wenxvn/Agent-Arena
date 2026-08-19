@@ -32,12 +32,14 @@ class EpisodeRunner:
         settings: RuntimeSettings,
         on_decision_start: Callable[[int, bool], None] | None = None,
         on_step_complete: Callable[[StepTrace], None] | None = None,
+        enable_runtime_feedback: bool = True,
     ) -> None:
         self._environment = environment
         self._agent = agent
         self._settings = settings
         self._on_decision_start = on_decision_start
         self._on_step_complete = on_step_complete
+        self._enable_runtime_feedback = enable_runtime_feedback
 
     def run(self) -> EpisodeTrace:
         """Return a terminal trace for one reset world instance."""
@@ -60,6 +62,7 @@ class EpisodeRunner:
                 provider_request_version="decision_request_v1",
                 base_prompt_version=self._agent.base_prompt_version,
                 base_prompt_hash=self._agent.base_prompt_hash,
+                runtime_feedback_enabled=self._enable_runtime_feedback,
                 memory_schema_version=(
                     "memory_v1" if self._agent.name in {"memory", "planner_assisted"} else None
                 ),
@@ -184,9 +187,10 @@ class EpisodeRunner:
             decision_observation = observation
             result, observation = self._environment.step(decision.action)
             self._agent.observe(decision.action, result, observation)
-            runtime_feedback = loop_detector.observe(
+            loop_feedback = loop_detector.observe(
                 decision_observation, decision.action, result, observation
             )
+            runtime_feedback = loop_feedback if self._enable_runtime_feedback else None
             executed_actions += 1
             if result.status is ToolStatus.REJECTED:
                 rejected_actions += 1

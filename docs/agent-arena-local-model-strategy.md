@@ -2,11 +2,11 @@
 
 > 建议文件位置：`docs/local-model-strategy.md`  
 > 项目：Agent Arena  
-> 更新日期：2026-08-18
+> 更新日期：2026-08-19
 
 ### 最新实测（2026-08-18）
 
-已完成 `qwen2.5:14b` 安装和连接验证。固定 `seed=0`、`MemoryAgent`、30 步的真实运行中，14B 在第 14 步恢复主电源后，仍连续重复读取诊断终端，最终为 `step_limit`；没有产生成功逃生 trace。结论是：14B 可用，但当前 Agent Loop 仍不能保证长程任务通关。
+此前已完成 `qwen2.5:14b` 安装和连接验证。固定 `seed=0`、`MemoryAgent`、30 步的真实运行中，14B 在第 14 步恢复主电源后，仍连续重复读取诊断终端，最终为 `step_limit`；没有产生成功逃生 trace。由于当前使用 Mac M5 Air，14B 暂缓继续测试，不纳入本轮实验矩阵。
 
 本轮实现的轻量化措施包括：`react_v9` 紧凑提示词、`MemoryAgent`、公开循环检测和运行时提醒、完成目标后隐藏部分观察对象，以及终端必须使用 `read_terminal`。这些措施改善了早期探索和信息边界，但没有消除模型循环。
 
@@ -489,9 +489,9 @@ runtime loop detection
 
 ---
 
-### B. 同家族更大模型（已实测 Qwen2.5 14B）
+### B. 同家族更大模型（14B 暂缓）
 
-如果机器资源允许，这是最优先尝试的下一档。当前 `qwen2.5:14b` 已完成安装和连接验证，但单局 30 步仍失败。
+`qwen2.5:14b` 曾完成安装和连接验证，但单局 30 步仍失败。由于 Mac M5 Air 运行资源有限，本项暂缓，待更合适硬件再恢复。
 
 原因不是要寻找“最好模型”，而是：
 
@@ -1038,15 +1038,13 @@ After diagnostic terminal says X, go to reactor_room.
         ↓
 6. 分析 trace
         ↓
-7. qwen2.5:14b × 5
+7. ReactAgent vs MemoryAgent 正式对照
         ↓
-8. 第二模型家族 × 5
+8. 第二模型家族 × 5（14B 暂缓，不在本轮）
         ↓
 9. 根据 stopping rule 决定本地 / API
         ↓
-10. 实现 MemoryAgent
-        ↓
-11. React vs Memory 正式 benchmark
+10. 再考虑 PlanningAgent、ReflectionAgent 和 Streamlit
 ```
 
 ---

@@ -5,22 +5,20 @@ from agent_arena.llm import FakeDecisionProvider
 from agent_arena.worlds import SpaceshipEscapeEnvironment
 
 
-def test_react_prompt_requires_flat_action_arguments_for_every_tool() -> None:
+def test_react_autonomous_prompt_contains_only_general_action_rules() -> None:
     provider = FakeDecisionProvider([{}])
     agent = ReactAgent(provider)
 
     agent.request(SpaceshipEscapeEnvironment().observe(), correction=False)
 
     prompt = provider.calls[0].request.system_prompt
+    assert agent.prompt_version == "react_v12_autonomous"
     assert "禁止使用 args、arguments 或 parameters 包装" in prompt
-    assert "move 的 destination 必须在 available_exits 中" in prompt
-    assert "Agent Memory" in prompt
-    assert "运行时提醒" in prompt
-    assert "优先处理新目标" in prompt
-    assert "读取终端使用 read_terminal" in prompt
-    assert '"action":{"tool":"move","destination":"corridor"}' in prompt
-    assert '"action":{"tool":"inspect","target":"storage_crate"}' in prompt
-    assert '"action":{"tool":"pickup","item":"screwdriver"}' in prompt
-    assert '"action":{"tool":"use","item":"screwdriver","target":"reactor_panel"}' in prompt
-    assert "授权码不会出现在 inventory" in prompt
+    assert "available_exits" in prompt
+    assert "visible_objects" in prompt
+    assert "把失败 ToolResult 当作事实" in prompt
+    assert "优先选择能够获得新信息" in prompt
+    assert "storage_room" not in prompt
+    assert "screwdriver" not in prompt
+    assert "reactor_panel" not in prompt
     assert "ALPHA-731" not in prompt

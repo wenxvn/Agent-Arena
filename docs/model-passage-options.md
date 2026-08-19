@@ -149,9 +149,20 @@ OLLAMA_MODEL=qwen2.5:7b uv run agent-arena benchmark \
 
 - 修正 `PublicLoopDetector` 的状态键和误报测试，避免合法回程被当成重复动作。
 - 单独实现并评估真正的公开规则保护模式 `guarded`，与规划辅助模式分开比较。
+- **完成不依赖谜题攻略式提示的纯模型自主通关验收**：分别运行 ReactAgent 和 MemoryAgent，使用通用 prompt、相同 seed 和预算，公开成功与失败 trace。
 - 继续测量纯 ReactAgent/MemoryAgent 的失败率，不把辅助结果当成纯模型能力。
 - 完成 Release 3 的 Streamlit 实验界面。
 - 后续再考虑独立的 PlanningAgent、ReflectionAgent、多世界和更多模型对照。
+
+`qwen2.5:14b` 因当前 Mac M5 Air 的运行资源限制暂缓测试，不纳入本轮自主通关实验矩阵。
+
+## 纯模型自主基线结果
+
+2026-08-19 使用通用 `react_v12_autonomous` prompt 和关闭循环提醒的 `--autonomous` 模式，分别运行 ReactAgent 与 MemoryAgent，各 5 局，seed 0 至 4，模型为 Ollama `qwen2.5:7b`。
+
+结果为：两种 Agent 都是 0/5 成功，平均 30 步，非法模型输出均为 0。ReactAgent 每局有 2 次环境拒绝，随后主要重复 `look`。MemoryAgent 每局有 15 次环境拒绝，主要在控制室和走廊之间反复读取不可见的控制终端。
+
+因此，当前项目已经有一组真实、可重复的纯模型失败基线。`planner_assisted` 的 3/3 成功不能用于替代这项验收。
 
 ## 相关决策
 

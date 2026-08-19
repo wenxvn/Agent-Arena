@@ -17,6 +17,36 @@
 关联提交：Git commit，若有
 ```
 
+## 2026-08-19 调整自主通关优先级并暂缓 14B
+
+事件：确认 ReactAgent 和 MemoryAgent 的代码实现、Fake provider 路线和公平对照测试已经完成，但真实 Ollama 的纯模型自主通关仍未完成。用户使用 Mac M5 Air，`qwen2.5:14b` 暂不继续测试。
+
+原因：`planner_assisted` 的成功依赖确定性公开阶段和下一动作建议，不能证明模型在没有谜题攻略式提示时具备自主规划能力。继续堆 Spaceship 专用提示词会把实验变成人工攻略执行，削弱研究结论。
+
+改动：将“不依赖谜题攻略式提示的纯 ReactAgent 与 MemoryAgent 自主通关验收”提升为当前首要未完成任务，要求使用通用 prompt、相同 seed 和预算，并独立保存成功与失败 trace。将 14B 标记为受 M5 Air 资源限制而暂缓，不纳入当前实验矩阵。
+
+验证：复核 `docs/scope/scope.md`、`docs/current-issues.md`、`docs/model-passage-options.md`、ReactAgent 与 MemoryAgent spec 及历史记录，确认两者已完成实现级验证，但真实自主通关验收没有完成。
+
+下一步：先完成通用 prompt 下的 ReactAgent 与 MemoryAgent 真实 Ollama 对照，再根据 trace 决定是否需要运行时循环检测或其他独立实验变量；之后才进入 Streamlit。
+
+关联提交：待提交。
+
+## 2026-08-19 通用 Prompt 纯模型自主基线未通过
+
+事件：完成 ReactAgent 与 MemoryAgent 的纯模型自主对照，各运行 5 局真实 Ollama 实验。
+
+原因：验证模型能否不依赖 Spaceship 专用攻略提示、规划辅助或运行时循环提醒，仅根据公开 Observation 和结构化 Memory 完成任务。
+
+改动：新增 `react_v12_autonomous` 通用 prompt。ReactAgent 和 MemoryAgent 默认使用该 prompt。新增 CLI `--autonomous`，关闭 Runner 的循环提醒，并在 trace provenance 中记录 `runtime_feedback_enabled=false`。`planner_assisted` 继续使用独立的 `react_v11` 和辅助路径。
+
+验证：`qwen2.5:7b`、seed 0 至 4、每局 30 步。ReactAgent 0/5 成功，平均 30 步，每局 2 次环境拒绝，非法输出 0。MemoryAgent 0/5 成功，平均 30 步，每局 15 次环境拒绝，非法输出 0。Ruff、mypy 和 49 项 pytest 全部通过。
+
+结论：纯模型自主通关仍未完成，但失败基线已经真实且可重复。ReactAgent 在初始观察后连续重复 `look`，MemoryAgent 在控制室和走廊之间反复读取不可见终端。问题集中在公开 Observation 的行动选择和失败后的状态更新，不是连接或 JSON 格式问题。
+
+下一步：先设计不含谜题答案的通用运行时上下文或受控短期历史实验，并将其与当前基线独立比较；不得直接恢复 Spaceship 专用路线提示。
+
+关联提交：待提交。
+
 ## 2026-08-17 架构决策确认
 
 事件：项目采用 Python 3.13、uv、本地分层单体、CLI 和本地 JSON 文件作为第一版基础架构。

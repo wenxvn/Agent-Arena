@@ -65,6 +65,7 @@ class ExperimentProvenance(BaseModel):
     provider_request_version: str
     base_prompt_version: str
     base_prompt_hash: str
+    runtime_feedback_enabled: bool = True
     memory_schema_version: str | None = None
     memory_renderer_version: str | None = None
 

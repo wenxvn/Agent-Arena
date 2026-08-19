@@ -57,10 +57,23 @@ def run(
     agent: Annotated[str | None, typer.Option("--agent")] = None,
     seed: Annotated[int | None, typer.Option("--seed")] = None,
     output_dir: Annotated[Path | None, typer.Option("--output-dir")] = None,
+    autonomous: Annotated[
+        bool,
+        typer.Option(
+            "--autonomous",
+            help="使用通用 prompt，并关闭 Runner 的循环提醒。",
+        ),
+    ] = False,
 ) -> None:
     """运行并保存一局受步数限制的飞船逃生实验。"""
 
     settings = _load_settings(provider=provider, agent=agent, seed=seed, runs_dir=output_dir)
+    if autonomous and settings.agent == "planner_assisted":
+        typer.echo(
+            "--autonomous 只适用于 react 或 memory，不能与 planner_assisted 同时使用。",
+            err=True,
+        )
+        raise typer.Exit(code=2)
     try:
         decision_provider = _create_decision_provider(settings)
     except ValueError:
@@ -78,6 +91,7 @@ def run(
         settings,
         on_decision_start=_real_model_step_report(settings),
         on_step_complete=_step_report(),
+        enable_runtime_feedback=not autonomous,
     ).run()
     episode_path = write_episode_trace(episode, settings.runs_dir)
     typer.echo(f"本局结果：{_OUTCOME_LABELS[episode.outcome]}")
@@ -92,11 +106,24 @@ def benchmark(
     provider: Annotated[str | None, typer.Option("--provider")] = None,
     agent: Annotated[str | None, typer.Option("--agent")] = None,
     output_dir: Annotated[Path | None, typer.Option("--output-dir")] = None,
+    autonomous: Annotated[
+        bool,
+        typer.Option(
+            "--autonomous",
+            help="使用通用 prompt，并关闭 Runner 的循环提醒。",
+        ),
+    ] = False,
 ) -> None:
     """重复运行 Agent 对照，并写入 JSON、CSV 指标。"""
 
     if agent is not None and agent not in {"react", "memory", "planner_assisted", "both"}:
         typer.echo("Agent 必须是 react、memory、planner_assisted 或 both。", err=True)
+        raise typer.Exit(code=2)
+    if autonomous and agent == "planner_assisted":
+        typer.echo(
+            "--autonomous 只适用于 react 或 memory，不能与 planner_assisted 同时使用。",
+            err=True,
+        )
         raise typer.Exit(code=2)
     settings = _load_settings(provider=provider)
     benchmark_id = str(uuid4())
@@ -133,6 +160,7 @@ def benchmark(
                         prefix=f"[{episode_number}/{total_episodes}] ",
                     ),
                     on_step_complete=_step_report(prefix=f"[{episode_number}/{total_episodes}] "),
+                    enable_runtime_feedback=not autonomous,
                 ).run()
                 trace_path = write_episode_trace(trace, episode_settings.runs_dir)
                 rows.append(row_from_trace(read_episode_trace(trace_path), benchmark_id, len(rows)))

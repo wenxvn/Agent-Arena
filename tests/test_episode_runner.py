@@ -93,7 +93,8 @@ def test_runner_completes_the_public_escape_path_and_records_decision_observatio
     assert trace.provenance.model_name == "qwen3.7-plus"
     assert trace.provenance.step_limit == 30
     assert len(trace.provenance.base_prompt_hash) == 64
-    assert trace.provenance.base_prompt_version == "react_v11"
+    assert trace.provenance.base_prompt_version == "react_v12_autonomous"
+    assert trace.provenance.runtime_feedback_enabled is True
     assert trace.provenance.provider_request_version == "decision_request_v1"
 
 
@@ -145,6 +146,27 @@ def test_runner_passes_public_repeat_failure_feedback_to_the_next_request() -> N
     assert provider.calls[2].request.runtime_feedback is not None
     assert "已完成的动作" in provider.calls[2].request.runtime_feedback
     assert trace.steps[1].runtime_feedback == provider.calls[2].request.runtime_feedback
+
+
+def test_runner_can_disable_runtime_feedback_for_autonomous_baseline() -> None:
+    provider = FakeDecisionProvider(
+        [
+            decision({"tool": "move", "destination": "escape_pod"}),
+            decision({"tool": "move", "destination": "escape_pod"}),
+            RuntimeError(),
+        ]
+    )
+    runner = EpisodeRunner(
+        SpaceshipEscapeEnvironment(),
+        ReactAgent(provider),
+        settings(),
+        enable_runtime_feedback=False,
+    )
+    trace = runner.run()
+
+    assert trace.provenance.runtime_feedback_enabled is False
+    assert all(call.request.runtime_feedback is None for call in provider.calls)
+    assert all(step.runtime_feedback is None for step in trace.steps)
 
 
 def test_runner_stops_at_the_configured_environment_step_limit() -> None:

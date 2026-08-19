@@ -132,14 +132,16 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 - [ ] **多世界、多模型对照**：至少加入第二个 world version 和第二种模型规模，避免结论只适用于单一地图和 `qwen2.5:7b`。
   - 验收：固定实验矩阵、统一指标和可重放 trace。
 
-### B. 纯模型自主规划通关（当前最高优先级）
+### B. 纯模型自主通关验收（当前首要未完成任务）
 
-- [ ] ReactAgent + Ollama `qwen2.5:7b`，不使用 planner feedback、不使用 guarded 公开规则保护。
-- [ ] MemoryAgent + Ollama `qwen2.5:7b`，保持与 ReactAgent 相同的 prompt、seed、步数和 provider 条件。
-- [ ] ReactAgent、MemoryAgent + `qwen2.5:14b`，记录模型规模变化带来的影响。
-- [ ] 每个配置至少运行 5 局；稳定后扩展到 10 局或更多。
-- [ ] 每局记录并比较：成功率、步数、重复动作数、非法输出数、环境拒绝数、输入/输出 token、总耗时和每步延迟。
-- [ ] 单独标记 `planner_assisted`、`guarded` 和纯模型三类结果；不得把辅助模式的成功率并入纯模型结论。
+这项任务必须证明模型在不依赖 Spaceship Escape 谜题攻略式提示、不使用 `planner_assisted` 或 `guarded` 引导的情况下，仅根据公开 Observation、历史和环境反馈完成任务。当前已有 ReactAgent 和 MemoryAgent 的实现与 Fake provider 对照测试，但真实 Ollama 的自主通关验收尚未完成。
+
+- [x] ReactAgent + Ollama `qwen2.5:7b`，使用通用 prompt，不使用 planner feedback 或 `guarded` 公开规则保护。
+- [x] MemoryAgent + Ollama `qwen2.5:7b`，保持与 ReactAgent 相同的模型、seed、预算和通用 prompt，只增加结构化记忆。
+- [x] ReactAgent 和 MemoryAgent 均使用通用 prompt 完成 5 局真实 Ollama 对照，关闭 planner feedback 和循环提醒。
+- [x] 每局记录并比较成功率、步数、重复或拒绝动作、非法输出、token 使用量和耗时。
+- [x] 纯模型、`guarded` 和 `planner_assisted` 结果保持独立标记。
+- [ ] 公开失败 trace，并确认至少一组纯模型结果可以重复成功；本轮 10 局均未成功，自主通关验收仍未通过。
 
 ### C. 尚未测试的行为
 
@@ -147,7 +149,7 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 - [ ] 规划建议被模型拒绝、偏离或返回非法 Action 时，Runner 是否正确继续、重试或终止。
 - [ ] planner 的阶段转换：覆盖 `POWER_RESTORED`、`CODE_READ`、回到控制终端和最终 `finish`。
 - [ ] `reset`、`finish` 以及跨 episode 的 Memory、阶段和循环检测状态清理。
-- [ ] 14B 模型的 planner/guarded 对照，以及非 Ollama provider 的 `planner_assisted` 行为。
+- [ ] `qwen2.5:14b` 暂缓测试：当前 Mac M5 Air 运行资源不足，不纳入本轮实验矩阵，待更合适硬件再恢复。
 - [ ] 不同 seed、world version 和模型温度下的路线稳定性；确认 19 步不是规则或测试桩写死的固定结果。
 - [ ] 完整回归：所有 planner 路线表项都必须是当前 Observation 中的合法出口，且公开反馈不能泄漏 WorldState 或密钥。
 
@@ -188,4 +190,4 @@ Done when: 计划和反思都有明确触发条件，并能通过 benchmark 验�
 
 ## 当前下一步
 
-Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。当前首先完成 **B. 纯模型自主规划通关** 和 **C/D. 尚未测试与技术债**，再进入 Release 3 的 Streamlit 设计；PlanningAgent 与 ReflectionAgent 仍按 Deferred 排在可重复基线之后。
+Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。当前首先建立 **B. 纯模型自主通关验收** 的通用 prompt 基线，并完成 ReactAgent 与 MemoryAgent 的真实 Ollama 对照；随后处理 C/D 的独立实验变量和技术债，再进入 Release 3 的 Streamlit 设计。PlanningAgent 与 ReflectionAgent 仍按 Deferred 排在可重复基线之后。
