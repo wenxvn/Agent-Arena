@@ -113,8 +113,14 @@ def test_terminal_requires_the_dedicated_read_tool() -> None:
     assert result.status is ToolStatus.REJECTED
     assert result.reason is ToolReason.READ_TERMINAL_REQUIRED
     assert "read_terminal" in result.summary
-    assert observation.visible_objects == ()
+    assert observation.visible_objects == ("control_terminal",)
     assert observation.current_room == "control_room"
+
+    result, observation = environment.step(
+        action({"tool": "read_terminal", "target": "control_terminal"})
+    )
+    assert result.reason is ToolReason.NO_POWER
+    assert observation.visible_objects == ("control_terminal",)
 
 
 def test_reactor_panel_reveals_the_damaged_fuse_only_after_opening() -> None:
@@ -181,7 +187,7 @@ def test_power_and_escape_rejections_do_not_change_puzzle_state() -> None:
     )
     assert result.reason is ToolReason.NO_POWER
     assert not environment._state.main_power
-    assert observation.visible_objects == ()
+    assert observation.visible_objects == ("control_terminal",)
 
     move_to(environment, "corridor", "maintenance_room", "reactor_room")
     result, _ = environment.step(

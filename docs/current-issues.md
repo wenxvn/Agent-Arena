@@ -100,6 +100,15 @@
 
 相同 provider、模型、seed 和 30 步预算下，ReactAgent 与 MemoryAgent 使用通用 `--autonomous` prompt 均在第 2 步后的格式修正阶段达到 `invalid_action_limit`，没有自主逃生成功。因此当前结论是“远程模型可执行公开规划建议”，不是“远程模型已具备纯自主逃生能力”。
 
+## 受控变量复验（2026-08-19）
+
+- 修复环境拒绝副作用：错误使用终端工具或断电读取终端后，终端继续出现在公开 Observation 中，不再永久隐藏。修复后纯自主 React 能执行满 30 步，但仍在 `inspect(control_terminal)` 与 `read_terminal(control_terminal)` 间循环，结果为 `step_limit`。
+- `reasoning_effort=high`：同一 seed 下执行 10 步、8 次非法输出后终止，仍是终端循环；没有证据表明增加推理预算能解决任务分解问题。
+- `guarded` 公开动作候选：第一次请求遇到 relay 400，重试后能离开控制室、进入储藏室并检查密封箱，但在拾取阶段因缺少 Action 必填参数达到 `invalid_action_limit`，尚未通关。
+- 非法输出分类显示本轮主要为 `missing_argument`。Responses relay 拒绝 `json_schema`（HTTP 400），因此默认继续使用 `json_object`，并将安全的缺参类别反馈给格式修正请求。
+
+当前证据更支持“错误恢复与任务分解不足，叠加结构化输出约束不够”这一解释，而不是单一的模型过弱或思考太长。关卡可由人工和 `planner_assisted` 稳定通关，但断电终端反馈曾存在不可恢复的可见性副作用，已修复。
+
 ## 2026-08-19 纯模型自主基线结果
 
 使用 `qwen2.5:7b`、`spaceship-escape-v2-zh`、seed 0 至 4、每局 30 步、关闭思考、通用 `react_v12_autonomous` prompt，并关闭 Runner 循环提醒，分别运行 ReactAgent 和 MemoryAgent。

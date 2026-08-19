@@ -8,6 +8,7 @@ from agent_arena.config import RuntimeSettings
 from agent_arena.evaluation import (
     EpisodeOutcome,
     EpisodeRunner,
+    InvalidOutputReason,
     TraceEvent,
     write_episode_trace,
 )
@@ -120,6 +121,27 @@ def test_runner_stops_after_three_consecutive_invalid_candidates() -> None:
     assert trace.invalid_output_count == 3
     assert trace.executed_action_count == 0
     assert [call.request.correction for call in provider.calls] == [False, True, False]
+
+
+def test_runner_records_safe_invalid_output_categories() -> None:
+    trace, _ = run([{}, {}, {}])
+
+    assert trace.steps[0].invalid_output_reason is InvalidOutputReason.MISSING_FIELD
+    assert trace.steps[2].invalid_output_reason is InvalidOutputReason.MISSING_FIELD
+
+
+def test_runner_can_enable_public_action_hints_as_a_separate_experiment() -> None:
+    provider = FakeDecisionProvider([decision({"tool": "look"}), RuntimeError()])
+    trace = EpisodeRunner(
+        SpaceshipEscapeEnvironment(),
+        ReactAgent(provider),
+        settings(step_limit=1),
+        enable_public_action_hints=True,
+    ).run()
+
+    assert trace.provenance.public_action_hints_enabled is True
+    assert provider.calls[0].request.runtime_feedback is not None
+    assert "move(destination=corridor)" in provider.calls[0].request.runtime_feedback
 
 
 def test_environment_rejection_is_a_valid_action_not_an_invalid_model_output() -> None:

@@ -41,6 +41,7 @@ def _load_settings(
     agent: str | None = None,
     seed: int | None = None,
     runs_dir: Path | None = None,
+    reasoning_effort: str | None = None,
 ) -> RuntimeSettings:
     return RuntimeSettings.load(
         {
@@ -48,6 +49,7 @@ def _load_settings(
             "agent": agent,
             "seed": seed,
             "runs_dir": runs_dir,
+            "reasoning_effort": reasoning_effort,
         }
     )
 
@@ -65,10 +67,33 @@ def run(
             help="使用通用 prompt，并关闭 Runner 的循环提醒。",
         ),
     ] = False,
+    guarded: Annotated[
+        bool,
+        typer.Option(
+            "--guarded",
+            help="注入仅基于公开 Observation 的动作候选提示，并单独记录该实验变量。",
+        ),
+    ] = False,
+    reasoning_effort: Annotated[
+        str | None,
+        typer.Option(
+            "--reasoning-effort",
+            help="Responses API 推理强度：none、low、medium、high。",
+        ),
+    ] = None,
 ) -> None:
     """运行并保存一局受步数限制的飞船逃生实验。"""
 
-    settings = _load_settings(provider=provider, agent=agent, seed=seed, runs_dir=output_dir)
+    if autonomous and guarded:
+        typer.echo("--autonomous 不能与 --guarded 同时使用。", err=True)
+        raise typer.Exit(code=2)
+    settings = _load_settings(
+        provider=provider,
+        agent=agent,
+        seed=seed,
+        runs_dir=output_dir,
+        reasoning_effort=reasoning_effort,
+    )
     if autonomous and settings.agent == "planner_assisted":
         typer.echo(
             "--autonomous 只适用于 react 或 memory，不能与 planner_assisted 同时使用。",
@@ -93,6 +118,7 @@ def run(
         on_decision_start=_real_model_step_report(settings),
         on_step_complete=_step_report(),
         enable_runtime_feedback=not autonomous,
+        enable_public_action_hints=guarded,
     ).run()
     episode_path = write_episode_trace(episode, settings.runs_dir)
     typer.echo(f"本局结果：{_OUTCOME_LABELS[episode.outcome]}")
@@ -114,11 +140,28 @@ def benchmark(
             help="使用通用 prompt，并关闭 Runner 的循环提醒。",
         ),
     ] = False,
+    guarded: Annotated[
+        bool,
+        typer.Option(
+            "--guarded",
+            help="注入仅基于公开 Observation 的动作候选提示，并单独记录该实验变量。",
+        ),
+    ] = False,
+    reasoning_effort: Annotated[
+        str | None,
+        typer.Option(
+            "--reasoning-effort",
+            help="Responses API 推理强度：none、low、medium、high。",
+        ),
+    ] = None,
 ) -> None:
     """重复运行 Agent 对照，并写入 JSON、CSV 指标。"""
 
     if agent is not None and agent not in {"react", "memory", "planner_assisted", "both"}:
         typer.echo("Agent 必须是 react、memory、planner_assisted 或 both。", err=True)
+        raise typer.Exit(code=2)
+    if autonomous and guarded:
+        typer.echo("--autonomous 不能与 --guarded 同时使用。", err=True)
         raise typer.Exit(code=2)
     if autonomous and agent == "planner_assisted":
         typer.echo(
@@ -126,7 +169,7 @@ def benchmark(
             err=True,
         )
         raise typer.Exit(code=2)
-    settings = _load_settings(provider=provider)
+    settings = _load_settings(provider=provider, reasoning_effort=reasoning_effort)
     benchmark_id = str(uuid4())
     rows: list[BenchmarkRow] = []
     try:
@@ -162,6 +205,7 @@ def benchmark(
                     ),
                     on_step_complete=_step_report(prefix=f"[{episode_number}/{total_episodes}] "),
                     enable_runtime_feedback=not autonomous,
+                    enable_public_action_hints=guarded,
                 ).run()
                 trace_path = write_episode_trace(trace, episode_settings.runs_dir)
                 rows.append(row_from_trace(read_episode_trace(trace_path), benchmark_id, len(rows)))

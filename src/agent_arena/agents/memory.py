@@ -175,6 +175,7 @@ class MemoryAgent(ReactAgent):
         *,
         correction: bool,
         runtime_feedback: str | None = None,
+        invalid_output_reason: str | None = None,
     ) -> ProviderResponse:
         if self._memory is None:
             raise RuntimeError("MemoryAgent requires reset before request.")
@@ -184,6 +185,7 @@ class MemoryAgent(ReactAgent):
                 system_prompt=self._prompt,
                 correction=correction,
                 runtime_feedback=runtime_feedback,
+                invalid_output_reason=invalid_output_reason,
                 memory_data=self._render_memory_data(),
             )
         )

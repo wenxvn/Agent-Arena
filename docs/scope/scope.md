@@ -190,4 +190,4 @@ Done when: 计划和反思都有明确触发条件，并能通过 benchmark 验�
 
 ## 当前下一步
 
-Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。**B. 纯模型自主通关验收** 已建立通用 prompt 的真实 Ollama 失败基线：`qwen2.5:7b` 下 ReactAgent 与 MemoryAgent 各 5 局均未成功。当前应先设计并验证不含谜题答案的通用运行时上下文或受控短期历史，并将它与纯模型基线独立比较；随后处理 C/D 的独立实验变量和技术债，再进入 Release 3 的 Streamlit 设计。PlanningAgent 与 ReflectionAgent 仍按 Deferred 排在可重复基线之后。
+Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。**B. 纯模型自主通关验收** 已建立失败基线：通用 prompt 下 ReactAgent 与 MemoryAgent 均未成功；修复终端可见性后，Hiyo `gpt-5.6-terra` 仍会在无电终端反馈中循环。当前应先比较输出格式纠错、公开动作候选和其他不含谜题答案的运行时上下文变量，并将它们与纯自主基线独立记录；随后处理 C/D 的其他实验变量，再进入 Release 3 的 Streamlit 设计。PlanningAgent 与 ReflectionAgent 仍按 Deferred 排在可重复基线之后。

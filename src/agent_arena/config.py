@@ -69,6 +69,8 @@ class RuntimeSettings(BaseSettings):
     retry_count: int = Field(ge=0)
     retry_backoff_seconds: list[int] = Field(default_factory=list)
     enable_thinking: bool
+    reasoning_effort: Literal["none", "low", "medium", "high"] = "none"
+    response_format: Literal["json_object", "json_schema"] = "json_object"
     model_name: str = Field(validation_alias=AliasChoices("OPENAI_MODEL", "model_name"))
     base_url: str | None = Field(
         default=None,

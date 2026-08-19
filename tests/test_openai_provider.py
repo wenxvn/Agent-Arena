@@ -74,7 +74,8 @@ def test_openai_decision_uses_responses_api_with_json_output(monkeypatch) -> Non
     assert client.kwargs["base_url"] == "https://relay.example/v1"
     assert call["model"] == "test-model"
     assert call["instructions"] == "按格式返回动作。"
-    assert call["text"] == {"format": {"type": "json_object"}}
+    output_format = call["text"]["format"]
+    assert output_format == {"type": "json_object"}
     assert call["store"] is False
     assert "公开记忆：无。" in call["input"]
     assert "运行时提醒（仅来自公开轨迹）：不要重复失败动作。" in call["input"]
@@ -84,6 +85,44 @@ def test_openai_decision_uses_responses_api_with_json_output(monkeypatch) -> Non
     }
     assert response.input_tokens == 12
     assert response.output_tokens == 8
+
+
+def test_openai_decision_can_request_json_schema_when_the_relay_supports_it(monkeypatch) -> None:
+    client = _FakeClient()
+
+    def create_client(**kwargs: Any) -> _FakeClient:
+        client.kwargs = kwargs
+        return client
+
+    monkeypatch.setattr("agent_arena.llm.openai.OpenAI", create_client)
+    settings = RuntimeSettings.load(
+        {
+            "provider": "openai",
+            "base_url": "https://relay.example/v1",
+            "openai_api_key": "test-key",
+            "model_name": "test-model",
+            "response_format": "json_schema",
+        },
+        env_file=None,
+    )
+    observation = Observation(
+        current_room="bridge",
+        description="控制台前方有一条通道。",
+        visible_objects=("console",),
+        available_exits=("corridor",),
+        inventory=(),
+        last_action_result=None,
+    )
+
+    OpenAIDecisionProvider(settings).decide(
+        DecisionRequest(observation=observation, system_prompt="按格式返回动作。", correction=False)
+    )
+
+    output_format = client.responses.calls[0]["text"]["format"]
+    assert output_format["type"] == "json_schema"
+    assert output_format["name"] == "agent_decision"
+    assert output_format["strict"] is True
+    assert output_format["schema"]["required"] == ["decision_reason", "action"]
 
 
 def test_openai_verifier_uses_responses_api(monkeypatch) -> None:
@@ -110,3 +149,37 @@ def test_openai_verifier_uses_responses_api(monkeypatch) -> None:
     assert call["max_output_tokens"] == 32
     assert call["store"] is False
     assert verification.model == "relay-model"
+
+
+def test_openai_decision_can_enable_reasoning_effort(monkeypatch) -> None:
+    client = _FakeClient()
+
+    def create_client(**kwargs: Any) -> _FakeClient:
+        client.kwargs = kwargs
+        return client
+
+    monkeypatch.setattr("agent_arena.llm.openai.OpenAI", create_client)
+    settings = RuntimeSettings.load(
+        {
+            "provider": "openai",
+            "base_url": "https://relay.example/v1",
+            "openai_api_key": "test-key",
+            "model_name": "test-model",
+            "reasoning_effort": "high",
+        },
+        env_file=None,
+    )
+    observation = Observation(
+        current_room="bridge",
+        description="控制台前方有一条通道。",
+        visible_objects=("console",),
+        available_exits=("corridor",),
+        inventory=(),
+        last_action_result=None,
+    )
+
+    OpenAIDecisionProvider(settings).decide(
+        DecisionRequest(observation=observation, system_prompt="按格式返回动作。", correction=False)
+    )
+
+    assert client.responses.calls[0]["reasoning"] == {"effort": "high"}

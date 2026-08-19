@@ -35,6 +35,20 @@ class TraceEvent(StrEnum):
     PROVIDER_ERROR = "provider_error"
 
 
+class InvalidOutputReason(StrEnum):
+    """Safe categories for diagnosing schema failures without raw responses."""
+
+    NOT_OBJECT = "not_object"
+    MISSING_FIELD = "missing_field"
+    ACTION_NOT_OBJECT = "action_not_object"
+    MISSING_TOOL = "missing_tool"
+    UNKNOWN_TOOL = "unknown_tool"
+    MISSING_ARGUMENT = "missing_argument"
+    EXTRA_FIELD = "extra_field"
+    INVALID_VALUE = "invalid_value"
+    UNKNOWN_SCHEMA_ERROR = "unknown_schema_error"
+
+
 class StepTrace(BaseModel):
     """One allowlisted decision or execution event."""
 
@@ -51,6 +65,7 @@ class StepTrace(BaseModel):
     output_tokens: int | None = Field(default=None, ge=0)
     runtime_feedback: str | None = Field(default=None, max_length=500)
     summary: str | None = Field(default=None, max_length=1_000)
+    invalid_output_reason: InvalidOutputReason | None = None
 
 
 class ExperimentProvenance(BaseModel):
@@ -62,10 +77,13 @@ class ExperimentProvenance(BaseModel):
     retry_count: int
     retry_backoff_seconds: tuple[int, ...]
     step_limit: int
+    reasoning_effort: str = "none"
+    response_format: str = "json_object"
     provider_request_version: str
     base_prompt_version: str
     base_prompt_hash: str
     runtime_feedback_enabled: bool = True
+    public_action_hints_enabled: bool = False
     memory_schema_version: str | None = None
     memory_renderer_version: str | None = None
 

@@ -5,6 +5,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Protocol
 
+from pydantic import TypeAdapter
+
+from agent_arena.arena import Action
+
 
 @dataclass(frozen=True)
 class DecisionRequest:
@@ -13,6 +17,7 @@ class DecisionRequest:
     correction: bool
     memory_data: str | None = None
     runtime_feedback: str | None = None
+    invalid_output_reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -27,3 +32,17 @@ class DecisionProvider(Protocol):
 
     def decide(self, request: DecisionRequest) -> ProviderResponse:
         """Return a response candidate for the supplied public observation."""
+
+
+def decision_response_schema() -> dict[str, object]:
+    """Return the shared JSON Schema for a decision without importing Agent policy."""
+
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["decision_reason", "action"],
+        "properties": {
+            "decision_reason": {"type": "string", "maxLength": 280},
+            "action": TypeAdapter(Action).json_schema(),
+        },
+    }

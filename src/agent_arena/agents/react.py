@@ -43,6 +43,7 @@ class ReactAgent:
         *,
         correction: bool,
         runtime_feedback: str | None = None,
+        invalid_output_reason: str | None = None,
     ) -> ProviderResponse:
         """Return the provider candidate for the current public observation."""
 
@@ -52,6 +53,7 @@ class ReactAgent:
                 system_prompt=self._prompt,
                 correction=correction,
                 runtime_feedback=runtime_feedback,
+                invalid_output_reason=invalid_output_reason,
             )
         )
 

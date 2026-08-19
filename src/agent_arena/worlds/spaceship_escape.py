@@ -174,7 +174,6 @@ class SpaceshipEscapeEnvironment(Environment):
         if action.target not in self._visible_objects() or action.target not in self._objects:
             return self._rejected(ToolReason.NOT_VISIBLE)
         if self._objects[action.target].kind == "terminal":
-            self._state.blocked_objects.add(action.target)
             return self._rejected(ToolReason.READ_TERMINAL_REQUIRED)
         if action.target == "storage_crate":
             self._state.revealed_items.update(self._items)
@@ -252,8 +251,6 @@ class SpaceshipEscapeEnvironment(Environment):
             )
         if action.target == "control_terminal":
             if not self._state.main_power:
-                self._state.control_terminal_blocked = True
-                self._state.blocked_objects.add("control_terminal")
                 return self._rejected(ToolReason.NO_POWER)
             self._state.authorization_code_read = True
             return self._success(

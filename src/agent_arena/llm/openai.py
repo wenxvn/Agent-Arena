@@ -5,13 +5,14 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from time import sleep
+from typing import Any, cast
 
 from openai import APIConnectionError, APITimeoutError, InternalServerError, OpenAI, RateLimitError
 from pydantic import BaseModel
 
 from agent_arena.config import RuntimeSettings
 from agent_arena.llm.bailian import DecisionProviderError, ModelVerificationError
-from agent_arena.llm.protocol import DecisionRequest, ProviderResponse
+from agent_arena.llm.protocol import DecisionRequest, ProviderResponse, decision_response_schema
 
 
 @dataclass(frozen=True)
@@ -89,11 +90,7 @@ class OpenAIDecisionProvider:
     def _request_once(self, request: DecisionRequest) -> ProviderResponse:
         if not isinstance(request.observation, BaseModel):
             raise DecisionProviderError("OpenAI provider requires a structured observation.")
-        correction_instruction = (
-            "上一条输出不符合格式。请只返回规定的 JSON 结构。"
-            if request.correction
-            else "请只返回规定的 JSON 结构。"
-        )
+        correction_instruction = _correction_instruction(request)
         input_parts = []
         if request.memory_data:
             input_parts.append(request.memory_data)
@@ -101,14 +98,17 @@ class OpenAIDecisionProvider:
         if request.runtime_feedback:
             input_parts.append(f"运行时提醒（仅来自公开轨迹）：{request.runtime_feedback}")
         input_parts.append(correction_instruction)
-        response = self._client.responses.create(
-            model=self._settings.model_name,
-            instructions=request.system_prompt,
-            input="\n".join(input_parts),
-            temperature=0,
-            text={"format": {"type": "json_object"}},
-            store=False,
-        )
+        request_kwargs: dict[str, object] = {
+            "model": self._settings.model_name,
+            "instructions": request.system_prompt,
+            "input": "\n".join(input_parts),
+            "temperature": 0,
+            "text": {"format": _response_format(self._settings.response_format)},
+            "store": False,
+        }
+        if self._settings.reasoning_effort != "none":
+            request_kwargs["reasoning"] = {"effort": self._settings.reasoning_effort}
+        response = self._client.responses.create(**cast(Any, request_kwargs))
         if not response.output_text:
             raise DecisionProviderError("OpenAI provider returned no decision.")
         try:
@@ -120,3 +120,22 @@ class OpenAIDecisionProvider:
             )
         except json.JSONDecodeError as exc:
             raise DecisionProviderError("OpenAI provider returned malformed JSON.") from exc
+
+
+def _correction_instruction(request: DecisionRequest) -> str:
+    if not request.correction:
+        return "请只返回规定的 JSON 结构。"
+    if request.invalid_output_reason == "missing_argument":
+        return "上一条 Action 缺少必填参数。请按所选 tool 补全所有必填参数后只返回 JSON。"
+    return "上一条输出不符合格式。请只返回规定的 JSON 结构。"
+
+
+def _response_format(mode: str) -> dict[str, object]:
+    if mode == "json_schema":
+        return {
+            "type": "json_schema",
+            "name": "agent_decision",
+            "strict": True,
+            "schema": decision_response_schema(),
+        }
+    return {"type": "json_object"}

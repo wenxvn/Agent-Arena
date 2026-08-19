@@ -42,7 +42,8 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 - `Environment.step(action)` 返回结果和新的 Observation，不泄露完整 WorldState。
 - Runner 通过 `DecisionProvider` Protocol 注入 Fake、百炼或本地 Ollama 实现，Agent 和 Environment 不直接依赖 OpenAI SDK。
 - Trace 记录简短 `decision_reason`、Action、结果、token 和延迟，不保存完整思维链或密钥。
-- `RuntimeSettings` 从 CLI、环境变量/`.env` 和 `config/runtime.defaults.json` 合并运行配置；Ollama 默认使用本地 `qwen2.5:7b`，OpenAI-compatible relay 使用 `OPENAI_BASE_URL`、`OPENAI_API_KEY` 和 `OPENAI_MODEL`。Ollama 适配器调用原生 `/api/chat`，OpenAI-compatible 适配器调用 `/v1/responses`，两者均使用结构化 JSON 输出。
+- `RuntimeSettings` 从 CLI、环境变量/`.env` 和 `config/runtime.defaults.json` 合并运行配置；Ollama 默认使用本地 `qwen2.5:7b`，OpenAI-compatible relay 使用 `OPENAI_BASE_URL`、`OPENAI_API_KEY` 和 `OPENAI_MODEL`。Ollama 适配器调用原生 `/api/chat`，OpenAI-compatible 适配器调用 `/v1/responses`；默认使用兼容性更广的 JSON object，若 relay 支持可显式启用共享 Action JSON Schema。
+- Runner 将非法候选分类为不含原文的安全类别，并可独立启用只根据当前公开 Observation 生成的动作候选提示；这些提示和推理强度都写入 trace provenance，不能与纯自主结果混合。
 - 第一版只提供本地 CLI 与 JSON/CSV 文件输出；Streamlit 延后到 Release 3。
 
 ## 更新规则

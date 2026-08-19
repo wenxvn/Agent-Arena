@@ -11,6 +11,8 @@
   "retry_count": 2,
   "retry_backoff_seconds": [1, 2],
   "enable_thinking": false,
+  "reasoning_effort": "none",
+  "response_format": "json_object",
   "model_name": "qwen3.7-plus",
   "ollama_base_url": "http://127.0.0.1:11434",
   "ollama_model": "qwen2.5:7b",

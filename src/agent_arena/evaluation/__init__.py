@@ -8,6 +8,7 @@ from agent_arena.evaluation.trace import (
     EpisodeTrace,
     EpisodeTraceHeader,
     ExperimentProvenance,
+    InvalidOutputReason,
     StepTrace,
     TraceEvent,
     read_episode_trace,
@@ -26,6 +27,7 @@ __all__ = [
     "EpisodeTraceHeader",
     "StepTrace",
     "TraceEvent",
+    "InvalidOutputReason",
     "read_episode_trace",
     "write_episode_trace",
 ]
