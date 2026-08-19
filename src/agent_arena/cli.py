@@ -9,7 +9,12 @@ from uuid import uuid4
 
 import typer
 
-from agent_arena.agents import MemoryAgent, PlannerAssistedAgent, ReactAgent
+from agent_arena.agents import (
+    CandidateSelectionAgent,
+    MemoryAgent,
+    PlannerAssistedAgent,
+    ReactAgent,
+)
 from agent_arena.config import RuntimeSettings
 from agent_arena.evaluation import (
     BenchmarkRow,
@@ -81,6 +86,33 @@ def run(
             help="Responses API 推理强度：none、low、medium、high。",
         ),
     ] = None,
+    recent_history: Annotated[
+        int,
+        typer.Option("--recent-history", min=0, help="向模型提供最近 N 步公开轨迹。"),
+    ] = 0,
+    structured_milestones: Annotated[
+        bool,
+        typer.Option("--structured-milestones", help="启用结构化公开里程碑记忆。"),
+    ] = False,
+    semantic_guard: Annotated[
+        bool,
+        typer.Option(
+            "--semantic-guard",
+            help="只依据公开 Observation 拒绝出口、可见目标和背包不合法的 Action。",
+        ),
+    ] = False,
+    stuck_recovery: Annotated[
+        bool,
+        typer.Option("--stuck-recovery", help="启用公开轨迹循环检测和恢复提醒。"),
+    ] = False,
+    candidate_actions: Annotated[
+        bool,
+        typer.Option("--candidate-actions", help="列出当前 Observation 可构造的具体 Action。"),
+    ] = False,
+    phase_context: Annotated[
+        bool,
+        typer.Option("--phase-context", help="注入由公开里程碑生成的阶段状态。"),
+    ] = False,
 ) -> None:
     """运行并保存一局受步数限制的飞船逃生实验。"""
 
@@ -94,9 +126,9 @@ def run(
         runs_dir=output_dir,
         reasoning_effort=reasoning_effort,
     )
-    if autonomous and settings.agent == "planner_assisted":
+    if autonomous and settings.agent in {"planner_assisted", "candidate_select"}:
         typer.echo(
-            "--autonomous 只适用于 react 或 memory，不能与 planner_assisted 同时使用。",
+            "--autonomous 只适用于 react 或 memory，不能与辅助 Agent 同时使用。",
             err=True,
         )
         raise typer.Exit(code=2)
@@ -113,12 +145,23 @@ def run(
         )
     episode = EpisodeRunner(
         SpaceshipEscapeEnvironment(seed=settings.seed),
-        _create_agent(settings.agent, decision_provider),
+        _create_agent(
+            settings.agent,
+            decision_provider,
+            structured_milestones=structured_milestones,
+        ),
         settings,
         on_decision_start=_real_model_step_report(settings),
         on_step_complete=_step_report(),
-        enable_runtime_feedback=not autonomous,
+        enable_runtime_feedback=not autonomous or stuck_recovery,
         enable_public_action_hints=guarded,
+        recent_history_window=recent_history,
+        enable_structured_milestones=structured_milestones,
+        enable_public_action_guard=semantic_guard,
+        enable_stuck_recovery=not autonomous or stuck_recovery,
+        enable_concrete_action_candidates=candidate_actions,
+        enable_public_phase_context=phase_context,
+        enable_candidate_selection=settings.agent == "candidate_select",
     ).run()
     episode_path = write_episode_trace(episode, settings.runs_dir)
     typer.echo(f"本局结果：{_OUTCOME_LABELS[episode.outcome]}")
@@ -154,18 +197,49 @@ def benchmark(
             help="Responses API 推理强度：none、low、medium、high。",
         ),
     ] = None,
+    recent_history: Annotated[
+        int,
+        typer.Option("--recent-history", min=0, help="向模型提供最近 N 步公开轨迹。"),
+    ] = 0,
+    structured_milestones: Annotated[
+        bool,
+        typer.Option("--structured-milestones", help="启用结构化公开里程碑记忆。"),
+    ] = False,
+    semantic_guard: Annotated[
+        bool,
+        typer.Option(
+            "--semantic-guard",
+            help="只依据公开 Observation 拒绝出口、可见目标和背包不合法的 Action。",
+        ),
+    ] = False,
+    stuck_recovery: Annotated[
+        bool,
+        typer.Option("--stuck-recovery", help="启用公开轨迹循环检测和恢复提醒。"),
+    ] = False,
+    candidate_actions: Annotated[
+        bool,
+        typer.Option("--candidate-actions", help="列出当前 Observation 可构造的具体 Action。"),
+    ] = False,
+    phase_context: Annotated[
+        bool,
+        typer.Option("--phase-context", help="注入由公开里程碑生成的阶段状态。"),
+    ] = False,
 ) -> None:
     """重复运行 Agent 对照，并写入 JSON、CSV 指标。"""
 
-    if agent is not None and agent not in {"react", "memory", "planner_assisted", "both"}:
-        typer.echo("Agent 必须是 react、memory、planner_assisted 或 both。", err=True)
+    supported_agents = {"react", "memory", "planner_assisted", "candidate_select", "both"}
+    if agent is not None and agent not in supported_agents:
+        typer.echo(
+            "Agent 必须是 react、memory、planner_assisted、candidate_select 或 both。",
+            err=True,
+        )
         raise typer.Exit(code=2)
     if autonomous and guarded:
         typer.echo("--autonomous 不能与 --guarded 同时使用。", err=True)
         raise typer.Exit(code=2)
-    if autonomous and agent == "planner_assisted":
+    if autonomous and agent in {"planner_assisted", "candidate_select"}:
         typer.echo(
-            "--autonomous 只适用于 react 或 memory，不能与 planner_assisted 同时使用。",
+            "--autonomous 只适用于 react 或 memory，不能与辅助 Agent 同时使用。",
             err=True,
         )
         raise typer.Exit(code=2)
@@ -197,15 +271,26 @@ def benchmark(
                 decision_provider = _create_decision_provider(episode_settings)
                 trace = EpisodeRunner(
                     SpaceshipEscapeEnvironment(seed=episode_settings.seed),
-                    _create_agent(episode_settings.agent, decision_provider),
+                    _create_agent(
+                        episode_settings.agent,
+                        decision_provider,
+                        structured_milestones=structured_milestones,
+                    ),
                     episode_settings,
                     on_decision_start=_real_model_step_report(
                         episode_settings,
                         prefix=f"[{episode_number}/{total_episodes}] ",
                     ),
                     on_step_complete=_step_report(prefix=f"[{episode_number}/{total_episodes}] "),
-                    enable_runtime_feedback=not autonomous,
+                    enable_runtime_feedback=not autonomous or stuck_recovery,
                     enable_public_action_hints=guarded,
+                    recent_history_window=recent_history,
+                    enable_structured_milestones=structured_milestones,
+                    enable_public_action_guard=semantic_guard,
+                    enable_stuck_recovery=not autonomous or stuck_recovery,
+                    enable_concrete_action_candidates=candidate_actions,
+                    enable_public_phase_context=phase_context,
+                    enable_candidate_selection=episode_settings.agent == "candidate_select",
                 ).run()
                 trace_path = write_episode_trace(trace, episode_settings.runs_dir)
                 rows.append(row_from_trace(read_episode_trace(trace_path), benchmark_id, len(rows)))
@@ -266,11 +351,18 @@ def _create_decision_provider(settings: RuntimeSettings) -> DecisionProvider:
     return FakeDecisionProvider(_default_fake_responses())
 
 
-def _create_agent(agent: str, provider: DecisionProvider) -> ReactAgent:
+def _create_agent(
+    agent: str,
+    provider: DecisionProvider,
+    *,
+    structured_milestones: bool = False,
+) -> ReactAgent:
     if agent == "memory":
-        return MemoryAgent(provider)
+        return MemoryAgent(provider, structured_milestones=structured_milestones)
     if agent == "planner_assisted":
         return PlannerAssistedAgent(provider)
+    if agent == "candidate_select":
+        return CandidateSelectionAgent(provider)
     return ReactAgent(provider)
 
 

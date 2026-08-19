@@ -101,4 +101,5 @@ def test_benchmark_rejects_unknown_agent(tmp_path: Path) -> None:
     result = runner.invoke(app, ["benchmark", "--agent", "unknown", "--output-dir", str(tmp_path)])
 
     assert result.exit_code == 2
-    assert "Agent 必须是 react、memory、planner_assisted 或 both。" in result.output
+    expected = "Agent 必须是 react、memory、planner_assisted、candidate_select 或 both。"
+    assert expected in result.output

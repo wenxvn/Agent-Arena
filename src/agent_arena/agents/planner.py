@@ -94,6 +94,7 @@ class PlannerAssistedAgent(MemoryAgent):
         correction: bool,
         runtime_feedback: str | None = None,
         invalid_output_reason: str | None = None,
+        recent_history: str | None = None,
     ) -> ProviderResponse:
         guidance = self._guidance(observation)
         planner_feedback = (
@@ -112,6 +113,7 @@ class PlannerAssistedAgent(MemoryAgent):
                 runtime_feedback=combined_feedback,
                 memory_data=self._render_memory_data(),
                 invalid_output_reason=invalid_output_reason,
+                recent_history=recent_history,
             )
         )
 

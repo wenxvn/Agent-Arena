@@ -10,7 +10,11 @@ from urllib.request import Request, urlopen
 
 from agent_arena.config import RuntimeSettings
 from agent_arena.llm.bailian import DecisionProviderError, ModelVerification, ModelVerificationError
-from agent_arena.llm.protocol import DecisionRequest, ProviderResponse
+from agent_arena.llm.protocol import (
+    DecisionRequest,
+    ProviderResponse,
+    candidate_selection_response_schema,
+)
 
 
 class _OllamaClient:
@@ -110,11 +114,23 @@ class OllamaDecisionProvider:
         if request.memory_data:
             messages.append({"role": "user", "content": request.memory_data})
         request_content = f"当前观察：{_observation_json(request.observation)}\n"
+        if request.output_contract == "candidate_selection":
+            request_content += (
+                '输出必须是 {"decision_reason":"...","candidate_id":"aN"}，'
+                "candidate_id 必须来自当前公开候选列表。\n"
+            )
         if request.runtime_feedback:
             request_content += f"运行时提醒（仅来自公开轨迹）：{request.runtime_feedback}\n"
+        if request.recent_history:
+            request_content += f"最近公开轨迹（仅供参考）：{request.recent_history}\n"
         request_content += correction_instruction
         messages.append({"role": "user", "content": request_content})
-        response = self._client.chat(messages, response_schema=ACTION_RESPONSE_SCHEMA)
+        schema = (
+            candidate_selection_response_schema()
+            if request.output_contract == "candidate_selection"
+            else ACTION_RESPONSE_SCHEMA
+        )
+        response = self._client.chat(messages, response_schema=schema)
         response_content = _json_content(response)
         return ProviderResponse(
             candidate=response_content,

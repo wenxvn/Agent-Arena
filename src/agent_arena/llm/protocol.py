@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Literal, Protocol
 
 from pydantic import TypeAdapter
 
@@ -18,6 +18,8 @@ class DecisionRequest:
     memory_data: str | None = None
     runtime_feedback: str | None = None
     invalid_output_reason: str | None = None
+    recent_history: str | None = None
+    output_contract: Literal["action", "candidate_selection"] = "action"
 
 
 @dataclass(frozen=True)
@@ -44,5 +46,19 @@ def decision_response_schema() -> dict[str, object]:
         "properties": {
             "decision_reason": {"type": "string", "maxLength": 280},
             "action": TypeAdapter(Action).json_schema(),
+        },
+    }
+
+
+def candidate_selection_response_schema() -> dict[str, object]:
+    """Return the compact schema used by the public candidate-selection experiment."""
+
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["decision_reason", "candidate_id"],
+        "properties": {
+            "decision_reason": {"type": "string", "maxLength": 280},
+            "candidate_id": {"type": "string", "pattern": r"^a[1-9][0-9]*$"},
         },
     }

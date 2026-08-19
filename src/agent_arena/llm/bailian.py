@@ -113,8 +113,15 @@ class BailianDecisionProvider:
         if request.memory_data:
             messages.append({"role": "user", "content": request.memory_data})
         request_content = f"当前观察：{request.observation.model_dump_json()}\n"
+        if request.output_contract == "candidate_selection":
+            request_content += (
+                '输出必须是 {"decision_reason":"...","candidate_id":"aN"}，'
+                "candidate_id 必须来自当前公开候选列表。\n"
+            )
         if request.runtime_feedback:
             request_content += f"运行时提醒（仅来自公开轨迹）：{request.runtime_feedback}\n"
+        if request.recent_history:
+            request_content += f"最近公开轨迹（仅供参考）：{request.recent_history}\n"
         request_content += correction_instruction
         messages.append({"role": "user", "content": request_content})
         response = self._client.chat.completions.create(

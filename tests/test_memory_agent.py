@@ -47,3 +47,46 @@ def test_memory_agent_sends_separate_sanitized_memory_data_and_clears_on_finish(
         pass
     else:
         raise AssertionError("finished agent must not reuse memory")
+
+
+def test_structured_milestones_are_derived_from_public_results() -> None:
+    environment = SpaceshipEscapeEnvironment()
+    observation = environment.reset(0)
+    reducer = MemoryReducer()
+    state = reducer.initialize(observation)
+
+    state = reducer.apply(
+        state,
+        LookAction(tool="look"),
+        ToolResult(status=ToolStatus.SUCCESS, reason=ToolReason.PANEL_OPENED, summary="面板已打开"),
+        observation,
+    )
+    assert state.panel_open is True
+    assert state.power_restored is False
+    assert state.authorization_code_read is False
+
+    state = reducer.apply(
+        state,
+        LookAction(tool="look"),
+        ToolResult(
+            status=ToolStatus.SUCCESS,
+            reason=ToolReason.POWER_RESTORED,
+            summary="主电源已恢复",
+        ),
+        observation,
+    )
+    assert state.power_restored is True
+
+
+def test_memory_agent_can_render_structured_milestones_as_a_separate_variable() -> None:
+    provider = FakeDecisionProvider([{}])
+    agent = MemoryAgent(provider, structured_milestones=True)
+    observation = SpaceshipEscapeEnvironment().reset(0)
+
+    agent.reset(observation)
+    agent.request(observation, correction=False)
+
+    memory_data = provider.calls[0].request.memory_data
+    assert memory_data is not None
+    assert '"panel_open":false' in memory_data
+    assert '"power_restored":false' in memory_data

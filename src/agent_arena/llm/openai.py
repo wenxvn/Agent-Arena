@@ -12,7 +12,12 @@ from pydantic import BaseModel
 
 from agent_arena.config import RuntimeSettings
 from agent_arena.llm.bailian import DecisionProviderError, ModelVerificationError
-from agent_arena.llm.protocol import DecisionRequest, ProviderResponse, decision_response_schema
+from agent_arena.llm.protocol import (
+    DecisionRequest,
+    ProviderResponse,
+    candidate_selection_response_schema,
+    decision_response_schema,
+)
 
 
 @dataclass(frozen=True)
@@ -95,15 +100,22 @@ class OpenAIDecisionProvider:
         if request.memory_data:
             input_parts.append(request.memory_data)
         input_parts.append(f"当前观察：{request.observation.model_dump_json()}")
+        if request.output_contract == "candidate_selection":
+            input_parts.append(
+                '输出必须是 {"decision_reason":"...","candidate_id":"aN"}，'
+                "candidate_id 必须来自当前公开候选列表。"
+            )
         if request.runtime_feedback:
             input_parts.append(f"运行时提醒（仅来自公开轨迹）：{request.runtime_feedback}")
+        if request.recent_history:
+            input_parts.append(f"最近公开轨迹（仅供参考）：{request.recent_history}")
         input_parts.append(correction_instruction)
         request_kwargs: dict[str, object] = {
             "model": self._settings.model_name,
             "instructions": request.system_prompt,
             "input": "\n".join(input_parts),
             "temperature": 0,
-            "text": {"format": _response_format(self._settings.response_format)},
+            "text": {"format": _response_format(self._settings.response_format, request)},
             "store": False,
         }
         if self._settings.reasoning_effort != "none":
@@ -130,12 +142,16 @@ def _correction_instruction(request: DecisionRequest) -> str:
     return "上一条输出不符合格式。请只返回规定的 JSON 结构。"
 
 
-def _response_format(mode: str) -> dict[str, object]:
+def _response_format(mode: str, request: DecisionRequest) -> dict[str, object]:
     if mode == "json_schema":
         return {
             "type": "json_schema",
             "name": "agent_decision",
             "strict": True,
-            "schema": decision_response_schema(),
+            "schema": (
+                candidate_selection_response_schema()
+                if request.output_contract == "candidate_selection"
+                else decision_response_schema()
+            ),
         }
     return {"type": "json_object"}

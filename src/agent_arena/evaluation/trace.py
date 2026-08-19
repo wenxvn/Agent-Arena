@@ -84,6 +84,14 @@ class ExperimentProvenance(BaseModel):
     base_prompt_hash: str
     runtime_feedback_enabled: bool = True
     public_action_hints_enabled: bool = False
+    recent_history_enabled: bool = False
+    recent_history_window: int = 0
+    structured_milestones_enabled: bool = False
+    public_action_guard_enabled: bool = False
+    stuck_recovery_enabled: bool = False
+    concrete_action_candidates_enabled: bool = False
+    public_phase_context_enabled: bool = False
+    candidate_selection_enabled: bool = False
     memory_schema_version: str | None = None
     memory_renderer_version: str | None = None
 

@@ -3,7 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from agent_arena.agents import ReactAgent
+from agent_arena.agents import CandidateSelectionAgent, ReactAgent
+from agent_arena.arena import action_adapter
 from agent_arena.config import RuntimeSettings
 from agent_arena.evaluation import (
     EpisodeOutcome,
@@ -12,6 +13,7 @@ from agent_arena.evaluation import (
     TraceEvent,
     write_episode_trace,
 )
+from agent_arena.evaluation.runner import PublicCandidateTracker
 from agent_arena.llm import FakeDecisionProvider
 from agent_arena.worlds import SpaceshipEscapeEnvironment
 
@@ -189,6 +191,191 @@ def test_runner_can_disable_runtime_feedback_for_autonomous_baseline() -> None:
     assert trace.provenance.runtime_feedback_enabled is False
     assert all(call.request.runtime_feedback is None for call in provider.calls)
     assert all(step.runtime_feedback is None for step in trace.steps)
+
+
+def test_runner_can_send_bounded_public_recent_history() -> None:
+    provider = FakeDecisionProvider(
+        [
+            decision({"tool": "look"}),
+            decision({"tool": "move", "destination": "corridor"}),
+            RuntimeError(),
+        ]
+    )
+    trace = EpisodeRunner(
+        SpaceshipEscapeEnvironment(),
+        ReactAgent(provider),
+        settings(),
+        recent_history_window=1,
+    ).run()
+
+    assert trace.provenance.recent_history_enabled is True
+    assert trace.provenance.recent_history_window == 1
+    assert provider.calls[0].request.recent_history is None
+    assert provider.calls[1].request.recent_history is not None
+    assert '"tool":"look"' in provider.calls[1].request.recent_history
+    assert provider.calls[2].request.recent_history is not None
+    assert '"tool":"move"' in provider.calls[2].request.recent_history
+    assert '"tool":"look"' not in provider.calls[2].request.recent_history
+
+
+def test_recent_history_is_disabled_by_default() -> None:
+    provider = FakeDecisionProvider(
+        [decision({"tool": "look"}), RuntimeError()]
+    )
+    EpisodeRunner(SpaceshipEscapeEnvironment(), ReactAgent(provider), settings()).run()
+    assert all(call.request.recent_history is None for call in provider.calls)
+
+
+def test_candidate_selection_resolves_an_opaque_public_candidate_id() -> None:
+    provider = FakeDecisionProvider(
+        [
+            {"decision_reason": "探索可达出口。", "candidate_id": "a2"},
+            RuntimeError(),
+        ]
+    )
+    trace = EpisodeRunner(
+        SpaceshipEscapeEnvironment(),
+        CandidateSelectionAgent(provider),
+        settings(),
+        enable_candidate_selection=True,
+        enable_runtime_feedback=False,
+        enable_stuck_recovery=False,
+    ).run()
+
+    assert trace.outcome is EpisodeOutcome.PROVIDER_ERROR
+    assert trace.executed_action_count == 1
+    assert trace.steps[0].action == action_adapter.validate_python(
+        {"tool": "move", "destination": "corridor"}
+    )
+    assert trace.provenance.candidate_selection_enabled is True
+    assert provider.calls[0].request.output_contract == "candidate_selection"
+    assert provider.calls[0].request.runtime_feedback is not None
+    assert "a2=move(destination=corridor)" in provider.calls[0].request.runtime_feedback
+
+
+def test_public_candidate_tracker_excludes_a_rejected_action_in_its_successor_state() -> None:
+    environment = SpaceshipEscapeEnvironment()
+    observation = environment.reset(0)
+    tracker = PublicCandidateTracker()
+    tracker.initialize(observation)
+    action = action_adapter.validate_python({"tool": "read_terminal", "target": "control_terminal"})
+    result, after = environment.step(action)
+    tracker.observe(observation, action, result, after)
+
+    identities = [candidate.action for candidate in tracker.candidates(after).values]
+    assert action not in identities
+
+
+def test_public_semantic_guard_rejects_only_publicly_invalid_actions() -> None:
+    provider = FakeDecisionProvider(
+        [
+            decision({"tool": "move", "destination": "escape_pod"}),
+            decision({"tool": "move", "destination": "corridor"}),
+            RuntimeError(),
+        ]
+    )
+    trace = EpisodeRunner(
+        SpaceshipEscapeEnvironment(),
+        ReactAgent(provider),
+        settings(),
+        enable_public_action_guard=True,
+        enable_runtime_feedback=False,
+        enable_stuck_recovery=False,
+    ).run()
+
+    assert trace.provenance.public_action_guard_enabled is True
+    assert trace.executed_action_count == 1
+    assert trace.rejected_action_count == 1
+    assert trace.steps[0].event is TraceEvent.ACTION_REJECTED
+    assert trace.steps[0].result is None
+    assert "available_exits" in (trace.steps[0].summary or "") or trace.steps[0].runtime_feedback
+    assert trace.steps[1].event is TraceEvent.ACTION_VALIDATED
+
+
+def test_public_semantic_guard_has_a_bounded_decision_budget() -> None:
+    provider = FakeDecisionProvider(
+        [decision({"tool": "move", "destination": "escape_pod"})] * 3
+    )
+    trace = EpisodeRunner(
+        SpaceshipEscapeEnvironment(),
+        ReactAgent(provider),
+        settings(step_limit=3),
+        enable_public_action_guard=True,
+    ).run()
+
+    assert trace.outcome is EpisodeOutcome.STEP_LIMIT
+    assert trace.executed_action_count == 0
+    assert trace.rejected_action_count == 3
+    assert len(provider.calls) == 3
+
+
+def test_stuck_recovery_can_be_enabled_independently_of_default_runtime_feedback() -> None:
+    provider = FakeDecisionProvider(
+        [
+            decision({"tool": "move", "destination": "escape_pod"}),
+            decision({"tool": "move", "destination": "escape_pod"}),
+            RuntimeError(),
+        ]
+    )
+    trace = EpisodeRunner(
+        SpaceshipEscapeEnvironment(),
+        ReactAgent(provider),
+        settings(),
+        enable_runtime_feedback=False,
+        enable_stuck_recovery=True,
+    ).run()
+
+    assert trace.provenance.runtime_feedback_enabled is False
+    assert trace.provenance.stuck_recovery_enabled is True
+    assert provider.calls[2].request.runtime_feedback is not None
+
+
+def test_runner_can_send_concrete_public_action_candidates() -> None:
+    provider = FakeDecisionProvider([decision({"tool": "look"}), RuntimeError()])
+    trace = EpisodeRunner(
+        SpaceshipEscapeEnvironment(),
+        ReactAgent(provider),
+        settings(step_limit=1),
+        enable_concrete_action_candidates=True,
+        enable_runtime_feedback=False,
+        enable_stuck_recovery=False,
+    ).run()
+
+    assert trace.provenance.concrete_action_candidates_enabled is True
+    feedback = provider.calls[0].request.runtime_feedback
+    assert feedback is not None
+    assert "look()" in feedback
+    assert "move(destination=corridor)" in feedback
+    assert "read_terminal(target=control_terminal)" in feedback
+
+
+def test_runner_can_send_public_phase_context_without_route_guidance() -> None:
+    provider = FakeDecisionProvider(
+        [
+            decision({"tool": "move", "destination": "corridor"}),
+            decision({"tool": "move", "destination": "storage_room"}),
+            decision({"tool": "inspect", "target": "storage_crate"}),
+            decision({"tool": "pickup", "item": "screwdriver"}),
+            RuntimeError(),
+        ]
+    )
+    trace = EpisodeRunner(
+        SpaceshipEscapeEnvironment(),
+        ReactAgent(provider),
+        settings(),
+        enable_public_phase_context=True,
+        enable_runtime_feedback=False,
+        enable_stuck_recovery=False,
+    ).run()
+
+    assert trace.provenance.public_phase_context_enabled is True
+    initial_feedback = provider.calls[0].request.runtime_feedback
+    assert initial_feedback is not None
+    assert "收集修理工具" in initial_feedback
+    assert "move(destination=" not in initial_feedback
+    after_pickup = provider.calls[4].request.runtime_feedback
+    assert after_pickup is not None
+    assert "replacement_fuse" in after_pickup
 
 
 def test_runner_stops_at_the_configured_environment_step_limit() -> None:
