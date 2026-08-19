@@ -30,6 +30,7 @@ from agent_arena.llm import (
     OllamaModelVerifier,
 )
 from agent_arena.llm.bailian import BailianModelVerifier, ModelVerificationError
+from agent_arena.llm.openai import OpenAIDecisionProvider, OpenAIModelVerifier
 from agent_arena.worlds import SpaceshipEscapeEnvironment
 
 app = typer.Typer(help="运行本地 Agent Arena 实验。", no_args_is_help=True)
@@ -80,7 +81,7 @@ def run(
         typer.echo("实验启动失败，请检查模型服务配置。", err=True)
         raise typer.Exit(code=2) from None
 
-    if settings.provider in {"bailian", "ollama"}:
+    if settings.provider in {"bailian", "openai", "ollama"}:
         typer.echo(
             f"真实模型实验开始：Agent={settings.agent}，seed={settings.seed}，"
             f"每局最多 {settings.step_limit} 步。"
@@ -184,17 +185,21 @@ def benchmark(
 def verify_model(
     provider: Annotated[str, typer.Option("--provider")] = "bailian",
 ) -> None:
-    """显式验证百炼或 Ollama，并只显示模型名和最终回复。"""
+    """显式验证远程 provider 或 Ollama，并只显示模型名和最终回复。"""
 
-    if provider not in {"bailian", "ollama"}:
-        typer.echo("验证 provider 必须是 ollama 或 bailian。", err=True)
+    if provider not in {"bailian", "openai", "ollama"}:
+        typer.echo("验证 provider 必须是 ollama、bailian 或 openai。", err=True)
         raise typer.Exit(code=2)
     try:
         settings = RuntimeSettings.load({"provider": provider})
         verification = (
             OllamaModelVerifier(settings).verify()
             if settings.provider == "ollama"
-            else BailianModelVerifier(settings).verify()
+            else (
+                OpenAIModelVerifier(settings).verify()
+                if settings.provider == "openai"
+                else BailianModelVerifier(settings).verify()
+            )
         )
     except (ModelVerificationError, ValueError):
         if provider == "ollama":
@@ -210,6 +215,8 @@ def verify_model(
 def _create_decision_provider(settings: RuntimeSettings) -> DecisionProvider:
     if settings.provider == "bailian":
         return BailianDecisionProvider(settings)
+    if settings.provider == "openai":
+        return OpenAIDecisionProvider(settings)
     if settings.provider == "ollama":
         return OllamaDecisionProvider(settings)
     return FakeDecisionProvider(_default_fake_responses())
@@ -228,7 +235,7 @@ def _real_model_step_report(
     *,
     prefix: str = "",
 ) -> Callable[[int, bool], None] | None:
-    if settings.provider not in {"bailian", "ollama"}:
+    if settings.provider not in {"bailian", "openai", "ollama"}:
         return None
 
     def report(step: int, correction: bool) -> None:

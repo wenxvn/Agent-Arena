@@ -17,6 +17,34 @@
 关联提交：Git commit，若有
 ```
 
+## 2026-08-19 研究状态文档同步
+
+事件：同步日常研究摘要、scope 和当前问题记录，使其反映 Release 2 已完成以及纯模型自主通关基线已完成但未通过的事实。
+
+原因：`研究总纲.md` 仍描述项目尚未创建源代码，scope 和问题记录的下一步也仍写为重新建立已完成的真实 Ollama 对照，容易使新对话从过期阶段开始工作。
+
+改动：将当前阶段改为已完成 Foundation 至 Release 2；记录 `qwen2.5:7b` 下 ReactAgent 与 MemoryAgent 各 5 局、均未成功的通用 prompt 基线；将下一步收敛为不含谜题答案的通用运行时上下文或受控短期历史实验，并保留 Streamlit、PlanningAgent 和 ReflectionAgent 的后置条件。
+
+验证：`uv run ruff check .`、`uv run mypy src` 和 `uv run pytest` 通过；pytest 共 49 项通过。
+
+下一步：为通用运行时上下文或受控短期历史建立独立技术设计和公平实验对照，不能将结果并入纯模型基线。
+
+关联提交：待提交。
+
+## 2026-08-19 Hiyo Responses provider 与自主通关复验
+
+事件：接入 Hiyo OpenAI-compatible relay 的原生 Responses API，并复验 `gpt-5.6-terra` 的辅助和纯自主逃生表现。
+
+原因：CCSwitch 配置声明该中转站使用 `wire_api = responses`；此前 Chat Completions 兼容调用虽然可连接，但纯 Agent 在错误工具反馈后频繁输出非法 Action，不能排除协议适配差异。
+
+改动：新增显式 `openai` provider，使用 `/v1/responses`、结构化 JSON 输出和 `store=false`；更新本机 `.env`、远程验证脚本及配置文档。保留 Fake 为仓库默认，避免无密钥 CI 误发真实请求。
+
+验证：`gpt-5.6-terra` 模型验证通过；`planner_assisted` seed 0/1/2 共 3 局均在 19 步成功逃生、0 次非法输出；ReactAgent 和 MemoryAgent 的通用 `--autonomous` seed 0 均在第 2 步后达到 `invalid_action_limit`。Ruff、mypy 和 52 项 pytest 通过。
+
+结论：该模型适合当前公开规划辅助演示，但尚不能作为纯自主通关模型。后续 benchmark 必须分开记录辅助与自主结果。
+
+关联提交：待提交。
+
 ## 2026-08-19 调整自主通关优先级并暂缓 14B
 
 事件：确认 ReactAgent 和 MemoryAgent 的代码实现、Fake provider 路线和公平对照测试已经完成，但真实 Ollama 的纯模型自主通关仍未完成。用户使用 Mac M5 Air，`qwen2.5:14b` 暂不继续测试。

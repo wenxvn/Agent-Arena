@@ -22,7 +22,7 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 | `src/agent_arena/arena/` | Action、Observation、WorldState、工具执行和终止规则 | LLM 调用、Agent 策略和 UI |
 | `src/agent_arena/worlds/` | 具体世界配置、房间、物品、谜题和胜利条件 | 通用 Agent Loop |
 | `src/agent_arena/agents/` | 基线策略、Memory 和未来的 Planning 或 Reflection | 世界规则和持久化格式细节 |
-| `src/agent_arena/llm/` | DecisionProvider、百炼适配器和 Fake provider | 环境状态和业务规则 |
+| `src/agent_arena/llm/` | DecisionProvider、OpenAI-compatible/Ollama/Fake 适配器 | 环境状态和业务规则 |
 | `src/agent_arena/evaluation/` | Episode Runner、Trace 持久化、指标和 benchmark | 修改 Agent 决策或世界规则 |
 | `prompts/` | 版本化的 Agent 指令模板 | 密钥和运行时配置 |
 | `src/agent_arena/ui/` | Release 3 展示世界、Trace 和指标 | 直接修改 Environment 内部状态 |
@@ -42,7 +42,7 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 - `Environment.step(action)` 返回结果和新的 Observation，不泄露完整 WorldState。
 - Runner 通过 `DecisionProvider` Protocol 注入 Fake、百炼或本地 Ollama 实现，Agent 和 Environment 不直接依赖 OpenAI SDK。
 - Trace 记录简短 `decision_reason`、Action、结果、token 和延迟，不保存完整思维链或密钥。
-- `RuntimeSettings` 从 CLI、环境变量/`.env` 和 `config/runtime.defaults.json` 合并运行配置；Ollama 默认使用本地 `qwen2.5:7b`，百炼保留 `qwen3.7-plus` 配置。Ollama 适配器调用原生 `/api/chat`，固定关闭思考并使用 JSON Schema。
+- `RuntimeSettings` 从 CLI、环境变量/`.env` 和 `config/runtime.defaults.json` 合并运行配置；Ollama 默认使用本地 `qwen2.5:7b`，OpenAI-compatible relay 使用 `OPENAI_BASE_URL`、`OPENAI_API_KEY` 和 `OPENAI_MODEL`。Ollama 适配器调用原生 `/api/chat`，OpenAI-compatible 适配器调用 `/v1/responses`，两者均使用结构化 JSON 输出。
 - 第一版只提供本地 CLI 与 JSON/CSV 文件输出；Streamlit 延后到 Release 3。
 
 ## 更新规则

@@ -82,6 +82,21 @@ def test_conflicting_bailian_keys_are_rejected_when_used(
         settings.require_bailian()
 
 
+def test_openai_provider_uses_only_the_openai_api_key(
+    isolated_defaults: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://relay.example/v1")
+    monkeypatch.setenv("OPENAI_API_KEY", "openai-key")
+    monkeypatch.setenv("DASHSCOPE_API_KEY", "different-bailian-key")
+
+    settings = RuntimeSettings.load({"provider": "openai"}, env_file=None)
+
+    base_url, api_key = settings.require_openai()
+    assert base_url == "https://relay.example/v1"
+    assert api_key.get_secret_value() == "openai-key"
+
+
 def test_retry_delays_must_match_the_retry_count(isolated_defaults: Path) -> None:
     with pytest.raises(ValueError, match="one delay"):
         RuntimeSettings.load({"retry_count": 1}, env_file=None)

@@ -57,7 +57,7 @@ class RuntimeSettings(BaseSettings):
 
     defaults_file: ClassVar[Path] = Path("config/runtime.defaults.json")
 
-    provider: Literal["fake", "bailian", "ollama"]
+    provider: Literal["fake", "bailian", "openai", "ollama"]
     world: str
     world_version: str
     agent: Literal["react", "memory", "planner_assisted"]
@@ -157,6 +157,15 @@ class RuntimeSettings(BaseSettings):
         if not self.base_url:
             raise ValueError("Bailian requires OPENAI_BASE_URL.")
         return self.base_url, self.api_key_for_bailian()
+
+    def require_openai(self) -> tuple[str, SecretStr]:
+        """Validate an OpenAI-compatible Responses API relay."""
+
+        if not self.base_url:
+            raise ValueError("OpenAI provider requires OPENAI_BASE_URL.")
+        if not self.openai_api_key:
+            raise ValueError("OpenAI provider requires OPENAI_API_KEY.")
+        return self.base_url, self.openai_api_key
 
     @property
     def selected_model_name(self) -> str:

@@ -79,7 +79,7 @@
 - 不保存完整思维链、API Key 或原始模型响应。
 - `uv run ruff check .` 通过。
 - `uv run mypy src` 通过。
-- `uv run pytest`：45 个测试全部通过。
+- `uv run pytest`：49 个测试全部通过（2026-08-19 的 `react_v12_autonomous` 基线验证）。
 - `qwen2.5:14b` 的 `verify-model` 通过，但完整逃生局结果为 `step_limit`。
 
 ## 当前验收状态
@@ -93,6 +93,12 @@
 | 终端逐步输出 | 通过 | 每一步显示理由、动作和结果 |
 | Trace 保存 | 通过 | 步骤写入 `runs/` |
 | 自动完成逃生 | 未通过 | 7B 出现重复动作并达到步数上限；14B 暂缓，不作为当前结论 |
+
+## Hiyo Responses provider 复验（2026-08-19）
+
+新增 `openai` provider，使用 `OPENAI_BASE_URL=https://codex.hiyo.top/v1` 的原生 `/v1/responses` 接口和 `gpt-5.6-terra`。模型连接验证通过，`planner_assisted` 在 seed 0/1/2 共 3 局全部于 19 步成功逃生，0 次非法输出。
+
+相同 provider、模型、seed 和 30 步预算下，ReactAgent 与 MemoryAgent 使用通用 `--autonomous` prompt 均在第 2 步后的格式修正阶段达到 `invalid_action_limit`，没有自主逃生成功。因此当前结论是“远程模型可执行公开规划建议”，不是“远程模型已具备纯自主逃生能力”。
 
 ## 2026-08-19 纯模型自主基线结果
 
@@ -109,7 +115,7 @@ ReactAgent 的典型行为是第 1 步误用 `inspect(control_terminal)`，第 2
 
 ## 建议的下一步
 
-1. 首先验证不依赖谜题攻略式提示的纯 ReactAgent 和 MemoryAgent 自主通关能力。这是当前首要未完成任务。
+1. 在当前已完成的纯模型失败基线上，设计不含谜题答案的通用运行时上下文或受控短期历史实验，并与基线使用相同模型、seed 和步数预算。
 2. 在保持通用 prompt 的前提下，分析最近历史、结构化记忆、重复动作检测各自对结果的影响。
 3. 对连续无进展动作触发运行时纠偏时，必须单独标记该实验变量，不能把它当成纯模型结果。
 4. `planner_assisted` 只作为辅助通关和演示模式，不能替代自主通关验收。

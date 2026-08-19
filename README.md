@@ -69,7 +69,7 @@ OLLAMA_BASE_URL=http://127.0.0.1:11434
 OLLAMA_MODEL=qwen2.5:7b
 ```
 
-## 使用百炼模型
+## 使用 OpenAI-compatible 远程模型
 
 真实模型调用必须显式指定，并且只在本机 `.env` 中保存密钥：
 
@@ -77,7 +77,7 @@ OLLAMA_MODEL=qwen2.5:7b
 cp .env.example .env
 ```
 
-在 `.env` 填入 `OPENAI_API_KEY` 或 `DASHSCOPE_API_KEY`。`OPENAI_BASE_URL` 和 `OPENAI_MODEL` 可保留示例值，或按你的百炼配置调整。密钥不能提交到 Git。
+在 `.env` 填入 OpenAI-compatible relay 的 `OPENAI_API_KEY`、`OPENAI_BASE_URL` 和 `OPENAI_MODEL`，并设置 `AGENT_ARENA_PROVIDER=openai`。密钥不能提交到 Git。
 
 先验证模型连接：
 
@@ -85,10 +85,10 @@ cp .env.example .env
 bash scripts/verify_model.sh
 ```
 
-再运行一局百炼实验：
+再运行一局远程实验：
 
 ```bash
-uv run agent-arena run --provider bailian --output-dir runs
+uv run agent-arena run --provider openai --agent planner_assisted --output-dir runs
 ```
 
 真实模型每次决策可能不同，因此结果可能是“成功逃离飞船”，也可能是“达到步数上限，未完成逃生”。后者表示 Agent 的探索策略尚不足，并不一定是配置或接口错误。
