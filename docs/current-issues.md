@@ -1,6 +1,6 @@
 # 当前问题记录
 
-更新时间：2026-08-19
+更新时间：2026-09-05
 
 ## 结论摘要
 
@@ -79,7 +79,7 @@
 - 不保存完整思维链、API Key 或原始模型响应。
 - `uv run ruff check .` 通过。
 - `uv run mypy src` 通过。
-- `uv run pytest`：49 个测试全部通过（2026-08-19 的 `react_v12_autonomous` 基线验证）。
+- `uv run pytest`：68 个测试全部通过（2026-09-05 的问题盘点）。
 - `qwen2.5:14b` 的 `verify-model` 通过，但完整逃生局结果为 `step_limit`。
 
 ## 当前验收状态
@@ -142,3 +142,33 @@ uv run pytest
 ```
 
 真实逃生验收的最低标准是：终端最后显示“成功逃生”，并且对应 trace 的 `outcome` 为成功，而不是“达到步数上限，未完成逃生”。
+
+## 2026-09-05 问题盘点补充
+
+以下条目区分已确认的缺口、尚未验证的行为和外部运行阻塞；未测试项不应被描述为现有缺陷。
+
+### P0：研究验收未完成
+
+1. 纯 ReactAgent 与 MemoryAgent 在 Ollama `qwen2.5:7b` 的固定五个 seed 对照中均为 0/5 成功，尚无可重复的纯模型成功样本。
+2. `planner_assisted` 的稳定成功只代表带公开规划建议的可靠性上界，不能与纯模型 trace、指标或结论混合。
+3. 尚未公开一组同时包含成功与失败的纯模型 trace；在取得可重复成功前，不能宣称自主规划验收通过。
+
+### P1：实现与实验契约缺口
+
+1. `RuntimeSettings.world` 和 `RuntimeSettings.world_version` 当前不驱动环境加载：即使传入不同值，`SpaceshipEscapeEnvironment` 仍加载 `spaceship_escape_v1 / v2-zh`。在实现真实 world selector 前，CLI/UI 不得暗示该配置已生效。
+2. `PublicLoopDetector` 的状态键缺少部分公开进展信息。已知授权码读取后的合法回程可能误报为循环；需要补充回归测试并决定使用 `available_exits`、最近公开结果或阶段 epoch 的最小修复。
+3. benchmark 尚未汇总阶段完成率、重复 Action 比例、连续 `look`、唯一公开状态数和 guidance 偏离率，无法完整执行既定实验解释规则。
+4. 每步 planner feedback 仍缺少受长度限制的 trace 摘要或 hash，导致无法在不保存完整 reasoning 的前提下复盘建议与实际动作的偏离。
+
+### P1：尚未完成验证
+
+1. `guarded` 模式是否只提供公开规则反馈、而不替模型选取或执行 Action。
+2. 规划建议被拒绝、偏离或产生非法 Action 时，Runner 的继续、纠正和终止行为。
+3. planner 的完整阶段转换，以及 `reset`、`finish`、跨 episode 的 Memory、阶段和循环检测状态清理。
+4. 所有 planner 路线表项都与当前公开 Observation 一致，且公开反馈不泄漏 WorldState 或密钥。
+
+### P2：范围与外部条件
+
+1. Streamlit、PlanningAgent、ReflectionAgent、第二 world version 和第二种模型的对照仍未交付；应在上述自主基线和变量边界稳定后推进。
+2. `qwen2.5:14b` 受本机资源限制暂缓，不纳入当前实验矩阵。
+3. 本次 Hiyo Responses 链路曾返回 `401 INVALID_API_KEY`；这是本地凭据或服务端配置的外部阻塞，不记录或输出密钥。更新有效本地配置后才可继续该 provider 的复验。

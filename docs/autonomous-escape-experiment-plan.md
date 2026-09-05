@@ -327,3 +327,15 @@ uv run agent-arena run --provider openai --agent candidate_select --seed 0 \
 2. 将公开阶段表示从布尔里程碑升级为“当前子目标 + 可接受目标类型”，并把它作为显式辅助变量单独统计。
 3. 增加公开语义 Action guard：只拒绝能由已公开阶段和 ToolResult 证明错误的 `use` 目标，不代替模型选动作。
 4. 使用 5 个固定 seed 重复 A7 组合变量；若仍不能稳定通关，应停止把它称为自主改进，转向独立 PlanningAgent 研究。
+
+## 17. 2026-09-05 实验契约缺口
+
+本次盘点确认，后续实验开始前还需关闭以下可复现性和解释性缺口：
+
+1. `world` 与 `world_version` 配置必须实际决定环境定义；当前传入任意值时仍固定加载 `spaceship_escape_v1 / v2-zh`，因此不能把配置值当作实验中的 world 变量。
+2. `PublicLoopDetector` 需增加授权码读取后合法回程的回归用例。修复只能使用公开数据，并要避免把新的循环键变成隐藏阶段泄漏。
+3. benchmark 应从 trace 计算阶段完成率、重复 Action 比例、连续 `look`、唯一公开状态数，以及 planner guidance 偏离率；这些指标用于解释失败，不得改变 Agent 决策。
+4. planner feedback 应以长度受限摘要或 hash 进入 trace provenance/步骤记录，既能复盘建议偏离，又不保存完整 reasoning 或密钥。
+5. `guarded`、规划建议偏离、非法 Action 纠错与跨 episode 生命周期均需独立回归；在验证前只能列为未测试行为。
+
+本次静态验证为 `68 passed`、Ruff 和 mypy 通过。纯模型成功率结论没有变化：尚未取得可重复成功，辅助模式仍必须独立报告。

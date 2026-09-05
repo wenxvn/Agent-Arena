@@ -368,3 +368,17 @@
 结论：阶段标签不提供从阶段到动作的桥接，不能解决自主逃生。后续停止继续堆自然语言提示变量，转向真正 PlanningAgent 或明确标记的辅助候选策略。
 
 关联提交：待提交。
+
+## 2026-09-05 当前问题盘点与实验契约登记
+
+事件：完成当前研究、配置、trace 和 benchmark 契约的只读盘点，并将未完成项写回持续文档。
+
+原因：纯模型自主通关仍未验收，需明确区分已确认的实现缺口、尚未验证的行为和辅助模式的研究边界，避免后续实验误读配置或混合结论。
+
+改动：更新 `docs/current-issues.md`、`docs/scope/scope.md` 和 `docs/autonomous-escape-experiment-plan.md`，登记固定 world 加载、循环检测回归、缺失指标、planner feedback 可复盘、生命周期测试和远程 provider 凭据阻塞。
+
+验证：只读确认传入任意 `world`/`world_version` 时环境仍加载 `spaceship_escape_v1 / v2-zh`；`uv run pytest` 为 68 passed，Ruff 和 mypy 通过。
+
+下一步：先设计并实现 world 加载契约、循环检测修复及指标补齐，再验证 guarded 和 planner 生命周期；纯模型与辅助模式继续独立统计。
+
+关联提交：待提交。

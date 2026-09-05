@@ -152,6 +152,7 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 - [ ] `qwen2.5:14b` 暂缓测试：当前 Mac M5 Air 运行资源不足，不纳入本轮实验矩阵，待更合适硬件再恢复。
 - [ ] 不同 seed、world version 和模型温度下的路线稳定性；确认 19 步不是规则或测试桩写死的固定结果。
 - [ ] 完整回归：所有 planner 路线表项都必须是当前 Observation 中的合法出口，且公开反馈不能泄漏 WorldState 或密钥。
+- [ ] 真实 world 选择：`RuntimeSettings.world` 与 `RuntimeSettings.world_version` 必须实际决定加载的环境定义；在此之前 CLI/UI 不得将它们显示为已生效的选择。
 
 ### D. 建议新增或修改
 
@@ -161,6 +162,8 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 - [ ] 做提示消融：仅公开阶段提示、阶段提示加多个候选动作、阶段提示加唯一下一动作建议，分别 benchmark。
 - [ ] 将公开规则保护与规划器辅助拆成独立实验变量；报告中同时给出“模型自主性”和“通关可靠性”两个维度。
 - [ ] 补充真实模型回归测试和最小可重复实验脚本，固定模型标签、prompt 版本、world 版本、seed 和输出目录格式。
+- [ ] 补齐 benchmark 实验指标：阶段完成率、重复 Action 比例、连续 `look`、唯一公开状态数、planner guidance 偏离率和模型拒绝建议后的成功率。
+- [ ] 为 planner feedback 写入长度受限摘要或 hash，以支持建议与实际 Action 的安全复盘。
 
 ### E. 完成判定
 
@@ -190,4 +193,4 @@ Done when: 计划和反思都有明确触发条件，并能通过 benchmark 验�
 
 ## 当前下一步
 
-Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。**B. 纯模型自主通关验收** 已建立失败基线：通用 prompt 下 ReactAgent 与 MemoryAgent 均未成功；修复终端可见性后，Hiyo `gpt-5.6-terra` 仍会在无电终端反馈中循环。当前应先比较输出格式纠错、公开动作候选和其他不含谜题答案的运行时上下文变量，并将它们与纯自主基线独立记录；随后处理 C/D 的其他实验变量，再进入 Release 3 的 Streamlit 设计。PlanningAgent 与 ReflectionAgent 仍按 Deferred 排在可重复基线之后。
+Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。**B. 纯模型自主通关验收** 已建立失败基线：通用 prompt 下 ReactAgent 与 MemoryAgent 均未成功，尚无可重复的纯模型成功样本；`planner_assisted` 的成功只作为独立可靠性上界。当前优先处理 world 配置与实际环境加载不一致、循环检测状态键和缺失的实验指标，再完成 guarded/planner 生命周期的回归验证。所有辅助变量必须与纯自主 trace 和指标分开；之后才进入 Release 3 的 Streamlit 设计。PlanningAgent 与 ReflectionAgent 仍按 Deferred 排在可重复基线之后。
