@@ -3,7 +3,7 @@
 ## 当前状态
 
 - `0001-project-architecture` 架构 spec 已确认生效，状态为 `Accepted`。
-- Release 2 的确定性 Spaceship Escape、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 对照已完成；下一步是在结果稳定后设计 Release 3 的 Streamlit 实验界面。
+- Release 2 的确定性 Spaceship Escape、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 对照已完成；PlanningAgent v1 的工程闭环已完成，下一步是运行真实模型对照并在结果稳定后设计 Reflection/Streamlit。
 - `研究总纲.md` 是新对话和日常 workflow 的研究摘要；完整产品与研究参考保留在 `总纲.md`，需要追溯细节时再阅读。
 - 当前模块结构见 `docs/architecture.md`，交付顺序和进度见 `docs/scope/scope.md`。
 - 重要阶段、决策、验证和阻塞记录在 `docs/engineering-log.md`，它不替代 scope、spec 或 Git 历史。

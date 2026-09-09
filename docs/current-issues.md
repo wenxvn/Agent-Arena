@@ -169,6 +169,6 @@ uv run pytest
 
 ### P2：范围与外部条件
 
-1. Streamlit、PlanningAgent、ReflectionAgent、第二 world version 和第二种模型的对照仍未交付；应在上述自主基线和变量边界稳定后推进。
+1. Streamlit、ReflectionAgent、第二 world version 和第二种模型的对照仍未交付；PlanningAgent v1 工程实现已交付，但真实模型对照仍需运行。
 2. `qwen2.5:14b` 受本机资源限制暂缓，不纳入当前实验矩阵。
 3. 本次 Hiyo Responses 链路曾返回 `401 INVALID_API_KEY`；这是本地凭据或服务端配置的外部阻塞，不记录或输出密钥。更新有效本地配置后才可继续该 provider 的复验。

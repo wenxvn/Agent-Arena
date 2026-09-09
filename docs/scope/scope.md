@@ -17,7 +17,8 @@
 | 6 | MemoryAgent | Release 2 | done |
 | 7 | Benchmark 与指标 | Release 2 | done |
 | 8 | Streamlit 实验界面 | Release 3 | planned |
-| 9 | PlanningAgent 与 ReflectionAgent | Deferred | planned |
+| 9 | PlanningAgent v1 | Research Core | done |
+| 10 | ReflectionAgent | Deferred | planned |
 
 ## Foundation
 
@@ -125,8 +126,9 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 
 - [ ] **Streamlit 实验界面**：选择 provider、模型、Agent、world 和 seed，启动单局或 benchmark，并查看逐步 Observation、Action、ToolResult、trace 和聚合指标。
   - 验收：UI 明确显示 Agent 类型和辅助来源；不能把 `planner_assisted` 标成纯 ReactAgent/MemoryAgent；失败、超步数和非法输出都有可见状态。
-- [ ] **PlanningAgent**：实现高层阶段规划和阶段切换，规划本身不直接调用环境、不绕过 Action schema。
-  - 验收：规划版本、阶段变化和实际 Action 可复盘；与基线在相同 seed、预算和模型下进行对照。
+- [x] **PlanningAgent v1**：实现高层子目标规划和事件触发阶段切换，规划本身不直接调用环境、不绕过 Action schema。
+  - 工程验收：规划版本、阶段变化和实际 Action 可复盘；Fake provider 5 seeds smoke benchmark 已通过。
+  - 研究验收待办：真实模型需与基线在相同 seed、预算和模型下进行对照。
 - [ ] **ReflectionAgent**：只在明确触发条件下根据失败或循环进行反思和重规划。
   - 验收：反思触发次数、输入摘要和后续动作可追踪；证明它减少失败或重复动作，而不是只增加 token。
 - [ ] **多世界、多模型对照**：至少加入第二个 world version 和第二种模型规模，避免结论只适用于单一地图和 `qwen2.5:7b`。
@@ -181,16 +183,31 @@ Done when: 可以选择 Agent 和世界，运行 episode，并查看每一步的
 
 - [ ] `/architect Streamlit 实验界面`
 
+## Research Core
+
+### 9. PlanningAgent v1 · done
+
+在保持 Environment、Observation、统一 Action schema 和 Runner 边界不变的前提下，加入事件触发的 Planner、PlanState、Executor integration、PlanMonitor、Planning Trace 和 Benchmark 指标。
+
+Done when: Planner 不读取 WorldState、不直接执行 Action；子目标完成、连续无进展和重复失败都能触发可复盘的重规划；Fake provider 和自动质量检查通过。
+
+- [x] Design it (spec): [0006](../specs/0006-planning-agent-v1/index.md)
+- [x] Build it: PlanningAgent、PlanMonitor、Planner provider contract、Trace、Benchmark 和 CLI
+- [x] Verify it: 96 项 pytest、Ruff、mypy 通过；Fake provider 5 seeds smoke benchmark 通过
+- [x] Test it: planning models、monitor、agent lifecycle、trace 和 benchmark 回归
+
+真实模型 5 seeds 对照仍需使用本地模型服务单独运行；Fake 结果不代表自主规划研究结论。
+
 ## Deferred
 
-### 9. PlanningAgent 与 ReflectionAgent · planned
+### 10. ReflectionAgent · planned
 
-在基线和 MemoryAgent 可重复比较之后，再加入高层计划、重规划和反思机制。
+在 PlanningAgent v1 的真实模型对照稳定后，再加入明确触发条件的失败反思与重规划。
 
-Done when: 计划和反思都有明确触发条件，并能通过 benchmark 验证是否减少失败和循环。
+Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证明它减少失败或重复动作，而不是只增加 token。
 
-- [ ] `/architect PlanningAgent 与 ReflectionAgent`
+- [ ] `/architect ReflectionAgent`
 
 ## 当前下一步
 
-Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。**B. 纯模型自主通关验收** 已建立失败基线：通用 prompt 下 ReactAgent 与 MemoryAgent 均未成功，尚无可重复的纯模型成功样本；`planner_assisted` 的成功只作为独立可靠性上界。当前优先处理 world 配置与实际环境加载不一致、循环检测状态键和缺失的实验指标，再完成 guarded/planner 生命周期的回归验证。所有辅助变量必须与纯自主 trace 和指标分开；之后才进入 Release 3 的 Streamlit 设计。PlanningAgent 与 ReflectionAgent 仍按 Deferred 排在可重复基线之后。
+Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。PlanningAgent v1 的工程闭环也已完成，新增 `planning` CLI Agent、事件触发重规划、计划生命周期 trace 和 benchmark v3 指标；它与 `planner_assisted` 保持独立。**B. 纯模型自主通关验收** 仍是失败基线：通用 prompt 下 ReactAgent 与 MemoryAgent 尚无可重复成功样本，PlanningAgent 的真实模型 5 seeds 还未运行。Fake smoke benchmark 只证明工程闭环，不代表模型自主能力。下一步是运行真实 Planning 对照、分析成功之外的阶段与成本指标，再进入 ReflectionAgent 和 Streamlit 的后续设计。

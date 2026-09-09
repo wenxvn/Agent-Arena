@@ -21,7 +21,7 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 |---|---|---|
 | `src/agent_arena/arena/` | Action、Observation、WorldState、工具执行和终止规则 | LLM 调用、Agent 策略和 UI |
 | `src/agent_arena/worlds/` | 具体世界配置、房间、物品、谜题和胜利条件 | 通用 Agent Loop |
-| `src/agent_arena/agents/` | 基线策略、Memory 和未来的 Planning 或 Reflection | 世界规则和持久化格式细节 |
+| `src/agent_arena/agents/` | 基线策略、Memory、Planning 和未来的 Reflection | 世界规则和持久化格式细节 |
 | `src/agent_arena/llm/` | DecisionProvider、OpenAI-compatible/Ollama/Fake 适配器 | 环境状态和业务规则 |
 | `src/agent_arena/evaluation/` | Episode Runner、Trace 持久化、指标和 benchmark | 修改 Agent 决策或世界规则 |
 | `prompts/` | 版本化的 Agent 指令模板 | 密钥和运行时配置 |
@@ -44,6 +44,8 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 - Trace 记录简短 `decision_reason`、Action、结果、token 和延迟，不保存完整思维链或密钥。
 - `RuntimeSettings` 从 CLI、环境变量/`.env` 和 `config/runtime.defaults.json` 合并运行配置；Ollama 默认使用本地 `qwen2.5:7b`，OpenAI-compatible relay 使用 `OPENAI_BASE_URL`、`OPENAI_API_KEY` 和 `OPENAI_MODEL`。Ollama 适配器调用原生 `/api/chat`，OpenAI-compatible 适配器调用 `/v1/responses`；默认使用兼容性更广的 JSON object，若 relay 支持可显式启用共享 Action JSON Schema。
 - Runner 将非法候选分类为不含原文的安全类别，并可独立启用只根据当前公开 Observation 生成的动作候选提示；这些提示和推理强度都写入 trace provenance，不能与纯自主结果混合。
+- `PlanningAgent` 在 `src/agent_arena/planning/` 中维护 episode-local `PlanState`。Planner 只接收公开 Observation、公开结果、计划状态和受限历史，输出非执行性的 `PlannerDecision`；Executor 复用统一 Action contract，`PlanMonitor` 只根据公开进度判断继续、子目标完成、无进展或重复失败。
+- Planning Trace 记录 `plan_id`、当前子目标、Planner 调用、重规划原因、监控信号、子目标完成和 Planner/Executor 成本。`planner_assisted` 仍是独立的规则路线辅助模式，不与 `planning` 结果合并。
 - 第一版只提供本地 CLI 与 JSON/CSV 文件输出；Streamlit 延后到 Release 3。
 
 ## 更新规则

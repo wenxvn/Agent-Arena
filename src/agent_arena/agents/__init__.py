@@ -2,6 +2,7 @@
 
 from agent_arena.agents.memory import MemoryAgent
 from agent_arena.agents.planner import PlannerAssistedAgent
+from agent_arena.agents.planning import PlanningAgent
 from agent_arena.agents.react import AgentDecision, ReactAgent, agent_decision_adapter
 
 __all__ = [
@@ -10,6 +11,7 @@ __all__ = [
     "CandidateSelectionDecision",
     "MemoryAgent",
     "PlannerAssistedAgent",
+    "PlanningAgent",
     "ReactAgent",
     "agent_decision_adapter",
     "candidate_selection_adapter",

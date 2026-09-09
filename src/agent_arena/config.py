@@ -60,7 +60,7 @@ class RuntimeSettings(BaseSettings):
     provider: Literal["fake", "bailian", "openai", "ollama"]
     world: str
     world_version: str
-    agent: Literal["react", "memory", "planner_assisted", "candidate_select"]
+    agent: Literal["react", "memory", "planning", "planner_assisted", "candidate_select"]
     seed: int
     runs_dir: Path
     results_dir: Path

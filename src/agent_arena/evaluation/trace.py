@@ -68,6 +68,19 @@ class StepTrace(BaseModel):
     planner_feedback: str | None = Field(default=None, max_length=500)
     planner_feedback_hash: str | None = None
     suggested_action: Action | None = None
+    plan_id: str | None = None
+    plan_version: str | None = None
+    current_subgoal: str | None = Field(default=None, max_length=240)
+    planner_called: bool = False
+    replan_reason: str | None = Field(default=None, max_length=120)
+    plan_signal: str | None = Field(default=None, max_length=120)
+    subgoal_completed: bool = False
+    planner_latency_ms: int | None = Field(default=None, ge=0)
+    planner_input_tokens: int | None = Field(default=None, ge=0)
+    planner_output_tokens: int | None = Field(default=None, ge=0)
+    executor_latency_ms: int | None = Field(default=None, ge=0)
+    executor_input_tokens: int | None = Field(default=None, ge=0)
+    executor_output_tokens: int | None = Field(default=None, ge=0)
     summary: str | None = Field(default=None, max_length=1_000)
     invalid_output_reason: InvalidOutputReason | None = None
 
@@ -103,6 +116,11 @@ class ExperimentProvenance(BaseModel):
     candidate_selection_enabled: bool = False
     memory_schema_version: str | None = None
     memory_renderer_version: str | None = None
+    planning_enabled: bool = False
+    planner_prompt_version: str | None = None
+    executor_prompt_version: str | None = None
+    plan_monitor_version: str | None = None
+    planning_policy: str | None = None
 
 
 class EpisodeTraceHeader(BaseModel):

@@ -14,6 +14,7 @@ from agent_arena.llm.protocol import (
     DecisionRequest,
     ProviderResponse,
     candidate_selection_response_schema,
+    planner_response_schema,
 )
 
 
@@ -119,6 +120,12 @@ class OllamaDecisionProvider:
                 '输出必须是 {"decision_reason":"...","candidate_id":"aN"}，'
                 "candidate_id 必须来自当前公开候选列表。\n"
             )
+        if request.plan_data:
+            request_content += f"当前计划状态（公开结构化数据）：{request.plan_data}\n"
+        if request.output_contract == "planner":
+            request_content += (
+                "你当前是 Planner，只能输出计划字段，不得输出 tool、action 或任何具体动作。\n"
+            )
         if request.runtime_feedback:
             request_content += f"运行时提醒（仅来自公开轨迹）：{request.runtime_feedback}\n"
         if request.recent_history:
@@ -128,7 +135,11 @@ class OllamaDecisionProvider:
         schema = (
             candidate_selection_response_schema()
             if request.output_contract == "candidate_selection"
-            else ACTION_RESPONSE_SCHEMA
+            else (
+                planner_response_schema()
+                if request.output_contract == "planner"
+                else ACTION_RESPONSE_SCHEMA
+            )
         )
         response = self._client.chat(messages, response_schema=schema)
         response_content = _json_content(response)

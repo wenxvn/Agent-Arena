@@ -13,6 +13,7 @@ from agent_arena.agents import (
     CandidateSelectionAgent,
     MemoryAgent,
     PlannerAssistedAgent,
+    PlanningAgent,
     ReactAgent,
 )
 from agent_arena.config import RuntimeSettings
@@ -228,10 +229,18 @@ def benchmark(
 ) -> None:
     """重复运行 Agent 对照，并写入 JSON、CSV 指标。"""
 
-    supported_agents = {"react", "memory", "planner_assisted", "candidate_select", "both"}
+    supported_agents = {
+        "react",
+        "memory",
+        "planning",
+        "planner_assisted",
+        "candidate_select",
+        "both",
+    }
     if agent is not None and agent not in supported_agents:
         typer.echo(
-            "Agent 必须是 react、memory、planner_assisted、candidate_select 或 both。",
+            "Agent 必须是 react、memory、planner_assisted、candidate_select 或 both。\n"
+            "另支持 planning。",
             err=True,
         )
         raise typer.Exit(code=2)
@@ -350,7 +359,7 @@ def _create_decision_provider(settings: RuntimeSettings) -> DecisionProvider:
         return OpenAIDecisionProvider(settings)
     if settings.provider == "ollama":
         return OllamaDecisionProvider(settings)
-    return FakeDecisionProvider(_default_fake_responses())
+    return FakeDecisionProvider(_default_fake_responses(settings.agent))
 
 
 def _create_agent(
@@ -361,6 +370,8 @@ def _create_agent(
 ) -> ReactAgent:
     if agent == "memory":
         return MemoryAgent(provider, structured_milestones=structured_milestones)
+    if agent == "planning":
+        return PlanningAgent(provider)
     if agent == "planner_assisted":
         return PlannerAssistedAgent(provider)
     if agent == "candidate_select":
@@ -413,8 +424,11 @@ def _format_action(step: StepTrace) -> str:
     return f"{tool}({arguments})" if arguments else f"{tool}()"
 
 
-def _default_fake_responses() -> list[object]:
+def _default_fake_responses(agent: str = "react") -> list[object]:
     """Provide a deterministic baseline path for a safe local CLI demonstration."""
+
+    if agent == "planning":
+        return _default_planning_fake_responses()
 
     actions = [
         {"tool": "move", "destination": "corridor"},
@@ -445,6 +459,53 @@ def _default_fake_responses() -> list[object]:
         }
         for action in actions
     ]
+
+
+def _default_planning_fake_responses() -> list[object]:
+    """Interleave generic Planner decisions and the public escape path."""
+
+    plans = [
+        {
+            "decision_reason": "先建立可公开验证的资源子目标。",
+            "current_subgoal": "获得完成后续任务所需的公开资源",
+            "success_criteria": ["inventory contains screwdriver replacement_fuse"],
+            "known_constraints": [],
+            "relevant_resources": [],
+            "unresolved_questions": ["尚未知道完成最终任务还需要哪些公开步骤"],
+        },
+        {
+            "decision_reason": "资源已满足，转向公开结果可验证的系统恢复目标。",
+            "current_subgoal": "恢复系统功能",
+            "success_criteria": ["ToolResult reason is power_restored"],
+            "known_constraints": [],
+            "relevant_resources": ["screwdriver", "replacement_fuse"],
+            "unresolved_questions": [],
+        },
+        {
+            "decision_reason": "系统已恢复，转向获取公开授权信息。",
+            "current_subgoal": "获得公开授权信息",
+            "success_criteria": ["ToolResult reason is code_read"],
+            "known_constraints": [],
+            "relevant_resources": [],
+            "unresolved_questions": [],
+        },
+        {
+            "decision_reason": "授权信息已公开，完成最终目标。",
+            "current_subgoal": "完成最终公开目标",
+            "success_criteria": ["ToolResult reason is escaped"],
+            "known_constraints": [],
+            "relevant_resources": [],
+            "unresolved_questions": [],
+        },
+    ]
+    actions = _default_fake_responses()
+    responses: list[object] = []
+    action_index = 0
+    for boundary, plan in zip((5, 11, 15, 20), plans, strict=True):
+        responses.append(plan)
+        responses.extend(actions[action_index:boundary])
+        action_index = boundary
+    return responses
 
 
 _OUTCOME_LABELS: dict[EpisodeOutcome, str] = {

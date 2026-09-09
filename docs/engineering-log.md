@@ -17,6 +17,15 @@
 关联提交：Git commit，若有
 ```
 
+## 2026-09-09 PlanningAgent v1 工程闭环完成
+
+事件：完成 PlanningAgent v1 的工程实现，形成独立的 Planner、结构化 PlanState、PlanMonitor、Executor integration、计划生命周期 Trace 和 Benchmark v3 指标。
+原因：ReactAgent、MemoryAgent 和公开规则辅助已经显示长程任务缺少稳定子目标表示，需要在不读取 WorldState、不绕过 Action schema 的前提下验证显式 Planning 变量。
+改动：新增 `src/agent_arena/planning/`、`PlanningAgent`、`planning_v1`/`planning_executor_v1` prompts；扩展 DecisionProvider 的 Planner contract；接入 Runner、Trace、Benchmark、CLI `--agent planning`；新增 0006 spec 和 Planning 专项测试。
+验证：96 项 pytest、Ruff、mypy 全部通过；Fake provider seed 0 完成 20 个 Executor Action、4 个子目标；Fake 5 seeds benchmark 全部成功并写出计划成本和生命周期指标。随后探测本机 Ollama，`verify-model` 未通过，因此没有伪造真实模型结果。
+下一步：使用真实本地模型在固定 5 seeds 下运行 React、Memory、Planning 和 `planner_assisted` 对照。Fake 成功不代表 Planning 自主能力，Reflection 和 Streamlit 继续后置。
+关联提交：PlanningAgent v1 工程提交。
+
 ## 2026-08-19 研究状态文档同步
 
 事件：同步日常研究摘要、scope 和当前问题记录，使其反映 Release 2 已完成以及纯模型自主通关基线已完成但未通过的事实。

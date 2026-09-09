@@ -17,6 +17,7 @@ from agent_arena.llm.protocol import (
     ProviderResponse,
     candidate_selection_response_schema,
     decision_response_schema,
+    planner_response_schema,
 )
 
 
@@ -105,6 +106,12 @@ class OpenAIDecisionProvider:
                 '输出必须是 {"decision_reason":"...","candidate_id":"aN"}，'
                 "candidate_id 必须来自当前公开候选列表。"
             )
+        if request.plan_data:
+            input_parts.append(f"当前计划状态（公开结构化数据）：{request.plan_data}")
+        if request.output_contract == "planner":
+            input_parts.append(
+                "你当前是 Planner，只能输出计划字段，不得输出 tool、action 或任何具体动作。"
+            )
         if request.runtime_feedback:
             input_parts.append(f"运行时提醒（仅来自公开轨迹）：{request.runtime_feedback}")
         if request.recent_history:
@@ -151,7 +158,11 @@ def _response_format(mode: str, request: DecisionRequest) -> dict[str, object]:
             "schema": (
                 candidate_selection_response_schema()
                 if request.output_contract == "candidate_selection"
-                else decision_response_schema()
+                else (
+                    planner_response_schema()
+                    if request.output_contract == "planner"
+                    else decision_response_schema()
+                )
             ),
         }
     return {"type": "json_object"}

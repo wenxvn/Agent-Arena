@@ -3,7 +3,7 @@
 **Project:** Agent Arena  
 **Feature:** PlanningAgent v1  
 **Suggested Spec:** `docs/specs/0006-planning-agent-v1/index.md`  
-**Status:** Proposed  
+**Status:** Implemented (v1 engineering scope)
 **Priority:** P0 / 下一阶段核心研究任务
 
 ---

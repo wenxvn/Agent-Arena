@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 from agent_arena.arena import Action, Observation
 from agent_arena.llm import DecisionProvider
 from agent_arena.llm.protocol import DecisionRequest, ProviderResponse
+from agent_arena.planning import PlanningMetadata
 
 
 class AgentDecision(BaseModel):
@@ -44,6 +45,30 @@ class ReactAgent:
     @property
     def suggested_action(self) -> Action | None:
         return None
+
+    @property
+    def planning_enabled(self) -> bool:
+        return False
+
+    @property
+    def planner_prompt_version(self) -> str | None:
+        return None
+
+    @property
+    def executor_prompt_version(self) -> str | None:
+        return None
+
+    @property
+    def plan_monitor_version(self) -> str | None:
+        return None
+
+    @property
+    def planning_policy(self) -> str | None:
+        return None
+
+    @property
+    def planning_metadata(self) -> PlanningMetadata:
+        return PlanningMetadata()
 
     def request(
         self,

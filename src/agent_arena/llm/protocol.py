@@ -19,7 +19,8 @@ class DecisionRequest:
     runtime_feedback: str | None = None
     invalid_output_reason: str | None = None
     recent_history: str | None = None
-    output_contract: Literal["action", "candidate_selection"] = "action"
+    output_contract: Literal["action", "candidate_selection", "planner"] = "action"
+    plan_data: str | None = None
 
 
 @dataclass(frozen=True)
@@ -60,5 +61,36 @@ def candidate_selection_response_schema() -> dict[str, object]:
         "properties": {
             "decision_reason": {"type": "string", "maxLength": 280},
             "candidate_id": {"type": "string", "pattern": r"^a[1-9][0-9]*$"},
+        },
+    }
+
+
+def planner_response_schema() -> dict[str, object]:
+    """Return the structured, non-executable Planner contract."""
+
+    bounded_text = {"type": "string", "minLength": 1, "maxLength": 240}
+    bounded_list = {
+        "type": "array",
+        "maxItems": 12,
+        "items": bounded_text,
+    }
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": [
+            "decision_reason",
+            "current_subgoal",
+            "success_criteria",
+            "known_constraints",
+            "relevant_resources",
+            "unresolved_questions",
+        ],
+        "properties": {
+            "decision_reason": {"type": "string", "minLength": 1, "maxLength": 280},
+            "current_subgoal": bounded_text,
+            "success_criteria": {**bounded_list, "minItems": 1, "maxItems": 8},
+            "known_constraints": bounded_list,
+            "relevant_resources": bounded_list,
+            "unresolved_questions": bounded_list,
         },
     }

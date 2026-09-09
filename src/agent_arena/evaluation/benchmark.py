@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import json
 import os
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from hashlib import sha256
@@ -46,6 +47,23 @@ class BenchmarkRow:
     guidance_comparable_count: int
     guidance_deviation_count: int
     guidance_deviation_rate: float | None
+    planner_call_count: int
+    replan_count: int
+    generated_subgoal_count: int
+    completed_subgoal_count: int
+    subgoal_completion_rate: float | None
+    mean_actions_per_subgoal: float | None
+    no_progress_action_count: int
+    repeated_failure_count: int
+    planner_latency_ms: int
+    executor_latency_ms: int
+    planner_input_tokens: int | None
+    planner_output_tokens: int | None
+    executor_input_tokens: int | None
+    executor_output_tokens: int | None
+    planner_tokens: int | None
+    executor_tokens: int | None
+    total_tokens: int | None
 
 
 def row_from_trace(trace: EpisodeTrace, benchmark_id: str, episode_index: int) -> BenchmarkRow:
@@ -72,6 +90,32 @@ def row_from_trace(trace: EpisodeTrace, benchmark_id: str, episode_index: int) -
         if step.suggested_action is not None and step.action is not None
     ]
     deviations = sum(step.action != step.suggested_action for step in comparable)
+    planner_calls = sum(step.planner_called for step in executed)
+    completed_subgoals = sum(step.subgoal_completed for step in executed)
+    planner_latency = sum(step.planner_latency_ms or 0 for step in executed)
+    executor_latency = sum(step.executor_latency_ms or 0 for step in executed)
+    planner_input_tokens = sum(
+        step.planner_input_tokens or 0
+        for step in executed
+        if step.planner_input_tokens is not None
+    )
+    planner_output_tokens = sum(
+        step.planner_output_tokens or 0
+        for step in executed
+        if step.planner_output_tokens is not None
+    )
+    executor_input_tokens = sum(
+        step.executor_input_tokens or 0
+        for step in executed
+        if step.executor_input_tokens is not None
+    )
+    executor_output_tokens = sum(
+        step.executor_output_tokens or 0
+        for step in executed
+        if step.executor_output_tokens is not None
+    )
+    total_input_tokens = sum(item.input_tokens or 0 for item in trace.steps)
+    total_output_tokens = sum(item.output_tokens or 0 for item in trace.steps)
     condition = {
         "world_version": trace.world_version,
         "agent": trace.agent,
@@ -96,8 +140,8 @@ def row_from_trace(trace: EpisodeTrace, benchmark_id: str, episode_index: int) -
         invalid_output_count=trace.invalid_output_count,
         rejected_action_count=trace.rejected_action_count,
         latency_ms=trace.latency_ms,
-        input_tokens=sum(item.input_tokens or 0 for item in trace.steps) or None,
-        output_tokens=sum(item.output_tokens or 0 for item in trace.steps) or None,
+        input_tokens=total_input_tokens or None,
+        output_tokens=total_output_tokens or None,
         condition_id=sha256(condition_json.encode("utf-8")).hexdigest(),
         condition_json=condition_json,
         repeated_action_ratio=repeated / len(executed) if executed else 0.0,
@@ -111,6 +155,35 @@ def row_from_trace(trace: EpisodeTrace, benchmark_id: str, episode_index: int) -
         guidance_comparable_count=len(comparable),
         guidance_deviation_count=deviations,
         guidance_deviation_rate=deviations / len(comparable) if comparable else None,
+        planner_call_count=planner_calls,
+        replan_count=max(0, planner_calls - 1),
+        generated_subgoal_count=planner_calls,
+        completed_subgoal_count=completed_subgoals,
+        subgoal_completion_rate=completed_subgoals / planner_calls if planner_calls else None,
+        mean_actions_per_subgoal=(
+            trace.executed_action_count / planner_calls if planner_calls else None
+        ),
+        no_progress_action_count=sum(step.plan_signal == "no_progress" for step in executed),
+        repeated_failure_count=sum(step.plan_signal == "repeated_failure" for step in executed),
+        planner_latency_ms=planner_latency,
+        executor_latency_ms=executor_latency,
+        planner_input_tokens=planner_input_tokens or None,
+        planner_output_tokens=planner_output_tokens or None,
+        executor_input_tokens=executor_input_tokens or None,
+        executor_output_tokens=executor_output_tokens or None,
+        planner_tokens=(
+            planner_input_tokens + planner_output_tokens
+            if planner_input_tokens or planner_output_tokens
+            else None
+        ),
+        executor_tokens=(
+            executor_input_tokens + executor_output_tokens
+            if executor_input_tokens or executor_output_tokens
+            else None
+        ),
+        total_tokens=(total_input_tokens + total_output_tokens)
+        if total_input_tokens or total_output_tokens
+        else None,
     )
 
 
@@ -128,7 +201,7 @@ def write_benchmark(rows: list[BenchmarkRow], output_dir: Path) -> tuple[Path, P
     for row in rows:
         groups.setdefault(row.condition_id, []).append(row)
     payload = {
-        "schema_version": "benchmark_v2",
+        "schema_version": "benchmark_v3",
         "benchmark_id": benchmark_id,
         "rows": [row.__dict__ for row in rows],
         "totals": {"attempted": len(rows)},
@@ -163,6 +236,26 @@ def _aggregate(rows: list[BenchmarkRow]) -> dict[str, object]:
         "mean_repeated_action_ratio": sum(row.repeated_action_ratio for row in rows) / attempted,
         "mean_max_consecutive_look": sum(row.max_consecutive_look for row in rows) / attempted,
         "mean_unique_public_states": sum(row.unique_public_states for row in rows) / attempted,
+        "mean_planner_call_count": sum(row.planner_call_count for row in rows) / attempted,
+        "mean_replan_count": sum(row.replan_count for row in rows) / attempted,
+        "mean_subgoal_completion_rate": _mean_optional(
+            row.subgoal_completion_rate for row in rows
+        ),
+        "mean_actions_per_subgoal": _mean_optional(row.mean_actions_per_subgoal for row in rows),
+        "mean_no_progress_action_count": sum(row.no_progress_action_count for row in rows)
+        / attempted,
+        "mean_repeated_failure_count": sum(row.repeated_failure_count for row in rows) / attempted,
+        "mean_planner_latency_ms": sum(row.planner_latency_ms for row in rows) / attempted,
+        "mean_executor_latency_ms": sum(row.executor_latency_ms for row in rows) / attempted,
+        "total_planner_latency_ms": sum(row.planner_latency_ms for row in rows),
+        "total_executor_latency_ms": sum(row.executor_latency_ms for row in rows),
+        "planner_input_tokens": _sum_optional(row.planner_input_tokens for row in rows),
+        "planner_output_tokens": _sum_optional(row.planner_output_tokens for row in rows),
+        "executor_input_tokens": _sum_optional(row.executor_input_tokens for row in rows),
+        "executor_output_tokens": _sum_optional(row.executor_output_tokens for row in rows),
+        "planner_tokens": _sum_optional(row.planner_tokens for row in rows),
+        "executor_tokens": _sum_optional(row.executor_tokens for row in rows),
+        "total_tokens": _sum_optional(row.total_tokens for row in rows),
         "stage_completion_rates": {
             stage: sum(bool(getattr(row, stage)) for row in rows) / attempted
             for stage in (
@@ -184,6 +277,16 @@ def _aggregate(rows: list[BenchmarkRow]) -> dict[str, object]:
             else None
         ),
     }
+
+
+def _mean_optional(values: Iterable[object]) -> float | None:
+    numbers = [value for value in values if isinstance(value, (int, float))]
+    return sum(numbers) / len(numbers) if numbers else None
+
+
+def _sum_optional(values: Iterable[object]) -> int | None:
+    numbers = [value for value in values if isinstance(value, int)]
+    return sum(numbers) if numbers else None
 
 
 def _atomic_write(destination: Path, contents: str) -> None:

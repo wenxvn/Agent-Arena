@@ -134,6 +134,11 @@ class EpisodeRunner:
                 memory_renderer_version=(
                     "memory_v1" if self._agent.name in {"memory", "planner_assisted"} else None
                 ),
+                planning_enabled=self._agent.planning_enabled,
+                planner_prompt_version=self._agent.planner_prompt_version,
+                executor_prompt_version=self._agent.executor_prompt_version,
+                plan_monitor_version=self._agent.plan_monitor_version,
+                planning_policy=self._agent.planning_policy,
             ),
         )
         steps: list[StepTrace] = []
@@ -490,6 +495,7 @@ class EpisodeRunner:
 
     def _with_guidance(self, step: StepTrace) -> StepTrace:
         feedback = self._agent.planner_feedback
+        planning = self._agent.planning_metadata
         return step.model_copy(
             update={
                 "planner_feedback": feedback,
@@ -497,6 +503,19 @@ class EpisodeRunner:
                 if feedback
                 else None,
                 "suggested_action": self._agent.suggested_action,
+                "plan_id": planning.plan_id,
+                "plan_version": planning.plan_version,
+                "current_subgoal": planning.current_subgoal,
+                "planner_called": planning.planner_called,
+                "replan_reason": planning.replan_reason,
+                "plan_signal": planning.plan_signal,
+                "subgoal_completed": planning.subgoal_completed,
+                "planner_latency_ms": planning.planner_latency_ms,
+                "planner_input_tokens": planning.planner_input_tokens,
+                "planner_output_tokens": planning.planner_output_tokens,
+                "executor_latency_ms": planning.executor_latency_ms,
+                "executor_input_tokens": planning.executor_input_tokens,
+                "executor_output_tokens": planning.executor_output_tokens,
             }
         )
 
