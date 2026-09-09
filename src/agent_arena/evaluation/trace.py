@@ -64,12 +64,21 @@ class StepTrace(BaseModel):
     input_tokens: int | None = Field(default=None, ge=0)
     output_tokens: int | None = Field(default=None, ge=0)
     runtime_feedback: str | None = Field(default=None, max_length=500)
+    next_observation: Observation | None = None
+    planner_feedback: str | None = Field(default=None, max_length=500)
+    planner_feedback_hash: str | None = None
+    suggested_action: Action | None = None
     summary: str | None = Field(default=None, max_length=1_000)
     invalid_output_reason: InvalidOutputReason | None = None
 
 
 class ExperimentProvenance(BaseModel):
     model_config = ConfigDict(frozen=True)
+    trace_contract_version: str = "legacy"
+    world: str | None = None
+    world_definition_id: str | None = None
+    world_definition_hash: str | None = None
+    max_output_tokens: int | None = None
     model_name: str
     temperature: float = 0
     enable_thinking: bool

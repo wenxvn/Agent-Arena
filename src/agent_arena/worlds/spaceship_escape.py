@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+from hashlib import sha256
 from importlib.resources import files
 from typing import Literal
 
@@ -86,6 +88,16 @@ class SpaceshipEscapeEnvironment(Environment):
         self._objects = {item.id: item for item in self.definition.objects}
         self._items = {item.id: item for item in self.definition.items}
         self._state = self._initial_state(seed)
+
+    @property
+    def identity(self) -> tuple[str, str, str, str]:
+        serialized = json.dumps(self.definition.model_dump(mode="json"), sort_keys=True)
+        return (
+            "spaceship-escape",
+            f"spaceship-escape-{self.definition.version}",
+            self.definition.world_id,
+            sha256(serialized.encode("utf-8")).hexdigest(),
+        )
 
     def reset(self, seed: int = 0) -> Observation:
         self._state = self._initial_state(seed)

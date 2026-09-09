@@ -37,6 +37,14 @@ class ReactAgent:
         path = prompt_path or self._default_prompt_path()
         self._prompt = path.read_text(encoding="utf-8")
 
+    @property
+    def planner_feedback(self) -> str | None:
+        return None
+
+    @property
+    def suggested_action(self) -> Action | None:
+        return None
+
     def request(
         self,
         observation: Observation,

@@ -69,14 +69,17 @@ def test_benchmark_writes_two_memory_episodes_in_stable_order(monkeypatch, tmp_p
     assert [row["outcome"] for row in csv_rows] == ["success", "success"]
     assert [row["agent"] for row in manifest["rows"]] == ["memory", "memory"]
     assert [row["episode_index"] for row in manifest["rows"]] == [0, 1]
-    assert manifest["aggregates"] == {
-        "attempted": 2,
-        "succeeded": 2,
-        "success_rate": 1.0,
-        "mean_steps": 20.0,
-        "mean_latency_ms": sum(int(row["latency_ms"]) for row in csv_rows) / 2,
-        "mean_invalid_output_count": 0.0,
-    }
+    assert (
+        manifest["aggregates"].items()
+        >= {
+            "attempted": 2,
+            "succeeded": 2,
+            "success_rate": 1.0,
+            "mean_steps": 20.0,
+            "mean_latency_ms": sum(int(row["latency_ms"]) for row in csv_rows) / 2,
+            "mean_invalid_output_count": 0.0,
+        }.items()
+    )
 
 
 def test_benchmark_defaults_to_react_and_memory_comparison(monkeypatch, tmp_path: Path) -> None:
@@ -90,8 +93,12 @@ def test_benchmark_defaults_to_react_and_memory_comparison(monkeypatch, tmp_path
     assert [row["agent"] for row in csv_rows] == ["react", "memory"]
     assert [row["episode_index"] for row in csv_rows] == ["0", "1"]
     assert [row["seed"] for row in csv_rows] == ["10", "10"]
-    assert manifest["aggregates"]["attempted"] == 2
-    assert manifest["aggregates"]["success_rate"] == 1.0
+    assert manifest["totals"]["attempted"] == 2
+    assert manifest["aggregates"] is None
+    assert len(manifest["conditions"]) == 2
+    assert all(
+        group["aggregates"]["success_rate"] == 1.0 for group in manifest["conditions"].values()
+    )
     assert "基准测试开始：共 2 局" in result.output
     assert "[2/2] 完成：成功逃离飞船" in result.output
     assert "[2/2] 运行记录：" in result.output

@@ -5,9 +5,9 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 
-from agent_arena.arena import Action, Observation, ToolResult
+from agent_arena.arena import Action, Observation, ToolResult, ToolStatus
 
-PublicState = tuple[str, tuple[str, ...], tuple[str, ...]]
+PublicState = str
 PublicOutcome = tuple[PublicState, str, str, str]
 
 
@@ -19,10 +19,16 @@ class PublicLoopDetector:
     _seen_rooms: set[str] = field(default_factory=set)
     _seen_outcomes: set[PublicOutcome] = field(default_factory=set)
     _recovery_mode: bool = False
+    _discoveries: set[tuple[str, str, str]] = field(default_factory=set)
 
     def initialize(self, observation: Observation) -> None:
         """Start a trajectory using only the reset Observation."""
 
+        self._seen_states.clear()
+        self._seen_rooms.clear()
+        self._seen_outcomes.clear()
+        self._discoveries.clear()
+        self._recovery_mode = False
         self._remember_state(observation)
 
     def observe(
@@ -34,8 +40,21 @@ class PublicLoopDetector:
     ) -> str | None:
         """Return a public recovery hint for the next request, when needed."""
 
-        before_state = _state_key(before)
-        after_state = _state_key(after)
+        # New successful public information starts a new comparison epoch.
+        # Movement/look events do not reset history; repeating the same discovery
+        # does not reset it either, so loops remain detectable after progress.
+        discovery = (_action_key(action), result.reason.value, result.summary)
+        if (
+            result.status is ToolStatus.SUCCESS
+            and action.tool not in {"move", "look"}
+            and discovery not in self._discoveries
+        ):
+            self._discoveries.add(discovery)
+            self._seen_states.clear()
+            self._seen_outcomes.clear()
+            self._recovery_mode = False
+        before_state = public_state_key(before)
+        after_state = public_state_key(after)
         outcome = (
             before_state,
             _action_key(action),
@@ -55,7 +74,7 @@ class PublicLoopDetector:
         return self._feedback(after) if self._recovery_mode else None
 
     def _remember_state(self, observation: Observation) -> None:
-        self._seen_states.add(_state_key(observation))
+        self._seen_states.add(public_state_key(observation))
         self._seen_rooms.add(observation.current_room)
 
     def _feedback(self, observation: Observation) -> str:
@@ -70,11 +89,18 @@ class PublicLoopDetector:
         return f"{message} 请使用当前可见对象或出口选择不同的推进动作。"
 
 
-def _state_key(observation: Observation) -> PublicState:
-    return (
-        observation.current_room,
-        observation.visible_objects,
-        observation.inventory,
+def public_state_key(observation: Observation) -> PublicState:
+    """Canonical persistent public state; the latest result is an event."""
+    return json.dumps(
+        {
+            "room": observation.current_room,
+            "description": observation.description,
+            "objects": sorted(observation.visible_objects),
+            "inventory": sorted(observation.inventory),
+            "exits": sorted(observation.available_exits),
+        },
+        ensure_ascii=False,
+        sort_keys=True,
     )
 
 

@@ -10,6 +10,11 @@ from agent_arena.arena.models import Action, Observation, ToolResult
 class Environment(ABC):
     """Executes validated actions while keeping world state private."""
 
+    @property
+    @abstractmethod
+    def identity(self) -> tuple[str, str, str, str]:
+        """Return world selector, public version, definition id and definition hash."""
+
     @abstractmethod
     def reset(self, seed: int = 0) -> Observation:
         """Restore the environment to its deterministic initial state."""

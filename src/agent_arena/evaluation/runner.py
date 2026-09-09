@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from collections.abc import Callable
 from dataclasses import dataclass
+from hashlib import sha256
 from time import perf_counter
 
 from pydantic import ValidationError
@@ -32,6 +33,7 @@ from agent_arena.evaluation.trace import (
     TraceEvent,
 )
 from agent_arena.llm.protocol import ProviderResponse
+from agent_arena.safety import sanitize_text
 
 
 class EpisodeRunner:
@@ -74,23 +76,45 @@ class EpisodeRunner:
     def run(self) -> EpisodeTrace:
         """Return a terminal trace for one reset world instance."""
 
+        world, world_version, definition_id, definition_hash = self._environment.identity
+        if (self._settings.world, self._settings.world_version) != (world, world_version):
+            raise ValueError("运行配置与实际环境身份不一致。")
         observation = self._environment.reset(self._settings.seed)
         self._agent.reset(observation)
         trace_header = EpisodeTrace.start(
-            world_version=self._settings.world_version,
+            world_version=world_version,
             seed=self._settings.seed,
             agent=self._agent.name,
             prompt_version=self._agent.prompt_version,
             provider=self._settings.provider,
             provenance=ExperimentProvenance(
-                model_name=self._settings.selected_model_name,
-                enable_thinking=self._settings.enable_thinking,
+                trace_contract_version="experiment_v2",
+                world=world,
+                world_definition_id=definition_id,
+                world_definition_hash=definition_hash,
+                max_output_tokens=(
+                    self._settings.ollama_max_output_tokens
+                    if self._settings.provider == "ollama"
+                    else None
+                ),
+                model_name=(
+                    "fake-scripted"
+                    if self._settings.provider == "fake"
+                    else self._settings.selected_model_name
+                ),
+                enable_thinking=(
+                    False if self._settings.provider == "ollama" else self._settings.enable_thinking
+                ),
                 request_timeout_seconds=self._settings.request_timeout_seconds,
                 retry_count=self._settings.retry_count,
                 retry_backoff_seconds=tuple(self._settings.retry_backoff_seconds),
                 step_limit=self._settings.step_limit,
                 reasoning_effort=self._settings.reasoning_effort,
-                response_format=self._settings.response_format,
+                response_format=(
+                    "json_schema"
+                    if self._settings.provider == "ollama"
+                    else self._settings.response_format
+                ),
                 provider_request_version="decision_request_v1",
                 base_prompt_version=self._agent.base_prompt_version,
                 base_prompt_hash=self._agent.base_prompt_hash,
@@ -137,6 +161,7 @@ class EpisodeRunner:
         recent_history: list[tuple[Observation, Action, ToolResult]] = []
 
         while decision_attempts < self._settings.step_limit:
+            corrected = False
             candidates = candidate_tracker.candidates(observation)
             request_feedback = runtime_feedback
             if self._enable_candidate_selection:
@@ -208,6 +233,7 @@ class EpisodeRunner:
                         summary="已请求模型按规定格式重新输出决策。",
                     )
                 )
+                corrected = True
                 if self._on_decision_start:
                     self._on_decision_start(executed_actions + 1, True)
                 (
@@ -278,6 +304,7 @@ class EpisodeRunner:
                     runtime_feedback = guard_error
                     guarded_step = StepTrace(
                         event=TraceEvent.ACTION_REJECTED,
+                        correction=corrected,
                         observation=observation,
                         decision_reason=decision.decision_reason,
                         action=decision.action,
@@ -287,6 +314,7 @@ class EpisodeRunner:
                         runtime_feedback=guard_error,
                         summary="公开动作校验拒绝了该 Action；环境未执行。",
                     )
+                    guarded_step = self._with_guidance(guarded_step)
                     steps.append(guarded_step)
                     if self._on_step_complete:
                         self._on_step_complete(guarded_step)
@@ -319,15 +347,20 @@ class EpisodeRunner:
                 event = TraceEvent.ACTION_VALIDATED
             completed_step = StepTrace(
                 event=event,
+                correction=corrected,
                 observation=decision_observation,
                 decision_reason=decision.decision_reason,
                 action=decision.action,
                 result=result,
+                next_observation=observation,
                 latency_ms=latency_ms,
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
-                runtime_feedback=runtime_feedback,
+                runtime_feedback=(
+                    sanitize_text(runtime_feedback, max_length=500) if runtime_feedback else None
+                ),
             )
+            completed_step = self._with_guidance(completed_step)
             steps.append(completed_step)
             if self._on_step_complete:
                 self._on_step_complete(completed_step)
@@ -415,8 +448,8 @@ class EpisodeRunner:
             raise ValueError("Candidate id is not in the current public candidate set.")
         return AgentDecision(decision_reason=selection.decision_reason, action=action)
 
-    @staticmethod
     def _invalid_event(
+        self,
         observation: Observation,
         *,
         correction: bool,
@@ -425,30 +458,46 @@ class EpisodeRunner:
         output_tokens: int | None,
         invalid_output_reason: InvalidOutputReason | None,
     ) -> StepTrace:
-        return StepTrace(
-            event=TraceEvent.ACTION_INVALID,
-            observation=observation,
-            correction=correction,
-            latency_ms=latency_ms,
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            summary="模型输出不符合决策格式。",
-            invalid_output_reason=invalid_output_reason,
+        return self._with_guidance(
+            StepTrace(
+                event=TraceEvent.ACTION_INVALID,
+                observation=observation,
+                correction=correction,
+                latency_ms=latency_ms,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                summary="模型输出不符合决策格式。",
+                invalid_output_reason=invalid_output_reason,
+            )
         )
 
-    @staticmethod
     def _provider_error_event(
+        self,
         observation: Observation,
         *,
         correction: bool,
         latency_ms: int,
     ) -> StepTrace:
-        return StepTrace(
-            event=TraceEvent.PROVIDER_ERROR,
-            observation=observation,
-            correction=correction,
-            latency_ms=latency_ms,
-            summary="模型服务请求失败。",
+        return self._with_guidance(
+            StepTrace(
+                event=TraceEvent.PROVIDER_ERROR,
+                observation=observation,
+                correction=correction,
+                latency_ms=latency_ms,
+                summary="模型服务请求失败。",
+            )
+        )
+
+    def _with_guidance(self, step: StepTrace) -> StepTrace:
+        feedback = self._agent.planner_feedback
+        return step.model_copy(
+            update={
+                "planner_feedback": feedback,
+                "planner_feedback_hash": sha256(feedback.encode("utf-8")).hexdigest()
+                if feedback
+                else None,
+                "suggested_action": self._agent.suggested_action,
+            }
         )
 
     def _complete(
@@ -502,7 +551,7 @@ def _classify_invalid_candidate(candidate: object) -> InvalidOutputReason:
         "use": ("item", "target"),
         "read_terminal": ("target",),
     }
-    if tool not in required_arguments:
+    if not isinstance(tool, str) or tool not in required_arguments:
         return InvalidOutputReason.UNKNOWN_TOOL
     required = required_arguments[tool]
     if any(argument not in action for argument in required):

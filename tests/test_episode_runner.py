@@ -93,7 +93,7 @@ def test_runner_completes_the_public_escape_path_and_records_decision_observatio
     assert trace.steps[0].action.tool == "move"
     assert trace.steps[0].input_tokens is None
     assert trace.steps[0].output_tokens is None
-    assert trace.provenance.model_name == "qwen3.7-plus"
+    assert trace.provenance.model_name == "fake-scripted"
     assert trace.provenance.step_limit == 30
     assert len(trace.provenance.base_prompt_hash) == 64
     assert trace.provenance.base_prompt_version == "react_v12_autonomous"

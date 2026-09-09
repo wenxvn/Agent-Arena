@@ -6,9 +6,17 @@ import re
 from pathlib import Path
 
 from agent_arena.agents.memory import MemoryAgent
-from agent_arena.arena import Action, Observation, ToolReason, ToolResult, ToolStatus
+from agent_arena.arena import (
+    Action,
+    Observation,
+    ToolReason,
+    ToolResult,
+    ToolStatus,
+    action_adapter,
+)
 from agent_arena.llm import DecisionProvider
 from agent_arena.llm.protocol import DecisionRequest, ProviderResponse
+from agent_arena.safety import sanitize_text
 
 
 class PlannerAssistedAgent(MemoryAgent):
@@ -54,6 +62,7 @@ class PlannerAssistedAgent(MemoryAgent):
             "escape_pod": "reactor_room",
         },
         "escape_pod": {
+            "reactor_room": "reactor_room",
             "control_room": "reactor_room",
             "storage_room": "reactor_room",
             "maintenance_room": "reactor_room",
@@ -64,6 +73,7 @@ class PlannerAssistedAgent(MemoryAgent):
         super().__init__(provider, prompt_path or self._planner_prompt_path())
         self._power_restored = False
         self._authorization_code: str | None = None
+        self._planner_feedback: str | None = None
 
     def _default_prompt_path(self) -> Path:
         return self._planner_prompt_path()
@@ -72,6 +82,7 @@ class PlannerAssistedAgent(MemoryAgent):
         super().reset(observation)
         self._power_restored = False
         self._authorization_code = None
+        self._planner_feedback = None
 
     def observe(self, action: Action, result: object, observation: Observation) -> None:
         super().observe(action, result, observation)
@@ -86,6 +97,20 @@ class PlannerAssistedAgent(MemoryAgent):
         super().finish(outcome)
         self._power_restored = False
         self._authorization_code = None
+        self._planner_feedback = None
+
+    @property
+    def planner_feedback(self) -> str | None:
+        return self._planner_feedback
+
+    @property
+    def suggested_action(self) -> Action | None:
+        # Parse only this program's bounded template, never provider output.
+        match = re.search(r"建议下一动作：(\w+)\(([^)]*)\)", self._planner_feedback or "")
+        if match is None:
+            return None
+        arguments = dict(part.split("=", 1) for part in match[2].split(",") if part)
+        return action_adapter.validate_python({"tool": match[1], **arguments})
 
     def request(
         self,
@@ -102,6 +127,8 @@ class PlannerAssistedAgent(MemoryAgent):
             "不是隐藏状态，也不代替你执行动作）：\n"
             f"{guidance}"
         )
+        self._planner_feedback = sanitize_text(planner_feedback, max_length=500)
+        planner_feedback = self._planner_feedback
         combined_feedback = (
             f"{runtime_feedback}\n{planner_feedback}" if runtime_feedback else planner_feedback
         )
@@ -151,10 +178,7 @@ class PlannerAssistedAgent(MemoryAgent):
         if self._authorization_code is None:
             if observation.current_room == "control_room":
                 if "control_terminal" in observation.visible_objects:
-                    return (
-                        "阶段=读取授权码。建议下一动作："
-                        "read_terminal(target=control_terminal)。"
-                    )
+                    return "阶段=读取授权码。建议下一动作：read_terminal(target=control_terminal)。"
             return self._route_guidance(observation, "control_room", "读取授权码")
 
         if observation.current_room == "escape_pod":
@@ -172,7 +196,7 @@ class PlannerAssistedAgent(MemoryAgent):
         if destination:
             return (
                 f"阶段={phase}。沿当前 Observation 的 available_exits 向 {target} 推进；"
-                f"优先选择 {destination}（若可达）。"
+                "只选择当前公开的合法出口。"
             )
         return f"阶段={phase}。当前已到达目标房间，优先处理 visible_objects 中的新目标。"
 

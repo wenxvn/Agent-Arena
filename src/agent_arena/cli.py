@@ -36,7 +36,7 @@ from agent_arena.llm import (
 )
 from agent_arena.llm.bailian import BailianModelVerifier, ModelVerificationError
 from agent_arena.llm.openai import OpenAIDecisionProvider, OpenAIModelVerifier
-from agent_arena.worlds import SpaceshipEscapeEnvironment
+from agent_arena.worlds import SpaceshipEscapeEnvironment, create_environment
 
 app = typer.Typer(help="运行本地 Agent Arena 实验。", no_args_is_help=True)
 
@@ -132,6 +132,7 @@ def run(
             err=True,
         )
         raise typer.Exit(code=2)
+    environment = _load_environment(settings)
     try:
         decision_provider = _create_decision_provider(settings)
     except ValueError:
@@ -144,7 +145,7 @@ def run(
             f"每局最多 {settings.step_limit} 步。"
         )
     episode = EpisodeRunner(
-        SpaceshipEscapeEnvironment(seed=settings.seed),
+        environment,
         _create_agent(
             settings.agent,
             decision_provider,
@@ -244,6 +245,7 @@ def benchmark(
         )
         raise typer.Exit(code=2)
     settings = _load_settings(provider=provider, reasoning_effort=reasoning_effort)
+    _load_environment(settings)
     benchmark_id = str(uuid4())
     rows: list[BenchmarkRow] = []
     try:
@@ -270,7 +272,7 @@ def benchmark(
                 )
                 decision_provider = _create_decision_provider(episode_settings)
                 trace = EpisodeRunner(
-                    SpaceshipEscapeEnvironment(seed=episode_settings.seed),
+                    _load_environment(episode_settings),
                     _create_agent(
                         episode_settings.agent,
                         decision_provider,
@@ -451,3 +453,11 @@ _OUTCOME_LABELS: dict[EpisodeOutcome, str] = {
     EpisodeOutcome.INVALID_ACTION_LIMIT: "连续输出格式错误，实验已停止",
     EpisodeOutcome.PROVIDER_ERROR: "模型服务请求失败，实验已停止",
 }
+
+
+def _load_environment(settings: RuntimeSettings) -> SpaceshipEscapeEnvironment:
+    try:
+        return create_environment(settings.world, settings.world_version, seed=settings.seed)
+    except ValueError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=2) from None
