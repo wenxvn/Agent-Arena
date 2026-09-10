@@ -1,6 +1,6 @@
 # 本地模型通关现状与复现记录
 
-更新时间：2026-08-18
+更新时间：2026-09-10
 
 ## 结论
 
@@ -147,12 +147,12 @@ OLLAMA_MODEL=qwen2.5:7b uv run agent-arena benchmark \
 
 ## 仍需完成的任务
 
-- 修正 `PublicLoopDetector` 的状态键和误报测试，避免合法回程被当成重复动作。
-- 单独实现并评估真正的公开规则保护模式 `guarded`，与规划辅助模式分开比较。
-- **完成不依赖谜题攻略式提示的纯模型自主通关验收**：分别运行 ReactAgent 和 MemoryAgent，使用通用 prompt、相同 seed 和预算，公开成功与失败 trace。
-- 继续测量纯 ReactAgent/MemoryAgent 的失败率，不把辅助结果当成纯模型能力。
+- **完成纯模型自主通关验收**：ReactAgent、MemoryAgent 和 PlanningAgent 当前固定 5 seeds 均为 0/5，仍需取得至少一组可重复成功并公开成功与失败 trace。
+- 单独评估真实模型下的 `guarded`、规划建议偏离和非法 Action 纠错，继续与规划辅助模式分开比较。
+- 分析 PlanningAgent 的 5 局真实 trace，重点确认高层子目标为何没有转化为移动、观察和工具动作。
+- 完成单变量消融：最近历史、结构化记忆、循环恢复、Planner trigger/PlanState 和提示表示。
 - 完成 Release 3 的 Streamlit 实验界面。
-- 后续再考虑独立的 PlanningAgent、ReflectionAgent、多世界和更多模型对照。
+- 后续再考虑 ReflectionAgent、多世界和更多模型对照。
 
 `qwen2.5:14b` 因当前 Mac M5 Air 的运行资源限制暂缓测试，不纳入本轮自主通关实验矩阵。
 

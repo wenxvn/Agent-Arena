@@ -1,6 +1,6 @@
 # 自主逃生失败分析与复现实验设计
 
-更新时间：2026-08-19
+更新时间：2026-09-10
 
 ## 1. 目的与边界
 
@@ -21,6 +21,7 @@
 | `reasoning_effort=high` | 未改变循环 | 只增加执行步数，没有改变任务分解 |
 | `guarded` | 未完成 | 能进入储藏室，但因 `missing_argument` 终止 |
 | `planner_assisted` | 3/3 成功 | 固定 19 步完成，证明环境和 provider 链路可用 |
+| PlanningAgent v1 | 0/5 成功 | 平均 30 步、28 次 Planner 调用、子目标完成率 0%，持续执行合法但无进展的 `look` |
 
 环境中曾存在错误终端动作导致终端永久消失的问题，已在 `c2eeca1` 修复。修复后仍然循环，因此该 bug 不再是当前主要原因。
 
@@ -328,14 +329,22 @@ uv run agent-arena run --provider openai --agent candidate_select --seed 0 \
 3. 增加公开语义 Action guard：只拒绝能由已公开阶段和 ToolResult 证明错误的 `use` 目标，不代替模型选动作。
 4. 使用 5 个固定 seed 重复 A7 组合变量；若仍不能稳定通关，应停止把它称为自主改进，转向独立 PlanningAgent 研究。
 
-## 17. 2026-09-05 实验契约缺口
+## 17. 2026-09-05 实验契约缺口（已关闭）
 
-本次盘点确认，后续实验开始前还需关闭以下可复现性和解释性缺口：
+本次盘点确认的工程缺口已在 `a308dd5` 和 `07f7457` 中关闭；以下保留为变更记录：
 
-1. `world` 与 `world_version` 配置必须实际决定环境定义；当前传入任意值时仍固定加载 `spaceship_escape_v1 / v2-zh`，因此不能把配置值当作实验中的 world 变量。
-2. `PublicLoopDetector` 需增加授权码读取后合法回程的回归用例。修复只能使用公开数据，并要避免把新的循环键变成隐藏阶段泄漏。
-3. benchmark 应从 trace 计算阶段完成率、重复 Action 比例、连续 `look`、唯一公开状态数，以及 planner guidance 偏离率；这些指标用于解释失败，不得改变 Agent 决策。
-4. planner feedback 应以长度受限摘要或 hash 进入 trace provenance/步骤记录，既能复盘建议偏离，又不保存完整 reasoning 或密钥。
-5. `guarded`、规划建议偏离、非法 Action 纠错与跨 episode 生命周期均需独立回归；在验证前只能列为未测试行为。
+1. `world` 与 `world_version` 已由 `create_environment` 实际驱动并拒绝未知组合。
+2. `PublicLoopDetector` 已增加公开出口等进展信息及合法回程回归用例。
+3. benchmark 已补充阶段完成率、重复 Action 比例、连续 `look`、唯一公开状态数和 planner guidance 偏离率。
+4. planner feedback 已以长度受限摘要和 hash 进入 trace，不保存完整 reasoning 或密钥。
+5. `guarded`、规划建议偏离、非法 Action 纠错与跨 episode 生命周期已有工程回归；真实模型行为仍待单独验证。
 
-本次静态验证为 `68 passed`、Ruff 和 mypy 通过。纯模型成功率结论没有变化：尚未取得可重复成功，辅助模式仍必须独立报告。
+本次工程回归为 `96 passed`、Ruff 和 mypy 通过。纯模型成功率结论没有变化：尚未取得可重复成功，辅助模式仍必须独立报告。
+
+## 18. 2026-09-10 PlanningAgent v1 真实对照
+
+使用 `qwen2.5:7b`、`spaceship-escape-v2-zh`、temperature 0、30 步上限、seed 0 至 4 和 `--autonomous` 运行 PlanningAgent。
+
+结果：5 局均为 `step_limit`，成功率 0%；平均重复动作比例 93.3%、连续 `look` 26 次、唯一公开状态 1 个、Planner 调用 28 次、子目标完成率 0%、总 token 141,445。真实结果没有证明显式 Planning 带来收益，但明确显示当前失败发生在高层子目标到有效移动/工具动作的桥接阶段。
+
+结果文件：`/tmp/agent-arena-planning-real-5/benchmark_20260910T004317Z_planning_5-seeds_5-episodes_16921bb2.json`。

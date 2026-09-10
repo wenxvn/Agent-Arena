@@ -136,36 +136,37 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 
 ### B. 纯模型自主通关验收（当前首要未完成任务）
 
-这项任务必须证明模型在不依赖 Spaceship Escape 谜题攻略式提示、不使用 `planner_assisted` 或 `guarded` 引导的情况下，仅根据公开 Observation、历史和环境反馈完成任务。当前已有 ReactAgent 和 MemoryAgent 的实现与 Fake provider 对照测试，但真实 Ollama 的自主通关验收尚未完成。
+这项任务必须证明模型在不依赖 Spaceship Escape 谜题攻略式提示、不使用 `planner_assisted` 或 `guarded` 引导的情况下，仅根据公开 Observation、历史和环境反馈完成任务。当前 ReactAgent、MemoryAgent 和 PlanningAgent 均有实现与 Fake provider 对照测试；真实 Ollama 对照已覆盖 React、Memory、Planning，但尚未取得可重复的纯模型成功。
 
 - [x] ReactAgent + Ollama `qwen2.5:7b`，使用通用 prompt，不使用 planner feedback 或 `guarded` 公开规则保护。
 - [x] MemoryAgent + Ollama `qwen2.5:7b`，保持与 ReactAgent 相同的模型、seed、预算和通用 prompt，只增加结构化记忆。
 - [x] ReactAgent 和 MemoryAgent 均使用通用 prompt 完成 5 局真实 Ollama 对照，关闭 planner feedback 和循环提醒。
 - [x] 每局记录并比较成功率、步数、重复或拒绝动作、非法输出、token 使用量和耗时。
+- [x] PlanningAgent 使用相同 world、模型、seed、temperature 和 step limit 完成 5 局真实 Ollama 对照；结果为 0/5 成功，平均 30 步，子目标完成率 0%。
 - [x] 纯模型、`guarded` 和 `planner_assisted` 结果保持独立标记。
-- [ ] 公开失败 trace，并确认至少一组纯模型结果可以重复成功；本轮 10 局均未成功，自主通关验收仍未通过。
+- [ ] 公开失败 trace，并确认至少一组纯模型结果可以重复成功；本轮 React、Memory、Planning 均未成功，自主通关验收仍未通过。
 
 ### C. 尚未测试的行为
 
-- [ ] `guarded` 公开规则保护模式：验证它只提供公开规则反馈，不替模型选择或执行 Action。
+- [x] `guarded` 公开规则保护模式：已通过 Fake contract test 验证它只提供公开规则反馈，不替模型选择或执行 Action；真实模型行为仍需对照。
 - [ ] 规划建议被模型拒绝、偏离或返回非法 Action 时，Runner 是否正确继续、重试或终止。
-- [ ] planner 的阶段转换：覆盖 `POWER_RESTORED`、`CODE_READ`、回到控制终端和最终 `finish`。
-- [ ] `reset`、`finish` 以及跨 episode 的 Memory、阶段和循环检测状态清理。
+- [x] planner 的阶段转换：Fake provider 已覆盖 `POWER_RESTORED`、`CODE_READ`、回到控制终端和最终 `finish`；真实模型路线仍需验证。
+- [x] `reset`、`finish` 以及跨 episode 的 Memory、阶段和循环检测状态清理：已有 PlanningAgent lifecycle 回归测试。
 - [ ] `qwen2.5:14b` 暂缓测试：当前 Mac M5 Air 运行资源不足，不纳入本轮实验矩阵，待更合适硬件再恢复。
 - [ ] 不同 seed、world version 和模型温度下的路线稳定性；确认 19 步不是规则或测试桩写死的固定结果。
-- [ ] 完整回归：所有 planner 路线表项都必须是当前 Observation 中的合法出口，且公开反馈不能泄漏 WorldState 或密钥。
-- [ ] 真实 world 选择：`RuntimeSettings.world` 与 `RuntimeSettings.world_version` 必须实际决定加载的环境定义；在此之前 CLI/UI 不得将它们显示为已生效的选择。
+- [x] 完整回归：planner-assisted 路线只使用当前公开出口，且 contract test 验证公开反馈不泄漏 WorldState 或密钥。
+- [x] 真实 world 选择：`RuntimeSettings.world` 与 `RuntimeSettings.world_version` 通过 `create_environment` 驱动加载，并拒绝未知组合。
 
 ### D. 建议新增或修改
 
-- [ ] 修正 `PublicLoopDetector`：公开状态应包含 `available_exits`、`last_action_result` 或公开阶段 epoch，避免授权码读取后合法回程被误报为循环。
-- [ ] 将每步 planner feedback 以长度受限文本或 hash 写入 trace，支持复盘且不记录完整思维链或密钥。
-- [ ] 增加 guidance 偏离率指标：比较 planner 建议与模型实际 Action，并统计模型拒绝建议后的成功率。
+- [x] 修正 `PublicLoopDetector`：公开状态已包含 `available_exits` 等进展信息，并有合法回程回归测试。
+- [x] 将每步 planner feedback 以长度受限文本或 hash 写入 trace，支持复盘且不记录完整思维链或密钥。
+- [x] 增加 guidance 偏离率指标：benchmark 已比较 planner 建议与模型实际 Action，并统计偏离后的成功率。
 - [ ] 做提示消融：仅公开阶段提示、阶段提示加多个候选动作、阶段提示加唯一下一动作建议，分别 benchmark。
-- [ ] 将公开规则保护与规划器辅助拆成独立实验变量；报告中同时给出“模型自主性”和“通关可靠性”两个维度。
+- [x] 将公开规则保护与规划器辅助拆成独立实验变量；trace provenance 和 benchmark 已分开记录“模型自主性”和“通关可靠性”。
 - [ ] 补充真实模型回归测试和最小可重复实验脚本，固定模型标签、prompt 版本、world 版本、seed 和输出目录格式。
-- [ ] 补齐 benchmark 实验指标：阶段完成率、重复 Action 比例、连续 `look`、唯一公开状态数、planner guidance 偏离率和模型拒绝建议后的成功率。
-- [ ] 为 planner feedback 写入长度受限摘要或 hash，以支持建议与实际 Action 的安全复盘。
+- [x] 补齐 benchmark 实验指标：已覆盖阶段完成率、重复 Action 比例、连续 `look`、唯一公开状态数、planner guidance 偏离率和偏离后的成功率。
+- [x] 为 planner feedback 写入长度受限摘要或 hash，以支持建议与实际 Action 的安全复盘。
 
 ### E. 完成判定
 
@@ -196,7 +197,7 @@ Done when: Planner 不读取 WorldState、不直接执行 Action；子目标完�
 - [x] Verify it: 96 项 pytest、Ruff、mypy 通过；Fake provider 5 seeds smoke benchmark 通过
 - [x] Test it: planning models、monitor、agent lifecycle、trace 和 benchmark 回归
 
-真实模型 5 seeds 对照仍需使用本地模型服务单独运行；Fake 结果不代表自主规划研究结论。
+真实 PlanningAgent 5 seeds 对照已使用本地模型服务完成，但 0/5 成功，Fake 结果不代表自主规划研究结论；仍需分析失败 trace 并取得可重复成功样本。
 
 ## Deferred
 
@@ -210,4 +211,4 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 
 ## 当前下一步
 
-Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。PlanningAgent v1 的工程闭环也已完成，新增 `planning` CLI Agent、事件触发重规划、计划生命周期 trace 和 benchmark v3 指标；它与 `planner_assisted` 保持独立。**B. 纯模型自主通关验收** 仍是失败基线：通用 prompt 下 ReactAgent 与 MemoryAgent 尚无可重复成功样本，PlanningAgent 的真实模型 5 seeds 还未运行。Fake smoke benchmark 只证明工程闭环，不代表模型自主能力。下一步是运行真实 Planning 对照、分析成功之外的阶段与成本指标，再进入 ReflectionAgent 和 Streamlit 的后续设计。
+Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。PlanningAgent v1 的工程闭环也已完成，新增 `planning` CLI Agent、事件触发重规划、计划生命周期 trace 和 benchmark v3 指标；它与 `planner_assisted` 保持独立。**B. 纯模型自主通关验收** 仍是失败基线：通用 prompt 下 ReactAgent、MemoryAgent 和 PlanningAgent 在 `qwen2.5:7b` 固定 5 seeds 中均未成功。PlanningAgent 的 5 局真实结果显示平均 28 次 Planner 调用、子目标完成率 0%、唯一公开状态 1 个，说明当前主要失败点仍是从高层目标到有效动作的桥接。Fake smoke benchmark 只证明工程闭环，不代表模型自主能力。下一步是公开并分析失败 trace，完成必要的真实对照/消融后，再决定 ReflectionAgent 和 Streamlit 的顺序。

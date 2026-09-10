@@ -6,7 +6,8 @@ import json
 from time import sleep
 from typing import Any
 from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+from urllib.parse import urlparse
+from urllib.request import ProxyHandler, Request, build_opener, urlopen
 
 from agent_arena.config import RuntimeSettings
 from agent_arena.llm.bailian import DecisionProviderError, ModelVerification, ModelVerificationError
@@ -21,6 +22,7 @@ from agent_arena.llm.protocol import (
 class _OllamaClient:
     def __init__(self, settings: RuntimeSettings) -> None:
         self._settings = settings
+        self._opener = _opener_for_ollama(settings.ollama_native_base_url)
 
     def chat(
         self,
@@ -47,7 +49,9 @@ class _OllamaClient:
                     headers={"Content-Type": "application/json"},
                     method="POST",
                 )
-                with urlopen(request, timeout=self._settings.request_timeout_seconds) as response:
+                with self._opener(
+                    request, timeout=self._settings.request_timeout_seconds
+                ) as response:
                     parsed = json.load(response)
                 if not isinstance(parsed, dict):
                     raise DecisionProviderError("Ollama returned an invalid response.")
@@ -61,6 +65,16 @@ class _OllamaClient:
                 raise DecisionProviderError("Ollama request failed.")
             sleep(self._settings.retry_backoff_seconds[attempt])
         raise AssertionError("Retry loop must return or raise.")
+
+
+def _opener_for_ollama(base_url: str) -> Any:
+    """Bypass ambient proxies for local Ollama without changing remote behavior."""
+
+    hostname = urlparse(base_url).hostname
+    if hostname in {"127.0.0.1", "localhost", "::1"}:
+        opener = build_opener(ProxyHandler({}))
+        return opener.open
+    return urlopen
 
 
 class OllamaModelVerifier:

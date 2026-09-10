@@ -4,7 +4,13 @@
 > 项目：Agent Arena  
 > 更新日期：2026-08-19
 
-### 最新实测（2026-08-18）
+### 最新实测（2026-09-10）
+
+PlanningAgent v1 已完成工程实现。使用 `qwen2.5:7b`、`spaceship-escape-v2-zh`、temperature 0、30 步上限、seed 0 至 4 和 `--autonomous` 的真实 benchmark 中，5 局均为 `step_limit`；平均重复动作比例 93.3%、连续 `look` 26 次、唯一公开状态 1 个、Planner 调用 28 次、子目标完成率 0%。
+
+本机 Ollama 的标准验证命令已恢复可用：适配器对 loopback 地址绕过系统代理；模型连接问题不再是当前主要阻塞。
+
+此前的 14B 结论和下方历史实验记录保留为历史证据，不纳入当前 7B Planning 研究结论。
 
 此前已完成 `qwen2.5:14b` 安装和连接验证。固定 `seed=0`、`MemoryAgent`、30 步的真实运行中，14B 在第 14 步恢复主电源后，仍连续重复读取诊断终端，最终为 `step_limit`；没有产生成功逃生 trace。由于当前使用 Mac M5 Air，14B 暂缓继续测试，不纳入本轮实验矩阵。
 
@@ -1023,28 +1029,20 @@ After diagnostic terminal says X, go to reactor_room.
 
 ## 19. 推荐的开发顺序
 
-从现在开始建议按以下顺序推进：
+当前建议按以下顺序推进：
 
 ```text
-1. ReactAgent 加 last-5-step recent history
+1. 公开并分析 React、Memory、Planning 的真实失败 trace
         ↓
-2. Runner 加 repeated-action detector
+2. 运行 Planning 与现有 React/Memory 基线的同条件成本和阶段指标对照
         ↓
-3. Runner 加 no-progress detector
+3. 设计单变量消融：最近历史、结构化记忆、循环恢复、Planner trigger/PlanState
         ↓
-4. 删除新增的 spaceship-specific prompt rules
+4. 验证 `guarded` 与规划建议偏离/非法 Action 的真实行为
         ↓
-5. qwen3:8b × 5
+5. 若 Planning 研究结论稳定，再设计 ReflectionAgent
         ↓
-6. 分析 trace
-        ↓
-7. ReactAgent vs MemoryAgent 正式对照
-        ↓
-8. 第二模型家族 × 5（14B 暂缓，不在本轮）
-        ↓
-9. 根据 stopping rule 决定本地 / API
-        ↓
-10. 再考虑 PlanningAgent、ReflectionAgent 和 Streamlit
+6. 最后进入 Streamlit、多世界和多模型扩展
 ```
 
 ---

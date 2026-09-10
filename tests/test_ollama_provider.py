@@ -44,7 +44,7 @@ def test_ollama_decision_uses_native_non_thinking_json_request(monkeypatch) -> N
             }
         )
 
-    monkeypatch.setattr("agent_arena.llm.ollama.urlopen", fake_urlopen)
+    monkeypatch.setattr("agent_arena.llm.ollama._opener_for_ollama", lambda _: fake_urlopen)
     settings = RuntimeSettings.load(
         {
             "provider": "ollama",
@@ -97,7 +97,7 @@ def test_ollama_decision_includes_public_runtime_feedback(monkeypatch) -> None:
             }
         )
 
-    monkeypatch.setattr("agent_arena.llm.ollama.urlopen", fake_urlopen)
+    monkeypatch.setattr("agent_arena.llm.ollama._opener_for_ollama", lambda _: fake_urlopen)
     settings = RuntimeSettings.load({"provider": "ollama"}, env_file=None)
     observation = Observation(
         current_room="bridge",

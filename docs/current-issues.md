@@ -1,12 +1,19 @@
 # 当前问题记录
 
-更新时间：2026-09-05
+更新时间：2026-09-10
 
 ## 结论摘要
 
-项目的本地运行链路已经可以工作，但“本地模型能否稳定完成飞船逃生”目前还没有验收通过。
+项目的本地运行链路和 PlanningAgent v1 工程闭环已经可以工作，但“本地模型能否稳定完成飞船逃生”目前还没有验收通过。
 
-简单说：程序能正常启动、调用 Ollama、校验模型输出、执行动作、在终端显示每一步并保存 trace；问题出在模型的多步决策能力，模型经常忘记已经得到的信息，重复走相同路线，最后达到 30 步上限。
+简单说：程序能正常启动、调用 Ollama、校验模型输出、执行动作、在终端显示每一步并保存 trace；问题出在模型的多步决策能力，模型经常忘记已经得到的信息，重复走相同路线，最后达到 30 步上限。PlanningAgent 已能记录子目标和重规划，但真实模型 seed 0 smoke 仍以重复 `look` 和 `step_limit` 失败。
+
+## 最新状态（2026-09-10）
+
+- 本机 Ollama 服务和 `qwen2.5:7b` 当前可用；此前验证失败是本地请求受系统代理环境影响，Ollama 适配器已对 loopback 地址绕过代理。
+- PlanningAgent 真实 seed 0 smoke：30 步、0 次非法输出、28 次 Planner 调用，未完成逃生；主要行为是持续执行 `look`，结果为 `step_limit`。
+- PlanningAgent 真实固定 5 seeds benchmark 已完成：0/5 成功，平均 30 步、重复动作比例 93.3%、平均连续 `look` 26 次、唯一公开状态 1 个、平均 28 次 Planner 调用、子目标完成率 0%，总 token 141,445。
+- 代码和测试已经关闭此前记录的 world selector、公开循环状态、benchmark 基础指标及 planner feedback hash 缺口；旧 P1 清单已改为历史/验证说明。
 
 ## 已确认的问题
 
@@ -79,7 +86,7 @@
 - 不保存完整思维链、API Key 或原始模型响应。
 - `uv run ruff check .` 通过。
 - `uv run mypy src` 通过。
-- `uv run pytest`：68 个测试全部通过（2026-09-05 的问题盘点）。
+- `uv run pytest`：96 个测试全部通过（2026-09-10，包含 Ollama 代理绕过修复后的回归）。
 - `qwen2.5:14b` 的 `verify-model` 通过，但完整逃生局结果为 `step_limit`。
 
 ## 当前验收状态
@@ -124,9 +131,9 @@ ReactAgent 的典型行为是第 1 步误用 `inspect(control_terminal)`，第 2
 
 ## 建议的下一步
 
-1. 在当前已完成的纯模型失败基线上，设计不含谜题答案的通用运行时上下文或受控短期历史实验，并与基线使用相同模型、seed 和步数预算。
-2. 在保持通用 prompt 的前提下，分析最近历史、结构化记忆、重复动作检测各自对结果的影响。
-3. 对连续无进展动作触发运行时纠偏时，必须单独标记该实验变量，不能把它当成纯模型结果。
+1. 完成 PlanningAgent 真实固定 5 seeds benchmark，并与 React、Memory 的既有 0/5 失败基线及独立的 `planner_assisted` 对照核对。
+2. 公开成功与失败 trace，比较阶段完成率、重复动作、子目标完成率、Planner 成本和失败类型。
+3. 在保持通用 prompt 的前提下，再决定是否开展最近历史、结构化记忆、循环恢复和提示消融；这些变量必须单独标记。
 4. `planner_assisted` 只作为辅助通关和演示模式，不能替代自主通关验收。
 5. 在自动逃生成功率稳定前，不应把 benchmark 结果描述为模型自主规划已完成。
 
@@ -143,29 +150,31 @@ uv run pytest
 
 真实逃生验收的最低标准是：终端最后显示“成功逃生”，并且对应 trace 的 `outcome` 为成功，而不是“达到步数上限，未完成逃生”。
 
-## 2026-09-05 问题盘点补充
+## 历史问题盘点（2026-09-05，已按当前代码校正）
 
 以下条目区分已确认的缺口、尚未验证的行为和外部运行阻塞；未测试项不应被描述为现有缺陷。
 
 ### P0：研究验收未完成
 
-1. 纯 ReactAgent 与 MemoryAgent 在 Ollama `qwen2.5:7b` 的固定五个 seed 对照中均为 0/5 成功，尚无可重复的纯模型成功样本。
+1. 纯 ReactAgent、MemoryAgent 和 PlanningAgent 在 Ollama `qwen2.5:7b` 的固定五个 seed 对照中均为 0/5 成功，尚无可重复的纯模型成功样本。
 2. `planner_assisted` 的稳定成功只代表带公开规划建议的可靠性上界，不能与纯模型 trace、指标或结论混合。
 3. 尚未公开一组同时包含成功与失败的纯模型 trace；在取得可重复成功前，不能宣称自主规划验收通过。
 
-### P1：实现与实验契约缺口
+### 已关闭的实现与实验契约项（原 P1 清单）
 
-1. `RuntimeSettings.world` 和 `RuntimeSettings.world_version` 当前不驱动环境加载：即使传入不同值，`SpaceshipEscapeEnvironment` 仍加载 `spaceship_escape_v1 / v2-zh`。在实现真实 world selector 前，CLI/UI 不得暗示该配置已生效。
-2. `PublicLoopDetector` 的状态键缺少部分公开进展信息。已知授权码读取后的合法回程可能误报为循环；需要补充回归测试并决定使用 `available_exits`、最近公开结果或阶段 epoch 的最小修复。
-3. benchmark 尚未汇总阶段完成率、重复 Action 比例、连续 `look`、唯一公开状态数和 guidance 偏离率，无法完整执行既定实验解释规则。
-4. 每步 planner feedback 仍缺少受长度限制的 trace 摘要或 hash，导致无法在不保存完整 reasoning 的前提下复盘建议与实际动作的偏离。
+以下问题已在 `a308dd5` 和 `07f7457` 中完成代码修复与回归测试，不再作为当前阻塞：
 
-### P1：尚未完成验证
+1. `RuntimeSettings.world` 和 `RuntimeSettings.world_version` 已通过 `create_environment` 驱动环境选择，并拒绝未知组合。
+2. `PublicLoopDetector` 的公开状态已包含可见出口、对象和背包等进展信息，并有合法回程回归测试。
+3. benchmark 已汇总阶段完成率、重复 Action 比例、连续 `look`、唯一公开状态数、Planning 成本和 guidance 偏离率。
+4. planner feedback 已以长度受限文本和 hash 写入 trace，不保存完整 reasoning。
 
-1. `guarded` 模式是否只提供公开规则反馈、而不替模型选取或执行 Action。
-2. 规划建议被拒绝、偏离或产生非法 Action 时，Runner 的继续、纠正和终止行为。
-3. planner 的完整阶段转换，以及 `reset`、`finish`、跨 episode 的 Memory、阶段和循环检测状态清理。
-4. 所有 planner 路线表项都与当前公开 Observation 一致，且公开反馈不泄漏 WorldState 或密钥。
+### P1：尚未完成的真实验证
+
+1. 尚未完成 React、Memory、Planning 与 `planner_assisted` 的统一真实模型对照，以及成功与失败 trace 的公开归档。
+2. 仍需在真实模型下验证 `guarded`、规划建议被拒绝/偏离/产生非法 Action 时的 Runner 行为。
+3. 仍需用真实 Planning 运行覆盖完整阶段转换；Fake provider 已覆盖生命周期、重规划、reset 和 finish 的工程路径。
+4. 仍需在不同 seed、模型温度和可用 world version 下验证路线稳定性；当前 14B 受本机资源限制暂缓。
 
 ### P2：范围与外部条件
 

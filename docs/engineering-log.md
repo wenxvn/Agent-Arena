@@ -17,6 +17,15 @@
 关联提交：Git commit，若有
 ```
 
+## 2026-09-10 文档同步与 PlanningAgent 真实五个 seed 对照
+
+事件：修正文档中已过期的实验契约描述，并完成 PlanningAgent v1 的本地真实模型固定 5 seeds 对照。
+原因：`a308dd5` 和 `07f7457` 已关闭 world selector、公开循环状态、benchmark 指标和 planner feedback hash 等工程缺口，但持续文档仍将它们列为未完成；PlanningAgent 的真实研究验收也需要实际结果。
+改动：更新 `README.md`、`研究总纲.md`、`docs/scope/scope.md`、`docs/current-issues.md`、`docs/autonomous-escape-experiment-plan.md`、`docs/model-passage-options.md` 和 Planning spec 验证记录；Ollama loopback 请求绕过系统代理，并补充 provider 回归适配。
+验证：标准 `uv run agent-arena verify-model --provider ollama` 通过；`qwen2.5:7b`、`spaceship-escape-v2-zh`、temperature 0、30 步、seed 0 至 4、`--autonomous` 的 Planning benchmark 为 0/5 成功，平均重复动作比例 93.3%、连续 `look` 26 次、唯一公开状态 1 个、Planner 调用 28 次、子目标完成率 0%、总 token 141,445；96 项 pytest、Ruff、mypy 通过。
+下一步：公开并分析 React、Memory、Planning 的成功/失败 trace，优先研究高层子目标到有效移动/工具动作的桥接；在取得可重复成功前，Reflection 和 Streamlit 继续后置。
+关联提交：本次文档同步与真实对照提交。
+
 ## 2026-09-09 PlanningAgent v1 工程闭环完成
 
 事件：完成 PlanningAgent v1 的工程实现，形成独立的 Planner、结构化 PlanState、PlanMonitor、Executor integration、计划生命周期 Trace 和 Benchmark v3 指标。

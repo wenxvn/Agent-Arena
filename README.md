@@ -2,7 +2,7 @@
 
 Agent Arena 是一个用于学习和比较 LLM Agent 行为的轻量实验环境。它让 Agent 在确定、部分可观测的飞船逃生世界中观察、调用工具、接收反馈，并记录每一步的运行结果。
 
-当前已完成 Release 2：确定性 Spaceship Escape 世界、ReactAgent、MemoryAgent、受步数限制的执行循环、每局 JSON 运行记录，以及可重复的 benchmark 对照。
+当前已完成 Release 2 和 PlanningAgent v1 工程闭环：确定性 Spaceship Escape 世界、ReactAgent、MemoryAgent、PlanningAgent、受步数限制的执行循环、每局 JSON 运行记录，以及可重复的 benchmark 对照。
 
 另外提供独立的 `planner_assisted` 实验模式：规划器只根据公开信息给出阶段和下一动作建议，模型仍需返回并执行合法的 JSON Action。它用于研究“公开辅助能否提高通关可靠性”，不能当作纯模型自主规划结果。
 
@@ -32,6 +32,7 @@ uv run agent-arena run
 |---|---|---|
 | `react` | 基线 Agent，只根据当前公开观察和反馈决策 | 是，尚未证明稳定通关 |
 | `memory` | 在 ReactAgent 上加入结构化公开记忆 | 是，尚未证明稳定通关 |
+| `planning` | 事件触发的 Planner、PlanState、Executor 和 PlanMonitor | 是，真实 5 seeds 为 0/5，尚未证明有效 |
 | `planner_assisted` | 公开阶段状态和下一动作建议，模型仍返回 Action | 否，路线选择主要由确定性规划器辅助 |
 
 运行时可以显式指定 Agent，未指定时默认仍是 `react`：
@@ -43,6 +44,8 @@ uv run agent-arena run --provider ollama --agent planner_assisted --seed 0 --out
 ```
 
 目前已真实验证的是 `qwen2.5:7b + planner_assisted`：固定 seed 0、1、2 共 3 局全部成功，平均 19 步，0 次非法输出，0 次环境拒绝。这个结果证明端到端辅助流程可用；纯 `react`/`memory` 的自主规划成功率仍需单独实验。
+
+PlanningAgent v1 已完成工程验证，并以相同模型、world、seed 和 30 步预算运行真实 5 seeds：0/5 成功，平均 28 次 Planner 调用、子目标完成率 0%。这说明当前主要问题仍是高层子目标到有效动作的桥接，不能把 Fake 或辅助模式结果当作自主规划能力。
 
 ## 使用 Ollama 本地模型
 
@@ -143,6 +146,7 @@ git diff --check
 - [架构摘要](docs/architecture.md)：模块职责和数据流。
 - [ReactAgent 与执行循环设计](docs/specs/0003-react-agent-loop/index.md)：Action、终止条件与 Trace 契约。
 - [规划辅助 Agent 设计](docs/specs/0005-planner-assisted-agent/index.md)：公开规划建议、边界和验收条件。
+- [PlanningAgent v1 设计](docs/specs/0006-planning-agent-v1/index.md)：事件触发计划、Executor、PlanMonitor 和真实对照状态。
 - [本地模型通关复现记录](docs/model-passage-options.md)：真实 Ollama 运行结果、排查过程和后续任务。
 - [工程记录](docs/engineering-log.md)：重要验证、决策和阻塞记录。
 
@@ -150,4 +154,4 @@ git diff --check
 
 首个版本不引入 LangChain、RAG、向量数据库、多 Agent 编排、数据库或复杂前端。环境规则、Agent 策略、模型调用和运行记录保持独立，确保实验结果可以追溯和比较。
 
-当前尚未完成：纯模型自主规划的稳定通关、`guarded` 公开规则保护模式、循环检测误报修正、Streamlit 实验界面、PlanningAgent、ReflectionAgent，以及多世界多模型对照。详细清单见 [开发进度](docs/scope/scope.md)。
+当前尚未完成：纯模型自主规划的稳定通关、真实 `guarded` 行为对照、规划建议偏离后的真实模型验证、提示与记忆消融、Streamlit 实验界面、ReflectionAgent，以及多世界多模型对照。PlanningAgent v1 工程实现已完成但研究验收尚未通过。详细清单见 [开发进度](docs/scope/scope.md)。
