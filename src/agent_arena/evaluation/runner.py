@@ -23,6 +23,7 @@ from agent_arena.arena import (
 )
 from agent_arena.config import RuntimeSettings
 from agent_arena.evaluation.loop import PublicLoopDetector
+from agent_arena.evaluation.progress import ProgressDetector
 from agent_arena.evaluation.trace import (
     EpisodeOutcome,
     EpisodeTrace,
@@ -154,6 +155,8 @@ class EpisodeRunner:
         phase_tracker.initialize(observation)
         candidate_tracker = PublicCandidateTracker()
         candidate_tracker.initialize(observation)
+        progress_detector = ProgressDetector()
+        progress_detector.reset(observation)
         runtime_feedback = (
             _public_action_hints(observation) if self._enable_public_action_hints else None
         )
@@ -326,6 +329,9 @@ class EpisodeRunner:
                     continue
             result, observation = self._environment.step(decision.action)
             self._agent.observe(decision.action, result, observation)
+            progress_event = progress_detector.evaluate(
+                decision_observation, decision.action, result, observation
+            )
             phase_tracker.observe(result)
             candidate_tracker.observe(decision_observation, decision.action, result, observation)
             loop_feedback = loop_detector.observe(
@@ -358,6 +364,7 @@ class EpisodeRunner:
                 action=decision.action,
                 result=result,
                 next_observation=observation,
+                progress=progress_event,
                 latency_ms=latency_ms,
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,

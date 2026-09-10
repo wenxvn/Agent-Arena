@@ -17,6 +17,20 @@
 关联提交：Git commit，若有
 ```
 
+## 2026-09-10 Planning v1 Failure Analysis 与 Evaluation v2 完成
+
+事件：完成 PlanningAgent v1 的失败分析基础设施、Evaluation v2 和真实 5 seeds 独立重跑；v1 Planner→Executor 核心保持冻结。
+
+原因：原始 Planning v1 在 `qwen2.5:7b` 下 0/5 成功，单纯的 persistent-state no-progress 指标无法区分首次获得公开事实与重复已知结果，必须先提高测量有效性再决定是否改 Agent。
+
+改动：新增 episode-local `PublicFact`/`EpisodeKnowledge`、State/Epistemic Progress、结构化 `SuccessCriterion` 及 legacy evaluator、规则 Failure taxonomy、Trace schema v2、`analyze-trace(s)` CLI 和 Evaluation v2 benchmark 字段；生成 JSON/CSV 失败分析报告，并同步 scope、架构、研究摘要和当前问题记录。未引入 ReflectionAgent、Streamlit、第二个 world 或 PlanningAgent v2。
+
+验证：`uv run ruff check .`、`uv run mypy src`、`uv run pytest -q`（116 passed）、`uv lock --check` 和 `git diff --check` 全部通过。Evaluation v2 固定 `qwen2.5:7b`、seed 0–4、30 步、autonomous 重跑为 0/5 成功；平均 Planner call ratio 85.3%、State Progress 0、Epistemic Progress 1、无进展动作 29、同子目标重复 Action 26。每局自动识别 3 次 rejected action 和 2 次 repeated failure。
+
+下一步：扩展已完成的人工抽样到每局完整的 replan 后首个 Action，区分 vague/wrong subgoal、wrong action、forgotten fact 与 ineffective replan；随后在保持 v1、模型、world 和 prompt 不变的条件下进行单变量 grounding 或 exploration/recovery 验证，再决定是否创建 PlanningAgent v2 spec。
+
+关联提交：待提交。
+
 ## 2026-09-10 文档同步与 PlanningAgent 真实五个 seed 对照
 
 事件：修正文档中已过期的实验契约描述，并完成 PlanningAgent v1 的本地真实模型固定 5 seeds 对照。

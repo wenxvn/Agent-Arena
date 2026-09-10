@@ -23,7 +23,7 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 | `src/agent_arena/worlds/` | 具体世界配置、房间、物品、谜题和胜利条件 | 通用 Agent Loop |
 | `src/agent_arena/agents/` | 基线策略、Memory、Planning 和未来的 Reflection | 世界规则和持久化格式细节 |
 | `src/agent_arena/llm/` | DecisionProvider、OpenAI-compatible/Ollama/Fake 适配器 | 环境状态和业务规则 |
-| `src/agent_arena/evaluation/` | Episode Runner、Trace 持久化、指标和 benchmark | 修改 Agent 决策或世界规则 |
+| `src/agent_arena/evaluation/` | Episode Runner、Trace 持久化、公开进展/事实、失败分析、指标和 benchmark | 修改 Agent 决策或世界规则 |
 | `prompts/` | 版本化的 Agent 指令模板 | 密钥和运行时配置 |
 | `src/agent_arena/ui/` | Release 3 展示世界、Trace 和指标 | 直接修改 Environment 内部状态 |
 
@@ -46,6 +46,8 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 - Runner 将非法候选分类为不含原文的安全类别，并可独立启用只根据当前公开 Observation 生成的动作候选提示；这些提示和推理强度都写入 trace provenance，不能与纯自主结果混合。
 - `PlanningAgent` 在 `src/agent_arena/planning/` 中维护 episode-local `PlanState`。Planner 只接收公开 Observation、公开结果、计划状态和受限历史，输出非执行性的 `PlannerDecision`；Executor 复用统一 Action contract，`PlanMonitor` 只根据公开进度判断继续、子目标完成、无进展或重复失败。
 - Planning Trace 记录 `plan_id`、当前子目标、Planner 调用、重规划原因、监控信号、子目标完成和 Planner/Executor 成本。`planner_assisted` 仍是独立的规则路线辅助模式，不与 `planning` 结果合并。
+- Evaluation v2 在 `evaluation/progress.py` 中将公开状态变化与 episode-local 公共事实分开计数；`evaluation/failures.py` 只用规则生成自动失败信号，并保留人工标注入口。`planning/criteria.py` 负责结构化 `SuccessCriterion`，同时兼容 Planning v1 字符串条件。
+- Trace schema v2 为已执行步骤记录 `ProgressEvent`，旧 trace 缺失字段时仍可读取，但对应指标必须标记为不可用；失败分析 CLI 输出独立的 JSON/CSV 报告。
 - 第一版只提供本地 CLI 与 JSON/CSV 文件输出；Streamlit 延后到 Release 3。
 
 ## 更新规则

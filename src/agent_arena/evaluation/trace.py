@@ -14,6 +14,7 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel, ConfigDict, Field
 
 from agent_arena.arena import Action, Observation, ToolResult
+from agent_arena.evaluation.progress import ProgressEvent
 
 
 class EpisodeOutcome(StrEnum):
@@ -65,6 +66,7 @@ class StepTrace(BaseModel):
     output_tokens: int | None = Field(default=None, ge=0)
     runtime_feedback: str | None = Field(default=None, max_length=500)
     next_observation: Observation | None = None
+    progress: ProgressEvent | None = None
     planner_feedback: str | None = Field(default=None, max_length=500)
     planner_feedback_hash: str | None = None
     suggested_action: Action | None = None
@@ -135,6 +137,7 @@ class EpisodeTraceHeader(BaseModel):
     agent: str
     prompt_version: str
     provider: str
+    trace_schema_version: int = 2
     provenance: ExperimentProvenance
 
 
@@ -150,6 +153,7 @@ class EpisodeTrace(BaseModel):
     agent: str
     prompt_version: str
     provider: str
+    trace_schema_version: int = 2
     provenance: ExperimentProvenance
     outcome: EpisodeOutcome
     executed_action_count: int = Field(ge=0)

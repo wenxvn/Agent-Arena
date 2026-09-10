@@ -74,6 +74,28 @@ def planner_response_schema() -> dict[str, object]:
         "maxItems": 12,
         "items": bounded_text,
     }
+    criterion = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["criterion_type", "description"],
+        "properties": {
+            "criterion_type": {
+                "type": "string",
+                "enum": [
+                    "inventory_contains",
+                    "room_reached",
+                    "object_visible",
+                    "exit_available",
+                    "tool_result_status",
+                    "tool_result_reason",
+                    "public_fact",
+                ],
+            },
+            "target": {"type": "string", "minLength": 1, "maxLength": 120},
+            "value": {"type": "string", "minLength": 1, "maxLength": 120},
+            "description": {"type": "string", "minLength": 1, "maxLength": 240},
+        },
+    }
     return {
         "type": "object",
         "additionalProperties": False,
@@ -88,7 +110,14 @@ def planner_response_schema() -> dict[str, object]:
         "properties": {
             "decision_reason": {"type": "string", "minLength": 1, "maxLength": 280},
             "current_subgoal": bounded_text,
-            "success_criteria": {**bounded_list, "minItems": 1, "maxItems": 8},
+            "success_criteria": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 8,
+                # String criteria remain valid for the frozen planning_v1
+                # prompt; structured criteria are the Evaluation v2 path.
+                "items": {"anyOf": [bounded_text, criterion]},
+            },
             "known_constraints": bounded_list,
             "relevant_resources": bounded_list,
             "unresolved_questions": bounded_list,

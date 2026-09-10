@@ -12,6 +12,28 @@ BoundedText = Annotated[str, Field(min_length=1, max_length=240)]
 PlannerReason = Annotated[str, Field(min_length=1, max_length=280)]
 
 
+class SuccessCriterion(BaseModel):
+    """A machine-checkable public condition for completing a subgoal."""
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    criterion_type: Literal[
+        "inventory_contains",
+        "room_reached",
+        "object_visible",
+        "exit_available",
+        "tool_result_status",
+        "tool_result_reason",
+        "public_fact",
+    ]
+    target: str | None = Field(default=None, min_length=1, max_length=120)
+    value: str | None = Field(default=None, min_length=1, max_length=120)
+    description: BoundedText
+
+
+Criterion = SuccessCriterion | BoundedText
+
+
 class PlanState(BaseModel):
     """The small, persistent public plan carried by one episode."""
 
@@ -21,7 +43,7 @@ class PlanState(BaseModel):
     plan_id: str = Field(default_factory=lambda: str(uuid4()), min_length=1)
     overall_goal: BoundedText
     current_subgoal: BoundedText
-    success_criteria: tuple[BoundedText, ...] = Field(min_length=1, max_length=8)
+    success_criteria: tuple[Criterion, ...] = Field(min_length=1, max_length=8)
     known_constraints: tuple[BoundedText, ...] = Field(default=(), max_length=12)
     relevant_resources: tuple[BoundedText, ...] = Field(default=(), max_length=12)
     completed_subgoals: tuple[BoundedText, ...] = Field(default=(), max_length=24)
@@ -36,7 +58,7 @@ class PlannerDecision(BaseModel):
 
     decision_reason: PlannerReason
     current_subgoal: BoundedText
-    success_criteria: tuple[BoundedText, ...] = Field(min_length=1, max_length=8)
+    success_criteria: tuple[Criterion, ...] = Field(min_length=1, max_length=8)
     known_constraints: tuple[BoundedText, ...] = Field(default=(), max_length=12)
     relevant_resources: tuple[BoundedText, ...] = Field(default=(), max_length=12)
     unresolved_questions: tuple[BoundedText, ...] = Field(default=(), max_length=12)

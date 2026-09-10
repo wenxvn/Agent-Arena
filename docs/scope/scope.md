@@ -19,6 +19,7 @@
 | 8 | Streamlit 实验界面 | Release 3 | planned |
 | 9 | PlanningAgent v1 | Research Core | done |
 | 10 | ReflectionAgent | Deferred | planned |
+| 11 | Planning v1 Failure Analysis & Evaluation v2 | Research Core | done |
 
 ## Foundation
 
@@ -197,7 +198,19 @@ Done when: Planner 不读取 WorldState、不直接执行 Action；子目标完�
 - [x] Verify it: 96 项 pytest、Ruff、mypy 通过；Fake provider 5 seeds smoke benchmark 通过
 - [x] Test it: planning models、monitor、agent lifecycle、trace 和 benchmark 回归
 
-真实 PlanningAgent 5 seeds 对照已使用本地模型服务完成，但 0/5 成功，Fake 结果不代表自主规划研究结论；仍需分析失败 trace 并取得可重复成功样本。
+真实 PlanningAgent 5 seeds 对照已使用本地模型服务完成，但 0/5 成功，Fake 结果不代表自主规划研究结论；Evaluation v2 已完成独立重跑和失败分析，仍需取得可重复成功样本。
+
+### 11. Planning v1 Failure Analysis & Evaluation v2 · done
+
+冻结 PlanningAgent v1 的 Planner→Executor 核心，增加公开事实、State/Epistemic Progress 分离、结构化 SuccessCriterion、Trace schema v2、规则失败分类和 `analyze-trace(s)` CLI。旧 trace 与 v1 字符串条件保持可读取；缺失字段的旧指标显式标记不可用。
+
+- [x] 对原始 Planning v1 5 局 trace 完成离线失败分析。
+- [x] 在 Evaluation v2 后以相同 `qwen2.5:7b`、固定 seeds、30 步、autonomous 配置独立重跑 5 局。
+- [x] 对 5 局各自前 10 个执行动作及重规划边界完成 Grounding Failure 人工抽样检查。
+- [x] 形成 [Planning v1 Failure Analysis](../experiments/planning-v1-failure-analysis.md)，回答 RQ1–RQ6 并完成 Gate 判断。
+- [x] 生成 `results/planning-v1-eval-v2/failure_analysis.json` 和 `.csv`；结果目录为本地生成物。
+
+结论：重跑仍为 0/5；主要证据指向 Action grounding 与 exploration/recovery 空转，而非单纯 Criteria 误判。暂不实现 PlanningAgent v2，后续先做带人工抽样标注的单变量验证。
 
 ## Deferred
 
@@ -211,4 +224,4 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 
 ## 当前下一步
 
-Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。PlanningAgent v1 的工程闭环也已完成，新增 `planning` CLI Agent、事件触发重规划、计划生命周期 trace 和 benchmark v3 指标；它与 `planner_assisted` 保持独立。**B. 纯模型自主通关验收** 仍是失败基线：通用 prompt 下 ReactAgent、MemoryAgent 和 PlanningAgent 在 `qwen2.5:7b` 固定 5 seeds 中均未成功。PlanningAgent 的 5 局真实结果显示平均 28 次 Planner 调用、子目标完成率 0%、唯一公开状态 1 个，说明当前主要失败点仍是从高层目标到有效动作的桥接。Fake smoke benchmark 只证明工程闭环，不代表模型自主能力。下一步是公开并分析失败 trace，完成必要的真实对照/消融后，再决定 ReflectionAgent 和 Streamlit 的顺序。
+Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。PlanningAgent v1 的工程闭环和 Evaluation v2 失败分析也已完成；它与 `planner_assisted` 保持独立。**B. 纯模型自主通关验收** 仍是失败基线：通用 prompt 下 ReactAgent、MemoryAgent 和 PlanningAgent 在 `qwen2.5:7b` 固定 5 seeds 中均未成功。Evaluation v2 重跑显示平均 Planner call ratio 85.3%、State Progress 0、每局 29 次无进展动作、唯一公开房间 1 个和同子目标重复 Action 26 次，当前主要证据指向 Action grounding 与 exploration/recovery 空转。Fake smoke benchmark 只证明工程闭环，不代表模型自主能力。下一步是完成失败步骤的人工抽样和单变量消融，再决定 PlanningAgent v2、ReflectionAgent 和 Streamlit 的顺序。

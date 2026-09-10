@@ -12,12 +12,12 @@ from agent_arena.arena import Action, Observation, ToolResult
 from agent_arena.llm import DecisionProvider
 from agent_arena.llm.protocol import DecisionRequest, ProviderResponse
 from agent_arena.planning import (
-    PlanMonitor,
     PlanningMetadata,
     PlanSignal,
     PlanState,
     planner_decision_adapter,
 )
+from agent_arena.planning.monitor import PlanMonitor
 
 
 class PlanningAgent(ReactAgent):
@@ -61,7 +61,7 @@ class PlanningAgent(ReactAgent):
 
     @property
     def plan_monitor_version(self) -> str | None:
-        return "plan_monitor_v1"
+        return "plan_monitor_v2"
 
     @property
     def planning_policy(self) -> str | None:

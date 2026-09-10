@@ -21,12 +21,15 @@ from agent_arena.evaluation import (
     BenchmarkRow,
     EpisodeOutcome,
     EpisodeRunner,
+    FailureAnalysis,
     StepTrace,
     TraceEvent,
+    analyze_trace,
     read_episode_trace,
     row_from_trace,
     write_benchmark,
     write_episode_trace,
+    write_failure_analysis,
 )
 from agent_arena.llm import (
     BailianDecisionProvider,
@@ -321,6 +324,52 @@ def benchmark(
     typer.echo(f"CSV 结果：{csv_path}")
 
 
+@app.command(name="analyze-trace")
+def analyze_trace_command(
+    trace_path: Annotated[Path, typer.Argument(help="一个 JSON Episode Trace 路径。")],
+) -> None:
+    """分析一个 Episode Trace 中的自动失败信号和公开进展。"""
+
+    try:
+        analysis = analyze_trace(read_episode_trace(trace_path))
+    except (OSError, ValueError):
+        typer.echo("Trace 读取失败：请提供可读取的 JSON Episode Trace。", err=True)
+        raise typer.Exit(code=2) from None
+    _print_failure_analysis(analysis)
+
+
+@app.command(name="analyze-traces")
+def analyze_traces_command(
+    traces_path: Annotated[Path, typer.Argument(help="Trace 文件或目录。")],
+    output_dir: Annotated[
+        Path | None,
+        typer.Option("--output-dir", help="报告输出目录，默认写入输入目录。"),
+    ] = None,
+) -> None:
+    """批量分析 Trace，并写入 failure_analysis JSON/CSV。"""
+
+    paths = _trace_paths(traces_path)
+    if not paths:
+        typer.echo("未找到可分析的 Episode Trace。", err=True)
+        raise typer.Exit(code=2)
+    analyses: list[FailureAnalysis] = []
+    for path in paths:
+        try:
+            analyses.append(analyze_trace(read_episode_trace(path)))
+        except (OSError, ValueError):
+            # Directories may contain benchmark manifests beside episode
+            # traces. They are not episode inputs and are skipped safely.
+            continue
+    if not analyses:
+        typer.echo("未找到可分析的 Episode Trace。", err=True)
+        raise typer.Exit(code=2)
+    destination = output_dir or (traces_path.parent if traces_path.is_file() else traces_path)
+    json_path, csv_path = write_failure_analysis(analyses, destination)
+    typer.echo(f"已分析 Episode：{len(analyses)}")
+    typer.echo(f"JSON 结果：{json_path}")
+    typer.echo(f"CSV 结果：{csv_path}")
+
+
 @app.command(name="verify-model")
 def verify_model(
     provider: Annotated[str, typer.Option("--provider")] = "bailian",
@@ -377,6 +426,54 @@ def _create_agent(
     if agent == "candidate_select":
         return CandidateSelectionAgent(provider)
     return ReactAgent(provider)
+
+
+def _trace_paths(path: Path) -> list[Path]:
+    if path.is_file():
+        return [path]
+    if not path.is_dir():
+        return []
+    return sorted(
+        candidate
+        for candidate in path.rglob("*.json")
+        if candidate.name != "failure_analysis.json"
+        and not candidate.name.startswith("benchmark_")
+    )
+
+
+def _print_failure_analysis(analysis: FailureAnalysis) -> None:
+    signals = analysis.automatic_failure_signals
+    typer.echo(f"Episode: {analysis.episode_id}")
+    typer.echo(f"Outcome: {analysis.outcome}")
+    typer.echo(f"Steps: {analysis.steps}")
+    typer.echo("")
+    typer.echo("Automatic failure signals:")
+    typer.echo(f"Repeated inspection: {signals.repeated_inspection}")
+    typer.echo(f"Repeated navigation: {signals.repeated_navigation}")
+    typer.echo(f"Repeated failure: {signals.repeated_failure}")
+    typer.echo(f"Invalid output: {signals.invalid_output}")
+    typer.echo(f"Rejected action: {signals.rejected_action}")
+    typer.echo("")
+    typer.echo(f"State progress events: {analysis.state_progress_count}")
+    typer.echo(f"Epistemic progress events: {analysis.epistemic_progress_count}")
+    typer.echo(f"No-progress actions: {analysis.no_progress_action_count}")
+    typer.echo(f"Unique public facts: {analysis.unique_public_fact_count}")
+    if analysis.unavailable_metrics:
+        typer.echo(
+            "Unavailable metrics (legacy trace): " + ", ".join(analysis.unavailable_metrics)
+        )
+    typer.echo("")
+    typer.echo(f"Planner calls: {analysis.planner_call_count}")
+    typer.echo(f"Replans: {analysis.replan_count}")
+    typer.echo(f"Planner call ratio: {analysis.planner_call_ratio:.3f}")
+    typer.echo("")
+    typer.echo("Manual annotation required:")
+    if analysis.manual_annotation_required_steps:
+        typer.echo(
+            " ".join(f"step {step}" for step in analysis.manual_annotation_required_steps)
+        )
+    else:
+        typer.echo("none")
 
 
 def _real_model_step_report(

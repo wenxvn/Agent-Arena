@@ -14,6 +14,7 @@ from tempfile import NamedTemporaryFile
 from uuid import uuid4
 
 from agent_arena.arena import ToolReason, ToolStatus
+from agent_arena.evaluation.failures import analyze_trace
 from agent_arena.evaluation.loop import public_state_key
 from agent_arena.evaluation.trace import EpisodeOutcome, EpisodeTrace
 
@@ -27,6 +28,8 @@ class BenchmarkRow:
     seed: int
     agent: str
     provider: str
+    model: str
+    world: str | None
     outcome: str
     steps: int
     invalid_output_count: int
@@ -64,9 +67,30 @@ class BenchmarkRow:
     planner_tokens: int | None
     executor_tokens: int | None
     total_tokens: int | None
+    # Evaluation v2 fields. Existing fields above remain stable for old
+    # benchmark consumers.
+    state_progress_count: int
+    epistemic_progress_count: int
+    total_progress_count: int
+    unique_public_fact_count: int
+    new_fact_rate: float | None
+    repeated_known_fact_action_count: int
+    planner_call_ratio: float
+    unique_subgoal_count: int
+    subgoal_switch_count: int
+    same_subgoal_repeated_action_count: int
+    same_subgoal_rejected_action_count: int
+    unique_room_count: int
+    unique_object_interaction_count: int
+    repeated_inspection_count: int
+    navigation_cycle_count: int
+    latency: int
+    evaluation_metrics_available: bool
+    unavailable_metrics: str
 
 
 def row_from_trace(trace: EpisodeTrace, benchmark_id: str, episode_index: int) -> BenchmarkRow:
+    analysis = analyze_trace(trace)
     executed = [step for step in trace.steps if step.action is not None and step.result is not None]
     action_keys = [step.action.model_dump_json() for step in executed if step.action is not None]
     repeated = len(action_keys) - len(set(action_keys))
@@ -135,6 +159,8 @@ def row_from_trace(trace: EpisodeTrace, benchmark_id: str, episode_index: int) -
         seed=trace.seed,
         agent=trace.agent,
         provider=trace.provider,
+        model=trace.provenance.model_name,
+        world=trace.provenance.world,
         outcome=trace.outcome.value,
         steps=trace.executed_action_count,
         invalid_output_count=trace.invalid_output_count,
@@ -160,10 +186,8 @@ def row_from_trace(trace: EpisodeTrace, benchmark_id: str, episode_index: int) -
         generated_subgoal_count=planner_calls,
         completed_subgoal_count=completed_subgoals,
         subgoal_completion_rate=completed_subgoals / planner_calls if planner_calls else None,
-        mean_actions_per_subgoal=(
-            trace.executed_action_count / planner_calls if planner_calls else None
-        ),
-        no_progress_action_count=sum(step.plan_signal == "no_progress" for step in executed),
+        mean_actions_per_subgoal=analysis.mean_actions_per_subgoal,
+        no_progress_action_count=analysis.no_progress_action_count,
         repeated_failure_count=sum(step.plan_signal == "repeated_failure" for step in executed),
         planner_latency_ms=planner_latency,
         executor_latency_ms=executor_latency,
@@ -184,6 +208,24 @@ def row_from_trace(trace: EpisodeTrace, benchmark_id: str, episode_index: int) -
         total_tokens=(total_input_tokens + total_output_tokens)
         if total_input_tokens or total_output_tokens
         else None,
+        state_progress_count=analysis.state_progress_count,
+        epistemic_progress_count=analysis.epistemic_progress_count,
+        total_progress_count=analysis.total_progress_count,
+        unique_public_fact_count=analysis.unique_public_fact_count,
+        new_fact_rate=analysis.new_fact_rate,
+        repeated_known_fact_action_count=analysis.repeated_known_fact_action_count,
+        planner_call_ratio=analysis.planner_call_ratio,
+        unique_subgoal_count=analysis.unique_subgoal_count,
+        subgoal_switch_count=analysis.subgoal_switch_count,
+        same_subgoal_repeated_action_count=analysis.same_subgoal_repeated_action_count,
+        same_subgoal_rejected_action_count=analysis.same_subgoal_rejected_action_count,
+        unique_room_count=analysis.unique_room_count,
+        unique_object_interaction_count=analysis.unique_object_interaction_count,
+        repeated_inspection_count=analysis.automatic_failure_signals.repeated_inspection,
+        navigation_cycle_count=analysis.automatic_failure_signals.repeated_navigation,
+        latency=trace.latency_ms,
+        evaluation_metrics_available=not analysis.unavailable_metrics,
+        unavailable_metrics=",".join(analysis.unavailable_metrics),
     )
 
 
@@ -202,6 +244,7 @@ def write_benchmark(rows: list[BenchmarkRow], output_dir: Path) -> tuple[Path, P
         groups.setdefault(row.condition_id, []).append(row)
     payload = {
         "schema_version": "benchmark_v3",
+        "evaluation_schema_version": "evaluation_v2",
         "benchmark_id": benchmark_id,
         "rows": [row.__dict__ for row in rows],
         "totals": {"attempted": len(rows)},
@@ -245,6 +288,37 @@ def _aggregate(rows: list[BenchmarkRow]) -> dict[str, object]:
         "mean_no_progress_action_count": sum(row.no_progress_action_count for row in rows)
         / attempted,
         "mean_repeated_failure_count": sum(row.repeated_failure_count for row in rows) / attempted,
+        "mean_state_progress_count": sum(row.state_progress_count for row in rows) / attempted,
+        "mean_epistemic_progress_count": sum(row.epistemic_progress_count for row in rows)
+        / attempted,
+        "mean_total_progress_count": sum(row.total_progress_count for row in rows) / attempted,
+        "mean_unique_public_fact_count": sum(row.unique_public_fact_count for row in rows)
+        / attempted,
+        "mean_new_fact_rate": _mean_optional(row.new_fact_rate for row in rows),
+        "mean_repeated_known_fact_action_count": sum(
+            row.repeated_known_fact_action_count for row in rows
+        )
+        / attempted,
+        "mean_planner_call_ratio": sum(row.planner_call_ratio for row in rows) / attempted,
+        "mean_unique_subgoal_count": sum(row.unique_subgoal_count for row in rows) / attempted,
+        "mean_subgoal_switch_count": sum(row.subgoal_switch_count for row in rows) / attempted,
+        "mean_same_subgoal_repeated_action_count": sum(
+            row.same_subgoal_repeated_action_count for row in rows
+        )
+        / attempted,
+        "mean_same_subgoal_rejected_action_count": sum(
+            row.same_subgoal_rejected_action_count for row in rows
+        )
+        / attempted,
+        "mean_unique_room_count": sum(row.unique_room_count for row in rows) / attempted,
+        "mean_unique_object_interaction_count": sum(
+            row.unique_object_interaction_count for row in rows
+        )
+        / attempted,
+        "mean_repeated_inspection_count": sum(row.repeated_inspection_count for row in rows)
+        / attempted,
+        "mean_navigation_cycle_count": sum(row.navigation_cycle_count for row in rows)
+        / attempted,
         "mean_planner_latency_ms": sum(row.planner_latency_ms for row in rows) / attempted,
         "mean_executor_latency_ms": sum(row.executor_latency_ms for row in rows) / attempted,
         "total_planner_latency_ms": sum(row.planner_latency_ms for row in rows),
