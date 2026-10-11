@@ -66,3 +66,24 @@
 1. T1：修 CI + provenance 报告（`01`），冻结本台账为后续唯一分母。
 2. T2：离线重算（`02`），0 次新 LLM 调用。
 3. T3 缺口 `C011`（+可选 `React-C111`）在登记预算后补测；此前不得把 30 步基线与 unlimited 成功率相减当架构收益。
+
+## 6. 在线补测冻结登记（2026-10-11，用户已批准在线对照）
+
+公共冻结条件：`provider=openai, model=muse-spark-1.3-contributor`（`verify-model` 通过），
+`world=spaceship-escape/world_version=spaceship-escape-v2-zh`（飞船 v1），
+`--autonomous` 基座（通用 prompt，hints/candidates/guard 全关），temperature/reasoning 与既有 s60 矩阵一致。
+停止条件：单局 `provider_error` 中断单列重跑一次仍失败则记 censored；连续 2 局网关限流则暂停并记录。
+
+| 实验 ID | 条件 | 预算/规模 | 预期调用 | 状态 |
+|---|---|---|---|---|
+| EXP-C011-pilot | memory, H0 R1 P1, B60, seed 0（1 局） | ≤60 动作 | ≤70 请求 | done：step_limit |
+| EXP-C011 | memory, H0 R1 P1, B60, seeds 0–4（5 局 +1 重跑） | 5×60 | ≤350 请求 | done：**0/5**（seed1 首跑 provider_error→重跑仍 step_limit） |
+| EXP-ReactC111-pilot | react, H5 R1 P1, B60, seed 0（1 局） | ≤60 | ≤70 | 待跑 |
+| EXP-ReactC111 | react, H5 R1 P1, B60, seeds 0–4（5 局） | 5×60 | ≤350 | 待跑（pilot 后） |
+| EXP-E1-pilot | memory+E1, H5 R1 P1, B60, seed 0（1 局） | ≤60 | ≤70 | 待跑（E1 实现+离线验证后） |
+| EXP-E1 | memory+E1, H5 R1 P1, B60, seeds 0–4（5 局） | 5×60 | ≤350 | 待跑 |
+| EXP-Pctx-pilot | planning, H5 R1 P1, B60, seed 0（1 局） | ≤60×2 调用 | ≤140 | 待跑 |
+| EXP-Pctx | planning, H5 R1 P1, B60, seeds 0–4（5 局） | 5×60 | ≤700 | 待跑 |
+
+对照声明：EXP-C011/ ReactC111 /E1/Pctx 均与既有 `muse-memory-s60*` 同模型同 world 同 B60；
+与 B30 自主基线比较时必须声明预算差。不得修改已冻结实验定义追逐成功率。

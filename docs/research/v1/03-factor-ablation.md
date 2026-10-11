@@ -37,7 +37,7 @@
 | C001 | 0 | 0 | 1 | 0/5 | `results/muse-memory-s60-p` |
 | C110 | 1 | 1 | 0 | 0/5 | `results/muse-memory-s60-h5r` |
 | C101 | 1 | 0 | 1 | 1/5 | `results/muse-memory-s60-h5p` |
-| C011 | 0 | 1 | 1 | **缺失（最关键）** | 需补 |
+| C011 | 0 | 1 | 1 | **0/5（本轮新跑，见 §8）** | `results/exp-C011-pilot` + `results/exp-C011` + `results/exp-C011-retry` |
 | C111 | 1 | 1 | 1 | 3/5（复验 seeds5-9：2/5） | `results/muse-memory-s60-h5rp(-s59)` |
 
 不可比（verified）：`muse-memory-s30-h5rp`（B30 0/5）、`shipv3-unlimited`（B0 3/3）、灯塔/深渊各格（地图不同）均不得并入上表。
@@ -59,4 +59,32 @@ Memory vs React（M 主效应）：代码正交（`cli.py:417-431` agent 选择�
 
 ## 7. 测试与 CI
 
-- `tests/test_phase_prior_audit.py` 通过（见 `01`）。消融新跑 0 局（blocked：需模型预算与 `00` 登记；本轮只交付矩阵与审计）。
+- `tests/test_phase_prior_audit.py` 通过（见 `01`）。在线补测见 §8（C011 已完成 0/5；C010 仍缺）。
+
+## 8. 在线补测进展（2026-10-11 EXP-C011，已完成）
+
+- EXP-C011-pilot（memory, H0 R1 P1, B60, 飞船 v1, seed 0）：**`step_limit` 失败**，60 步未逃生。
+  trace `runs/episode_20261011T095424Z_memory_seed-0_a7a65f95.json`（provenance verified：
+  `recent_history_enabled=false/window 0, stuck_recovery=true, public_phase_context=true, step_limit=60,
+  memory_v2, muse-spark-1.3-contributor`）。
+  行为：第 20 步读到码（`CODE_READ ALPHA-731`），随后 corridor↔control_room 往返，
+  `CODE_READ` 共 9 次（steps 20/21/26/30/32/43/49/52/58），从未前往逃生链。
+- EXP-C011（seeds 1–4）+ seed 1 重跑：**C011 格 0/5**（全部 `step_limit`，60 步）。
+  seed 1 首跑在 26 步后 `provider_error` 中断（censored，trace `…_seed-1_9c3f5737.json`），
+  按停止规则重跑一次仍 `step_limit`（trace `runs/episode_20261011T102929Z_memory_seed-1_04a8d68e.json`）。
+
+| seed | outcome | 重读码 | look | input/output tokens | trace |
+|---|---|---|---|---|---|
+| 0 | step_limit | 9 次 | 14 | 53k/46k | `runs/episode_20261011T095424Z_memory_seed-0_a7a65f95.json` |
+| 1 | step_limit（首跑 provider_error→重跑） | 9 次 | 22 | 55k/29k | `runs/episode_20261011T102929Z_memory_seed-1_04a8d68e.json` |
+| 2 | step_limit | 6 次 | 26 | 52k/36k | `runs/episode_20261011T100904Z_memory_seed-2_beabe31e.json` |
+| 3 | step_limit | 8 次 | 23 | 52k/38k | `runs/episode_20261011T101536Z_memory_seed-3_0efdf13a.json` |
+| 4 | step_limit | 8 次 | 19 | 53k/39k | `runs/episode_20261011T102235Z_memory_seed-4_dfe5a650.json` |
+
+- 交互结论更新：C101（H+P）1/5 vs C011（R+P）**0/5** vs C111（H+R+P）3/5。
+  R 在无 H 时不能替代 H（0/5），R 只在有 H 时把 1/5 抬到 3/5——**R 是 H 的放大器，不是独立驱动**。
+  H 必要性成立（无 H 的 C000/C010 未测但 C001/C011 均为 0/5；C010 仍缺，R 主效应不可单独判定）。
+- 附带观察（reported，需后续验证）：C011 后半程 `decision_reason` 质量坍缩，
+  出现 `placeholder`/`abc`/`123`/`1234567890` 等无意义短理由（尤其 seed 3/4 的 look 簇），
+  但 Action 仍合法（`invalid_output=0`）。长循环下理由字段先退化，动作接地随后停滞。
+- 成本：6 次尝试（含 1 censored 重跑）≈ input 265k / output 188k tokens，模型耗时约 33 分钟。
