@@ -16,6 +16,7 @@ venv/
 # Generated experiment output
 runs/
 results/
+logs/
 
 # Editor and OS files
 .DS_Store

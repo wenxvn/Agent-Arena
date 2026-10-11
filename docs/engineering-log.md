@@ -17,6 +17,51 @@
 关联提交：Git commit，若有
 ```
 
+## 2026-10-11 三图难度对齐地图完成，实跑进行中
+
+事件：灯塔扩建为 8 房 v2（工具箱搬进地窖、诱饵房/物、新授权码），新增第三世界
+深海站 v1（8 房飞船形拓扑、新名称新授权码）；三张图最优公开路径 16–19 步。
+
+原因：此前只有飞船 v3（8 房难图）和灯塔 v1（6 房简单图），用户要求 3 张难度
+相当的地图做测试，并把简单的灯塔加难。
+
+改动：`worlds/data/lighthouse_escape_v2.json` + `LighthouseV2Definition`/
+`LighthouseV2Environment`（规则复用）、灯塔储物箱可见逻辑按容器房间泛化、
+`worlds/abyss.py` + `data/abyss_escape_v1.json`（新 id 新谜题文本，同规则形状）、
+`worlds/__init__.py` 注册两对 selector、`cli.py` 类型标注；
+`tests/test_lighthouse_v2.py`、`tests/test_abyss.py`；`docs/specs/0009-*`。
+
+验证：全套 `pytest` 143 passed（含 11 项新测试）；灯塔 v2 16 步、深海站 19 步
+公开路径通关测试通过，旧码/诱饵/隐藏出口拒绝行为均覆盖；本机无 ruff/mypy/uv，
+只跑了 pytest。Muse 自主组合（memory + history5 + recovery + phase，不限步）
+三张图 seed 0 实跑已在后台启动。
+
+下一步：等三局实跑结果，成功则扩到 5 seeds 并归档，失败则分析 trace；
+commit/push 本轮全部改动。
+
+关联提交：待提交。
+
+## 2026-10-11 三图自主通关对照完成
+
+事件：Muse 自主组合（memory + history5 + recovery + phase，不限步）在三张
+8 房图上全部取得通关样本：深海站 seed 0（41 步）、灯塔 v2 seed 0（56 步）、
+飞船 v3 seed 2（113 步）/ seed 1（180 步）。
+
+原因：验证三图难度对齐后 AI 是否都能自主通关。
+
+改动：仅实验运行，无代码改动；trace 在 `runs/muse-3maps-*`（本地生成物，
+不进 Git）。
+
+验证：4 个 success trace（0 非法输出）+ 2 个飞船 seed 0 `provider_error`
+trace（73/76 步，0 非法输出）。关键发现：飞船 seed 1 重读授权码 20 次、
+游荡 150+ 步才逃生，不限步数是通关前提；新图一次过证明能力迁移而非背路线；
+灯塔 v2 终点模型 3 次对小艇用错 `read_terminal`（inspect 文本措辞可优化）。
+
+下一步：三图各补到 5 seeds 归档；考虑把逃生舱 inspect 文本改得更动作导向；
+commit/push 本轮全部改动。
+
+关联提交：待提交。
+
 ## 2026-10-11 飞船扩建 v3 与不限步数 5/5
 
 事件：飞船扩建为 8 房 v3（诱饵 + 新授权码），`step_limit=0` 支持不限步数；Muse 自主组合在 v3 以 5/5 成功逃生。

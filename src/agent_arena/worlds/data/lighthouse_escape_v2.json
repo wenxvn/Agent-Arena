@@ -1,0 +1,121 @@
+{
+  "world_id": "lighthouse_escape_v2",
+  "version": "v2-zh",
+  "goal": "修复引擎、点亮信号灯、读取潮汐码，并乘小艇离开雾岛。",
+  "start_room": "cliff_base",
+  "authorization_code": "TIDE-3160",
+  "rooms": [
+    {
+      "id": "cliff_base",
+      "description": "悬崖边的空地风很大，不远处有一块信号板，岔路通向棚屋、车间和潮汐洼地。",
+      "exits": ["supply_shed", "workshop_path", "tide_pool"],
+      "object_ids": ["signal_board"]
+    },
+    {
+      "id": "supply_shed",
+      "description": "补给棚里只剩一盏旧提灯，后墙有道窄门通往储物地窖。",
+      "exits": ["cliff_base", "storage_cellar"],
+      "object_ids": ["old_lantern"]
+    },
+    {
+      "id": "storage_cellar",
+      "description": "潮湿的地窖里放着一个工具箱，箱盖半掩着。",
+      "exits": ["supply_shed"],
+      "object_ids": ["tool_chest"]
+    },
+    {
+      "id": "workshop_path",
+      "description": "车间小道上有一台野战电台，滋滋作响。再往前是引擎洞的入口。",
+      "exits": ["cliff_base", "engine_cave"],
+      "object_ids": ["field_radio"]
+    },
+    {
+      "id": "engine_cave",
+      "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+      "exits": ["workshop_path", "lamp_room", "skiff_cove"],
+      "object_ids": ["engine_cover", "burnt_cell"]
+    },
+    {
+      "id": "lamp_room",
+      "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+      "exits": ["engine_cave"],
+      "object_ids": ["lamp_console"]
+    },
+    {
+      "id": "skiff_cove",
+      "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+      "exits": ["engine_cave"],
+      "object_ids": ["harbor_skiff"]
+    },
+    {
+      "id": "tide_pool",
+      "description": "潮汐洼地里只有一块被海水磨圆的礁石，别无他物。",
+      "exits": ["cliff_base"],
+      "object_ids": ["tidal_rock"]
+    }
+  ],
+  "objects": [
+    {
+      "id": "signal_board",
+      "room_id": "cliff_base",
+      "kind": "terminal",
+      "inspect_result": "信号板需要电力才能显示信息。"
+    },
+    {
+      "id": "old_lantern",
+      "room_id": "supply_shed",
+      "kind": "fixture",
+      "inspect_result": "旧提灯早就没油了，照不出什么。"
+    },
+    {
+      "id": "tool_chest",
+      "room_id": "storage_cellar",
+      "kind": "container",
+      "inspect_result": "工具箱里有一把扳手、一枚备用电芯和一块藤壶胶。"
+    },
+    {
+      "id": "field_radio",
+      "room_id": "workshop_path",
+      "kind": "terminal",
+      "inspect_result": "即使没有电力，仍可收听电台广播。"
+    },
+    {
+      "id": "engine_cover",
+      "room_id": "engine_cave",
+      "kind": "fixture",
+      "inspect_result": "引擎盖板由螺栓固定。"
+    },
+    {
+      "id": "burnt_cell",
+      "room_id": "engine_cave",
+      "kind": "fixture",
+      "inspect_result": "烧坏的电芯需要更换。"
+    },
+    {
+      "id": "harbor_skiff",
+      "room_id": "skiff_cove",
+      "kind": "fixture",
+      "inspect_result": "小艇需要潮汐码才能出发。"
+    },
+    {
+      "id": "tidal_rock",
+      "room_id": "tide_pool",
+      "kind": "fixture",
+      "inspect_result": "礁石上只有海水和贝壳，没有别的信息。"
+    }
+  ],
+  "items": [
+    {
+      "id": "wrench",
+      "container_id": "tool_chest"
+    },
+    {
+      "id": "spare_cell",
+      "container_id": "tool_chest"
+    },
+    {
+      "id": "barnacle_glue",
+      "container_id": "tool_chest"
+    }
+  ]
+}

@@ -22,6 +22,7 @@
 | 11 | Planning v1 Failure Analysis & Evaluation v2 | Research Core | done |
 | 12 | 雾岛灯塔第二世界与迁移对照 | Research Core | done |
 | 13 | 飞船扩建 v3 与不限步数 | Research Core | done |
+| 14 | 三图难度对齐：灯塔 v2 与深海站 v1 | Research Core | done |
 
 ## Foundation
 
@@ -189,6 +190,14 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 - [x] v3 地图：8 房（货舱藏箱、观察甲板/船员舱/胶带三处诱饵）、新授权码 `BETA-512`、19 步最优公开路径；规则测试通过（spec 0008）。
 - [x] `step_limit=0` 表示不限步数：非法输出上限与网关错误照常兜底；探索运行由实验者监督。
 - [x] Muse 自主组合（同获胜配置，不限步）v3 5 seeds：**5/5 成功**（152/125/153/93/65 步）；诱饵被查看/拾取均未阻止通关。
+
+### H. 三图难度对齐与自主通关对照（2026-10-11，地图 done / 实跑 pending）
+
+- [x] 灯塔 v2：8 房（工具箱搬进地窖、旧提灯/礁石/藤壶胶三处诱饵）、新授权码 `TIDE-3160`、16 步最优公开路径；规则测试与人可通关验证通过（spec 0009）。
+- [x] 深海站 v1：8 房飞船形拓扑（货舱藏箱、瞭望穹顶/睡舱诱饵链、无电状态板）、新授权码 `ABYSS-618`、19 步最优公开路径；规则测试通过（spec 0009）。
+- [x] 灯塔储物箱可见逻辑泛化为按容器房间判定（v1 行为不变）；`create_environment` 注册两对新 selector；全套 143 passed。
+- [x] Muse 自主组合（memory + history5 + recovery + phase，不限步）首轮：深海站 seed 0 ✅ 41 步、灯塔 v2 seed 0 ✅ 56 步（终点对小艇 3 次用错 `read_terminal` 后纠正），trace 在 `runs/muse-3maps-*`。
+- [x] 飞船 v3：seed 0 两次均在 73/76 步遇网关 `provider_error` 中断（0 非法输出，倾向偶发抖动：seed 1/2 同网关跑过 100+ 步无事）；seed 2 ✅ 113 步、seed 1 ✅ 180 步（重读授权码 20 次，不限步数立功，60 步预算下必挂）。三图均有自主通关样本，trace 在 `runs/muse-3maps-*`。
 
 ## Release 3
 

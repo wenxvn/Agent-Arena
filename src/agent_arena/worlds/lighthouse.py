@@ -62,6 +62,30 @@ def load_lighthouse_definition() -> LighthouseDefinition:
     return LighthouseDefinition.model_validate_json(definition_path.read_text(encoding="utf-8"))
 
 
+class LighthouseV2Definition(BaseModel):
+    """Versioned data for the expanded eight room lighthouse; same rule contract."""
+
+    model_config = ConfigDict(frozen=True)
+
+    world_id: Literal["lighthouse_escape_v2"]
+    version: str
+    goal: str
+    start_room: str
+    authorization_code: str
+    rooms: tuple[RoomDefinition, ...]
+    objects: tuple[ObjectDefinition, ...]
+    items: tuple[ItemDefinition, ...]
+
+
+def load_lighthouse_v2_definition() -> LighthouseV2Definition:
+    """Load the checked in static definition for the expanded lighthouse version."""
+
+    definition_path = files("agent_arena.worlds").joinpath("data/lighthouse_escape_v2.json")
+    return LighthouseV2Definition.model_validate_json(
+        definition_path.read_text(encoding="utf-8")
+    )
+
+
 LIGHTHOUSE_MILESTONES: tuple[PublicMilestone, ...] = (
     PublicMilestone(
         stage="收集修理工具",
@@ -173,15 +197,24 @@ class LighthouseEnvironment(Environment):
 
     def _visible_objects(self) -> tuple[str, ...]:
         visible = list(self._current_room().object_ids)
-        if self._state.current_room == "supply_shed" and all(
-            item_id in self._state.inventory for item_id in self._items
+        for container_id in sorted(
+            {item.container_id for item in self._items.values()}
         ):
-            visible = [object_id for object_id in visible if object_id != "tool_chest"]
-        if self._state.current_room == "supply_shed":
+            if self._state.current_room != self._objects[container_id].room_id:
+                continue
+            contained = [
+                item_id
+                for item_id, item in self._items.items()
+                if item.container_id == container_id
+            ]
+            if contained and all(item_id in self._state.inventory for item_id in contained):
+                visible = [object_id for object_id in visible if object_id != container_id]
             visible.extend(
                 item_id
                 for item_id in sorted(self._state.revealed_items)
                 if item_id not in self._state.inventory
+                and self._items.get(item_id) is not None
+                and self._items[item_id].container_id == container_id
             )
         visible = [
             object_id for object_id in visible if object_id not in self._state.blocked_objects
@@ -300,6 +333,17 @@ class LighthouseEnvironment(Environment):
     @staticmethod
     def _rejected(reason: ToolReason) -> ToolResult:
         return ToolResult(status=ToolStatus.REJECTED, reason=reason, summary=_SUMMARIES[reason])
+
+
+class LighthouseV2Environment(LighthouseEnvironment):
+    """The expanded eight room lighthouse; identical rules, new map and code."""
+
+    def __init__(self, definition: LighthouseV2Definition | None = None, seed: int = 0) -> None:
+        self.definition = definition or load_lighthouse_v2_definition()
+        self._rooms = {room.id: room for room in self.definition.rooms}
+        self._objects = {item.id: item for item in self.definition.objects}
+        self._items = {item.id: item for item in self.definition.items}
+        self._state = self._initial_state(seed)
 
 
 _SUMMARIES: dict[ToolReason, str] = {
