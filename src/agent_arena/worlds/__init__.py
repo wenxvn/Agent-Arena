@@ -27,6 +27,11 @@ from agent_arena.worlds.spaceship_escape import (
     load_spaceship_v2_definition,
     load_spaceship_v3_definition,
 )
+from agent_arena.worlds.variants import (
+    SeededShipEnvironment,
+    build_seeded_definition,
+    load_seeded_base_definition,
+)
 
 __all__ = [
     "AbyssEasyEnvironment",
@@ -35,12 +40,15 @@ __all__ = [
     "LighthouseEnvironment",
     "LighthouseV2Environment",
     "LighthouseV3Environment",
+    "SeededShipEnvironment",
     "SpaceshipEscapeEnvironment",
     "SpaceshipV2Definition",
     "SpaceshipV2Environment",
     "SpaceshipV3Definition",
     "SpaceshipV3Environment",
     "WorldDefinition",
+    "build_seeded_definition",
+    "load_seeded_base_definition",
     "load_abyss_definition",
     "load_abyss_easy_definition",
     "load_abyss_hard_definition",
@@ -79,11 +87,14 @@ def create_environment(
         environment = AbyssEasyEnvironment(seed=seed)
     elif (world, world_version) == ("abyss-escape", "abyss-escape-hard-zh"):
         environment = AbyssHardEnvironment(seed=seed)
+    elif (world, world_version) == ("spaceship-escape", "spaceship-escape-v5-zh-seeded"):
+        environment = SeededShipEnvironment(seed=seed)
     else:
         raise ValueError(
             "不支持该世界或版本；当前支持 spaceship-escape / spaceship-escape-v2-zh"
             "、spaceship-escape / spaceship-escape-v3-zh"
             "、spaceship-escape / spaceship-escape-v4-zh"
+            "、spaceship-escape / spaceship-escape-v5-zh-seeded"
             "、lighthouse-escape / lighthouse-escape-v1-zh"
             "、lighthouse-escape / lighthouse-escape-v2-zh"
             "、lighthouse-escape / lighthouse-escape-v3-zh"
