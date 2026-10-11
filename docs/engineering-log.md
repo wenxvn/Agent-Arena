@@ -1,5 +1,14 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-11 V1 提纲 S0–S1 完成、S2–S6 部分（离线先行、在线阻塞）
+
+事件：按 `研究提纲/V1研究提纲.md` 执行 T1–T7；T1 CI 红灯修复与运行台账、T2 离线重评完成；T3–T7 审计/设计/离线契约测试完成，在线补测阻塞。
+原因：把“45/45”从叙述变为可追溯证据；成本控制要求先离线后在线，不重跑已有完整实验。
+改动：`tests/test_phase_tracker.py` 去未使用导入；新增 `docs/research/v1/`（00/01/02/03/04/05/06/07/SUMMARY + assets）；新增 `scripts/build_run_register.py`；新增 `tests/test_success_at_k.py`、`test_terminal_contract.py`、`test_phase_prior_audit.py`、`test_seed_replicate.py`；`docs/scope/scope.md` 加 V1 状态。
+验证：`PYTHONPATH=src python -m pytest -q` 173 passed（159+14 新）；`build_run_register.py` 生成 144 行台账；`ruff/mypy/uv` 本机缺装，CI 全绿待 push 后确认；在线实验 0 次新调用。
+下一步：push 后取 CI 链接；登记预算后补 C011/React-C111、E1 在线、P-v1-context、新实例冒烟。
+关联提交：待提交（分 T1/T2/T3–T4/T5–T7 四批独立 commit）。
+
 这份记录只保存重要的工程事件，不替代 scope、spec 或 Git 历史。
 
 记录范围包括：阶段开始或完成、架构决策确认或修改、重要验证结果、阻塞及解决、开发优先级调整。

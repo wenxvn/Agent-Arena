@@ -258,3 +258,10 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 ## 当前下一步
 
 三世界九图与 Muse 自主组合 45/45 通关矩阵已完成（均值步数随难度单调递增，trace 全部归档）。下一步：终点 `read_terminal` 误用与读码后迷路的 prompt/文本消融、PlanningAgent 配相同公开上下文；之后再决定 ReflectionAgent 和 Streamlit 的顺序。
+
+## V1 研究提纲执行状态（2026-10-11，S0–S1 完成，S2–S6 部分）
+
+- S0/T1 partial：CI 红灯根因（`test_phase_tracker.py` 未使用导入）已修，本地 159→173 passed；51→45 去重台账与 provenance 审计见 `docs/research/v1/00-audit-and-run-register.md`、`01-ci-and-provenance.md`。CI 全绿待 push 后确认（本机无 uv/ruff/mypy）。
+- S1/T2 done（离线）：9 配置统计复核通过，`Success@K` 离线裁剪（K=60:60%、K=100:80%）与 TOP3 瓶颈见 `docs/research/v1/02-offline-metrics.md` + `assets/success_at_k.csv`。0 次新 LLM 调用。
+- S2–S6 partial：T3 八格矩阵（缺 C010/C011、缺 React-C111）与 Phase 先验定级见 `03-factor-ablation.md`；T4 三类错误 + E1/E2/E3 见 `04-efficiency-ablation.md`；T5 公平对照设计见 `05-planning-controlled.md`；T6 seed=replicate 审计 + 随机化设计见 `06-generalization.md`；T7 Reflection deferred + UI 只读 MVP 见 `07-reflection-and-ui.md`；总表见 `SUMMARY.md`。
+- 在线补测（C011、React-C111、E1 在线、P-v1-context、新实例评测）全部 blocked，待预算登记后执行；未重跑已有完整实验。
