@@ -303,3 +303,16 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 - S1/T2 done（离线）：9 配置统计复核通过，`Success@K` 离线裁剪（K=60:60%、K=100:80%）与 TOP3 瓶颈见 `docs/research/v1/02-offline-metrics.md` + `assets/success_at_k.csv`。0 次新 LLM 调用。
 - S2–S6 partial：T3 八格矩阵（缺 C010/C011、缺 React-C111）与 Phase 先验定级见 `03-factor-ablation.md`；T4 三类错误 + E1/E2/E3 见 `04-efficiency-ablation.md`；T5 公平对照设计见 `05-planning-controlled.md`；T6 seed=replicate 审计 + 随机化设计见 `06-generalization.md`；T7 Reflection deferred + UI 只读 MVP 见 `07-reflection-and-ui.md`；总表见 `SUMMARY.md`。
 - 在线补测（C011、React-C111、E1 在线、P-v1-context、新实例评测）全部 blocked，待预算登记后执行；未重跑已有完整实验。
+
+## V1 在线收官状态（2026-10-11 晚，用户批准在线后全部完成）
+
+- T3 done：八格 8/8（C010/C011 新跑 0/5）；React-C111 0/4（seed4 censored）。
+  结论：H 必要、M 增益（FORGOTTEN_FACT 双分离）、R 仅放大器。
+- T4 done：E1 单变量 5/5（均值 30.6，零误用）vs C111 3/5（均值 47.2），配对全优，保留；
+  E2/E3 隔离 deferred。
+- T5 done：Planning 同上下文 0/4（seed4 censored），更差且 2 倍 token，不提议 v2。
+- T6 partial：seeded-v5 生成器 + oracle + 真实 3/3（2 新布局）；跨任务族未实施。
+- T7 partial：Reflection deferred；UI 只读 MVP 实现 + 真实数据冒烟通过。
+- 中断总账：C011-seed1 provider_error→重跑失败；React-seed4 2×provider_error→censored；
+  Pctx-seed4 2×基础设施中断 + 首步 provider_error→censored。全部单列，未并入分母。
+- 另：并行会话新增 7 世界 21 图（spec 0011），兼容共存（249 passed）；本轮结论范围仍为原三世界。

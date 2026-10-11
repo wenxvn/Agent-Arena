@@ -45,6 +45,19 @@ seeded 确定性/差异性/可解性全部通过；本机无 ruff/mypy/uv。
 下一步：真实模型新图 benchmark（预算登记后执行）；commit/push 本轮全部改动。
 关联提交：`e8da39d`。
 
+## 2026-10-11 V1 提纲在线收官（33 次尝试，全部提交）
+
+事件：用户批准在线对照后，完成 C011/C010/React-C111/E1/Pctx/SeedSmoke 全部在线格；
+T7-B UI MVP 实现；与并行会话的 7 世界扩展兼容共存。
+原因：离线审计已定位缺口，低成本 pilot 逐个验证契约后放量。
+改动：`docs/research/v1/`（00–07 + SUMMARY 定稿）、E1 prompt 第 7 条（保留）、
+`worlds/variants.py` + seeded JSON + 注册、`ui/present.py` + `ui/app.py`、
+7 个新测试文件；`docs/scope/scope.md` 收官状态。
+验证：`PYTHONPATH=src pytest` 249 passed；在线 33 尝试全部记账；
+`git diff --check` 通过；ruff/mypy 待 CI。
+下一步：CI 全绿确认；E1 与消融结论在 7 新世界的复验；跨任务泛化与 Streamlit 部署。
+关联提交：`050a31a/abafbe6/15834c2/5cb869e/ac9da24/7286a69/c733c45/a0166b3` + 本批收官。
+
 ## 2026-10-11 V1 提纲 S0–S1 完成、S2–S6 部分（离线先行、在线阻塞）
 
 事件：按 `研究提纲/V1研究提纲.md` 执行 T1–T7；T1 CI 红灯修复与运行台账、T2 离线重评完成；T3–T7 审计/设计/离线契约测试完成，在线补测阻塞。

@@ -29,9 +29,13 @@
 - Benchmark CSV 全字段（`benchmark.py:22-90`，含 Eval v2 `state_progress/epistemic/new_fact_rate/repeated_*/navigation_cycle/planner_call_ratio`）+ `failure_analysis.json/csv` + CLI `analyze-trace(s)`。
 - 自主性三档 UI 必须原样显示：纯 observation / world-declared phase guidance（`public_phase_context_enabled=true`，不得标“自主发现”）/ `planner_assisted`（红字“辅助上界，非自主”）+ guarded/planning/candidate_select。
 
-### 2. 最小只读 MVP（本轮未实施）
+### 2. 最小只读 MVP（已实施，见 `src/agent_arena/ui/`）
 
 三页只读：①单 trace 步骤回放；②benchmark 对照表（读 CSV + `conditions.aggregates`）；③失败分布。经 `read_episode_trace`/`csv.DictReader` 加载，不新增 schema；禁调 `Runner/provider/Environment.step`；禁读 `.env`/密钥（CI grep `OPENAI_API_KEY|DASHSCOPE_API_KEY|get_secret_value` 在 `ui/` 零命中；展示白名单仅 provenance 非秘密字段）。
+提交 `7286a69`。streamlit 经 `import_module` 懒加载，运行走
+`uv run --with streamlit streamlit run src/agent_arena/ui/app.py`，不动 `pyproject`/`uv.lock`。
+验证：`tests/test_ui_present.py`（分级/回放/聚合/门禁）+ `tests/test_ui_app_smoke.py`
+（stub streamlit 跑真实 trace 与 E1-vs-C111 真实 CSV：1.0 vs 0.6）通过。
 
 ### 3. 验收
 

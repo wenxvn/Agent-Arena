@@ -1,48 +1,60 @@
 # V1 研究总表（SUMMARY）
 
-> 代码：`main@4b3261b` + T1 单行修复 + 4 个离线契约测试 + 1 台账脚本。模型实验 0 次新增调用。
-> 状态：`done`=已验证交付，`partial`=审计/设计完成、在线部分阻塞，`blocked`=暂不可做（含恢复条件）。
+> 代码：`main@4b3261b` 起，至本轮在线收官。模型实验：C011 6 尝试、React-C111 7 尝试、
+> C010 5 局、E1 6 局、Pctx 6 尝试、SeedSmoke 3 局，合计 33 次尝试。
+> 状态：`done`=已验证交付，`partial`=审计/设计完成、在线部分有明确决策（deferred 属合法终态）。
 
 | Task | 状态 | 实际完成内容 | 关键证据/统计 | 测试与 CI | commit | 遗留问题 |
 |---|---|---|---|---|---|---|
-| T1 | partial | F401 修复；51→45 去重台账；provenance 审计；4 离线测试+台账脚本 | 原始 46/51=90.2%，去重 45/45；本地 pytest 159 passed | 新测试待跑；CI 全绿待 push 后确认 | 待提交 | 本机无 uv/ruff/mypy（Python 3.11），CI 链接缺 |
-| T2 | done（离线） | 9 配置统计复核；Success@K 离线裁剪；TOP3 瓶颈 + step 引用 | K=60:60%、K=100:80%；B1 重读53次/B2 误用68 hits/B3 look簇 | `test_success_at_k` 待跑；`analyze-traces` 可重算 | 待提交 | 阶段精确分解需全量 analyze-traces CSV |
-| T3 | partial | H/R/P 实现审计；Phase 先验定级；八格矩阵（6/8 格已有，缺 C010/C011）；M 消融缺口 | C101 1/5 vs C111 3/5；P 含物品名+阶段顺序（测试锁定） | `test_phase_prior_audit` 待跑；补测 0 局 blocked | 待提交 | C011 + React-C111 未跑（需预算登记） |
-| T4 | partial | 三类错误分类 + step 引用；E1/E2/E3 插入点与排序；离线契约测试 | E1>E3>E2；灯塔 lamp_console 缺定义 verified | `test_terminal_contract` 待跑；在线对照 not run | 待提交 | E1 未实施；E2 需新 world version |
-| T5 | partial | qwen/Muse 旧失败复核；透传等价+prompt分叉；P-v1-context 设计 + G1 | 双输基线可比；与获胜组不可比；无偷读 | 无新测试；在线对照 not run | 待提交 | 需 T3 冻结机制 + 预算 |
-| T6 | partial | seed=replicate 审计；版本机制；随机化+新任务族设计 | seed 只存档（3 处行号）；旧图锁定 | `test_seed_replicate` 待跑；生成器 not run | 待提交 | 生成器/冒烟需新 spec |
-| T7 | partial | Reflection deferred 决策句；UI 只读 MVP 设计 + 契约清单 | 高频第二调用零完成；三档标记要求 | 无新测试；实现 not run | 待提交 | 待 E1/E3 与 Planning 对照后重估 |
+| T1 | done | F401 修复；51→45 去重台账；provenance 审计；4 离线测试+台账脚本 | 原始 46/51=90.2%，去重 45/45；本地 249 passed（含并行会话 56 项） | 新测试全过；CI 全绿待 push 后确认 | `f1e441a` | 本机无 uv/ruff/mypy，CI 链接缺 |
+| T2 | done | 9 配置统计复核；Success@K 离线裁剪；TOP3 瓶颈 + step 引用 | K=60:60%、K=100:80%；B1 重读53次/B2 误用68 hits/B3 look簇 | `test_success_at_k` 通过；可重算 | `24f3851` | 阶段精确分解待全量 analyze-traces |
+| T3 | done | 八格 8/8（C010/C011 新跑 0/5）；React-C111 0/4；Phase 定级测试锁定 | H 必要、M 增益（FORGOTTEN_FACT 双分离）、R 仅放大器 | 3 审计测试 +33 次在线尝试 | `050a31a` `abafbe6` `a0166b3` | n=5，只报效应 |
+| T4 | done | E1 单变量 5/5 有效保留；E2/E3 隔离 deferred | E1 5/5 均值 30.6 零误用 vs C111 3/5 均值 47.2，配对全优 | 诚实性契约通过；在线 6 局 | `15834c2` `5cb869e` | E1 只在飞船 v1 验证 |
+| T5 | done | P-v1-context 0/4；不提议 Planning v2 | planning 更差（0/4，2 倍 token）；子目标完成≠逃生 | 在线 6 尝试；0/5 合法交付 | `c733c45` | planning 系 prompt 无 E1 规则（已披露） |
+| T6 | partial | seeded-v5 生成器 + oracle 测试 + 真实 3/3；新任务族仍设计 | 2 新布局一次通过；按 hash 分面（aggregates=null 验证警告） | `test_seeded_world` 9 项通过 | `ac9da24` | 跨任务泛化未实施；码值未随机（已披露） |
+| T7 | partial | Reflection deferred（决策句）；UI 只读 MVP 实现+冒烟 | 高频第二调用零完成；E1-vs-C111 回放 1.0 vs 0.6 | UI 7 项测试通过；部署走 --with | `7286a69` | streamlit 未进 lock（设计如此）；Reflection 无收益证据 |
 
 ## CI 是否全绿
 
-否。本地 pytest 159 passed（Python 3.11 + `PYTHONPATH=src`）；Ruff/mypy/uv 本机缺装，CI 全绿待 push 后 GitHub Actions `quality` 链接确认。红灯根因（单行 F401）已修。
+本地 pytest 全绿（249 passed，含并行会话新增 7 世界 56 项）；Ruff/mypy 本机缺装，CI 全绿待 push 后 GitHub Actions `quality` 链接确认。红灯根因（单行 F401）早已修复。
 
 ## 45/45 口径
 
 - 去重后 45 组合全 success（每组合至少一次成功）。
 - 原始尝试 46 success + 5 provider_error = 51 文件，端到端 90.2%。
 - “6 次网关异常”缺 1 件源文件（abyss-easy 双 success 非网关错误），已修正记述，不补数字。
+- 本轮新增 33 次尝试全部单列记账（见 `00` §6），未并入 45/45 分母。
 
 ## 离线 Success@K 与瓶颈
 
 - 总体 K=30/60/100/150/200：15.6%/60.0%/80.0%/88.9%/93.3%；飞船最敏感（K=60 仅 26.7%）。
 - TOP3：B1 重复读码+读码后空转（强）> B2 终点工具误用（强，灯塔）> B3 look 簇空转（中）。
+- E1 已把 B1/B2 在飞船 v1 上消除（5 局零误用、读码 ≤2 次）。
 
-## 消融最有价值结论（可信度）
+## 消融最终结论（可信度）
 
-- P 必须与 H 联动（C101 1/5 vs 单变量全 0/5），R 疑似放大器（C111−C101=2/5）——可信度中（缺 C011，不可判交互）。
-- P = world-declared guidance（含物品名+阶段顺序），主成绩不得称纯自主——可信度高（代码+测试锁定）。
-- 预算独立效应大（B30 0/5 → B60 3/5 → unlimited 45/45）——可信度高；跨预算差值不得当架构收益。
+- H 必要（无 H 四格全 0/5）——高；M 增益（FORGOTTEN_FACT 双分离，0/4 vs 3/5）——中高；
+  R 仅放大器（R-only 与 R+P 全 0/5，C101 1/5→C111 3/5）——中高；P = world-declared guidance——高。
+- E1（通用 tool 语义）5/5 vs 3/5，配对 5 格全优，token −35%/−50%——中高（n=5，同模型，跨日对照已声明）。
+- Planning + 同上下文更差（0/4，2 倍成本），不做 v2——中高。
 
 ## Planning/Reflection/泛化
 
-- Planning：与 Memory 双输基线可比，失败主因 grounding；P-v1-context 设计完成，未跑。更好/更差：**证据不足**。
-- Reflection：deferred（见决策句），无必要性证据。
-- 随机化/跨任务：审计+设计完成，seed=replicate 已测试锁定；生成器与评测未做。
+- Planning：更差，不是更好，也不是证据不足（公平对照完成）。
+- Reflection：deferred（E1 成功后必要性更弱；第二调用零完成率已证无效）。
+- 随机化：同任务结构实例迁移 3/3（2 新布局）；跨任务结构未做。
+
+## 并行会话说明（2026-10-11 晚）
+
+- 另一并行会话新增 7 世界 21 图（spec 0011，commit `e8da39d`），与本轮工作兼容：
+  全套 249 passed，我的 seeded 注册、E1 prompt、UI 文件均完好。本轮 V1 提纲执行范围
+  仍为原三世界（提纲冻结时的范围）， conclusions 不自动外推到 7 新世界；
+  E1/C111 等结论在新世界的复验为明确下一步（未做，不假装已做）。
 
 ## 未做/失败/证据不足明示
 
-- 未做：一切新模型在线对照（T3 补测、T4 E1 在线、T5 上下文对照、T6 新实例评测、T7 实现）。
-- 失败：CI 全绿未确认；`1a95834e` Planning 整批 provider_error 作废。
-- 证据不足：M 主效应、P 内部分量、Planning 是否受益于同上下文、Reflection 收益。
+- 未做：E2/E3（deferred，有证据的决策）、跨任务泛化、新世界复验、Planning v2（证据为负）。
+- 失败：Pctx seed 4 两次基础设施中断（并行争用）+ 一次首步 provider_error→censored；
+  React-C111 seed 4 两次 provider_error→censored；C011 seed 1 一次 provider_error→重跑失败。
+- 证据不足：一切 n=5 结论均只报效应不报显著性；C111 为跨日历史对照（已声明）。
 - 未重跑已有完整实验；未伪造表格；未假定正向结果。
