@@ -1,6 +1,6 @@
 from agent_arena.arena import ToolReason, ToolResult, ToolStatus
 from agent_arena.evaluation.runner import PublicPhaseTracker
-from agent_arena.worlds.lighthouse import LIGHTHOUSE_MILESTONES, LighthouseEnvironment
+from agent_arena.worlds.lighthouse import LighthouseEnvironment
 from agent_arena.worlds.spaceship_escape import (
     SPACESHIP_MILESTONES,
     SpaceshipEscapeEnvironment,
