@@ -66,3 +66,104 @@ def compare_conditions(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "mean_input_tokens": (sum(input_tokens) / len(input_tokens)) if input_tokens else "N/A",
         "mean_output_tokens": (sum(output_tokens) / len(output_tokens)) if output_tokens else "N/A",
     }
+
+
+def trace_overview(trace: dict[str, Any]) -> dict[str, Any]:
+    """单局头部总览（只取白名单字段；缺值记 N/A）。"""
+    provenance = trace.get("provenance", {}) or {}
+    steps = trace.get("steps", []) or []
+    input_tokens = sum(s.get("input_tokens") or 0 for s in steps if isinstance(s, dict))
+    output_tokens = sum(s.get("output_tokens") or 0 for s in steps if isinstance(s, dict))
+    prompt_hash = str(provenance.get("base_prompt_hash") or "")
+    return {
+        "episode_id": trace.get("episode_id", "N/A"),
+        "agent": trace.get("agent", "N/A"),
+        "world_version": trace.get("world_version", "N/A"),
+        "model": provenance.get("model_name", "N/A"),
+        "seed": trace.get("seed", "N/A"),
+        "outcome": trace.get("outcome", "N/A"),
+        "steps": trace.get("executed_action_count", len(steps)),
+        "invalid_outputs": trace.get("invalid_output_count", "N/A"),
+        "rejected_actions": trace.get("rejected_action_count", "N/A"),
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "latency_ms": trace.get("latency_ms", "N/A"),
+        "prompt_hash": prompt_hash[:8] if prompt_hash else "N/A",
+        "autonomy": autonomy_level(provenance),
+    }
+
+
+def success_at_k(steps_list: list[int], budgets: list[int]) -> dict[int, float]:
+    """离线 Success@K：步数 ≤K 视为该预算下成功（回放估计，非在线预算）。"""
+    total = len(steps_list)
+    return {
+        budget: (sum(1 for steps in steps_list if steps <= budget) / total) if total else 0.0
+        for budget in budgets
+    }
+
+
+def error_hotspots(trace: dict[str, Any]) -> dict[str, int]:
+    """T4 三类错误计数（只用公开字段；旧 schema 缺字段时按 0 计）。"""
+    steps = trace.get("steps", []) or []
+    wrong_tool = 0
+    code_reads = 0
+    post_code_wander = 0
+    seen_code = False
+    for step in steps:
+        if not isinstance(step, dict):
+            continue
+        action = step.get("action") or {}
+        result = step.get("result") or {}
+        reason = result.get("reason")
+        if action.get("tool") == "read_terminal" and reason == "wrong_target":
+            wrong_tool += 1
+        if reason == "code_read":
+            code_reads += 1
+            seen_code = True
+        elif seen_code and (action.get("tool") in ("move", "look")):
+            post_code_wander += 1
+    return {
+        "wrong_tool_at_terminal": wrong_tool,
+        "code_reads": code_reads,
+        "repeated_code_read": max(0, code_reads - 1),
+        "post_code_moves": post_code_wander,
+    }
+
+
+def aggregate_traces(traces: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """多局 trace 按 world_version 聚合成矩阵行（成功 seed、均值、中位数）。"""
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for trace in traces:
+        if not isinstance(trace, dict):
+            continue
+        groups.setdefault(str(trace.get("world_version", "unknown")), []).append(trace)
+    rows: list[dict[str, Any]] = []
+    for version in sorted(groups):
+        group = groups[version]
+        successes = sorted(
+            trace.get("seed") for trace in group if trace.get("outcome") == "success"
+        )
+        steps = sorted(
+            trace.get("executed_action_count")
+            for trace in group
+            if trace.get("outcome") == "success"
+            and isinstance(trace.get("executed_action_count"), (int, float))
+        )
+        rows.append(
+            {
+                "world_version": version,
+                "success": f"{len(successes)}/{len(group)}",
+                "success_seeds": successes,
+                "mean_steps": (sum(steps) / len(steps)) if steps else "N/A",
+                "median_steps": (steps[len(steps) // 2]) if steps else "N/A",
+                "attempts": len(group),
+            }
+        )
+    return rows
+
+
+def page_rows(rows: list[dict[str, Any]], page: int, size: int) -> list[dict[str, Any]]:
+    """回放分页（page 从 1 起；越界返回空表，不抛错）。"""
+    if page < 1 or size < 1:
+        return []
+    return rows[(page - 1) * size : page * size]

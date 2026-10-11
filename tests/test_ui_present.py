@@ -5,7 +5,16 @@ import json
 import re
 from pathlib import Path
 
-from agent_arena.ui.present import autonomy_level, compare_conditions, summarize_trace
+from agent_arena.ui.present import (
+    aggregate_traces,
+    autonomy_level,
+    compare_conditions,
+    error_hotspots,
+    page_rows,
+    success_at_k,
+    summarize_trace,
+    trace_overview,
+)
 
 UI_DIR = Path(__file__).resolve().parent.parent / "src" / "agent_arena" / "ui"
 
@@ -84,3 +93,80 @@ def test_ui_touches_no_secrets() -> None:
         if forbidden.search(path.read_text(encoding="utf-8")):
             hits.append(path.name)
     assert hits == []
+
+
+def test_trace_overview_uses_allowlist_fields() -> None:
+    trace = {
+        "episode_id": "abc",
+        "agent": "memory",
+        "world_version": "polar-escape-easy-zh",
+        "seed": 1,
+        "outcome": "success",
+        "executed_action_count": 22,
+        "invalid_output_count": 0,
+        "rejected_action_count": 3,
+        "latency_ms": 100,
+        "provenance": {"model_name": "muse-spark-1.3-contributor", "base_prompt_hash": "44229085xx"},
+        "steps": [{"input_tokens": 10, "output_tokens": 2}],
+    }
+    overview = trace_overview(trace)
+    assert overview["steps"] == 22
+    assert overview["prompt_hash"] == "44229085"
+    assert overview["input_tokens"] == 10
+    assert overview["autonomy"] == "纯 observation 自主"
+
+
+def test_success_at_k_counts_budget_hits() -> None:
+    curve = success_at_k([20, 60, 100], [30, 60, 100])
+    assert curve == {30: 1 / 3, 60: 2 / 3, 100: 1.0}
+    assert success_at_k([], [30]) == {30: 0.0}
+
+
+def test_error_hotspots_counts_three_categories() -> None:
+    def action_step(tool: str, reason: str, **extra: object) -> dict[str, object]:
+        action: dict[str, object] = {"tool": tool}
+        action.update(extra)
+        return {"action": action, "result": {"reason": reason}}
+
+    trace = {
+        "steps": [
+            action_step("read_terminal", "wrong_target", target="harbor_skiff"),
+            action_step("read_terminal", "code_read", target="lamp_console"),
+            action_step("read_terminal", "code_read", target="lamp_console"),
+            action_step("move", "moved", destination="engine_cave"),
+            action_step("look", "looked"),
+        ]
+    }
+    hotspots = error_hotspots(trace)
+    assert hotspots["wrong_tool_at_terminal"] == 1
+    assert hotspots["code_reads"] == 2
+    assert hotspots["repeated_code_read"] == 1
+    assert hotspots["post_code_moves"] == 2
+    assert error_hotspots({}) == {
+        "wrong_tool_at_terminal": 0,
+        "code_reads": 0,
+        "repeated_code_read": 0,
+        "post_code_moves": 0,
+    }
+
+
+def test_aggregate_traces_groups_by_world_version() -> None:
+    traces = [
+        {"world_version": "v", "outcome": "success", "seed": 0, "executed_action_count": 20},
+        {"world_version": "v", "outcome": "success", "seed": 1, "executed_action_count": 30},
+        {"world_version": "v", "outcome": "step_limit", "seed": 2, "executed_action_count": 60},
+    ]
+    rows = aggregate_traces(traces)
+    assert len(rows) == 1
+    assert rows[0]["success"] == "2/3"
+    assert rows[0]["mean_steps"] == 25.0
+    assert rows[0]["median_steps"] == 30
+    assert aggregate_traces([]) == []
+
+
+def test_page_rows_bounds() -> None:
+    rows = [{"step": index} for index in range(1, 6)]
+    assert [row["step"] for row in page_rows(rows, 1, 2)] == [1, 2]
+    assert [row["step"] for row in page_rows(rows, 3, 2)] == [5]
+    assert page_rows(rows, 4, 2) == []
+    assert page_rows(rows, 0, 2) == []

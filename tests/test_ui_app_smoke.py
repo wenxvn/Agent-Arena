@@ -16,6 +16,15 @@ class _StubSidebar:
     def text_input(self, label: str, default: str = "") -> str:
         return self._owner.inputs.get(label, default)
 
+    def selectbox(self, label: str, options: list[str]) -> str:
+        override = self._owner.inputs.get(label)
+        if isinstance(override, str) and override in options:
+            return override
+        return options[0]
+
+    def slider(self, label: str, low: int, high: int, default: int) -> int:
+        return default
+
 
 class _StubStreamlit:
     radio_choice = "单局回放"
@@ -43,6 +52,9 @@ class _StubStreamlit:
     def info(self, text: object) -> None:
         self.calls.append(("info", text))
 
+    def error(self, text: object) -> None:
+        self.calls.append(("error", text))
+
 
 def _run_with_stub(radio: str, inputs: dict[str, str]) -> list[tuple[str, object]]:
     from agent_arena.ui import app as ui_app
@@ -53,7 +65,7 @@ def _run_with_stub(radio: str, inputs: dict[str, str]) -> list[tuple[str, object
     stub.calls = []
     module = types.ModuleType("streamlit")
     module.__dict__.update(
-        {name: getattr(stub, name) for name in ("title", "caption", "subheader", "write", "table", "info", "sidebar")}
+        {name: getattr(stub, name) for name in ("title", "caption", "subheader", "write", "table", "info", "error", "sidebar")}
     )
     sys.modules["streamlit"] = module
     try:
@@ -68,10 +80,13 @@ def test_app_replays_real_trace() -> None:
 
     trace_path = sorted(glob.glob("runs/muse-9maps-ship-med/*.json"))[0]
     expected = json.load(open(trace_path, encoding="utf-8"))["executed_action_count"]
-    calls = _run_with_stub("单局回放", {"trace JSON 路径": trace_path})
+    calls = _run_with_stub(
+        "单局回放",
+        {"实验目录": "muse-9maps-ship-med", "trace 文件": trace_path.split("\\")[-1]},
+    )
     tables = [payload for kind, payload in calls if kind == "table"]
     assert len(tables) == 1
-    assert len(tables[0]) == expected
+    assert len(tables[0]) == min(expected, 30)
     labels = [str(payload) for kind, payload in calls if kind == "write"]
     assert any("world-declared" in label for label in labels)
 
@@ -84,3 +99,34 @@ def test_app_compares_two_benchmark_csvs() -> None:
     assert len(summaries) == 2
     assert summaries[0]["success_rate"] == 1.0
     assert summaries[1]["success_rate"] == 0.6
+
+
+def test_app_matrix_view_aggregates_real_directory() -> None:
+    calls = _run_with_stub("矩阵总览", {"矩阵目录": "muse-9maps-ship-med"})
+    tables = [payload for kind, payload in calls if kind == "table"]
+    assert len(tables) == 1
+    assert tables[0][0]["success"] == "5/6"
+    curves = [
+        payload for kind, payload in calls
+        if kind == "write" and isinstance(payload, dict) and "success_at_k" in payload
+    ]
+    assert len(curves) == 1
+    assert curves[0]["success_at_k"][200] == 0.8
+
+
+def test_app_hotspot_view_counts_real_directory() -> None:
+    calls = _run_with_stub("错误热点", {"实验目录": "muse-9maps-ship-med"})
+    tables = [payload for kind, payload in calls if kind == "table"]
+    assert len(tables) == 1
+    assert len(tables[0]) == 6
+    assert all("wrong_tool" in row for row in tables[0])
+
+
+def test_app_rejects_path_escape() -> None:
+    from pathlib import Path
+
+    from agent_arena.ui import app as ui_app
+
+    assert ui_app._safe_dir(Path("runs"), "../src") is None
+    assert ui_app._safe_dir(Path("runs"), "muse-9maps-ship-med") is not None
+    assert ui_app._safe_dir(Path("runs"), "no-such-dir") is None

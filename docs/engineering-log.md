@@ -1,5 +1,20 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-11 V1 缺口续作：T6 跨任务证据、E1 新世界验证、UI 四视图
+
+事件：V1 收官后并行会话续作三项——flex pilot 真实 30/30 + seeded 15/15
+（跨任务迁移成立，seeded 长尾 232/159 步）；187 成功 trace 离线 E1 扫描
+（终点误用 0、重读 4 次，E1 泛化成立但无新世界对照组）；UI 只读 MVP 升级
+4 视图（回放分页/矩阵总览+Success@K/错误热点/条件对照）。
+原因：SUMMARY 点名的三项未做（跨任务泛化、E1 新世界复验、前端优化）；
+T7-Reflection deferred 为合法终态，不硬做。
+改动：新增 `docs/research/v1/08-cross-task-and-e1.md`（不碰已冻结 00–07
+与 SUMMARY）；`ui/present.py` +4 纯函数、`ui/app.py` 4 视图；
+UI 测试 10 新增/同步。
+验证：`PYTHONPATH=src python -m pytest -q` 全套通过；E1 扫描零新调用。
+下一步：全量 seeded 推广与跨任务泛化讨论（V1 T6）；commit/push。
+关联提交：待提交。
+
 ## 2026-10-11 pilot/seeded 7 配置真实模型 35/35 通关
 
 事件：6 张 flex pilot + 飞船 seeded 共 7 配置 × 5 seeds 获 35/35 成功；
