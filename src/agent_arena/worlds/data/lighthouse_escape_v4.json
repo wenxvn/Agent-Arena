@@ -1,0 +1,127 @@
+{
+  "world_id": "lighthouse_escape_v4",
+  "version": "v4-zh",
+  "goal": "修复引擎、恢复电力、读取潮汐码，并乘小艇离开灯塔。",
+  "start_room": "cliff_base",
+  "authorization_code": "TIDE-310",
+  "rooms": [
+    {
+      "id": "cliff_base",
+      "description": "悬崖下只有一块信号板，两条路分别通往泡沫小径和车间。",
+      "exits": [
+        "foam_path",
+        "workshop_path"
+      ],
+      "object_ids": [
+        "signal_board"
+      ]
+    },
+    {
+      "id": "foam_path",
+      "description": "泡沫小径尽头有一台电台，别无他路。",
+      "exits": [
+        "cliff_base"
+      ],
+      "object_ids": [
+        "field_radio"
+      ]
+    },
+    {
+      "id": "workshop_path",
+      "description": "车间里连着补给棚，再往前是引擎洞。",
+      "exits": [
+        "cliff_base",
+        "supply_shed",
+        "engine_cave"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "supply_shed",
+      "description": "补给棚里只有一个工具箱，箱盖半掩着。",
+      "exits": [
+        "workshop_path"
+      ],
+      "object_ids": [
+        "tool_chest"
+      ]
+    },
+    {
+      "id": "engine_cave",
+      "description": "引擎洞里有一台老引擎，盖板紧闭，旁边嵌着信号灯控制台。再往前是小艇湾。",
+      "exits": [
+        "workshop_path",
+        "skiff_cove"
+      ],
+      "object_ids": [
+        "engine_cover",
+        "burnt_cell",
+        "lamp_console"
+      ]
+    },
+    {
+      "id": "skiff_cove",
+      "description": "小艇湾里停着一艘小艇，等待有效授权后出发。",
+      "exits": [
+        "engine_cave"
+      ],
+      "object_ids": [
+        "harbor_skiff"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "signal_board",
+      "room_id": "cliff_base",
+      "kind": "terminal",
+      "inspect_result": "信号板需要电力才能显示信息。"
+    },
+    {
+      "id": "field_radio",
+      "room_id": "foam_path",
+      "kind": "terminal",
+      "inspect_result": "即使没有电力，仍可收听广播。"
+    },
+    {
+      "id": "tool_chest",
+      "room_id": "supply_shed",
+      "kind": "container",
+      "inspect_result": "工具箱里有一把扳手和一枚备用电芯。"
+    },
+    {
+      "id": "engine_cover",
+      "room_id": "engine_cave",
+      "kind": "fixture",
+      "inspect_result": "引擎盖板由螺栓固定。"
+    },
+    {
+      "id": "burnt_cell",
+      "room_id": "engine_cave",
+      "kind": "fixture",
+      "inspect_result": "烧坏的电芯需要更换。"
+    },
+    {
+      "id": "lamp_console",
+      "room_id": "engine_cave",
+      "kind": "terminal",
+      "inspect_result": "信号灯控制台需要电力才能工作。"
+    },
+    {
+      "id": "harbor_skiff",
+      "room_id": "skiff_cove",
+      "kind": "fixture",
+      "inspect_result": "小艇需要潮汐码才能启动。"
+    }
+  ],
+  "items": [
+    {
+      "id": "wrench",
+      "container_id": "tool_chest"
+    },
+    {
+      "id": "spare_cell",
+      "container_id": "tool_chest"
+    }
+  ]
+}

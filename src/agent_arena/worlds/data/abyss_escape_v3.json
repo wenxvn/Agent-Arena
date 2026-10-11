@@ -1,0 +1,167 @@
+{
+  "world_id": "abyss_escape_v3",
+  "version": "v3-zh",
+  "goal": "修复引擎、恢复电力、读取深渊码，并乘逃生舱离开深海站。",
+  "start_room": "docking_bay",
+  "authorization_code": "ABYSS-320",
+  "rooms": [
+    {
+      "id": "docking_bay",
+      "description": "对接舱一片昏暗，舱壁上嵌着指挥终端和状态板，一侧就是逃生舱，另一侧通往中央隧道。",
+      "exits": [
+        "central_tunnel",
+        "escape_capsule"
+      ],
+      "object_ids": [
+        "command_console",
+        "status_board"
+      ]
+    },
+    {
+      "id": "central_tunnel",
+      "description": "中央隧道连接着对接舱、维修角和瞭望穹顶。",
+      "exits": [
+        "docking_bay",
+        "repair_nook",
+        "lookout_dome"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "repair_nook",
+      "description": "维修角里有一台声呐终端，角落有通道通往货舱，再往前是反应堆沟壑。",
+      "exits": [
+        "central_tunnel",
+        "cargo_hold",
+        "reactor_trench"
+      ],
+      "object_ids": [
+        "sonar_terminal"
+      ]
+    },
+    {
+      "id": "cargo_hold",
+      "description": "货舱里只有一个工具箱，箱盖半掩着。",
+      "exits": [
+        "repair_nook"
+      ],
+      "object_ids": [
+        "supply_crate"
+      ]
+    },
+    {
+      "id": "reactor_trench",
+      "description": "反应堆沟壑里有一台老式引擎，舱盖紧闭。再往前是逃生舱。",
+      "exits": [
+        "repair_nook",
+        "escape_capsule"
+      ],
+      "object_ids": [
+        "hatch_cover",
+        "flooded_cell"
+      ]
+    },
+    {
+      "id": "escape_capsule",
+      "description": "逃生舱已经就绪，一侧连着对接舱，一侧连着反应堆沟壑。",
+      "exits": [
+        "docking_bay",
+        "reactor_trench"
+      ],
+      "object_ids": [
+        "escape_capsule"
+      ]
+    },
+    {
+      "id": "lookout_dome",
+      "description": "瞭望穹顶外只有深海，角落有扇小门通往睡舱。",
+      "exits": [
+        "central_tunnel",
+        "bunk_pod"
+      ],
+      "object_ids": [
+        "viewport"
+      ]
+    },
+    {
+      "id": "bunk_pod",
+      "description": "睡舱里只有一张固定的铺位，门后连着瞭望穹顶。",
+      "exits": [
+        "lookout_dome"
+      ],
+      "object_ids": [
+        "bunk"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "command_console",
+      "room_id": "docking_bay",
+      "kind": "terminal",
+      "inspect_result": "指挥终端需要电力才能工作。"
+    },
+    {
+      "id": "status_board",
+      "room_id": "docking_bay",
+      "kind": "terminal",
+      "inspect_result": "状态板需要电力才能显示信息。"
+    },
+    {
+      "id": "sonar_terminal",
+      "room_id": "repair_nook",
+      "kind": "terminal",
+      "inspect_result": "即使没有电力，仍可收听声呐广播。"
+    },
+    {
+      "id": "supply_crate",
+      "room_id": "cargo_hold",
+      "kind": "container",
+      "inspect_result": "工具箱里有一把力矩扳手、一枚聚变电芯和一卷海带胶带。"
+    },
+    {
+      "id": "hatch_cover",
+      "room_id": "reactor_trench",
+      "kind": "fixture",
+      "inspect_result": "引擎舱盖由螺栓固定。"
+    },
+    {
+      "id": "flooded_cell",
+      "room_id": "reactor_trench",
+      "kind": "fixture",
+      "inspect_result": "进水的电芯需要更换。"
+    },
+    {
+      "id": "escape_capsule",
+      "room_id": "escape_capsule",
+      "kind": "fixture",
+      "inspect_result": "逃生舱需要深渊码才能启动。"
+    },
+    {
+      "id": "viewport",
+      "room_id": "lookout_dome",
+      "kind": "fixture",
+      "inspect_result": "穹顶外只有深海，没有别的信息。"
+    },
+    {
+      "id": "bunk",
+      "room_id": "bunk_pod",
+      "kind": "fixture",
+      "inspect_result": "铺位上什么都没有。"
+    }
+  ],
+  "items": [
+    {
+      "id": "torque_wrench",
+      "container_id": "supply_crate"
+    },
+    {
+      "id": "fusion_cell",
+      "container_id": "supply_crate"
+    },
+    {
+      "id": "kelp_tape",
+      "container_id": "supply_crate"
+    }
+  ]
+}

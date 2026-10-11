@@ -1,0 +1,203 @@
+{
+  "world_id": "lighthouse_escape_v6",
+  "version": "v6-zh",
+  "goal": "修复引擎、恢复电力、读取潮汐码，并乘小艇离开灯塔。",
+  "start_room": "cliff_base",
+  "authorization_code": "TIDE-530",
+  "rooms": [
+    {
+      "id": "cliff_base",
+      "description": "悬崖下一片昏暗，墙上嵌着信号灯控制台和信号板，小道通往海岸。",
+      "exits": [
+        "coast_path"
+      ],
+      "object_ids": [
+        "signal_board",
+        "lamp_console"
+      ]
+    },
+    {
+      "id": "coast_path",
+      "description": "海岸连接着悬崖下、车间和潮池。",
+      "exits": [
+        "cliff_base",
+        "workshop_path",
+        "tide_pool"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "workshop_path",
+      "description": "车间里有一台电台，再往前是引擎洞，一侧是补给棚，另一侧通往锚室。",
+      "exits": [
+        "coast_path",
+        "engine_cave",
+        "supply_shed",
+        "anchor_room"
+      ],
+      "object_ids": [
+        "field_radio"
+      ]
+    },
+    {
+      "id": "supply_shed",
+      "description": "补给棚里只有一个工具箱，箱盖半掩着。",
+      "exits": [
+        "workshop_path"
+      ],
+      "object_ids": [
+        "tool_chest"
+      ]
+    },
+    {
+      "id": "engine_cave",
+      "description": "引擎洞里有一台老引擎，盖板紧闭。再往前是小艇湾。",
+      "exits": [
+        "workshop_path",
+        "skiff_cove"
+      ],
+      "object_ids": [
+        "engine_cover",
+        "burnt_cell"
+      ]
+    },
+    {
+      "id": "skiff_cove",
+      "description": "小艇湾里停着一艘小艇，等待有效授权后出发。",
+      "exits": [
+        "engine_cave"
+      ],
+      "object_ids": [
+        "harbor_skiff"
+      ]
+    },
+    {
+      "id": "tide_pool",
+      "description": "潮池边只有一只空桶，别无他物。角落有扇小门通往睡眠舱。",
+      "exits": [
+        "coast_path",
+        "sleep_pod"
+      ],
+      "object_ids": [
+        "empty_barrel"
+      ]
+    },
+    {
+      "id": "sleep_pod",
+      "description": "睡眠舱里只有一张铺位，门后连着潮池。",
+      "exits": [
+        "tide_pool"
+      ],
+      "object_ids": [
+        "cot"
+      ]
+    },
+    {
+      "id": "anchor_room",
+      "description": "锚室里只有一个生锈的锚，别无他物。里侧还有帆室。",
+      "exits": [
+        "workshop_path",
+        "sail_loft"
+      ],
+      "object_ids": [
+        "rusty_anchor"
+      ]
+    },
+    {
+      "id": "sail_loft",
+      "description": "帆室里只有一张破帆，门后连着锚室。",
+      "exits": [
+        "anchor_room"
+      ],
+      "object_ids": [
+        "torn_sail"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "signal_board",
+      "room_id": "cliff_base",
+      "kind": "terminal",
+      "inspect_result": "信号板需要电力才能显示信息。"
+    },
+    {
+      "id": "lamp_console",
+      "room_id": "cliff_base",
+      "kind": "terminal",
+      "inspect_result": "信号灯控制台需要电力才能工作。"
+    },
+    {
+      "id": "field_radio",
+      "room_id": "workshop_path",
+      "kind": "terminal",
+      "inspect_result": "即使没有电力，仍可收听广播。"
+    },
+    {
+      "id": "tool_chest",
+      "room_id": "supply_shed",
+      "kind": "container",
+      "inspect_result": "工具箱里有一把扳手、一枚备用电芯、一条旧缆绳和一只烧坏的灯泡。"
+    },
+    {
+      "id": "engine_cover",
+      "room_id": "engine_cave",
+      "kind": "fixture",
+      "inspect_result": "引擎盖板由螺栓固定。"
+    },
+    {
+      "id": "burnt_cell",
+      "room_id": "engine_cave",
+      "kind": "fixture",
+      "inspect_result": "烧坏的电芯需要更换。"
+    },
+    {
+      "id": "harbor_skiff",
+      "room_id": "skiff_cove",
+      "kind": "fixture",
+      "inspect_result": "小艇需要潮汐码才能启动。"
+    },
+    {
+      "id": "empty_barrel",
+      "room_id": "tide_pool",
+      "kind": "fixture",
+      "inspect_result": "空桶里什么都没有。"
+    },
+    {
+      "id": "cot",
+      "room_id": "sleep_pod",
+      "kind": "fixture",
+      "inspect_result": "铺位上什么都没有。"
+    },
+    {
+      "id": "rusty_anchor",
+      "room_id": "anchor_room",
+      "kind": "fixture",
+      "inspect_result": "生锈的锚搬不动。"
+    },
+    {
+      "id": "torn_sail",
+      "room_id": "sail_loft",
+      "kind": "fixture",
+      "inspect_result": "破帆帮不上忙。"
+    }
+  ],
+  "items": [
+    {
+      "id": "wrench",
+      "container_id": "tool_chest"
+    },
+    {
+      "id": "spare_cell",
+      "container_id": "tool_chest"
+    },
+    {
+      "id": "old_rope",
+      "container_id": "tool_chest"
+    },
+    {
+      "id": "burnt_bulb",
+      "container_id": "tool_chest"
+    }
+  ]
+}

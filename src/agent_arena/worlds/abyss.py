@@ -378,6 +378,105 @@ class AbyssHardEnvironment(AbyssEnvironment):
         self._state = self._initial_state(seed)
 
 
+class AbyssV2Definition(BaseModel):
+    """Versioned data for the redesigned six room easy abyss; same rule contract."""
+
+    model_config = ConfigDict(frozen=True)
+
+    world_id: Literal["abyss_escape_v2"]
+    version: str
+    goal: str
+    start_room: str
+    authorization_code: str
+    rooms: tuple[RoomDefinition, ...]
+    objects: tuple[ObjectDefinition, ...]
+    items: tuple[ItemDefinition, ...]
+
+
+def load_abyss_v2_definition() -> AbyssV2Definition:
+    """Load the checked in static definition for the redesigned easy abyss."""
+
+    definition_path = files("agent_arena.worlds").joinpath("data/abyss_escape_v2.json")
+    return AbyssV2Definition.model_validate_json(definition_path.read_text(encoding="utf-8"))
+
+
+class AbyssV3Definition(BaseModel):
+    """Versioned data for the redesigned eight room medium abyss; same rule contract."""
+
+    model_config = ConfigDict(frozen=True)
+
+    world_id: Literal["abyss_escape_v3"]
+    version: str
+    goal: str
+    start_room: str
+    authorization_code: str
+    rooms: tuple[RoomDefinition, ...]
+    objects: tuple[ObjectDefinition, ...]
+    items: tuple[ItemDefinition, ...]
+
+
+def load_abyss_v3_definition() -> AbyssV3Definition:
+    """Load the checked in static definition for the redesigned medium abyss."""
+
+    definition_path = files("agent_arena.worlds").joinpath("data/abyss_escape_v3.json")
+    return AbyssV3Definition.model_validate_json(definition_path.read_text(encoding="utf-8"))
+
+
+class AbyssV4Definition(BaseModel):
+    """Versioned data for the redesigned ten room hard abyss; same rule contract."""
+
+    model_config = ConfigDict(frozen=True)
+
+    world_id: Literal["abyss_escape_v4"]
+    version: str
+    goal: str
+    start_room: str
+    authorization_code: str
+    rooms: tuple[RoomDefinition, ...]
+    objects: tuple[ObjectDefinition, ...]
+    items: tuple[ItemDefinition, ...]
+
+
+def load_abyss_v4_definition() -> AbyssV4Definition:
+    """Load the checked in static definition for the redesigned hard abyss."""
+
+    definition_path = files("agent_arena.worlds").joinpath("data/abyss_escape_v4.json")
+    return AbyssV4Definition.model_validate_json(definition_path.read_text(encoding="utf-8"))
+
+
+class AbyssV2Environment(AbyssEnvironment):
+    """The redesigned six room easy abyss: shortcut straight to the nook."""
+
+    def __init__(self, definition: AbyssV2Definition | None = None, seed: int = 0) -> None:
+        self.definition = definition or load_abyss_v2_definition()
+        self._rooms = {room.id: room for room in self.definition.rooms}
+        self._objects = {item.id: item for item in self.definition.objects}
+        self._items = {item.id: item for item in self.definition.items}
+        self._state = self._initial_state(seed)
+
+
+class AbyssV3Environment(AbyssEnvironment):
+    """The redesigned eight room medium abyss: escape capsule next to start."""
+
+    def __init__(self, definition: AbyssV3Definition | None = None, seed: int = 0) -> None:
+        self.definition = definition or load_abyss_v3_definition()
+        self._rooms = {room.id: room for room in self.definition.rooms}
+        self._objects = {item.id: item for item in self.definition.objects}
+        self._items = {item.id: item for item in self.definition.items}
+        self._state = self._initial_state(seed)
+
+
+class AbyssV4Environment(AbyssEnvironment):
+    """The redesigned ten room hard abyss: loop plus deep code room."""
+
+    def __init__(self, definition: AbyssV4Definition | None = None, seed: int = 0) -> None:
+        self.definition = definition or load_abyss_v4_definition()
+        self._rooms = {room.id: room for room in self.definition.rooms}
+        self._objects = {item.id: item for item in self.definition.objects}
+        self._items = {item.id: item for item in self.definition.items}
+        self._state = self._initial_state(seed)
+
+
 _SUMMARIES: dict[ToolReason, str] = {
     ToolReason.LOOKED: "你查看了当前舱段。",
     ToolReason.MOVED: "你移动到了指定舱段。",

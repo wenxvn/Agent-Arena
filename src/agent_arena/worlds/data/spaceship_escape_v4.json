@@ -1,0 +1,120 @@
+{
+  "world_id": "spaceship_escape_v4",
+  "version": "easy-zh",
+  "goal": "恢复主电源，读取逃生授权码，并启动逃生舱。",
+  "start_room": "control_room",
+  "authorization_code": "ALPHA-204",
+  "rooms": [
+    {
+      "id": "control_room",
+      "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁，走廊通往深处。",
+      "exits": [
+        "corridor"
+      ],
+      "object_ids": [
+        "control_terminal"
+      ]
+    },
+    {
+      "id": "corridor",
+      "description": "中央走廊一头连着控制室，一头连着零件间。",
+      "exits": [
+        "control_room",
+        "parts_room"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "parts_room",
+      "description": "零件间里只有一个密封箱，箱盖半掩着，再往前是维修室。",
+      "exits": [
+        "corridor",
+        "maintenance_room"
+      ],
+      "object_ids": [
+        "storage_crate"
+      ]
+    },
+    {
+      "id": "maintenance_room",
+      "description": "维修控制台正在监测故障系统，再往前是反应堆舱。",
+      "exits": [
+        "parts_room",
+        "reactor_room"
+      ],
+      "object_ids": [
+        "diagnostic_terminal"
+      ]
+    },
+    {
+      "id": "reactor_room",
+      "description": "反应堆舱内有主电源面板。再往前是逃生舱。",
+      "exits": [
+        "maintenance_room",
+        "escape_pod"
+      ],
+      "object_ids": [
+        "reactor_panel",
+        "damaged_fuse"
+      ]
+    },
+    {
+      "id": "escape_pod",
+      "description": "逃生舱已准备就绪，等待有效授权后发射。",
+      "exits": [
+        "reactor_room"
+      ],
+      "object_ids": [
+        "escape_pod"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "control_terminal",
+      "room_id": "control_room",
+      "kind": "terminal",
+      "inspect_result": "控制终端需要主电源才能工作。"
+    },
+    {
+      "id": "storage_crate",
+      "room_id": "parts_room",
+      "kind": "container",
+      "inspect_result": "密封箱内有一把螺丝刀和一枚备用保险丝。"
+    },
+    {
+      "id": "diagnostic_terminal",
+      "room_id": "maintenance_room",
+      "kind": "terminal",
+      "inspect_result": "即使主电源未恢复，仍可读取诊断信息。"
+    },
+    {
+      "id": "reactor_panel",
+      "room_id": "reactor_room",
+      "kind": "fixture",
+      "inspect_result": "反应堆面板由螺丝固定。"
+    },
+    {
+      "id": "damaged_fuse",
+      "room_id": "reactor_room",
+      "kind": "fixture",
+      "inspect_result": "损坏的保险丝需要更换。"
+    },
+    {
+      "id": "escape_pod",
+      "room_id": "escape_pod",
+      "kind": "fixture",
+      "inspect_result": "逃生舱需要授权码才能启动。"
+    }
+  ],
+  "items": [
+    {
+      "id": "screwdriver",
+      "container_id": "storage_crate"
+    },
+    {
+      "id": "replacement_fuse",
+      "container_id": "storage_crate"
+    }
+  ]
+}

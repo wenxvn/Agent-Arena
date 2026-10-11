@@ -399,6 +399,105 @@ class SpaceshipV3Environment(SpaceshipV2Environment):
         self._state = self._initial_state(seed)
 
 
+class SpaceshipV4Definition(BaseModel):
+    """Versioned data for the redesigned six room easy ship; same rule contract."""
+
+    model_config = ConfigDict(frozen=True)
+
+    world_id: Literal["spaceship_escape_v4"]
+    version: str
+    goal: str
+    start_room: str
+    authorization_code: str
+    rooms: tuple[RoomDefinition, ...]
+    objects: tuple[ObjectDefinition, ...]
+    items: tuple[ItemDefinition, ...]
+
+
+def load_spaceship_v4_definition() -> SpaceshipV4Definition:
+    """Load the checked in static definition for the redesigned easy ship."""
+
+    definition_path = files("agent_arena.worlds").joinpath("data/spaceship_escape_v4.json")
+    return SpaceshipV4Definition.model_validate_json(definition_path.read_text(encoding="utf-8"))
+
+
+class SpaceshipV5Definition(BaseModel):
+    """Versioned data for the redesigned eight room medium ship; same rule contract."""
+
+    model_config = ConfigDict(frozen=True)
+
+    world_id: Literal["spaceship_escape_v5"]
+    version: str
+    goal: str
+    start_room: str
+    authorization_code: str
+    rooms: tuple[RoomDefinition, ...]
+    objects: tuple[ObjectDefinition, ...]
+    items: tuple[ItemDefinition, ...]
+
+
+def load_spaceship_v5_definition() -> SpaceshipV5Definition:
+    """Load the checked in static definition for the redesigned medium ship."""
+
+    definition_path = files("agent_arena.worlds").joinpath("data/spaceship_escape_v5.json")
+    return SpaceshipV5Definition.model_validate_json(definition_path.read_text(encoding="utf-8"))
+
+
+class SpaceshipV6Definition(BaseModel):
+    """Versioned data for the redesigned ten room hard ship; same rule contract."""
+
+    model_config = ConfigDict(frozen=True)
+
+    world_id: Literal["spaceship_escape_v6"]
+    version: str
+    goal: str
+    start_room: str
+    authorization_code: str
+    rooms: tuple[RoomDefinition, ...]
+    objects: tuple[ObjectDefinition, ...]
+    items: tuple[ItemDefinition, ...]
+
+
+def load_spaceship_v6_definition() -> SpaceshipV6Definition:
+    """Load the checked in static definition for the redesigned hard ship."""
+
+    definition_path = files("agent_arena.worlds").joinpath("data/spaceship_escape_v6.json")
+    return SpaceshipV6Definition.model_validate_json(definition_path.read_text(encoding="utf-8"))
+
+
+class SpaceshipV4Environment(SpaceshipEscapeEnvironment):
+    """The redesigned six room easy ship: a pure chain with tools second."""
+
+    def __init__(self, definition: SpaceshipV4Definition | None = None, seed: int = 0) -> None:
+        self.definition = definition or load_spaceship_v4_definition()
+        self._rooms = {room.id: room for room in self.definition.rooms}
+        self._objects = {item.id: item for item in self.definition.objects}
+        self._items = {item.id: item for item in self.definition.items}
+        self._state = self._initial_state(seed)
+
+
+class SpaceshipV5Environment(SpaceshipEscapeEnvironment):
+    """The redesigned eight room medium ship: split tool containers."""
+
+    def __init__(self, definition: SpaceshipV5Definition | None = None, seed: int = 0) -> None:
+        self.definition = definition or load_spaceship_v5_definition()
+        self._rooms = {room.id: room for room in self.definition.rooms}
+        self._objects = {item.id: item for item in self.definition.objects}
+        self._items = {item.id: item for item in self.definition.items}
+        self._state = self._initial_state(seed)
+
+
+class SpaceshipV6Environment(SpaceshipEscapeEnvironment):
+    """The redesigned ten room hard ship: split deep containers."""
+
+    def __init__(self, definition: SpaceshipV6Definition | None = None, seed: int = 0) -> None:
+        self.definition = definition or load_spaceship_v6_definition()
+        self._rooms = {room.id: room for room in self.definition.rooms}
+        self._objects = {item.id: item for item in self.definition.objects}
+        self._items = {item.id: item for item in self.definition.items}
+        self._state = self._initial_state(seed)
+
+
 _SUMMARIES: dict[ToolReason, str] = {
     ToolReason.LOOKED: "你查看了当前房间。",
     ToolReason.MOVED: "你移动到了指定房间。",

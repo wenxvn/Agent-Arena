@@ -4,9 +4,15 @@ from agent_arena.worlds.abyss import (
     AbyssEasyEnvironment,
     AbyssEnvironment,
     AbyssHardEnvironment,
+    AbyssV2Environment,
+    AbyssV3Environment,
+    AbyssV4Environment,
     load_abyss_definition,
     load_abyss_easy_definition,
     load_abyss_hard_definition,
+    load_abyss_v2_definition,
+    load_abyss_v3_definition,
+    load_abyss_v4_definition,
 )
 from agent_arena.worlds.castle import (
     CastleEasyEnvironment,
@@ -42,9 +48,15 @@ from agent_arena.worlds.lighthouse import (
     LighthouseEnvironment,
     LighthouseV2Environment,
     LighthouseV3Environment,
+    LighthouseV4Environment,
+    LighthouseV5Environment,
+    LighthouseV6Environment,
     load_lighthouse_definition,
     load_lighthouse_v2_definition,
     load_lighthouse_v3_definition,
+    load_lighthouse_v4_definition,
+    load_lighthouse_v5_definition,
+    load_lighthouse_v6_definition,
 )
 from agent_arena.worlds.lunar import (
     LunarEasyEnvironment,
@@ -76,10 +88,19 @@ from agent_arena.worlds.spaceship_escape import (
     SpaceshipV2Environment,
     SpaceshipV3Definition,
     SpaceshipV3Environment,
+    SpaceshipV4Definition,
+    SpaceshipV4Environment,
+    SpaceshipV5Definition,
+    SpaceshipV5Environment,
+    SpaceshipV6Definition,
+    SpaceshipV6Environment,
     WorldDefinition,
     load_spaceship_escape_definition,
     load_spaceship_v2_definition,
     load_spaceship_v3_definition,
+    load_spaceship_v4_definition,
+    load_spaceship_v5_definition,
+    load_spaceship_v6_definition,
 )
 from agent_arena.worlds.subway import (
     SubwayEasyEnvironment,
@@ -107,6 +128,9 @@ __all__ = [
     "AbyssEasyEnvironment",
     "AbyssEnvironment",
     "AbyssHardEnvironment",
+    "AbyssV2Environment",
+    "AbyssV3Environment",
+    "AbyssV4Environment",
     "CastleEasyEnvironment",
     "CastleEnvironment",
     "CastleHardEnvironment",
@@ -118,6 +142,9 @@ __all__ = [
     "LighthouseEnvironment",
     "LighthouseV2Environment",
     "LighthouseV3Environment",
+    "LighthouseV4Environment",
+    "LighthouseV5Environment",
+    "LighthouseV6Environment",
     "LunarEasyEnvironment",
     "LunarEnvironment",
     "LunarHardEnvironment",
@@ -137,6 +164,12 @@ __all__ = [
     "SpaceshipV2Environment",
     "SpaceshipV3Definition",
     "SpaceshipV3Environment",
+    "SpaceshipV4Definition",
+    "SpaceshipV4Environment",
+    "SpaceshipV5Definition",
+    "SpaceshipV5Environment",
+    "SpaceshipV6Definition",
+    "SpaceshipV6Environment",
     "SubwayEasyEnvironment",
     "SubwayEnvironment",
     "SubwayHardEnvironment",
@@ -148,6 +181,9 @@ __all__ = [
     "load_abyss_definition",
     "load_abyss_easy_definition",
     "load_abyss_hard_definition",
+    "load_abyss_v2_definition",
+    "load_abyss_v3_definition",
+    "load_abyss_v4_definition",
     "load_castle_definition",
     "load_castle_easy_definition",
     "load_castle_hard_definition",
@@ -159,6 +195,9 @@ __all__ = [
     "load_lighthouse_definition",
     "load_lighthouse_v2_definition",
     "load_lighthouse_v3_definition",
+    "load_lighthouse_v4_definition",
+    "load_lighthouse_v5_definition",
+    "load_lighthouse_v6_definition",
     "load_lunar_definition",
     "load_lunar_easy_definition",
     "load_lunar_hard_definition",
@@ -176,6 +215,9 @@ __all__ = [
     "load_spaceship_escape_definition",
     "load_spaceship_v2_definition",
     "load_spaceship_v3_definition",
+    "load_spaceship_v4_definition",
+    "load_spaceship_v5_definition",
+    "load_spaceship_v6_definition",
     "load_subway_definition",
     "load_subway_easy_definition",
     "load_subway_hard_definition",
@@ -267,17 +309,44 @@ def create_environment(
         environment = PyramidV2SeededEnvironment(seed=seed)
     elif (world, world_version) == ("spaceship-escape", "spaceship-escape-v5-zh-seeded"):
         environment = SeededShipEnvironment(seed=seed)
+    elif (world, world_version) == ("spaceship-escape", "spaceship-escape-easy-zh"):
+        environment = SpaceshipV4Environment(seed=seed)
+    elif (world, world_version) == ("spaceship-escape", "spaceship-escape-v1-zh"):
+        environment = SpaceshipV5Environment(seed=seed)
+    elif (world, world_version) == ("spaceship-escape", "spaceship-escape-hard-zh"):
+        environment = SpaceshipV6Environment(seed=seed)
+    elif (world, world_version) == ("lighthouse-escape", "lighthouse-escape-v4-zh"):
+        environment = LighthouseV4Environment(seed=seed)
+    elif (world, world_version) == ("lighthouse-escape", "lighthouse-escape-v5-zh"):
+        environment = LighthouseV5Environment(seed=seed)
+    elif (world, world_version) == ("lighthouse-escape", "lighthouse-escape-v6-zh"):
+        environment = LighthouseV6Environment(seed=seed)
+    elif (world, world_version) == ("abyss-escape", "abyss-escape-v2-zh"):
+        environment = AbyssV2Environment(seed=seed)
+    elif (world, world_version) == ("abyss-escape", "abyss-escape-v3-zh"):
+        environment = AbyssV3Environment(seed=seed)
+    elif (world, world_version) == ("abyss-escape", "abyss-escape-v4-zh"):
+        environment = AbyssV4Environment(seed=seed)
     else:
         raise ValueError(
             "不支持该世界或版本；当前支持 spaceship-escape / spaceship-escape-v2-zh"
             "、spaceship-escape / spaceship-escape-v3-zh"
             "、spaceship-escape / spaceship-escape-v4-zh"
             "、spaceship-escape / spaceship-escape-v5-zh-seeded"
+            "、spaceship-escape / spaceship-escape-easy-zh"
+            "、spaceship-escape / spaceship-escape-v1-zh"
+            "、spaceship-escape / spaceship-escape-hard-zh"
             "、lighthouse-escape / lighthouse-escape-v1-zh"
             "、lighthouse-escape / lighthouse-escape-v2-zh"
             "、lighthouse-escape / lighthouse-escape-v3-zh"
+            "、lighthouse-escape / lighthouse-escape-v4-zh"
+            "、lighthouse-escape / lighthouse-escape-v5-zh"
+            "、lighthouse-escape / lighthouse-escape-v6-zh"
             "、abyss-escape / abyss-escape-easy-zh"
             "、abyss-escape / abyss-escape-v1-zh"
+            "、abyss-escape / abyss-escape-v2-zh"
+            "、abyss-escape / abyss-escape-v3-zh"
+            "、abyss-escape / abyss-escape-v4-zh"
             "、abyss-escape / abyss-escape-hard-zh"
             "、polar-escape / polar-escape-easy-zh"
             "、polar-escape / polar-escape-v1-zh"

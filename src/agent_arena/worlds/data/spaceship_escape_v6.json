@@ -1,0 +1,196 @@
+{
+  "world_id": "spaceship_escape_v6",
+  "version": "hard-zh",
+  "goal": "恢复主电源，读取逃生授权码，并启动逃生舱。",
+  "start_room": "control_room",
+  "authorization_code": "GAMMA-730",
+  "rooms": [
+    {
+      "id": "control_room",
+      "description": "主控制中心一片昏暗，墙上嵌着控制终端。",
+      "exits": [
+        "corridor"
+      ],
+      "object_ids": [
+        "control_terminal"
+      ]
+    },
+    {
+      "id": "corridor",
+      "description": "中央走廊连接着控制室、维修室、补给间和观察甲板。",
+      "exits": [
+        "control_room",
+        "maintenance_room",
+        "supply_closet",
+        "observation_deck"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "maintenance_room",
+      "description": "维修控制台正在监测故障系统，角落有通道通往货舱，再往前是反应堆舱。",
+      "exits": [
+        "corridor",
+        "cargo_bay",
+        "reactor_room"
+      ],
+      "object_ids": [
+        "diagnostic_terminal"
+      ]
+    },
+    {
+      "id": "cargo_bay",
+      "description": "货舱里堆满了补给箱，里侧还有一道通往深层储藏室的门，墙上贴着一张货运清单。",
+      "exits": [
+        "maintenance_room",
+        "deep_cellar"
+      ],
+      "object_ids": [
+        "cargo_manifest"
+      ]
+    },
+    {
+      "id": "deep_cellar",
+      "description": "深层储藏室里只有一个密封箱，箱盖半掩着。",
+      "exits": [
+        "cargo_bay"
+      ],
+      "object_ids": [
+        "storage_crate"
+      ]
+    },
+    {
+      "id": "supply_closet",
+      "description": "补给间里只有一个货箱，箱盖半掩着。",
+      "exits": [
+        "corridor"
+      ],
+      "object_ids": [
+        "cargo_crate"
+      ]
+    },
+    {
+      "id": "reactor_room",
+      "description": "反应堆舱内有主电源面板。再往前是逃生舱。",
+      "exits": [
+        "maintenance_room",
+        "escape_pod"
+      ],
+      "object_ids": [
+        "reactor_panel",
+        "damaged_fuse"
+      ]
+    },
+    {
+      "id": "escape_pod",
+      "description": "逃生舱已准备就绪，等待有效授权后发射。",
+      "exits": [
+        "reactor_room"
+      ],
+      "object_ids": [
+        "escape_pod"
+      ]
+    },
+    {
+      "id": "observation_deck",
+      "description": "观察甲板上有一面巨大的舷窗，角落有扇小门通往船员舱。",
+      "exits": [
+        "corridor",
+        "crew_quarters"
+      ],
+      "object_ids": [
+        "viewport"
+      ]
+    },
+    {
+      "id": "crew_quarters",
+      "description": "船员舱里只有一张固定的铺位，门后连着观察甲板。",
+      "exits": [
+        "observation_deck"
+      ],
+      "object_ids": [
+        "bunk"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "control_terminal",
+      "room_id": "control_room",
+      "kind": "terminal",
+      "inspect_result": "控制终端需要主电源才能工作。"
+    },
+    {
+      "id": "diagnostic_terminal",
+      "room_id": "maintenance_room",
+      "kind": "terminal",
+      "inspect_result": "即使主电源未恢复，仍可读取诊断信息。"
+    },
+    {
+      "id": "cargo_manifest",
+      "room_id": "cargo_bay",
+      "kind": "fixture",
+      "inspect_result": "货运清单上没有维修工具的信息。"
+    },
+    {
+      "id": "storage_crate",
+      "room_id": "deep_cellar",
+      "kind": "container",
+      "inspect_result": "密封箱内有一把螺丝刀和一卷绝缘胶带。"
+    },
+    {
+      "id": "cargo_crate",
+      "room_id": "supply_closet",
+      "kind": "container",
+      "inspect_result": "货箱里有一枚备用保险丝和一只备用灯泡。"
+    },
+    {
+      "id": "reactor_panel",
+      "room_id": "reactor_room",
+      "kind": "fixture",
+      "inspect_result": "反应堆面板由螺丝固定。"
+    },
+    {
+      "id": "damaged_fuse",
+      "room_id": "reactor_room",
+      "kind": "fixture",
+      "inspect_result": "损坏的保险丝需要更换。"
+    },
+    {
+      "id": "escape_pod",
+      "room_id": "escape_pod",
+      "kind": "fixture",
+      "inspect_result": "逃生舱需要授权码才能启动。"
+    },
+    {
+      "id": "viewport",
+      "room_id": "observation_deck",
+      "kind": "fixture",
+      "inspect_result": "舷窗外只有深空，没有别的信息。"
+    },
+    {
+      "id": "bunk",
+      "room_id": "crew_quarters",
+      "kind": "fixture",
+      "inspect_result": "铺位上什么都没有。"
+    }
+  ],
+  "items": [
+    {
+      "id": "screwdriver",
+      "container_id": "storage_crate"
+    },
+    {
+      "id": "duct_tape",
+      "container_id": "storage_crate"
+    },
+    {
+      "id": "replacement_fuse",
+      "container_id": "cargo_crate"
+    },
+    {
+      "id": "spare_bulb",
+      "container_id": "cargo_crate"
+    }
+  ]
+}
