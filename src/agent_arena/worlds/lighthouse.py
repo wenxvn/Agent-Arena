@@ -346,6 +346,41 @@ class LighthouseV2Environment(LighthouseEnvironment):
         self._state = self._initial_state(seed)
 
 
+class LighthouseV3Definition(BaseModel):
+    """Versioned data for the ten room hard lighthouse; same rule contract."""
+
+    model_config = ConfigDict(frozen=True)
+
+    world_id: Literal["lighthouse_escape_v3"]
+    version: str
+    goal: str
+    start_room: str
+    authorization_code: str
+    rooms: tuple[RoomDefinition, ...]
+    objects: tuple[ObjectDefinition, ...]
+    items: tuple[ItemDefinition, ...]
+
+
+def load_lighthouse_v3_definition() -> LighthouseV3Definition:
+    """Load the checked in static definition for the hard lighthouse version."""
+
+    definition_path = files("agent_arena.worlds").joinpath("data/lighthouse_escape_v3.json")
+    return LighthouseV3Definition.model_validate_json(
+        definition_path.read_text(encoding="utf-8")
+    )
+
+
+class LighthouseV3Environment(LighthouseV2Environment):
+    """The ten room hard lighthouse; identical rules, deeper tools and moved code room."""
+
+    def __init__(self, definition: LighthouseV3Definition | None = None, seed: int = 0) -> None:
+        self.definition = definition or load_lighthouse_v3_definition()
+        self._rooms = {room.id: room for room in self.definition.rooms}
+        self._objects = {item.id: item for item in self.definition.objects}
+        self._items = {item.id: item for item in self.definition.items}
+        self._state = self._initial_state(seed)
+
+
 _SUMMARIES: dict[ToolReason, str] = {
     ToolReason.LOOKED: "你查看了当前地点。",
     ToolReason.MOVED: "你移动到了指定地点。",

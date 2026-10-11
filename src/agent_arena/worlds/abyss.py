@@ -62,6 +62,50 @@ def load_abyss_definition() -> AbyssDefinition:
     return AbyssDefinition.model_validate_json(definition_path.read_text(encoding="utf-8"))
 
 
+class AbyssEasyDefinition(BaseModel):
+    """Versioned data for the six room easy abyss; same rule contract."""
+
+    model_config = ConfigDict(frozen=True)
+
+    world_id: Literal["abyss_escape_easy"]
+    version: str
+    goal: str
+    start_room: str
+    authorization_code: str
+    rooms: tuple[RoomDefinition, ...]
+    objects: tuple[ObjectDefinition, ...]
+    items: tuple[ItemDefinition, ...]
+
+
+def load_abyss_easy_definition() -> AbyssEasyDefinition:
+    """Load the checked in static definition for the easy abyss version."""
+
+    definition_path = files("agent_arena.worlds").joinpath("data/abyss_escape_easy.json")
+    return AbyssEasyDefinition.model_validate_json(definition_path.read_text(encoding="utf-8"))
+
+
+class AbyssHardDefinition(BaseModel):
+    """Versioned data for the ten room hard abyss; same rule contract."""
+
+    model_config = ConfigDict(frozen=True)
+
+    world_id: Literal["abyss_escape_hard"]
+    version: str
+    goal: str
+    start_room: str
+    authorization_code: str
+    rooms: tuple[RoomDefinition, ...]
+    objects: tuple[ObjectDefinition, ...]
+    items: tuple[ItemDefinition, ...]
+
+
+def load_abyss_hard_definition() -> AbyssHardDefinition:
+    """Load the checked in static definition for the hard abyss version."""
+
+    definition_path = files("agent_arena.worlds").joinpath("data/abyss_escape_hard.json")
+    return AbyssHardDefinition.model_validate_json(definition_path.read_text(encoding="utf-8"))
+
+
 ABYSS_MILESTONES: tuple[PublicMilestone, ...] = (
     PublicMilestone(
         stage="收集修理工具",
@@ -310,6 +354,28 @@ class AbyssEnvironment(Environment):
     @staticmethod
     def _rejected(reason: ToolReason) -> ToolResult:
         return ToolResult(status=ToolStatus.REJECTED, reason=reason, summary=_SUMMARIES[reason])
+
+
+class AbyssEasyEnvironment(AbyssEnvironment):
+    """The six room easy abyss; identical rules, compact map and nearby code room."""
+
+    def __init__(self, definition: AbyssEasyDefinition | None = None, seed: int = 0) -> None:
+        self.definition = definition or load_abyss_easy_definition()
+        self._rooms = {room.id: room for room in self.definition.rooms}
+        self._objects = {item.id: item for item in self.definition.objects}
+        self._items = {item.id: item for item in self.definition.items}
+        self._state = self._initial_state(seed)
+
+
+class AbyssHardEnvironment(AbyssEnvironment):
+    """The ten room hard abyss; identical rules, deeper tools and more decoys."""
+
+    def __init__(self, definition: AbyssHardDefinition | None = None, seed: int = 0) -> None:
+        self.definition = definition or load_abyss_hard_definition()
+        self._rooms = {room.id: room for room in self.definition.rooms}
+        self._objects = {item.id: item for item in self.definition.objects}
+        self._items = {item.id: item for item in self.definition.items}
+        self._state = self._initial_state(seed)
 
 
 _SUMMARIES: dict[ToolReason, str] = {

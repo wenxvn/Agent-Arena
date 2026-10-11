@@ -41,9 +41,7 @@ from agent_arena.llm import (
 from agent_arena.llm.bailian import BailianModelVerifier, ModelVerificationError
 from agent_arena.llm.openai import OpenAIDecisionProvider, OpenAIModelVerifier
 from agent_arena.worlds import (
-    AbyssEnvironment,
-    LighthouseEnvironment,
-    SpaceshipEscapeEnvironment,
+    Environment,
     create_environment,
 )
 
@@ -629,7 +627,7 @@ _OUTCOME_LABELS: dict[EpisodeOutcome, str] = {
 
 def _load_environment(
     settings: RuntimeSettings,
-) -> SpaceshipEscapeEnvironment | LighthouseEnvironment | AbyssEnvironment:
+) -> Environment:
     try:
         return create_environment(settings.world, settings.world_version, seed=settings.seed)
     except ValueError as exc:

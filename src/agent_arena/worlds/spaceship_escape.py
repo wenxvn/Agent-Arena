@@ -101,6 +101,28 @@ def load_spaceship_v2_definition() -> SpaceshipV2Definition:
     return SpaceshipV2Definition.model_validate_json(definition_path.read_text(encoding="utf-8"))
 
 
+class SpaceshipV3Definition(BaseModel):
+    """Versioned data for the ten room hard ship; same rule contract."""
+
+    model_config = ConfigDict(frozen=True)
+
+    world_id: Literal["spaceship_escape_v3"]
+    version: str
+    goal: str
+    start_room: str
+    authorization_code: str
+    rooms: tuple[RoomDefinition, ...]
+    objects: tuple[ObjectDefinition, ...]
+    items: tuple[ItemDefinition, ...]
+
+
+def load_spaceship_v3_definition() -> SpaceshipV3Definition:
+    """Load the checked in static definition for the hard ship version."""
+
+    definition_path = files("agent_arena.worlds").joinpath("data/spaceship_escape_v3.json")
+    return SpaceshipV3Definition.model_validate_json(definition_path.read_text(encoding="utf-8"))
+
+
 SPACESHIP_MILESTONES: tuple[PublicMilestone, ...] = (
     PublicMilestone(
         stage="收集修理工具",
@@ -360,6 +382,17 @@ class SpaceshipV2Environment(SpaceshipEscapeEnvironment):
 
     def __init__(self, definition: SpaceshipV2Definition | None = None, seed: int = 0) -> None:
         self.definition = definition or load_spaceship_v2_definition()
+        self._rooms = {room.id: room for room in self.definition.rooms}
+        self._objects = {item.id: item for item in self.definition.objects}
+        self._items = {item.id: item for item in self.definition.items}
+        self._state = self._initial_state(seed)
+
+
+class SpaceshipV3Environment(SpaceshipV2Environment):
+    """The ten room hard ship; identical rules, deeper tools and more decoys."""
+
+    def __init__(self, definition: SpaceshipV3Definition | None = None, seed: int = 0) -> None:
+        self.definition = definition or load_spaceship_v3_definition()
         self._rooms = {room.id: room for room in self.definition.rooms}
         self._objects = {item.id: item for item in self.definition.objects}
         self._items = {item.id: item for item in self.definition.items}
