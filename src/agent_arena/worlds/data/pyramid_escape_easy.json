@@ -1,0 +1,131 @@
+{
+  "world_id": "pyramid_escape_easy",
+  "version": "easy-zh",
+  "goal": "修复机关、恢复供电、读取铭文码，并乘沙橇离开金字塔。",
+  "start_room": "entrance_hall",
+  "authorization_code": "SAND-107",
+  "rooms": [
+    {
+      "id": "entrance_hall",
+      "description": "入口大厅一片昏暗，只有应急灯还亮着，墙边立着一块无字碑，两条沙道分别通往沙道口和器物库。",
+      "exits": [
+        "sand_tunnel",
+        "relic_store"
+      ],
+      "object_ids": [
+        "blank_stele"
+      ]
+    },
+    {
+      "id": "sand_tunnel",
+      "description": "沙道交汇处连接着入口大厅、勘测角和器物库，去机关墓室有两条路。",
+      "exits": [
+        "entrance_hall",
+        "survey_nook",
+        "relic_store"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "relic_store",
+      "description": "器物库里只有一个器物箱，箱盖半掩着，一条暗道直通机关墓室。",
+      "exits": [
+        "entrance_hall",
+        "sand_tunnel",
+        "engine_crypt"
+      ],
+      "object_ids": [
+        "relic_chest"
+      ]
+    },
+    {
+      "id": "survey_nook",
+      "description": "勘测角里有一台勘测终端正在监测故障系统，再往前是机关墓室。",
+      "exits": [
+        "sand_tunnel",
+        "engine_crypt"
+      ],
+      "object_ids": [
+        "survey_terminal"
+      ]
+    },
+    {
+      "id": "engine_crypt",
+      "description": "机关墓室里有一台老式机关，石板盖紧闭，旁边嵌着铭文终端。再往前是沙橇台。",
+      "exits": [
+        "survey_nook",
+        "relic_store",
+        "skiff_dock"
+      ],
+      "object_ids": [
+        "stone_slab",
+        "drained_cell",
+        "glyph_console"
+      ]
+    },
+    {
+      "id": "skiff_dock",
+      "description": "沙橇台上停着一架沙橇，等待有效授权后出发。",
+      "exits": [
+        "engine_crypt"
+      ],
+      "object_ids": [
+        "sand_skiff"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "blank_stele",
+      "room_id": "entrance_hall",
+      "kind": "terminal",
+      "inspect_result": "无字碑需要供电才能显示信息。"
+    },
+    {
+      "id": "relic_chest",
+      "room_id": "relic_store",
+      "kind": "container",
+      "inspect_result": "器物箱里有一把凿子和一枚太阳能芯。"
+    },
+    {
+      "id": "survey_terminal",
+      "room_id": "survey_nook",
+      "kind": "terminal",
+      "inspect_result": "即使没有供电，仍可收听广播。"
+    },
+    {
+      "id": "stone_slab",
+      "room_id": "engine_crypt",
+      "kind": "fixture",
+      "inspect_result": "石板盖由螺栓固定。"
+    },
+    {
+      "id": "drained_cell",
+      "room_id": "engine_crypt",
+      "kind": "fixture",
+      "inspect_result": "干涸电芯需要更换。"
+    },
+    {
+      "id": "glyph_console",
+      "room_id": "engine_crypt",
+      "kind": "terminal",
+      "inspect_result": "铭文终端需要供电才能工作。"
+    },
+    {
+      "id": "sand_skiff",
+      "room_id": "skiff_dock",
+      "kind": "fixture",
+      "inspect_result": "沙橇需要铭文码才能启动。"
+    }
+  ],
+  "items": [
+    {
+      "id": "chisel",
+      "container_id": "relic_chest"
+    },
+    {
+      "id": "sun_cell",
+      "container_id": "relic_chest"
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "world_id": "lunar_escape_easy",
+  "version": "easy-zh",
+  "goal": "修复反应堆、恢复供电、读取任务码，并乘返回舱离开月球基地。",
+  "start_room": "airlock_hall",
+  "authorization_code": "LUNAR-134",
+  "rooms": [
+    {
+      "id": "airlock_hall",
+      "description": "气闸大厅一片昏暗，只有应急灯还亮着，舱壁上钉着一块任务板，通道通往月壤隧道。",
+      "exits": [
+        "regolith_tunnel"
+      ],
+      "object_ids": [
+        "mission_board"
+      ]
+    },
+    {
+      "id": "regolith_tunnel",
+      "description": "月壤隧道、备件库和遥测角形成三角回路，一头连着气闸大厅。",
+      "exits": [
+        "airlock_hall",
+        "telemetry_nook",
+        "depot_store"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "depot_store",
+      "description": "备件库是三角回路的一角，只有一个备件箱半掩着。",
+      "exits": [
+        "regolith_tunnel",
+        "telemetry_nook"
+      ],
+      "object_ids": [
+        "depot_crate"
+      ]
+    },
+    {
+      "id": "telemetry_nook",
+      "description": "遥测角是三角回路的一角，有一台遥测终端，再往前是反应堆舱。",
+      "exits": [
+        "regolith_tunnel",
+        "depot_store",
+        "reactor_bay"
+      ],
+      "object_ids": [
+        "telemetry_terminal"
+      ]
+    },
+    {
+      "id": "reactor_bay",
+      "description": "反应堆舱里有一台老反应堆，盖板紧闭，旁边嵌着任务终端。再往前是发射台。",
+      "exits": [
+        "telemetry_nook",
+        "launch_pad"
+      ],
+      "object_ids": [
+        "bay_panel",
+        "spent_cell",
+        "mission_console"
+      ]
+    },
+    {
+      "id": "launch_pad",
+      "description": "发射台上停着一枚返回舱，等待有效授权后出发。",
+      "exits": [
+        "reactor_bay"
+      ],
+      "object_ids": [
+        "return_capsule"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "mission_board",
+      "room_id": "airlock_hall",
+      "kind": "terminal",
+      "inspect_result": "任务板需要供电才能显示信息。"
+    },
+    {
+      "id": "depot_crate",
+      "room_id": "depot_store",
+      "kind": "container",
+      "inspect_result": "备件箱里有一把力矩起子和一枚氧电芯。"
+    },
+    {
+      "id": "telemetry_terminal",
+      "room_id": "telemetry_nook",
+      "kind": "terminal",
+      "inspect_result": "即使没有供电，仍可收听广播。"
+    },
+    {
+      "id": "bay_panel",
+      "room_id": "reactor_bay",
+      "kind": "fixture",
+      "inspect_result": "舱盖板由螺栓固定。"
+    },
+    {
+      "id": "spent_cell",
+      "room_id": "reactor_bay",
+      "kind": "fixture",
+      "inspect_result": "耗尽电芯需要更换。"
+    },
+    {
+      "id": "mission_console",
+      "room_id": "reactor_bay",
+      "kind": "terminal",
+      "inspect_result": "任务终端需要供电才能工作。"
+    },
+    {
+      "id": "return_capsule",
+      "room_id": "launch_pad",
+      "kind": "fixture",
+      "inspect_result": "返回舱需要任务码才能启动。"
+    }
+  ],
+  "items": [
+    {
+      "id": "torque_driver",
+      "container_id": "depot_crate"
+    },
+    {
+      "id": "oxy_cell",
+      "container_id": "depot_crate"
+    }
+  ]
+}

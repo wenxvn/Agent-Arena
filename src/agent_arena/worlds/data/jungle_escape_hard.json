@@ -1,0 +1,203 @@
+{
+  "world_id": "jungle_escape_hard",
+  "version": "hard-zh",
+  "goal": "修复水力机、恢复供电、读取祭坛码，并乘河船离开遗迹。",
+  "start_room": "camp_clearing",
+  "authorization_code": "VINE-791",
+  "rooms": [
+    {
+      "id": "camp_clearing",
+      "description": "营地空地一片昏暗，只有应急灯还亮着，路边嵌着祭坛终端和损坏的路牌。",
+      "exits": [
+        "vine_tunnel"
+      ],
+      "object_ids": [
+        "altar_console",
+        "broken_sign"
+      ]
+    },
+    {
+      "id": "vine_tunnel",
+      "description": "藤蔓隧道连接着营地空地、补给库和树冠平台，去神庙机房必须穿过补给库。",
+      "exits": [
+        "camp_clearing",
+        "cache_store",
+        "canopy_deck"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "cache_store",
+      "description": "补给库里堆满了物资，里侧还有一道通往树根窖的门，角落放着一只空葫芦，穿过去就是巡护角。",
+      "exits": [
+        "vine_tunnel",
+        "ranger_nook",
+        "root_cellar"
+      ],
+      "object_ids": [
+        "empty_gourd"
+      ]
+    },
+    {
+      "id": "root_cellar",
+      "description": "树根窖里只有一个补给箱，箱盖半掩着。",
+      "exits": [
+        "cache_store"
+      ],
+      "object_ids": [
+        "cache_box"
+      ]
+    },
+    {
+      "id": "ranger_nook",
+      "description": "巡护角里有一台巡护电台正在监测故障系统，一侧还有水磨房，再往前是神庙机房。",
+      "exits": [
+        "cache_store",
+        "temple_engine",
+        "mill_room"
+      ],
+      "object_ids": [
+        "ranger_radio"
+      ]
+    },
+    {
+      "id": "mill_room",
+      "description": "水磨房里只有一个卡住的水轮，别无他物。",
+      "exits": [
+        "ranger_nook"
+      ],
+      "object_ids": [
+        "jammed_wheel"
+      ]
+    },
+    {
+      "id": "temple_engine",
+      "description": "神庙机房里有一台老水力机，舱盖紧闭。再往前是河码头。",
+      "exits": [
+        "ranger_nook",
+        "river_pier"
+      ],
+      "object_ids": [
+        "mossy_hatch",
+        "dead_cell"
+      ]
+    },
+    {
+      "id": "river_pier",
+      "description": "河码头上停着一条河船，等待有效授权后出发。",
+      "exits": [
+        "temple_engine"
+      ],
+      "object_ids": [
+        "river_boat"
+      ]
+    },
+    {
+      "id": "canopy_deck",
+      "description": "树冠平台外只有丛林，别无他物。角落有扇小门通往吊床屋。",
+      "exits": [
+        "vine_tunnel",
+        "hammock_hut"
+      ],
+      "object_ids": [
+        "old_scope"
+      ]
+    },
+    {
+      "id": "hammock_hut",
+      "description": "吊床屋里只有一张吊床，门后连着树冠平台。",
+      "exits": [
+        "canopy_deck"
+      ],
+      "object_ids": [
+        "hammock"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "altar_console",
+      "room_id": "camp_clearing",
+      "kind": "terminal",
+      "inspect_result": "祭坛终端需要供电才能工作。"
+    },
+    {
+      "id": "broken_sign",
+      "room_id": "camp_clearing",
+      "kind": "terminal",
+      "inspect_result": "损坏路牌需要供电才能显示信息。"
+    },
+    {
+      "id": "empty_gourd",
+      "room_id": "cache_store",
+      "kind": "fixture",
+      "inspect_result": "空葫芦里什么都没有。"
+    },
+    {
+      "id": "cache_box",
+      "room_id": "root_cellar",
+      "kind": "container",
+      "inspect_result": "补给箱里有一把弯刀、一枚太阳能芯、一捆藤绳和一盒潮火柴。"
+    },
+    {
+      "id": "ranger_radio",
+      "room_id": "ranger_nook",
+      "kind": "terminal",
+      "inspect_result": "即使没有供电，仍可收听广播。"
+    },
+    {
+      "id": "mossy_hatch",
+      "room_id": "temple_engine",
+      "kind": "fixture",
+      "inspect_result": "苔藓舱盖由螺栓固定。"
+    },
+    {
+      "id": "dead_cell",
+      "room_id": "temple_engine",
+      "kind": "fixture",
+      "inspect_result": "耗尽电芯需要更换。"
+    },
+    {
+      "id": "old_scope",
+      "room_id": "canopy_deck",
+      "kind": "fixture",
+      "inspect_result": "旧望远镜外只有丛林，没有别的信息。"
+    },
+    {
+      "id": "hammock",
+      "room_id": "hammock_hut",
+      "kind": "fixture",
+      "inspect_result": "吊床上什么都没有。"
+    },
+    {
+      "id": "jammed_wheel",
+      "room_id": "mill_room",
+      "kind": "fixture",
+      "inspect_result": "卡住的水轮推不动。"
+    },
+    {
+      "id": "river_boat",
+      "room_id": "river_pier",
+      "kind": "fixture",
+      "inspect_result": "河船需要祭坛码才能启动。"
+    }
+  ],
+  "items": [
+    {
+      "id": "machete",
+      "container_id": "cache_box"
+    },
+    {
+      "id": "solar_cell",
+      "container_id": "cache_box"
+    },
+    {
+      "id": "vine_rope",
+      "container_id": "cache_box"
+    },
+    {
+      "id": "wet_matches",
+      "container_id": "cache_box"
+    }
+  ]
+}

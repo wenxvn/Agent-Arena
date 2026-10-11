@@ -1,0 +1,127 @@
+{
+  "world_id": "volcano_escape_easy",
+  "version": "easy-zh",
+  "goal": "修复汽轮机、恢复供电、读取观测码，并乘缆车离开观测站。",
+  "start_room": "base_lobby",
+  "authorization_code": "MAGMA-203",
+  "rooms": [
+    {
+      "id": "base_lobby",
+      "description": "基地大厅一片昏暗，只有应急灯还亮着，墙上贴着一块海报板，旁边就是设备库，另一侧通往熔岩隧道。",
+      "exits": [
+        "equip_store",
+        "lava_tunnel"
+      ],
+      "object_ids": [
+        "poster_board"
+      ]
+    },
+    {
+      "id": "equip_store",
+      "description": "设备库就在大厅旁边，只有一个设备箱半掩着。",
+      "exits": [
+        "base_lobby"
+      ],
+      "object_ids": [
+        "equip_crate"
+      ]
+    },
+    {
+      "id": "lava_tunnel",
+      "description": "熔岩隧道连接着基地大厅和地震角。",
+      "exits": [
+        "base_lobby",
+        "seismic_nook"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "seismic_nook",
+      "description": "地震角里有一台地震终端正在监测故障系统，再往前是汽轮机房。",
+      "exits": [
+        "lava_tunnel",
+        "turbine_room"
+      ],
+      "object_ids": [
+        "seismic_terminal"
+      ]
+    },
+    {
+      "id": "turbine_room",
+      "description": "汽轮机房里有一台老汽轮机，盖板紧闭，旁边嵌着观测终端。再往前是缆车站。",
+      "exits": [
+        "seismic_nook",
+        "cable_station"
+      ],
+      "object_ids": [
+        "vent_cover",
+        "cracked_cell",
+        "observatory_console"
+      ]
+    },
+    {
+      "id": "cable_station",
+      "description": "缆车站里停着一辆缆车，等待有效授权后出发。",
+      "exits": [
+        "turbine_room"
+      ],
+      "object_ids": [
+        "cable_car"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "poster_board",
+      "room_id": "base_lobby",
+      "kind": "terminal",
+      "inspect_result": "海报板需要供电才能显示信息。"
+    },
+    {
+      "id": "equip_crate",
+      "room_id": "equip_store",
+      "kind": "container",
+      "inspect_result": "设备箱里有一把内六角扳手和一枚温差电芯。"
+    },
+    {
+      "id": "seismic_terminal",
+      "room_id": "seismic_nook",
+      "kind": "terminal",
+      "inspect_result": "即使没有供电，仍可收听广播。"
+    },
+    {
+      "id": "vent_cover",
+      "room_id": "turbine_room",
+      "kind": "fixture",
+      "inspect_result": "通风盖板由螺栓固定。"
+    },
+    {
+      "id": "cracked_cell",
+      "room_id": "turbine_room",
+      "kind": "fixture",
+      "inspect_result": "开裂电芯需要更换。"
+    },
+    {
+      "id": "observatory_console",
+      "room_id": "turbine_room",
+      "kind": "terminal",
+      "inspect_result": "观测终端需要供电才能工作。"
+    },
+    {
+      "id": "cable_car",
+      "room_id": "cable_station",
+      "kind": "fixture",
+      "inspect_result": "缆车需要观测码才能启动。"
+    }
+  ],
+  "items": [
+    {
+      "id": "hex_key",
+      "container_id": "equip_crate"
+    },
+    {
+      "id": "thermo_cell",
+      "container_id": "equip_crate"
+    }
+  ]
+}

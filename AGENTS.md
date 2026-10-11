@@ -4,7 +4,7 @@
 
 - `0001-project-architecture` 架构 spec 已确认生效，状态为 `Accepted`。
 - Release 2 的确定性 Spaceship Escape、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 对照已完成；PlanningAgent v1 的工程闭环及真实对照已完成（qwen 与 Muse 基线均为 0/5，见 spec 0006 与失败分析）。
-- 三世界九图（飞船/灯塔/深海站 × 简单 6 房/中等 8 房/困难 10 房，spec 0007–0010）已建成，规则零改动，全套 pytest 159 通过。
+- 十世界三十图（飞船/灯塔/深海站/极地/金字塔/地铁/火山/丛林/月球/古堡 × 简单 6 房/中等 8 房/困难 10 房，spec 0007–0011）已建成，规则零改动，全套 pytest 249 通过。
 - Muse 自主组合（memory + history5 + recovery + phase，不限步）在 9 配置 × 5 seeds = 45/45 成功通关，均值步数三图全部随难度单调递增；终点 `read_terminal` 误用与读码后迷路是已确认的下一步消融靶子。
 - `研究总纲.md` 是新对话和日常 workflow 的研究摘要；完整产品与研究参考保留在 `总纲.md`，需要追溯细节时再阅读。
 - 当前模块结构见 `docs/architecture.md`，交付顺序和进度见 `docs/scope/scope.md`。

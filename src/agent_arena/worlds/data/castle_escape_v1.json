@@ -1,0 +1,165 @@
+{
+  "world_id": "castle_escape_v1",
+  "version": "v1-zh",
+  "goal": "修复熔炉、恢复供电、读取王座码，并乘密道船离开古堡。",
+  "start_room": "gate_hall",
+  "authorization_code": "CROWN-386",
+  "rooms": [
+    {
+      "id": "gate_hall",
+      "description": "城门大厅一片昏暗，只有应急灯还亮着，墙上嵌着王座终端和挂毯板。",
+      "exits": [
+        "stone_tunnel"
+      ],
+      "object_ids": [
+        "throne_console",
+        "tapestry_board"
+      ]
+    },
+    {
+      "id": "stone_tunnel",
+      "description": "石隧道连接着城门大厅和瞭望角。",
+      "exits": [
+        "gate_hall",
+        "watch_nook"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "watch_nook",
+      "description": "瞭望角里有一台烽火终端正在监测故障系统，再往前是熔炉房。",
+      "exits": [
+        "stone_tunnel",
+        "forge_room"
+      ],
+      "object_ids": [
+        "beacon_terminal"
+      ]
+    },
+    {
+      "id": "forge_room",
+      "description": "熔炉房里有一台老熔炉，炉盖紧闭，里侧小门通往军械库，另一侧通往塔楼平台，再往前是护城河码头。",
+      "exits": [
+        "watch_nook",
+        "moat_dock",
+        "armory",
+        "tower_deck"
+      ],
+      "object_ids": [
+        "furnace_lid",
+        "cold_cell"
+      ]
+    },
+    {
+      "id": "armory",
+      "description": "军械库藏在熔炉房后面，堆着兵器，其中一个军械箱半掩着。",
+      "exits": [
+        "forge_room"
+      ],
+      "object_ids": [
+        "armory_chest"
+      ]
+    },
+    {
+      "id": "tower_deck",
+      "description": "塔楼平台外只有荒野，别无他物。角落有扇小门通往守卫小间。",
+      "exits": [
+        "forge_room",
+        "guard_cell"
+      ],
+      "object_ids": [
+        "far_glass"
+      ]
+    },
+    {
+      "id": "guard_cell",
+      "description": "守卫小间里只有一张草铺，门后连着塔楼平台。",
+      "exits": [
+        "tower_deck"
+      ],
+      "object_ids": [
+        "straw_bed"
+      ]
+    },
+    {
+      "id": "moat_dock",
+      "description": "护城河码头上停着一条密道船，等待有效授权后出发。",
+      "exits": [
+        "forge_room"
+      ],
+      "object_ids": [
+        "secret_boat"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "throne_console",
+      "room_id": "gate_hall",
+      "kind": "terminal",
+      "inspect_result": "王座终端需要供电才能工作。"
+    },
+    {
+      "id": "tapestry_board",
+      "room_id": "gate_hall",
+      "kind": "terminal",
+      "inspect_result": "挂毯板需要供电才能显示信息。"
+    },
+    {
+      "id": "armory_chest",
+      "room_id": "armory",
+      "kind": "container",
+      "inspect_result": "军械箱里有一把铁钥匙、一枚风暴电芯和一条布条。"
+    },
+    {
+      "id": "beacon_terminal",
+      "room_id": "watch_nook",
+      "kind": "terminal",
+      "inspect_result": "即使没有供电，仍可收听广播。"
+    },
+    {
+      "id": "furnace_lid",
+      "room_id": "forge_room",
+      "kind": "fixture",
+      "inspect_result": "炉盖由螺栓固定。"
+    },
+    {
+      "id": "cold_cell",
+      "room_id": "forge_room",
+      "kind": "fixture",
+      "inspect_result": "熄灭电芯需要更换。"
+    },
+    {
+      "id": "far_glass",
+      "room_id": "tower_deck",
+      "kind": "fixture",
+      "inspect_result": "旧望远镜外只有荒野，没有别的信息。"
+    },
+    {
+      "id": "straw_bed",
+      "room_id": "guard_cell",
+      "kind": "fixture",
+      "inspect_result": "草铺上什么都没有。"
+    },
+    {
+      "id": "secret_boat",
+      "room_id": "moat_dock",
+      "kind": "fixture",
+      "inspect_result": "密道船需要王座码才能启动。"
+    }
+  ],
+  "items": [
+    {
+      "id": "iron_key",
+      "container_id": "armory_chest"
+    },
+    {
+      "id": "storm_cell",
+      "container_id": "armory_chest"
+    },
+    {
+      "id": "cloth_strip",
+      "container_id": "armory_chest"
+    }
+  ]
+}

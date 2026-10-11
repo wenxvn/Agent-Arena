@@ -1,0 +1,127 @@
+{
+  "world_id": "subway_escape_easy",
+  "version": "easy-zh",
+  "goal": "修复配电柜、恢复供电、读取调度码，并乘工程车离开地铁站。",
+  "start_room": "concourse",
+  "authorization_code": "METRO-118",
+  "rooms": [
+    {
+      "id": "concourse",
+      "description": "站厅一片昏暗，只有应急灯还亮着，墙上挂着一块广告牌，干线通往主隧道。",
+      "exits": [
+        "main_tunnel"
+      ],
+      "object_ids": [
+        "ad_board"
+      ]
+    },
+    {
+      "id": "main_tunnel",
+      "description": "主隧道是地铁干线，一头连着站厅，一头连着维修角，中途有条侧线通往储物间。",
+      "exits": [
+        "concourse",
+        "service_nook",
+        "locker_room"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "locker_room",
+      "description": "储物间是干线旁的侧线小间，只有一个工具箱半掩着。",
+      "exits": [
+        "main_tunnel"
+      ],
+      "object_ids": [
+        "toolbox"
+      ]
+    },
+    {
+      "id": "service_nook",
+      "description": "维修角里有一台检修终端正在监测故障系统，再往前是配电室。",
+      "exits": [
+        "main_tunnel",
+        "power_room"
+      ],
+      "object_ids": [
+        "service_terminal"
+      ]
+    },
+    {
+      "id": "power_room",
+      "description": "配电室里有一台老配电柜，柜门紧闭，旁边嵌着调度终端。再往前是侧线站台。",
+      "exits": [
+        "service_nook",
+        "siding_track"
+      ],
+      "object_ids": [
+        "cabinet_door",
+        "burnt_cell",
+        "dispatch_console"
+      ]
+    },
+    {
+      "id": "siding_track",
+      "description": "侧线站台上停着一辆工程车，等待有效授权后出发。",
+      "exits": [
+        "power_room"
+      ],
+      "object_ids": [
+        "service_train"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "ad_board",
+      "room_id": "concourse",
+      "kind": "terminal",
+      "inspect_result": "广告牌需要供电才能显示信息。"
+    },
+    {
+      "id": "toolbox",
+      "room_id": "locker_room",
+      "kind": "container",
+      "inspect_result": "工具箱里有一根撬棍和一枚备用电芯。"
+    },
+    {
+      "id": "service_terminal",
+      "room_id": "service_nook",
+      "kind": "terminal",
+      "inspect_result": "即使没有供电，仍可收听广播。"
+    },
+    {
+      "id": "cabinet_door",
+      "room_id": "power_room",
+      "kind": "fixture",
+      "inspect_result": "配电柜门由螺栓固定。"
+    },
+    {
+      "id": "burnt_cell",
+      "room_id": "power_room",
+      "kind": "fixture",
+      "inspect_result": "烧毁电芯需要更换。"
+    },
+    {
+      "id": "dispatch_console",
+      "room_id": "power_room",
+      "kind": "terminal",
+      "inspect_result": "调度终端需要供电才能工作。"
+    },
+    {
+      "id": "service_train",
+      "room_id": "siding_track",
+      "kind": "fixture",
+      "inspect_result": "工程车需要调度码才能启动。"
+    }
+  ],
+  "items": [
+    {
+      "id": "crowbar",
+      "container_id": "toolbox"
+    },
+    {
+      "id": "power_cell",
+      "container_id": "toolbox"
+    }
+  ]
+}

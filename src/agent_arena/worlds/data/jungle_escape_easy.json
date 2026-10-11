@@ -1,0 +1,127 @@
+{
+  "world_id": "jungle_escape_easy",
+  "version": "easy-zh",
+  "goal": "修复水力机、恢复供电、读取祭坛码，并乘河船离开遗迹。",
+  "start_room": "camp_clearing",
+  "authorization_code": "VINE-126",
+  "rooms": [
+    {
+      "id": "camp_clearing",
+      "description": "营地空地一片昏暗，只有应急灯还亮着，路边立着一块损坏的路牌，小道通往藤蔓隧道。",
+      "exits": [
+        "vine_tunnel"
+      ],
+      "object_ids": [
+        "broken_sign"
+      ]
+    },
+    {
+      "id": "vine_tunnel",
+      "description": "藤蔓隧道连接着营地空地和巡护角。",
+      "exits": [
+        "camp_clearing",
+        "ranger_nook"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "ranger_nook",
+      "description": "巡护角里有一台巡护电台正在监测故障系统，一侧是补给库，再往前是神庙机房。",
+      "exits": [
+        "vine_tunnel",
+        "cache_store",
+        "temple_engine"
+      ],
+      "object_ids": [
+        "ranger_radio"
+      ]
+    },
+    {
+      "id": "cache_store",
+      "description": "补给库是巡护角旁的小间，只有一个补给箱半掩着。",
+      "exits": [
+        "ranger_nook"
+      ],
+      "object_ids": [
+        "cache_box"
+      ]
+    },
+    {
+      "id": "temple_engine",
+      "description": "神庙机房里有一台老水力机，舱盖紧闭，旁边嵌着祭坛终端。再往前是河码头。",
+      "exits": [
+        "ranger_nook",
+        "river_pier"
+      ],
+      "object_ids": [
+        "mossy_hatch",
+        "dead_cell",
+        "altar_console"
+      ]
+    },
+    {
+      "id": "river_pier",
+      "description": "河码头上停着一条河船，等待有效授权后出发。",
+      "exits": [
+        "temple_engine"
+      ],
+      "object_ids": [
+        "river_boat"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "broken_sign",
+      "room_id": "camp_clearing",
+      "kind": "terminal",
+      "inspect_result": "损坏路牌需要供电才能显示信息。"
+    },
+    {
+      "id": "cache_box",
+      "room_id": "cache_store",
+      "kind": "container",
+      "inspect_result": "补给箱里有一把弯刀和一枚太阳能芯。"
+    },
+    {
+      "id": "ranger_radio",
+      "room_id": "ranger_nook",
+      "kind": "terminal",
+      "inspect_result": "即使没有供电，仍可收听广播。"
+    },
+    {
+      "id": "mossy_hatch",
+      "room_id": "temple_engine",
+      "kind": "fixture",
+      "inspect_result": "苔藓舱盖由螺栓固定。"
+    },
+    {
+      "id": "dead_cell",
+      "room_id": "temple_engine",
+      "kind": "fixture",
+      "inspect_result": "耗尽电芯需要更换。"
+    },
+    {
+      "id": "altar_console",
+      "room_id": "temple_engine",
+      "kind": "terminal",
+      "inspect_result": "祭坛终端需要供电才能工作。"
+    },
+    {
+      "id": "river_boat",
+      "room_id": "river_pier",
+      "kind": "fixture",
+      "inspect_result": "河船需要祭坛码才能启动。"
+    }
+  ],
+  "items": [
+    {
+      "id": "machete",
+      "container_id": "cache_box"
+    },
+    {
+      "id": "solar_cell",
+      "container_id": "cache_box"
+    }
+  ]
+}

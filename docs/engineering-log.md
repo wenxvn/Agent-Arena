@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-11 十世界三十图建成，全套 249 passed
+
+事件：新增极地/金字塔/地铁/火山/丛林/月球/古堡 7 个世界，各分三档难度，
+共 21 张新图；每张图独立拓扑与读码点，最优公开路径 11–22 步。
+原因：用户要求从 3 世界扩到 10 世界，且明确不要纯换皮。
+改动：`worlds/{polar,pyramid,subway,volcano,jungle,lunar,castle}.py`（规则复用，
+只换 definition）+ 21 个版本化 JSON + `worlds/__init__.py` 新增 21 对 selector
++ 7 个新测试文件（56 项）+ spec 0011；旧 9 图一字节未动。
+验证：`PYTHONPATH=src python -m pytest -q` 249 passed（含 56 项新测试）；
+21 张图全部公开动作序列通关，新码生效、诱饵不挡路；本机无 ruff/mypy/uv，
+只跑了 pytest。
+下一步：真实模型新图 benchmark（预算登记后执行）；commit/push 本轮全部改动。
+关联提交：待提交。
+
 ## 2026-10-11 V1 提纲 S0–S1 完成、S2–S6 部分（离线先行、在线阻塞）
 
 事件：按 `研究提纲/V1研究提纲.md` 执行 T1–T7；T1 CI 红灯修复与运行台账、T2 离线重评完成；T3–T7 审计/设计/离线契约测试完成，在线补测阻塞。
