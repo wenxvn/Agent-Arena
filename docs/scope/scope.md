@@ -25,6 +25,7 @@
 | 14 | 三图难度对齐：灯塔 v2 与深海站 v1 | Research Core | done |
 | 15 | 三档难度：简单/中等/困难 9 图 | Research Core | done |
 | 16 | 七个新世界：十世界三十图 | Research Core | done |
+| 17 | 任务结构 pilot：分支/并行/反转 + seeded（flex 引擎） | Research Core | done |
 
 ## Foundation
 
@@ -229,6 +230,18 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
   七图均值全部随难度单调递增；非法输出总共 1 次。
   首波 105 并发触发网关系统性限流（104 局开局中断），降到 21 并发池重跑后
   101/105，再补 4 局偶发中断后全通；全部尝试 trace 均保留。
+
+### K. 任务结构 pilot 与 flex 引擎（2026-10-11，done）
+
+- [x] 新参数化规则引擎 `worlds/flex.py`：维修点列表（分支二选一/单点多件），
+  读码电源要求可配，深诱饵纯文本 fixture；旧 30 图零改动，全套回归通过。
+- [x] 3 张 pilot 图（均为 8 房）：月球 v2 分支（`LUNAR-220`，短支 19）、
+  古堡 v2 并行三件套（`CROWN-250`，22 步，中间件报 `CELL_STAGED`）、
+  金字塔 v2 先读码（`SAND-260`，16 步）；各带 1 个深诱饵。
+- [x] 3 张 seeded 版（工具双容器按 seed 分配，确定性/差异性/可解性测试通过）。
+- [x] 共享加法：`ToolReason.CELL_STAGED`（旧 trace 可读，旧逻辑不受影响）；
+  另修复 `_escape` 不查电源的旧假设 bug。
+- [x] 22 项新测试，全套 271 passed；真实模型对照另行安排（spec 0012）。
 
 ## Release 3
 

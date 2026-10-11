@@ -1,0 +1,309 @@
+{
+  "world_id": "lunar_escape_v2_seeded",
+  "slug": "lunar-escape",
+  "version": "v2-seeded-zh",
+  "goal": "修复主或备用反应堆、恢复供电、读取任务码，并乘返回舱离开月球基地。",
+  "start_room": "airlock_hall",
+  "authorization_code": "LUNAR-220",
+  "rooms": [
+    {
+      "id": "airlock_hall",
+      "description": "气闸大厅一片昏暗，只有应急灯还亮着，舱壁上嵌着任务终端和任务板。",
+      "exits": [
+        "regolith_tunnel"
+      ],
+      "object_ids": [
+        "mission_console",
+        "mission_board"
+      ]
+    },
+    {
+      "id": "regolith_tunnel",
+      "description": "月壤隧道连接着气闸大厅、遥测角和穹顶舱。",
+      "exits": [
+        "airlock_hall",
+        "telemetry_nook",
+        "cupola"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "telemetry_nook",
+      "description": "遥测角里有一台遥测终端正在监测故障系统，角落有通道通往备件库，再往前是反应堆舱。",
+      "exits": [
+        "regolith_tunnel",
+        "depot_store",
+        "reactor_bay"
+      ],
+      "object_ids": [
+        "telemetry_terminal"
+      ]
+    },
+    {
+      "id": "depot_store",
+      "description": "备件库里只有一个备件箱，箱盖半掩着。",
+      "exits": [
+        "telemetry_nook"
+      ],
+      "object_ids": [
+        "depot_crate"
+      ]
+    },
+    {
+      "id": "reactor_bay",
+      "description": "反应堆舱里有一台主反应堆，盖板紧闭，里侧小门通往备用舱。再往前是发射台。",
+      "exits": [
+        "telemetry_nook",
+        "aux_bay",
+        "launch_pad"
+      ],
+      "object_ids": [
+        "main_panel",
+        "main_cell"
+      ]
+    },
+    {
+      "id": "aux_bay",
+      "description": "备用舱里有一台备用反应堆，盖板紧闭，门后连着反应堆舱。另一侧也通往发射台。",
+      "exits": [
+        "reactor_bay",
+        "launch_pad"
+      ],
+      "object_ids": [
+        "aux_panel",
+        "aux_cell"
+      ]
+    },
+    {
+      "id": "launch_pad",
+      "description": "发射台上停着一枚返回舱，等待有效授权后出发。",
+      "exits": [
+        "reactor_bay",
+        "aux_bay"
+      ],
+      "object_ids": [
+        "return_capsule"
+      ]
+    },
+    {
+      "id": "cupola",
+      "description": "穹顶舱外只有月海，角落放着一只备用箱。",
+      "exits": [
+        "regolith_tunnel"
+      ],
+      "object_ids": [
+        "dome_scope",
+        "spare_crate"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "mission_console",
+      "room_id": "airlock_hall",
+      "kind": "terminal",
+      "inspect_result": "任务终端需要供电才能工作。"
+    },
+    {
+      "id": "mission_board",
+      "room_id": "airlock_hall",
+      "kind": "terminal",
+      "inspect_result": "任务板需要供电才能显示信息。"
+    },
+    {
+      "id": "telemetry_terminal",
+      "room_id": "telemetry_nook",
+      "kind": "terminal",
+      "inspect_result": "即使没有供电，仍可收听广播。"
+    },
+    {
+      "id": "depot_crate",
+      "room_id": "depot_store",
+      "kind": "container",
+      "inspect_result": "备件箱里有一把力矩起子、一枚主堆芯、一把六角起子和一枚备堆芯。"
+    },
+    {
+      "id": "main_panel",
+      "room_id": "reactor_bay",
+      "kind": "fixture",
+      "inspect_result": "主盖板由螺栓固定。"
+    },
+    {
+      "id": "main_cell",
+      "room_id": "reactor_bay",
+      "kind": "fixture",
+      "inspect_result": "主电芯需要更换。"
+    },
+    {
+      "id": "aux_panel",
+      "room_id": "aux_bay",
+      "kind": "fixture",
+      "inspect_result": "副盖板由螺栓固定。"
+    },
+    {
+      "id": "aux_cell",
+      "room_id": "aux_bay",
+      "kind": "fixture",
+      "inspect_result": "副电芯需要更换。"
+    },
+    {
+      "id": "return_capsule",
+      "room_id": "launch_pad",
+      "kind": "fixture",
+      "inspect_result": "返回舱需要任务码才能启动。"
+    },
+    {
+      "id": "dome_scope",
+      "room_id": "cupola",
+      "kind": "fixture",
+      "inspect_result": "穹顶观测镜外只有月海，没有别的信息。"
+    },
+    {
+      "id": "spare_crate",
+      "room_id": "cupola",
+      "kind": "container",
+      "inspect_result": "备用箱里可能有备件，也可能没有。"
+    }
+  ],
+  "items": [
+    {
+      "id": "torque_driver",
+      "container_id": "depot_crate"
+    },
+    {
+      "id": "core_cell_a",
+      "container_id": "depot_crate"
+    },
+    {
+      "id": "hex_driver",
+      "container_id": "depot_crate"
+    },
+    {
+      "id": "core_cell_b",
+      "container_id": "depot_crate"
+    }
+  ],
+  "containers": [
+    "depot_crate",
+    "spare_crate"
+  ],
+  "repair_sites": [
+    {
+      "panel": "main_panel",
+      "panel_tool": "torque_driver",
+      "cells": [
+        {
+          "cell": "main_cell",
+          "tool": "core_cell_a"
+        }
+      ]
+    },
+    {
+      "panel": "aux_panel",
+      "panel_tool": "hex_driver",
+      "cells": [
+        {
+          "cell": "aux_cell",
+          "tool": "core_cell_b"
+        }
+      ]
+    }
+  ],
+  "repair_rooms": [
+    "reactor_bay",
+    "aux_bay"
+  ],
+  "code_terminal": "mission_console",
+  "code_requires_power": true,
+  "code_label": "任务码",
+  "decoy_terminals": [
+    "mission_board"
+  ],
+  "diagnostic_terminal": "telemetry_terminal",
+  "diagnostic_ok": "遥测广播：供电稳定，各系统正常。",
+  "diagnostic_down": "遥测广播：电力中断，请手动修复反应堆舱的老反应堆。",
+  "escape_room": "launch_pad",
+  "escape_vehicle": "return_capsule",
+  "cell_staged_summary": "部件已装好，但供电尚未恢复。",
+  "panel_opened_summary": "盖板已打开。",
+  "power_restored_summary": "供电已恢复。",
+  "escape_summary": "返回舱已成功出发。",
+  "no_power_summary": "任务板没有电力。",
+  "milestones": [
+    {
+      "stage": "收集修理工具",
+      "done_text": "无",
+      "undone": "获得 {missing}",
+      "key_items": [
+        "torque_driver",
+        "core_cell_a",
+        "hex_driver",
+        "core_cell_b"
+      ],
+      "trigger_reasons": []
+    },
+    {
+      "stage": "恢复供电",
+      "done_text": "修理工具",
+      "undone": "打开盖板",
+      "key_items": [],
+      "trigger_reasons": [
+        "panel_opened"
+      ]
+    },
+    {
+      "stage": "恢复供电",
+      "done_text": "修理工具和盖板",
+      "undone": "恢复供电",
+      "key_items": [],
+      "trigger_reasons": [
+        "power_restored"
+      ]
+    },
+    {
+      "stage": "读取任务码",
+      "done_text": "修理工具和供电",
+      "undone": "读取任务码",
+      "key_items": [],
+      "trigger_reasons": [
+        "code_read"
+      ]
+    },
+    {
+      "stage": "乘返回舱离开",
+      "done_text": "修理工具、供电和任务码",
+      "undone": "乘返回舱离开",
+      "key_items": [],
+      "trigger_reasons": []
+    }
+  ],
+  "summaries": {
+    "looked": "你查看了当前舱段。",
+    "moved": "你移动到了指定舱段。",
+    "inspected": "你检查了指定对象。",
+    "picked_up": "你将物品放入了背包。",
+    "panel_opened": "盖板已打开。",
+    "power_restored": "供电已恢复。",
+    "cell_staged": "部件已装好，但供电尚未恢复。",
+    "diagnostic_read": "你收听了广播。",
+    "code_read": "你读取了任务终端中的任务码。",
+    "escaped": "返回舱已成功出发。",
+    "already_completed": "离开程序已经完成。",
+    "not_adjacent": "当前舱段无法直接到达该处。",
+    "not_visible": "当前舱段看不到该目标。",
+    "not_revealed": "该物品尚未被发现。",
+    "not_present": "当前舱段没有该物品。",
+    "already_collected": "该物品已经在背包中。",
+    "missing_item": "你没有所需物品。",
+    "wrong_target": "当前不能将该物品用于这个目标。",
+    "read_terminal_required": "终端请使用 read_terminal 工具读取。",
+    "panel_closed": "请先打开盖板，再更换电芯。",
+    "code_unread": "请先读取任务码，再启动返回舱。",
+    "incorrect_code": "该任务码不正确。",
+    "no_power": "任务板没有电力。"
+  },
+  "seed_containers": [
+    "depot_crate",
+    "spare_crate"
+  ]
+}

@@ -63,6 +63,7 @@ class ToolReason(StrEnum):
     PICKED_UP = "picked_up"
     PANEL_OPENED = "panel_opened"
     POWER_RESTORED = "power_restored"
+    CELL_STAGED = "cell_staged"
     DIAGNOSTIC_READ = "diagnostic_read"
     CODE_READ = "code_read"
     ESCAPED = "escaped"

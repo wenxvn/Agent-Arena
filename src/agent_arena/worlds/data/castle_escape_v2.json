@@ -1,0 +1,290 @@
+{
+  "world_id": "castle_escape_v2",
+  "slug": "castle-escape",
+  "version": "v2-zh",
+  "goal": "打开炉盖、换上两枚电芯、恢复供电、读取王座码，并乘密道船离开古堡。",
+  "start_room": "gate_hall",
+  "authorization_code": "CROWN-250",
+  "rooms": [
+    {
+      "id": "gate_hall",
+      "description": "城门大厅一片昏暗，只有应急灯还亮着，墙上嵌着王座终端和挂毯板。",
+      "exits": [
+        "stone_tunnel"
+      ],
+      "object_ids": [
+        "throne_console",
+        "tapestry_board"
+      ]
+    },
+    {
+      "id": "stone_tunnel",
+      "description": "石隧道连接着城门大厅、瞭望角和军械库。",
+      "exits": [
+        "gate_hall",
+        "watch_nook",
+        "armory"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "armory",
+      "description": "军械库里只有一个军械箱，箱盖半掩着。",
+      "exits": [
+        "stone_tunnel"
+      ],
+      "object_ids": [
+        "armory_chest"
+      ]
+    },
+    {
+      "id": "watch_nook",
+      "description": "瞭望角里有一台烽火终端正在监测故障系统，再往前是熔炉房，一侧还有塔楼平台。",
+      "exits": [
+        "stone_tunnel",
+        "forge_room",
+        "tower_deck"
+      ],
+      "object_ids": [
+        "beacon_terminal"
+      ]
+    },
+    {
+      "id": "tower_deck",
+      "description": "塔楼平台外只有荒野，别无他物。角落有扇小门通往守卫小间。",
+      "exits": [
+        "watch_nook",
+        "guard_cell"
+      ],
+      "object_ids": [
+        "far_glass"
+      ]
+    },
+    {
+      "id": "guard_cell",
+      "description": "守卫小间里有一张草铺和一副锈住的铠甲架，门后连着塔楼平台。",
+      "exits": [
+        "tower_deck"
+      ],
+      "object_ids": [
+        "straw_bed",
+        "rusty_armor"
+      ]
+    },
+    {
+      "id": "forge_room",
+      "description": "熔炉房里有一台老熔炉，炉盖紧闭，两枚电芯都已熄灭。再往前是护城河码头。",
+      "exits": [
+        "watch_nook",
+        "moat_dock"
+      ],
+      "object_ids": [
+        "furnace_lid",
+        "cold_cell",
+        "frost_cell"
+      ]
+    },
+    {
+      "id": "moat_dock",
+      "description": "护城河码头上停着一条密道船，等待有效授权后出发。",
+      "exits": [
+        "forge_room"
+      ],
+      "object_ids": [
+        "secret_boat"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "throne_console",
+      "room_id": "gate_hall",
+      "kind": "terminal",
+      "inspect_result": "王座终端需要供电才能工作。"
+    },
+    {
+      "id": "tapestry_board",
+      "room_id": "gate_hall",
+      "kind": "terminal",
+      "inspect_result": "挂毯板需要供电才能显示信息。"
+    },
+    {
+      "id": "beacon_terminal",
+      "room_id": "watch_nook",
+      "kind": "terminal",
+      "inspect_result": "即使没有供电，仍可收听广播。"
+    },
+    {
+      "id": "armory_chest",
+      "room_id": "armory",
+      "kind": "container",
+      "inspect_result": "军械箱里有一把铁钥匙、一枚风暴电芯和一枚霜冻电芯。"
+    },
+    {
+      "id": "furnace_lid",
+      "room_id": "forge_room",
+      "kind": "fixture",
+      "inspect_result": "炉盖由螺栓固定。"
+    },
+    {
+      "id": "cold_cell",
+      "room_id": "forge_room",
+      "kind": "fixture",
+      "inspect_result": "熄灭的电芯需要更换。"
+    },
+    {
+      "id": "frost_cell",
+      "room_id": "forge_room",
+      "kind": "fixture",
+      "inspect_result": "结霜的电芯需要更换。"
+    },
+    {
+      "id": "far_glass",
+      "room_id": "tower_deck",
+      "kind": "fixture",
+      "inspect_result": "旧望远镜外只有荒野，没有别的信息。"
+    },
+    {
+      "id": "straw_bed",
+      "room_id": "guard_cell",
+      "kind": "fixture",
+      "inspect_result": "草铺上什么都没有。"
+    },
+    {
+      "id": "rusty_armor",
+      "room_id": "guard_cell",
+      "kind": "fixture",
+      "inspect_result": "铠甲架锈住了，穿不动。"
+    },
+    {
+      "id": "secret_boat",
+      "room_id": "moat_dock",
+      "kind": "fixture",
+      "inspect_result": "密道船需要王座码才能启动。"
+    }
+  ],
+  "items": [
+    {
+      "id": "iron_key",
+      "container_id": "armory_chest"
+    },
+    {
+      "id": "storm_cell",
+      "container_id": "armory_chest"
+    },
+    {
+      "id": "frost_core",
+      "container_id": "armory_chest"
+    }
+  ],
+  "containers": [
+    "armory_chest"
+  ],
+  "repair_sites": [
+    {
+      "panel": "furnace_lid",
+      "panel_tool": "iron_key",
+      "cells": [
+        {
+          "cell": "cold_cell",
+          "tool": "storm_cell"
+        },
+        {
+          "cell": "frost_cell",
+          "tool": "frost_core"
+        }
+      ]
+    }
+  ],
+  "repair_rooms": [
+    "forge_room"
+  ],
+  "code_terminal": "throne_console",
+  "code_requires_power": true,
+  "code_label": "王座码",
+  "decoy_terminals": [
+    "tapestry_board"
+  ],
+  "diagnostic_terminal": "beacon_terminal",
+  "diagnostic_ok": "烽火广播：供电稳定，各系统正常。",
+  "diagnostic_down": "烽火广播：电力中断，请手动修复熔炉房的老熔炉。",
+  "escape_room": "moat_dock",
+  "escape_vehicle": "secret_boat",
+  "cell_staged_summary": "一枚电芯已换好，还差一枚，电力尚未恢复。",
+  "panel_opened_summary": "炉盖已打开。",
+  "power_restored_summary": "供电已恢复。",
+  "escape_summary": "密道船已成功出发。",
+  "no_power_summary": "挂毯板没有电力。",
+  "milestones": [
+    {
+      "stage": "收集修理工具",
+      "done_text": "无",
+      "undone": "获得 {missing}",
+      "key_items": [
+        "iron_key",
+        "storm_cell",
+        "frost_core"
+      ],
+      "trigger_reasons": []
+    },
+    {
+      "stage": "恢复供电",
+      "done_text": "修理工具",
+      "undone": "打开炉盖",
+      "key_items": [],
+      "trigger_reasons": [
+        "panel_opened"
+      ]
+    },
+    {
+      "stage": "恢复供电",
+      "done_text": "修理工具和炉盖",
+      "undone": "恢复供电",
+      "key_items": [],
+      "trigger_reasons": [
+        "power_restored"
+      ]
+    },
+    {
+      "stage": "读取王座码",
+      "done_text": "修理工具和供电",
+      "undone": "读取王座码",
+      "key_items": [],
+      "trigger_reasons": [
+        "code_read"
+      ]
+    },
+    {
+      "stage": "乘密道船离开",
+      "done_text": "修理工具、供电和王座码",
+      "undone": "乘密道船离开",
+      "key_items": [],
+      "trigger_reasons": []
+    }
+  ],
+  "summaries": {
+    "looked": "你查看了当前堡内。",
+    "moved": "你移动到了指定堡内。",
+    "inspected": "你检查了指定对象。",
+    "picked_up": "你将物品放入了背包。",
+    "panel_opened": "炉盖已打开。",
+    "power_restored": "供电已恢复。",
+    "cell_staged": "部件已装好，但供电尚未恢复。",
+    "diagnostic_read": "你收听了广播。",
+    "code_read": "你读取了王座终端中的王座码。",
+    "escaped": "密道船已成功出发。",
+    "already_completed": "离开程序已经完成。",
+    "not_adjacent": "当前堡内无法直接到达该处。",
+    "not_visible": "当前堡内看不到该目标。",
+    "not_revealed": "该物品尚未被发现。",
+    "not_present": "当前堡内没有该物品。",
+    "already_collected": "该物品已经在背包中。",
+    "missing_item": "你没有所需物品。",
+    "wrong_target": "当前不能将该物品用于这个目标。",
+    "read_terminal_required": "终端请使用 read_terminal 工具读取。",
+    "panel_closed": "请先打开炉盖，再更换电芯。",
+    "code_unread": "请先读取王座码，再启动密道船。",
+    "incorrect_code": "该王座码不正确。",
+    "no_power": "挂毯板没有电力。"
+  }
+}

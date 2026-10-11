@@ -1,5 +1,21 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-11 flex 引擎与 6 张 pilot 图建成，全套 271 passed
+
+事件：按用户确认的四个优化方向交付：flex 参数化引擎（分支/并行/反转）、
+难度三杠杆打标（spec 0012 表格，离线）、3 张 pilot 图各带 1 个深诱饵、
+3 张 seeded 图（工具双容器分配）。
+原因：105/105 证明单链已无瓶颈，需验证换任务结构后能力是否还在；
+全部走新版本，旧 30 图与 V1 基线不受影响。
+改动：`worlds/flex.py` + 6 个 JSON + `worlds/__init__.py` 新增 6 对 selector
++ `arena/models.py` 加 `CELL_STAGED`（加法）+ 3 个新测试文件（22 项）+
+spec 0012；测试抓到 `_escape` 不查电源的旧假设 bug 并修复。
+验证：`PYTHONPATH=src python -m pytest -q` 271 passed；6 图公开通关
+（19/22/16）、分支任一供电、并行缺件断电、无电读码/无电禁逃、
+seeded 确定性/差异性/可解性全部通过；本机无 ruff/mypy/uv。
+下一步：pilot 图真实模型对照（预算登记后）；全量 seeded 推广待定。
+关联提交：待提交。
+
 ## 2026-10-11 新 21 图真实模型 105/105 通关
 
 事件：Muse 自主组合（memory + history5 + recovery + phase，不限步）在 7 个
