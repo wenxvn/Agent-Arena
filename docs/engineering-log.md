@@ -1,5 +1,20 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-11 新 21 图真实模型 105/105 通关
+
+事件：Muse 自主组合（memory + history5 + recovery + phase，不限步）在 7 个
+新世界 21 配置 × 5 seeds 获 105/105 成功，七图均值步数全部随难度单调递增。
+原因：验证新图可通关且难度梯度成立；首波 105 并发触发网关系统性限流，
+104 局开局中断，全部 trace 保留并降并发重跑。
+改动：仅实验运行，无代码改动；新增 `scripts/run_21maps_matrix.ps1`、
+`scripts/run_episode.py`、`scripts/rerun_21maps_pool.py`、
+`scripts/summarize_21maps.py`；trace 在 `runs/muse-21maps-*`（本地生成物，
+不进 Git）；scope §J 更新。
+验证：离线汇总 21 配置全部 5/5，非法输出总共 1 次；尝试分母=首波 105 +
+重跑 104 + 补跑 4（含 1 冒烟，另计）。
+下一步：把 105/105 纳入 V1 提纲 T2 离线重评与 T6 泛化讨论；commit/push。
+关联提交：待提交。
+
 ## 2026-10-11 十世界三十图建成，全套 249 passed
 
 事件：新增极地/金字塔/地铁/火山/丛林/月球/古堡 7 个世界，各分三档难度，
