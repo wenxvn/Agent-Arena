@@ -139,7 +139,7 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 - [ ] **多世界、多模型对照**：至少加入第二个 world version 和第二种模型规模，避免结论只适用于单一地图和 `qwen2.5:7b`。
   - 验收：固定实验矩阵、统一指标和可重放 trace。
 
-### B. 纯模型自主通关验收（当前首要未完成任务）
+### B. 纯模型自主通关验收（2026-10-11 已通过，Muse 45/45）
 
 这项任务必须证明模型在不依赖 Spaceship Escape 谜题攻略式提示、不使用 `planner_assisted` 或 `guarded` 引导的情况下，仅根据公开 Observation、历史和环境反馈完成任务。当前 ReactAgent、MemoryAgent 和 PlanningAgent 均有实现与 Fake provider 对照测试；真实 Ollama 对照已覆盖 React、Memory、Planning，但尚未取得可重复的纯模型成功。
 
@@ -257,4 +257,4 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 
 ## 当前下一步
 
-Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。PlanningAgent v1 的工程闭环和 Evaluation v2 失败分析也已完成；它与 `planner_assisted` 保持独立。**B. 纯模型自主通关验收** 仍是失败基线：通用 prompt 下 ReactAgent、MemoryAgent 和 PlanningAgent 在 `qwen2.5:7b` 固定 5 seeds 中均未成功。2026-10-10 起真实实验切到 Windows + Zen 网关 `muse-spark-1.3-contributor`：React 0/5（控制室/走廊循环），Memory 0/5（工具 3/5、电源 2/5、读码 1/5，seed 0 走完修复链路但步数耗尽），Planning 0/5（4 step_limit + 1 网关瞬断 provider_error；平均 Planner 调用 2.6 次、子目标完成率 12%、电源 1/5）。Evaluation v2（qwen 时代）重跑显示平均 Planner call ratio 85.3%、State Progress 0、每局 29 次无进展动作，当前主要证据指向 Action grounding 与 exploration/recovery 空转；Muse 时代的新特征是 Planner 调用过少（Monitor 阈值可能偏宽容）。Fake smoke benchmark 只证明工程闭环，不代表模型自主能力。下一步是完成失败步骤的人工抽样和单变量消融，再决定 PlanningAgent v2、ReflectionAgent 和 Streamlit 的顺序。
+三世界九图与 Muse 自主组合 45/45 通关矩阵已完成（均值步数随难度单调递增，trace 全部归档）。下一步：终点 `read_terminal` 误用与读码后迷路的 prompt/文本消融、PlanningAgent 配相同公开上下文；之后再决定 ReflectionAgent 和 Streamlit 的顺序。

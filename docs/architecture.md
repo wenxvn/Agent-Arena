@@ -29,7 +29,7 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 
 ## 当前 MVP 闭环
 
-1. 用公开工具手动完成一个 Spaceship Escape 世界。
+1. 用公开工具手动完成三个世界（飞船/灯塔/深海站）的九张难度图。
 2. 用环境规则测试固定该世界行为。
 3. 接入 ReactAgent，运行受步数限制的 Agent Loop。
 4. 保存 JSON Episode Trace。
