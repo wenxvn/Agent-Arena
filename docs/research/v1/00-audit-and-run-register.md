@@ -80,8 +80,8 @@
 | EXP-C011 | memory, H0 R1 P1, B60, seeds 0–4（5 局 +1 重跑） | 5×60 | ≤350 请求 | done：**0/5**（seed1 首跑 provider_error→重跑仍 step_limit） |
 | EXP-ReactC111-pilot | react, H5 R1 P1, B60, seed 0（1 局） | ≤60 | ≤70 | done：step_limit（遗忘授权码，见 03 §9） |
 | EXP-ReactC111 | react, H5 R1 P1, B60, seeds 0–4（5 局 +1 重跑） | 5×60 | ≤350 | done：**0/4 完成**（seed4 两次 provider_error 记 censored） |
-| EXP-E1-pilot | memory+E1, H5 R1 P1, B60, seed 0（1 局） | ≤60 | ≤70 | 待跑（E1 实现+离线验证后） |
-| EXP-E1 | memory+E1, H5 R1 P1, B60, seeds 0–4（5 局） | 5×60 | ≤350 | 待跑 |
+| EXP-E1-pilot | memory+E1, H5 R1 P1, B60, seed 0（1 局） | ≤60 | ≤70 | done：success/44 步（见 04 §5） |
+| EXP-E1 | memory+E1, H5 R1 P1, B60, seeds 0–4（5 局） | 5×60 | ≤350 | done：**5/5**（均值 30.6，零误用；C111 3/5 均值 47.2） |
 | EXP-Pctx-pilot | planning, H5 R1 P1, B60, seed 0（1 局） | ≤60×2 调用 | ≤140 | 待跑 |
 | EXP-Pctx | planning, H5 R1 P1, B60, seeds 0–4（5 局） | 5×60 | ≤700 | 待跑 |
 

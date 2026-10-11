@@ -27,11 +27,25 @@
 - **E3 已读码事实提醒**（次推荐，需控措辞）：总渲染“已读取授权码（True/False），不要重读”，不带码值、不点名房间（插入 `memory.py:236-246` 或 `PublicPhaseTracker.render`）。
 - **E2 终点文本澄清**（风险最高，需新 world version）：终点 `inspect_result` 加“请用 `use(码,载具)`，不要 `read_terminal(载具)`”，不写路线；改 JSON 即改 hash（`worlds/*.py:168-176`），须走新 version + 9 图同步，成本大。措辞只讲工具否定，不讲肯定路线。
 
-## 5. 验证（本轮：离线契约测试通过；在线对照 blocked）
+## 5. 验证（E1 在线对照完成，有效，保留）
 
-- 离线：`tests/test_terminal_contract.py`（3 断言，加载真实失败 trace，只读 `read_episode_trace` + `ProgressDetector`，0 模型调用）通过。
-- 在线：同模型同配置同预算 `C111` vs E1/E2/E3 各少量局比较——**not run**（blocked：需冻结对照 + 预算登记；E1 未实施，不得把三项叠加宣称每项有效）。
-- 量化指标（实施后比较）：读码后无进展动作、终点误用次数、到终点延迟、`Success@K`、平均总步数、token；退化必须报告；检查是否变成 `planner_assisted`（暗示唯一答案则不公平）。
+- 离线：`tests/test_terminal_contract.py`（3 断言）+ `tests/test_e1_prompt_contract.py`
+  （4 断言：规则存在、无码值、无地图 ID、无路线暗示）通过；全套 177 passed。
+  E1 实现提交 `15834c2` 即实验代码版本标记（prompt 仍署 `react_v12_autonomous`，
+  新旧靠 `base_prompt_hash` 区分：旧 `5dc2038b…` vs E1 `44229085…`）。
+- 在线 EXP-E1（memory+E1, H5 R1 P1, B60, 飞船 v1, seeds 0–4）：**5/5 成功**，
+  步数 35/29/31/28/30（均值 30.6），`invalid=0`，5 局**零 `read_terminal(载具)` 误用**，
+  读码次数 2/1/1/1/1（读到即走，不重读）。
+  对照 C111（同模型同 world 同 B60 同 H/R/P，旧 hash）：3/5，步数 36/35/60/60/45（均值 47.2）。
+  按 seed 配对：0: 36→35、1: 35→29、2: 60→31、3: 60→28、4: 45→30——**5 格全部持平或更好**。
+  token 效率：E1 均值 input 42k/output 16.6k vs C111 65k/34k（约 −35%/−50%）。
+- 公平性：E1 文本经诚实性契约（无码值/地图 ID/路线），属通用 tool 语义，不构成
+  `planner_assisted`（无下一动作建议、无路线）。未叠加 E2/E3，单变量归因成立。
+- 结论：**E1 有效，保留**（prompt 第 7 条不撤回）。E2/E3 保持隔离未实施；
+  REPEATED_CODE_READ 在 E1 组已消失（读码 ≤2 次），E3 暂无实施必要，记 deferred。
+- 成本：6 次尝试（pilot 44 步 + 5 局）≈ input 260k / output 105k tokens，无中断。
+
+## 6. 下一步
 
 ## 6. 下一步
 
