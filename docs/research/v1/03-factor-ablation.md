@@ -59,7 +59,7 @@ Memory vs React（M 主效应）：代码正交（`cli.py:417-431` agent 选择�
 
 ## 7. 测试与 CI
 
-- `tests/test_phase_prior_audit.py` 通过（见 `01`）。在线补测见 §8（C011 已完成 0/5；C010 仍缺）。
+- `tests/test_phase_prior_audit.py` 通过（见 `01`）。在线补测见 §8（C011 已完成 0/5；C010 仍缺）、§9（React-C111 pilot 完成）。
 
 ## 8. 在线补测进展（2026-10-11 EXP-C011，已完成）
 
@@ -88,3 +88,29 @@ Memory vs React（M 主效应）：代码正交（`cli.py:417-431` agent 选择�
   出现 `placeholder`/`abc`/`123`/`1234567890` 等无意义短理由（尤其 seed 3/4 的 look 簇），
   但 Action 仍合法（`invalid_output=0`）。长循环下理由字段先退化，动作接地随后停滞。
 - 成本：6 次尝试（含 1 censored 重跑）≈ input 265k / output 188k tokens，模型耗时约 33 分钟。
+
+## 9. M 消融对照（EXP-ReactC111，2026-10-11，已完成）
+
+- EXP-ReactC111-pilot（react, H5 R1 P1, B60, 飞船 v1, seed 0）：**`step_limit` 失败**。
+  trace `runs/episode_20261011T103502Z_react_seed-0_e980e788.json`。
+- EXP-ReactC111（seeds 1–4）+ seed 4 重跑：**0/4 完成**（seed 4 两次 `provider_error` 记 censored）。
+  seeds 0–3 全部 `step_limit`，60 步。
+
+| seed | outcome | 读码次数 | 终点误用 | input/output tokens | trace |
+|---|---|---|---|---|---|
+| 0 | step_limit | 1 | 1（+`use(screwdriver→pod)` 错码） | 69k/52k | `runs/episode_20261011T103502Z_react_seed-0_e980e788.json` |
+| 1 | step_limit | 1 | 1 | 69k/58k | `runs/episode_20261011T104347Z_react_seed-1_8aae6f1f.json` |
+| 2 | step_limit | 1 | 1 | 69k/55k | `runs/episode_20261011T105453Z_react_seed-2_00dbbae8.json` |
+| 3 | step_limit | 1 | 1 | 69k/53k | `runs/episode_20261011T110329Z_react_seed-3_cc85f548.json` |
+| 4 | censored（2×provider_error） | 1/1 | 0/1 | — | `runs/episode_20261011T111523Z_react_seed-4_9ae5ccd6.json` + `…112425Z…_7d6c86b2.json` |
+
+- 统一失败模式（4/4 完成局一致）：22 步前后读到码**恰好 1 次**，随后 reactor_room↔escape_pod
+  往返 + 反复 `inspect(escape_pod)`，**忘记授权码内容**——`read_terminal(escape_pod)→wrong_target`
+  每局 ≥1 次；seed 0 更以 `use(screwdriver→escape_pod)→incorrect_code`（拿螺丝刀当码）。
+  失败分类：`FORGOTTEN_FACT`。与 C011 系（memory 无 H：读码 6–9 次、corridor↔control_room 空转）
+  形成双分离：**H 给推进、M 保事实**——React 能走到终点但保不住码，Memory 保住码但无 H 时到不了终点。
+- M 主效应结论：同 H5/R1/P1/B60 下，memory（C111 历史 3/5）vs react（本轮 0/4）。
+  **M 增益成立**（效应方向明确，n 小，只报效应不报显著性）。
+  可比性声明：C111 3/5 为 10-11 早前同模型同条件历史数据，非同日并跑；prompt 差异
+  （`memory_v2` vs `react_v12`）即待测变量本身。
+- 成本：7 次尝试（含 2 censored）≈ input 460k / output 350k tokens。
