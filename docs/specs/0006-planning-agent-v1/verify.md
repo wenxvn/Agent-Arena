@@ -10,7 +10,7 @@ uv run ruff check .
 uv run mypy src
 ```
 
-结果：96 项 pytest 通过，Ruff 通过，mypy 通过。
+结果：96 项 pytest 通过，Ruff 通过，mypy 通过（Planning v1 工程时点；Evaluation v2 阶段为 116 项，见工程记录 2026-09-10）。
 
 ## Fake smoke test
 

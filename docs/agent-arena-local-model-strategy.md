@@ -2,7 +2,7 @@
 
 > 建议文件位置：`docs/local-model-strategy.md`  
 > 项目：Agent Arena  
-> 更新日期：2026-08-19
+> 更新日期：2026-08-19（2026-09-10 补记：本文为历史推进建议，部分已实现——最近历史、循环检测、里程碑记忆、MemoryAgent、benchmark 指标、PlanningAgent v1、Evaluation v2；当前状态以 `docs/scope/scope.md`、`docs/current-issues.md` 和失败分析报告为准，不以本文第 21 节 checkbox 为准）
 
 ### 最新实测（2026-09-10）
 

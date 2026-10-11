@@ -91,6 +91,26 @@ class ToolResult(BaseModel):
     summary: str
 
 
+class PublicMilestone(BaseModel):
+    """One world-declared quest checkpoint rendered as public phase context.
+
+    Worlds declare these; the runner only tracks and renders them. A
+    milestone completes either when all ``key_items`` are in the inventory
+    (``{missing}`` in ``undone`` lists what is still missing) or when any
+    ``trigger_reason`` appears in a public ToolResult. ``done_text`` is the
+    full "already completed" content shown while this milestone is current;
+    the trailing milestone is never completable and names the final stage.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    stage: str
+    done_text: str
+    undone: str
+    key_items: frozenset[str] = frozenset()
+    trigger_reasons: frozenset[ToolReason] = frozenset()
+
+
 class Observation(BaseModel):
     """The complete allowlisted view made available to an agent."""
 

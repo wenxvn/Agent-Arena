@@ -17,6 +17,7 @@ from agent_arena.arena.models import (
     MoveAction,
     Observation,
     PickupAction,
+    PublicMilestone,
     ReadTerminalAction,
     ToolReason,
     ToolResult,
@@ -28,7 +29,6 @@ from agent_arena.arena.models import (
 
 class RoomDefinition(BaseModel):
     """Static definition of one room in the spaceship."""
-
     model_config = ConfigDict(frozen=True)
 
     id: str
@@ -79,9 +79,41 @@ def load_spaceship_escape_definition() -> WorldDefinition:
     return WorldDefinition.model_validate_json(definition_path.read_text(encoding="utf-8"))
 
 
+SPACESHIP_MILESTONES: tuple[PublicMilestone, ...] = (
+    PublicMilestone(
+        stage="收集修理工具",
+        done_text="无",
+        undone="获得 {missing}",
+        key_items=frozenset({"screwdriver", "replacement_fuse"}),
+    ),
+    PublicMilestone(
+        stage="恢复主电源",
+        done_text="修理工具",
+        undone="打开反应堆面板",
+        trigger_reasons=frozenset({ToolReason.PANEL_OPENED}),
+    ),
+    PublicMilestone(
+        stage="恢复主电源",
+        done_text="修理工具和反应堆面板",
+        undone="恢复主电源",
+        trigger_reasons=frozenset({ToolReason.POWER_RESTORED}),
+    ),
+    PublicMilestone(
+        stage="读取逃生授权码",
+        done_text="修理工具和主电源",
+        undone="读取授权码",
+        trigger_reasons=frozenset({ToolReason.CODE_READ}),
+    ),
+    PublicMilestone(
+        stage="启动逃生舱",
+        done_text="修理工具、主电源和授权码",
+        undone="启动逃生舱",
+    ),
+)
+
+
 class SpaceshipEscapeEnvironment(Environment):
     """A six room, deterministic environment with a single escape route."""
-
     def __init__(self, definition: WorldDefinition | None = None, seed: int = 0) -> None:
         self.definition = definition or load_spaceship_escape_definition()
         self._rooms = {room.id: room for room in self.definition.rooms}
@@ -138,6 +170,10 @@ class SpaceshipEscapeEnvironment(Environment):
 
     def is_success(self) -> bool:
         return self._state.escaped
+
+    @property
+    def public_milestones(self) -> tuple[PublicMilestone, ...]:
+        return SPACESHIP_MILESTONES
 
     def _initial_state(self, seed: int) -> WorldState:
         return WorldState(seed=seed, current_room=self.definition.start_room)

@@ -40,7 +40,11 @@ from agent_arena.llm import (
 )
 from agent_arena.llm.bailian import BailianModelVerifier, ModelVerificationError
 from agent_arena.llm.openai import OpenAIDecisionProvider, OpenAIModelVerifier
-from agent_arena.worlds import SpaceshipEscapeEnvironment, create_environment
+from agent_arena.worlds import (
+    LighthouseEnvironment,
+    SpaceshipEscapeEnvironment,
+    create_environment,
+)
 
 app = typer.Typer(help="运行本地 Agent Arena 实验。", no_args_is_help=True)
 
@@ -613,7 +617,9 @@ _OUTCOME_LABELS: dict[EpisodeOutcome, str] = {
 }
 
 
-def _load_environment(settings: RuntimeSettings) -> SpaceshipEscapeEnvironment:
+def _load_environment(
+    settings: RuntimeSettings,
+) -> SpaceshipEscapeEnvironment | LighthouseEnvironment:
     try:
         return create_environment(settings.world, settings.world_version, seed=settings.seed)
     except ValueError as exc:

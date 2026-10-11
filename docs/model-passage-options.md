@@ -73,7 +73,7 @@ OLLAMA_MODEL=qwen2.5:7b uv run agent-arena run \
 2. 旧 prompt 要求所有 `use.item` 都必须在 `inventory`，但授权码来自控制终端结果，不在背包中；这与最终逃生规则冲突。
 3. ReactAgent 没有跨步保存授权码的能力，离开控制室后无法仅靠当前 Observation 得到授权码。
 4. 早期规划器在储物室先建议重复 `inspect`，没有优先拾取已经出现的物品，因此也会循环。
-5. 当前 `PublicLoopDetector` 的公开状态键还没有包含 `available_exits` 和 `last_action_result`，可能把合法的回程动作误报为循环。这不影响本次 19 步通关，但仍是待修复问题。
+5. `PublicLoopDetector` 的公开状态键曾缺少 `available_exits` 和 `last_action_result`，可能把合法回程误报为循环（已在 `a308dd5` 修复并有回归测试，不影响本次 19 步通关）。
 
 ## 解决过程
 
@@ -149,7 +149,7 @@ OLLAMA_MODEL=qwen2.5:7b uv run agent-arena benchmark \
 
 - **完成纯模型自主通关验收**：ReactAgent、MemoryAgent 和 PlanningAgent 当前固定 5 seeds 均为 0/5，仍需取得至少一组可重复成功并公开成功与失败 trace。
 - 单独评估真实模型下的 `guarded`、规划建议偏离和非法 Action 纠错，继续与规划辅助模式分开比较。
-- 分析 PlanningAgent 的 5 局真实 trace，重点确认高层子目标为何没有转化为移动、观察和工具动作。
+- 分析 PlanningAgent 的 5 局真实 trace，重点确认高层子目标为何没有转化为移动、观察和工具动作（首轮前 10 步抽样与 Evaluation v2 重跑分析见 [Planning v1 Failure Analysis](experiments/planning-v1-failure-analysis.md)，仍需扩展到完整 replan 后首 Action）。
 - 完成单变量消融：最近历史、结构化记忆、循环恢复、Planner trigger/PlanState 和提示表示。
 - 完成 Release 3 的 Streamlit 实验界面。
 - 后续再考虑 ReflectionAgent、多世界和更多模型对照。

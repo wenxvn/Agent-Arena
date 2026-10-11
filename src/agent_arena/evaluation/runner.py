@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from hashlib import sha256
 from time import perf_counter
 
@@ -16,7 +16,7 @@ from agent_arena.arena import (
     Action,
     Environment,
     Observation,
-    ToolReason,
+    PublicMilestone,
     ToolResult,
     ToolStatus,
     action_adapter,
@@ -82,6 +82,10 @@ class EpisodeRunner:
             raise ValueError("运行配置与实际环境身份不一致。")
         observation = self._environment.reset(self._settings.seed)
         self._agent.reset(observation)
+        # 阶段文本完全来自世界声明的里程碑；无里程碑的世界不受影响。
+        phase_milestones = (
+            self._environment.public_milestones if self._enable_public_phase_context else ()
+        )
         trace_header = EpisodeTrace.start(
             world_version=world_version,
             seed=self._settings.seed,
@@ -127,7 +131,7 @@ class EpisodeRunner:
                 public_action_guard_enabled=self._enable_public_action_guard,
                 stuck_recovery_enabled=self._enable_stuck_recovery,
                 concrete_action_candidates_enabled=self._enable_concrete_action_candidates,
-                public_phase_context_enabled=self._enable_public_phase_context,
+                public_phase_context_enabled=bool(phase_milestones),
                 candidate_selection_enabled=self._enable_candidate_selection,
                 memory_schema_version=(
                     "memory_v1" if self._agent.name in {"memory", "planner_assisted"} else None
@@ -151,7 +155,7 @@ class EpisodeRunner:
         total_latency_ms = 0
         loop_detector = PublicLoopDetector()
         loop_detector.initialize(observation)
-        phase_tracker = PublicPhaseTracker()
+        phase_tracker = PublicPhaseTracker(milestones=phase_milestones)
         phase_tracker.initialize(observation)
         candidate_tracker = PublicCandidateTracker()
         candidate_tracker.initialize(observation)
@@ -164,8 +168,10 @@ class EpisodeRunner:
             runtime_feedback = _join_feedback(
                 runtime_feedback, _concrete_action_candidates(observation)
             )
-        if self._enable_public_phase_context:
-            runtime_feedback = _join_feedback(runtime_feedback, phase_tracker.render(observation))
+        if phase_milestones:
+            runtime_feedback = _join_feedback(
+                runtime_feedback, phase_tracker.render(observation)
+            )
         recent_history: list[tuple[Observation, Action, ToolResult]] = []
 
         while decision_attempts < self._settings.step_limit:
@@ -344,8 +350,10 @@ class EpisodeRunner:
                 feedback_parts.append(_public_action_hints(observation))
             if self._enable_concrete_action_candidates:
                 feedback_parts.append(_concrete_action_candidates(observation))
-            if self._enable_public_phase_context:
-                feedback_parts.append(phase_tracker.render(observation))
+            if phase_milestones:
+                phase_text = phase_tracker.render(observation)
+                if phase_text:
+                    feedback_parts.append(phase_text)
             runtime_feedback = "\n".join(feedback_parts) or None
             if self._recent_history_window > 0:
                 recent_history.append((decision_observation, decision.action, result))
@@ -782,38 +790,41 @@ def _render_action(action: Action) -> str:
 
 @dataclass
 class PublicPhaseTracker:
-    """Track only public milestone results for the optional A6 context."""
+    """Render the first incomplete world milestone as public phase context."""
 
-    _panel_open: bool = False
-    _power_restored: bool = False
-    _authorization_code_read: bool = False
+    milestones: tuple[PublicMilestone, ...] = ()
+    completed: set[int] = field(default_factory=set)
 
     def initialize(self, observation: Observation) -> None:
         del observation
-        self._panel_open = False
-        self._power_restored = False
-        self._authorization_code_read = False
+        self.completed.clear()
 
     def observe(self, result: ToolResult) -> None:
-        self._panel_open = self._panel_open or result.reason is ToolReason.PANEL_OPENED
-        self._power_restored = self._power_restored or result.reason is ToolReason.POWER_RESTORED
-        self._authorization_code_read = (
-            self._authorization_code_read or result.reason is ToolReason.CODE_READ
-        )
+        for index, milestone in enumerate(self.milestones):
+            if milestone.trigger_reasons and result.reason in milestone.trigger_reasons:
+                self.completed.add(index)
 
-    def render(self, observation: Observation) -> str:
-        tools = {"screwdriver", "replacement_fuse"}
-        missing_tools = tools - set(observation.inventory)
-        if missing_tools:
-            missing = "、".join(sorted(missing_tools))
-            return f"当前公开阶段：收集修理工具。已完成：无。未完成：获得 {missing}。"
-        if not self._panel_open:
-            return "当前公开阶段：恢复主电源。已完成：修理工具。未完成：打开反应堆面板。"
-        if not self._power_restored:
-            return "当前公开阶段：恢复主电源。已完成：修理工具和反应堆面板。未完成：恢复主电源。"
-        if not self._authorization_code_read:
-            return "当前公开阶段：读取逃生授权码。已完成：修理工具和主电源。未完成：读取授权码。"
-        return "当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。"
+    def render(self, observation: Observation) -> str | None:
+        if not self.milestones:
+            return None
+        for index, milestone in enumerate(self.milestones):
+            if milestone.key_items:
+                missing = milestone.key_items - set(observation.inventory)
+                if not missing:
+                    continue
+                return (
+                    f"当前公开阶段：{milestone.stage}。"
+                    f"已完成：{milestone.done_text}。"
+                    f"未完成：{milestone.undone.format(missing='、'.join(sorted(missing)))}。"
+                )
+            if index in self.completed:
+                continue
+            return (
+                f"当前公开阶段：{milestone.stage}。"
+                f"已完成：{milestone.done_text}。"
+                f"未完成：{milestone.undone}。"
+            )
+        return None
 
 
 def _render_recent_history(history: list[tuple[Observation, Action, ToolResult]]) -> str | None:

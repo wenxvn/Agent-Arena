@@ -146,7 +146,8 @@ def test_openai_verifier_uses_responses_api(monkeypatch) -> None:
     verification = OpenAIModelVerifier(settings).verify()
 
     call = client.responses.calls[0]
-    assert call["max_output_tokens"] == 32
+    # Reasoning models spend output tokens before the final text; keep headroom.
+    assert call["max_output_tokens"] == 1024
     assert call["store"] is False
     assert verification.model == "relay-model"
 

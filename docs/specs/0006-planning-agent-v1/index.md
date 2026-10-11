@@ -32,4 +32,4 @@
 - [x] Trace 可复盘初始计划、计划保持、子目标完成和事件重规划。
 - [x] CLI 支持 `--agent planning`，Benchmark 支持 Planning 指标。
 - [x] pytest、Ruff、mypy 通过；Fake provider 固定 5 seeds 可重复完成 20 步公共路径。
-- [ ] 真实模型 5 seeds 的研究结论：需要在本地模型服务可用时单独运行，不能用 Fake 结果替代。
+- [x] 真实模型 5 seeds 已运行并记录：首轮与 Evaluation v2 重跑均为 0/5（工程完成，研究验收未通过），详见 verify.md 与失败分析报告；不得用 Fake 结果替代。

@@ -20,6 +20,7 @@
 | 9 | PlanningAgent v1 | Research Core | done |
 | 10 | ReflectionAgent | Deferred | planned |
 | 11 | Planning v1 Failure Analysis & Evaluation v2 | Research Core | done |
+| 12 | 雾岛灯塔第二世界与迁移对照 | Research Core | done |
 
 ## Foundation
 
@@ -145,7 +146,8 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 - [x] 每局记录并比较成功率、步数、重复或拒绝动作、非法输出、token 使用量和耗时。
 - [x] PlanningAgent 使用相同 world、模型、seed、temperature 和 step limit 完成 5 局真实 Ollama 对照；结果为 0/5 成功，平均 30 步，子目标完成率 0%。
 - [x] 纯模型、`guarded` 和 `planner_assisted` 结果保持独立标记。
-- [ ] 公开失败 trace，并确认至少一组纯模型结果可以重复成功；本轮 React、Memory、Planning 均未成功，自主通关验收仍未通过。
+- [x] Muse `muse-spark-1.3-contributor`（Zen 网关）完成 React/Memory/Planning 各 5 局同等条件对照：React 0/5（控制室/走廊循环），Memory 0/5（工具 3/5、电源 2/5、读码 1/5），Planning 0/5（4 step_limit + 1 网关瞬断，子目标完成率 12%、电源 1/5）；与 qwen 基线独立统计。
+- [x] 公开失败 trace，并确认至少一组纯模型结果可以重复成功：2026-10-11 Muse Memory + history5 + stuck_recovery + phase_context + 60 步在 seeds 0–4 获 3/5（36/35/45 步）、全新 seeds 5–9 获 2/5（均 57 步），成功与失败 trace 均归档；消融确认 history/phase/recovery 互补（单变量均为 0/5）。
 
 ### C. 尚未测试的行为
 
@@ -171,9 +173,15 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 
 ### E. 完成判定
 
-- [ ] 纯模型至少有一组可重复的成功结果，并公开失败样本，不能只报告成功局。
+- [x] 纯模型至少有一组可重复的成功结果，并公开失败样本，不能只报告成功局：飞船 10 局 5 胜 + 灯塔 5 局 5 胜，成功与失败 trace 均归档。
 - [ ] 辅助模式与纯模型模式有独立 trace、独立指标和独立结论。
 - [ ] 关键技术债和未测试项关闭后，再将 Streamlit 和 Planning/Reflection 结果纳入下一版研究总结。
+
+### F. 第二世界迁移对照（2026-10-11，done）
+
+- [x] 雾岛灯塔世界：6 房链式拓扑、新名称新授权码（`TIDE-2049`）、15 步最优公开路径；规则测试与人可通关验证通过（spec 0007）。
+- [x] 阶段上下文泛化为世界声明里程碑（`PublicMilestone`），飞船旧文本逐字保留（回归测试锁定）；Runner 不再内置飞船知识。
+- [x] Muse 自主组合（memory + history5 + recovery + 通用 phase，无辅助）灯塔 5 seeds：**5/5 成功**（27/28/28/55/57 步），证明能力迁移到未见地图，而非背下飞船路线。
 
 ## Release 3
 
@@ -224,4 +232,4 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 
 ## 当前下一步
 
-Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。PlanningAgent v1 的工程闭环和 Evaluation v2 失败分析也已完成；它与 `planner_assisted` 保持独立。**B. 纯模型自主通关验收** 仍是失败基线：通用 prompt 下 ReactAgent、MemoryAgent 和 PlanningAgent 在 `qwen2.5:7b` 固定 5 seeds 中均未成功。Evaluation v2 重跑显示平均 Planner call ratio 85.3%、State Progress 0、每局 29 次无进展动作、唯一公开房间 1 个和同子目标重复 Action 26 次，当前主要证据指向 Action grounding 与 exploration/recovery 空转。Fake smoke benchmark 只证明工程闭环，不代表模型自主能力。下一步是完成失败步骤的人工抽样和单变量消融，再决定 PlanningAgent v2、ReflectionAgent 和 Streamlit 的顺序。
+Release 2 的确定性环境、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 已完成。PlanningAgent v1 的工程闭环和 Evaluation v2 失败分析也已完成；它与 `planner_assisted` 保持独立。**B. 纯模型自主通关验收** 仍是失败基线：通用 prompt 下 ReactAgent、MemoryAgent 和 PlanningAgent 在 `qwen2.5:7b` 固定 5 seeds 中均未成功。2026-10-10 起真实实验切到 Windows + Zen 网关 `muse-spark-1.3-contributor`：React 0/5（控制室/走廊循环），Memory 0/5（工具 3/5、电源 2/5、读码 1/5，seed 0 走完修复链路但步数耗尽），Planning 0/5（4 step_limit + 1 网关瞬断 provider_error；平均 Planner 调用 2.6 次、子目标完成率 12%、电源 1/5）。Evaluation v2（qwen 时代）重跑显示平均 Planner call ratio 85.3%、State Progress 0、每局 29 次无进展动作，当前主要证据指向 Action grounding 与 exploration/recovery 空转；Muse 时代的新特征是 Planner 调用过少（Monitor 阈值可能偏宽容）。Fake smoke benchmark 只证明工程闭环，不代表模型自主能力。下一步是完成失败步骤的人工抽样和单变量消融，再决定 PlanningAgent v2、ReflectionAgent 和 Streamlit 的顺序。

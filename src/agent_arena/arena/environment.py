@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from agent_arena.arena.models import Action, Observation, ToolResult
+from agent_arena.arena.models import Action, Observation, PublicMilestone, ToolResult
 
 
 class Environment(ABC):
@@ -14,6 +14,12 @@ class Environment(ABC):
     @abstractmethod
     def identity(self) -> tuple[str, str, str, str]:
         """Return world selector, public version, definition id and definition hash."""
+
+    @property
+    def public_milestones(self) -> tuple[PublicMilestone, ...]:
+        """World-declared quest checkpoints; empty means no phase context."""
+
+        return ()
 
     @abstractmethod
     def reset(self, seed: int = 0) -> Observation:

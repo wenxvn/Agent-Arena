@@ -17,6 +17,48 @@
 关联提交：Git commit，若有
 ```
 
+## 2026-10-11 雾岛灯塔世界与迁移 5/5
+
+事件：新增第二个确定性世界（雾岛灯塔，spec 0007），Muse 自主组合在新地图 5/5 成功逃生；阶段上下文泛化为世界声明里程碑，Runner 不再内置飞船知识。
+
+原因：检验通关能力是否迁移到未见地图，而非背下飞船路线；灯塔首轮无 phase 时 0/5（死法与飞船一致），证明阶段标签不可或缺，倒逼其泛化。
+
+改动：`worlds/lighthouse.py` + `data/lighthouse_escape_v1.json`、`worlds/__init__.py` 注册、`arena/models.py` 新增 `PublicMilestone`、`arena/environment.py` 新增 `public_milestones` 默认空、`evaluation/runner.py` 的 tracker 改里程碑驱动（飞船旧文本逐字保留）、`agents/planning.py` 不变、`cli.py` 类型标注更新；`tests/test_lighthouse.py` + `tests/test_phase_tracker.py`。
+
+验证：全套 `pytest` 126 passed；灯塔 15 步公开路径通关测试通过；Muse 自主组合灯塔 5 seeds 5/5（27/28/28/55/57 步），trace 与 failure_analysis 归档于 `results/muse-lighthouse-h5rp(-s14)/`。
+
+下一步：压缩成功路径回 30 步预算；Planning 配相同公开上下文；ReflectionAgent；Streamlit。
+
+关联提交：待提交。
+
+## 2026-10-11 首个真正自主通关
+
+事件：Muse Memory 在 `--autonomous` 下 5 seeds 获 3/5 成功逃生（seed 0/1/4，36/35/45 步），全部 Action 由模型自主返回并校验。
+
+原因：Phase 1–3 逐个证伪预算/历史/卡死恢复都不充分；Phase 4 加入公开阶段上下文后模型首次把授权码与逃生舱绑定，此前 15 局全倒在这一步。
+
+改动：仅实验变量组合（history5 + stuck_recovery + phase_context + 60 步），无代码改动；结果归档于 `results/muse-memory-s60-h5rp/`（benchmark JSON/CSV + failure_analysis + traces）。
+
+验证：trace `outcome=success`、`agent=memory`、终局动作为模型输出的 `use(ALPHA-731 → escape_pod)`；provenance 中 hints/candidates/selection/guard 全关；全新 seeds 5–9 复验 2/5（seed 5/9，均 57 步），可重复性确认；消融矩阵：history-only 0/5、phase-only 0/5、history+phase 1/5、三者组合 3/5。
+
+下一步：单变量消融已完成（history/phase/recovery 互补）。后续方向：把成功路径压缩回 30 步预算（当前需 35–57 步）、PlanningAgent 配相同公开上下文、ReflectionAgent，以及 Streamlit。
+
+关联提交：待提交。
+
+## 2026-10-10 Windows + Muse provider 切换与自主基线
+
+事件：真实实验 provider 从 Mac 本地 Ollama（`qwen2.5:7b`）切换为 Windows 下 OpenCode Zen 网关的 `muse-spark-1.3-contributor`；完成 React/Memory 各 5 seeds 自主对照，并适配网关严格 schema。
+
+原因：换到 Windows 后本地 Ollama 需重装且 Python 仅 3.11（项目要求 3.13 + uv）；用更强 API 模型能更快取得首个深阶段样本，验证瓶颈是 grounding 还是模型规模。
+
+改动：`src/agent_arena/config.py` 新增 `openai_session_id`（网关强制 `x-opencode-session` 请求头）、`src/agent_arena/llm/openai.py` 注入该头并把验证输出上限调到 1024（推理模型空回复问题）、`src/agent_arena/llm/protocol.py` 新增无 `$ref` 的 `decision_response_schema_strict()` 和全 required 的 `planner_response_schema_strict()`、`src/agent_arena/agents/planning.py` 增加 `""`→`None` 归一化；`.env`（本机）与 `.env.example` 更新；`docs/current-issues.md` 登记 Muse 基线。
+
+验证：`verify-model --provider openai` 通过；Muse React 0/5（控制室/走廊循环，非法输出 0）、Memory 0/5（工具 3/5、电源 2/5、读码 1/5）；`uv` 不可用故用本机 Python 3.11 + `PYTHONPATH=src` 跑 `pytest`：118 passed。附带修好两个测试问题：本机 `.env` 会污染 CLI 测试（改走真实 provider 并挂起网络），新增 `tests/conftest.py` 做 env/dotenv 双隔离；验证输出上限 32→1024（推理模型空回复），同步更新 `test_openai_provider.py` 断言。Planning 5 seeds 曾因 Planner schema 被网关 400 而 `provider_error`，修复后正在重跑。
+
+下一步：Muse 三组对照已完成（React/Memory/Planning 均为 0/5，无可重复成功样本）。下一步是失败步骤人工抽样 + 单变量消融（优先：PlanMonitor 重规划阈值、Executor grounding 约束），再决定 PlanningAgent v2、ReflectionAgent 和 Streamlit 的顺序。
+
+关联提交：待提交。
+
 ## 2026-09-10 Planning v1 Failure Analysis 与 Evaluation v2 完成
 
 事件：完成 PlanningAgent v1 的失败分析基础设施、Evaluation v2 和真实 5 seeds 独立重跑；v1 Planner→Executor 核心保持冻结。
@@ -29,7 +71,7 @@
 
 下一步：扩展已完成的人工抽样到每局完整的 replan 后首个 Action，区分 vague/wrong subgoal、wrong action、forgotten fact 与 ineffective replan；随后在保持 v1、模型、world 和 prompt 不变的条件下进行单变量 grounding 或 exploration/recovery 验证，再决定是否创建 PlanningAgent v2 spec。
 
-关联提交：待提交。
+关联提交：`6504db8`。
 
 ## 2026-09-10 文档同步与 PlanningAgent 真实五个 seed 对照
 
@@ -38,7 +80,7 @@
 改动：更新 `README.md`、`研究总纲.md`、`docs/scope/scope.md`、`docs/current-issues.md`、`docs/autonomous-escape-experiment-plan.md`、`docs/model-passage-options.md` 和 Planning spec 验证记录；Ollama loopback 请求绕过系统代理，并补充 provider 回归适配。
 验证：标准 `uv run agent-arena verify-model --provider ollama` 通过；`qwen2.5:7b`、`spaceship-escape-v2-zh`、temperature 0、30 步、seed 0 至 4、`--autonomous` 的 Planning benchmark 为 0/5 成功，平均重复动作比例 93.3%、连续 `look` 26 次、唯一公开状态 1 个、Planner 调用 28 次、子目标完成率 0%、总 token 141,445；96 项 pytest、Ruff、mypy 通过。
 下一步：公开并分析 React、Memory、Planning 的成功/失败 trace，优先研究高层子目标到有效移动/工具动作的桥接；在取得可重复成功前，Reflection 和 Streamlit 继续后置。
-关联提交：本次文档同步与真实对照提交。
+关联提交：`a7aedf5`。
 
 ## 2026-09-09 PlanningAgent v1 工程闭环完成
 
@@ -47,7 +89,7 @@
 改动：新增 `src/agent_arena/planning/`、`PlanningAgent`、`planning_v1`/`planning_executor_v1` prompts；扩展 DecisionProvider 的 Planner contract；接入 Runner、Trace、Benchmark、CLI `--agent planning`；新增 0006 spec 和 Planning 专项测试。
 验证：96 项 pytest、Ruff、mypy 全部通过；Fake provider seed 0 完成 20 个 Executor Action、4 个子目标；Fake 5 seeds benchmark 全部成功并写出计划成本和生命周期指标。随后探测本机 Ollama，`verify-model` 未通过，因此没有伪造真实模型结果。
 下一步：使用真实本地模型在固定 5 seeds 下运行 React、Memory、Planning 和 `planner_assisted` 对照。Fake 成功不代表 Planning 自主能力，Reflection 和 Streamlit 继续后置。
-关联提交：PlanningAgent v1 工程提交。
+关联提交：`07f7457`。
 
 ## 2026-08-19 研究状态文档同步
 
@@ -413,4 +455,4 @@
 
 下一步：先设计并实现 world 加载契约、循环检测修复及指标补齐，再验证 guarded 和 planner 生命周期；纯模型与辅助模式继续独立统计。
 
-关联提交：待提交。
+关联提交：`29cb000`。

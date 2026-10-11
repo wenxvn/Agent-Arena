@@ -161,7 +161,7 @@ uv run agent-arena benchmark \
 
 A1/A2 使用新增的实验开关，命令格式和固定 seed 与 A0 相同；实际开关名称以实现后的 CLI help 和 trace provenance 为准。
 
-## 10. 2026-08-19 实验结果
+## 9. 2026-08-19 实验结果
 
 实现提交前的 A1/A2 复验使用 Ollama `qwen2.5:7b`、固定 seed 0 至 4、30 步预算、`--autonomous`。
 
@@ -179,7 +179,7 @@ A1/A2 使用新增的实验开关，命令格式和固定 seed 与 A0 相同；�
 
 下一步应优先做 A3/A4 的**公开动作约束与卡死恢复**：把已知失败动作和当前公开前置条件转换成候选动作排除，而不是继续扩展自然语言记忆字段。A3/A4 仍需与 A0/A1/A2 独立统计，不能称为纯自主基线。
 
-## 11. 2026-08-19 A3/A4 实验结果
+## 10. 2026-08-19 A3/A4 实验结果
 
 | 条件 | 成功 | 平均步数 | 主要结果 |
 |---|---:|---:|---|
@@ -197,7 +197,7 @@ A4 能打破最初的控制室终端循环，说明公开循环提醒确实改�
 
 结论：A3 主要降低公开非法动作风险，A4 能改善早期探索但不能完成阶段转换。下一步应研究“公开阶段状态 + 候选动作集合”或真正的 PlanningAgent；不能把 A4 的路径改善写成自主通关能力。
 
-## 12. A5 公开具体候选动作
+## 11. A5 公开具体候选动作
 
 A5 只根据当前 `Observation` 枚举可构造的具体 Action，例如：
 
@@ -222,7 +222,7 @@ uv run agent-arena benchmark \
   --output-dir results/a5-react-candidates
 ```
 
-## 13. 2026-08-19 A5 实验结果
+## 12. 2026-08-19 A5 实验结果
 
 A5 已完成实现、Fake 回归和 Ollama seed 0/1 的真实探针。两局均为 `step_limit`、30 步、0 次非法输出；模型仍在控制室循环 `inspect/read_terminal(control_terminal)`，具体候选列表没有改变选择。
 
@@ -233,7 +233,7 @@ A5 已完成实现、Fake 回归和 Ollama seed 0/1 的真实探针。两局均�
 
 结论：具体 Action 候选主要解决参数填写问题，不能解决“公开参数合法但阶段无进展”的策略循环。A5 不足以替代阶段状态或 PlanningAgent。
 
-## 14. A6 公开阶段状态
+## 13. A6 公开阶段状态
 
 A6 使用已经公开的 Observation、Action 和 ToolResult，确定性压缩为当前阶段和未完成条件：
 
@@ -254,13 +254,13 @@ uv run agent-arena benchmark \
   --output-dir results/a6-react-phase-context
 ```
 
-## 15. 2026-08-19 A6 实验结果
+## 14. 2026-08-19 A6 实验结果
 
 A6 seed 0 探针结果为 `step_limit`，30 步全部在控制室重复 `inspect/read_terminal(control_terminal)`，0 次非法输出，0 次阶段推进。阶段文字“收集修理工具”没有让模型离开控制室。
 
 结论：公开阶段标签不能替代阶段到动作的桥接；继续增加类似自然语言上下文的收益很低。后续应暂停 A6 类提示变量，转向真正的规划策略或明确标记的公开辅助候选集合。
 
-## 9. 成功标准
+## 15. 成功标准
 
 本轮不以“某一局成功”作为充分结论。最低交付是：
 
@@ -339,7 +339,7 @@ uv run agent-arena run --provider openai --agent candidate_select --seed 0 \
 4. planner feedback 已以长度受限摘要和 hash 进入 trace，不保存完整 reasoning 或密钥。
 5. `guarded`、规划建议偏离、非法 Action 纠错与跨 episode 生命周期已有工程回归；真实模型行为仍待单独验证。
 
-本次工程回归为 `96 passed`、Ruff 和 mypy 通过。纯模型成功率结论没有变化：尚未取得可重复成功，辅助模式仍必须独立报告。
+本次工程回归为 `96 passed`、Ruff 和 mypy 通过（该盘点时点；Evaluation v2 阶段为 `116 passed`，见工程记录 2026-09-10）。纯模型成功率结论没有变化：尚未取得可重复成功，辅助模式仍必须独立报告。
 
 ## 18. 2026-09-10 PlanningAgent v1 真实对照
 

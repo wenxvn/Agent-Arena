@@ -80,6 +80,10 @@ class RuntimeSettings(BaseSettings):
         default=None,
         validation_alias=AliasChoices("OPENAI_API_KEY", "openai_api_key"),
     )
+    openai_session_id: str = Field(
+        default="agent-arena",
+        validation_alias=AliasChoices("OPENAI_SESSION_ID", "openai_session_id"),
+    )
     dashscope_api_key: SecretStr | None = Field(
         default=None,
         validation_alias=AliasChoices("DASHSCOPE_API_KEY", "dashscope_api_key"),

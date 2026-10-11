@@ -16,8 +16,8 @@ from agent_arena.llm.protocol import (
     DecisionRequest,
     ProviderResponse,
     candidate_selection_response_schema,
-    decision_response_schema,
-    planner_response_schema,
+    decision_response_schema_strict,
+    planner_response_schema_strict,
 )
 
 
@@ -40,6 +40,7 @@ class OpenAIModelVerifier:
             base_url=base_url,
             timeout=settings.request_timeout_seconds,
             max_retries=0,
+            default_headers={"x-opencode-session": settings.openai_session_id},
         )
 
     def verify(self) -> ModelVerification:
@@ -47,7 +48,7 @@ class OpenAIModelVerifier:
             response = self._client.responses.create(
                 model=self._settings.model_name,
                 input="请只回复：Agent Arena 模型配置验证成功。",
-                max_output_tokens=32,
+                max_output_tokens=1024,
                 store=False,
             )
         except Exception as exc:
@@ -71,6 +72,7 @@ class OpenAIDecisionProvider:
             base_url=base_url,
             timeout=settings.request_timeout_seconds,
             max_retries=0,
+            default_headers={"x-opencode-session": settings.openai_session_id},
         )
 
     def decide(self, request: DecisionRequest) -> ProviderResponse:
@@ -159,9 +161,9 @@ def _response_format(mode: str, request: DecisionRequest) -> dict[str, object]:
                 candidate_selection_response_schema()
                 if request.output_contract == "candidate_selection"
                 else (
-                    planner_response_schema()
+                    planner_response_schema_strict()
                     if request.output_contract == "planner"
-                    else decision_response_schema()
+                    else decision_response_schema_strict()
                 )
             ),
         }

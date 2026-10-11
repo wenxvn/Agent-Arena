@@ -157,7 +157,9 @@ class PlanningAgent(ReactAgent):
                 raise TypeError("Planner provider must return ProviderResponse.")
             planner_input_tokens = planner_response.input_tokens
             planner_output_tokens = planner_response.output_tokens
-            decision = planner_decision_adapter.validate_python(planner_response.candidate)
+            decision = planner_decision_adapter.validate_python(
+                _normalize_planner_candidate(planner_response.candidate)
+            )
             completed = list(self._plan_state.completed_subgoals) if self._plan_state else []
             if pending and pending.status == "subgoal_completed" and self._plan_state:
                 if self._plan_state.current_subgoal not in completed:
@@ -236,6 +238,28 @@ def _sum_tokens(first: int | None, second: int | None) -> int | None:
     if first is None and second is None:
         return None
     return (first or 0) + (second or 0)
+
+
+def _normalize_planner_candidate(candidate: object) -> object:
+    """Map strict-gateway encodings back to the canonical Planner contract.
+
+    Strict-mode gateways require every schema property in ``required``, so
+    the transport schema accepts ``""`` for a missing criterion target/value.
+    The canonical contract uses ``None`` there; translate before validation.
+    """
+
+    if isinstance(candidate, dict):
+        return {
+            key: (
+                _normalize_planner_candidate(value)
+                if key not in {"target", "value"}
+                else (None if value == "" else _normalize_planner_candidate(value))
+            )
+            for key, value in candidate.items()
+        }
+    if isinstance(candidate, list):
+        return [_normalize_planner_candidate(value) for value in candidate]
+    return candidate
 
 
 def _elapsed_ms(started_at: float) -> int:

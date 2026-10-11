@@ -6,9 +6,14 @@
 
 项目的本地运行链路和 PlanningAgent v1 工程闭环已经可以工作，但“本地模型能否稳定完成飞船逃生”目前还没有验收通过。
 
-简单说：程序能正常启动、调用 Ollama、校验模型输出、执行动作、在终端显示每一步并保存 trace；问题出在模型的多步决策能力，模型经常忘记已经得到的信息，重复走相同路线，最后达到 30 步上限。PlanningAgent 已能记录子目标和重规划，但真实模型 seed 0 smoke 仍以重复 `look` 和 `step_limit` 失败。
+简单说：程序能正常启动、调用 Ollama、校验模型输出、执行动作、在终端显示每一步并保存 trace；问题出在模型的多步决策能力，模型经常忘记已经得到的信息，重复走相同路线，最后达到 30 步上限。PlanningAgent 已能记录子目标和重规划，但真实固定 5 seeds 与 Evaluation v2 重跑均为 0/5，主要行为是持续执行合法但无进展的 `look`。
 
-## 最新状态（2026-09-10）
+## 最新状态（2026-09-10，2026-10-10 补记 Muse 基线）
+
+- 2026-10-10 起真实实验 provider 从 Mac 本地 Ollama 切换为 Windows 下 OpenCode Zen 网关的 `muse-spark-1.3-contributor`（OpenAI Responses 兼容，`OPENAI_BASE_URL=https://opencode.ai/zen/go/v1`）。密钥只保存在本机 `.env`，绝不提交。
+- Muse React 自主 5 seeds（`--autonomous`，30 步）：0/5 成功，0 次非法输出，平均重复动作比例约 83%、唯一公开房间 2 个；5 局全部卡在控制室/走廊循环，从未进入储藏室。严格 schema 消除了协议失败，但任务分解仍不足。
+- Muse Memory 自主 5 seeds：0/5 成功，但阶段完成率显著高于 React——工具收集 3/5、面板打开 2/5、主电源恢复 2/5、授权码读取 1/5（seed 0 在第 27 步读到授权码，但把步数耗尽在往返上）。平均唯一房间 4.6 个。
+- 结论：Muse 比 `qwen2.5:7b` 探索更深（Memory 已能走完“拿工具→修反应堆→恢复电源→读码”链路），但 30 步预算下仍无可重复成功样本；自主通关验收继续未通过。
 
 - 本机 Ollama 服务和 `qwen2.5:7b` 当前可用；此前验证失败是本地请求受系统代理环境影响，Ollama 适配器已对 loopback 地址绕过代理。
 - PlanningAgent 真实 seed 0 smoke：30 步、0 次非法输出、28 次 Planner 调用，未完成逃生；主要行为是持续执行 `look`，结果为 `step_limit`。
@@ -39,7 +44,7 @@
 
 ### 2. 关闭思考后速度更合适，但推理能力下降
 
-当前 Ollama 适配器使用原生 `/api/chat`，发送 `think: false`，并限制输出为 Action JSON Schema。
+当前 Ollama 适配器使用原生 `/api/chat`，发送 `think: false`，并以 Action JSON Schema 约束输出格式（Ollama `format` 参数；OpenAI-compatible 默认 `json_object`，可选 `json_schema`，见 `config/runtime.defaults.json` 的 `response_format`）。
 
 优点：
 
@@ -130,6 +135,45 @@ ReactAgent 的典型行为是第 1 步误用 `inspect(control_terminal)`，第 2
 
 这组结果证明：移除谜题攻略式提示后，当前 `qwen2.5:7b` 还不能依靠公开 Observation 和结构化 Memory 自主完成任务。它不是连接、格式校验或非法 JSON 问题，所有 10 局的模型输出都通过格式校验。
 
+## 2026-10-11 第二世界迁移：灯塔 5/5 自主通关
+
+灯塔首轮（无 phase）0/5 但 5/5 读码，死法与飞船无 phase 时完全一致；阶段系统泛化为世界声明里程碑后，同一自主组合在新地图 **5/5 成功**（27/28/28/55/57 步）。迁移实锤：新拓扑、新名称、新授权码，无飞船专用知识可用。
+
+## 2026-10-11 首个真正自主通关（Muse + Memory + 公开上下文组合）
+
+在 `--autonomous`（无规划辅助、无候选动作、无动作提示）下，Memory + 最近 5 步公开轨迹 + 卡死恢复 + 公开阶段上下文 + 60 步，seeds 0–4 获 **3/5 成功逃生**（seed 0/1/4，36/35/45 步，0 非法输出），全新 seeds 5–9 获 **2/5 成功**（seed 5/9，均 57 步）——合计 10 局 5 胜，可重复性确认，非 seed 运气。每局全部 Action 均由模型返回并经统一 schema 校验；trace 中 `provenance` 可查：`public_action_hints/candidate_selection/concrete_candidates/guard` 全关。
+
+成功路径与 `planner_assisted` 的 19 步一致（拿工具→修面板→换保险丝→恢复电源→读码→逃生舱用码），但全部由模型自主走出。消融矩阵（60 步，5 seeds/组）：history-only 0/5、phase-only 0/5、history+phase 1/5、history+phase+recovery 3/5——三者互补，决定性的是 history+phase 组合（读码后把授权码与逃生舱绑定，此前 15 局全倒在这一步），recovery 把 1/5 提升到 3/5。同组合 30 步版本 0/5（成功局需 35–57 步，seed 0 在 30 步时已走到反应堆门口，还差约 3 步）。
+
+结论更新：自主通关验收首次通过（Muse + 记忆 + 公开上下文组合）；纯 React/Planning 与 qwen 基线仍未通过。成功与失败 trace 均已归档（`results/muse-memory-s60-h5rp/` 与 `results/muse-memory-s60-h5rp-s59/`）。
+
+## 2026-10-10 Muse 自主基线结果（Windows + Zen 网关）
+
+使用 `muse-spark-1.3-contributor`（OpenCode Zen 网关，OpenAI Responses 兼容）、`spaceship-escape-v2-zh`、seed 0 至 4、每局 30 步、通用 prompt、关闭 Runner 循环提醒（`--autonomous`），分别运行 ReactAgent 和 MemoryAgent。传输层使用 `json_schema` 严格模式（`AGENT_ARENA_RESPONSE_FORMAT=json_schema`，见下节）。
+
+| Agent | 局数 | 成功 | 成功率 | 平均步数 | 平均环境拒绝 | 非法输出 |
+|---|---:|---:|---:|---:|---:|---:|
+| ReactAgent | 5 | 0 | 0% | 30 | 15 | 0 |
+| MemoryAgent | 5 | 0 | 0% | 30 | 2 | 0 |
+
+阶段完成率（Memory）：工具收集 3/5、面板打开 2/5、主电源恢复 2/5、授权码读取 1/5、逃生 0/5。平均唯一房间 4.6 个，平均 State Progress 13.2。
+
+PlanningAgent 5 seeds（第一轮）：0/5 成功（4 局 `step_limit` + 1 局网关瞬断 `provider_error`，已排除 schema 原因）。平均 Planner 调用 2.6 次、重规划 1.6 次、子目标完成率 12%；阶段：工具 1/5、面板 1/5、电源 1/5（seed 1 走完修复链路）、读码 0/5。Planning 的 Planner 调用远少于 qwen 时代（25+ 次），Monitor 很少触发重规划——Muse 的 Executor 行为更稳定，PlanMonitor 的无进展阈值可能偏宽容，这是下一步可消融的点。
+
+Planning 第二轮 5 seeds（复核，`results/muse-planning-autonomous2`）：仍 0/5（4 step_limit + 1 网关瞬断），子目标完成率 45%、Planner 调用 5.6 次。seed 0 留下标准 grounding 样本：Executor 在面板打开后果断但错误地反复 `use(screwdriver → damaged_fuse)`（正确应为 `replacement_fuse`），连续 5 次 `missing_item` 仍不换物品、不触发有效重规划——子目标（修反应堆）正确，动作绑定错误，且失败反馈未转化为约束。这正是 Gate B 的教科书证据。
+
+ReactAgent 的典型行为是在控制室与走廊之间往返（重复导航 7 次/局），从未进入储藏室。MemoryAgent 能走完“读诊断终端→进反应堆→回维修室→去储藏室拿工具→修面板→换保险丝→恢复电源→回控制室读码”链路（seed 0 在第 27 步读到授权码 `ALPHA-731`），但把剩余步数耗尽在往返和重复读取上，未进入逃生舱。
+
+结论：Muse 的探索深度和阶段推进明显好于 `qwen2.5:7b`（后者在 Memory 下平均唯一房间约 1–2 个、State Progress 接近 0），但 30 步预算下仍无可重复成功样本。自主通关验收继续未通过；Muse 结果与 qwen 基线独立统计，不合并成功率。
+
+## 2026-10-10 Zen 网关严格 schema 适配记录
+
+OpenCode Zen 网关在 `text.format=json_schema + strict:true` 下拒绝三类写法（均为 400）：`$defs`/`$ref`、`oneOf`、以及 `required` 未覆盖全部 properties 的对象。`TypeAdapter(Action).json_schema()` 的鉴别联合和 Planner 结构化 criterion 的可选 `target`/`value` 因此不可直接下发。
+
+解法（不改 canonical 契约，只改传输编码）：`src/agent_arena/llm/protocol.py` 新增 `decision_response_schema_strict()`（`anyOf` 内联全部 6 种 Action，无 `$ref`）和 `planner_response_schema_strict()`（全部属性列入 `required`，无目标时填 `""`）；`src/agent_arena/llm/openai.py` 的 `json_schema` 分支改用二者；`PlanningAgent` 用 `_normalize_planner_candidate` 把 `""` 转回 `None` 再做 Pydantic 校验。默认仍是 `json_object`（Hiyo 兼容），Zen 下用 `AGENT_ARENA_RESPONSE_FORMAT=json_schema` 显式启用。
+
+附带发现：`json_object` 下 Muse 会偶发自造冗余参数（如 `read_terminal` 附带 `"object"` 字段），被统一 Action schema 拒绝为 `EXTRA_FIELD`；严格 schema 上线后 10 局 Muse 自主对照非法输出均为 0。
+
 ## 建议的下一步
 
 1. 扩展已完成的 Evaluation v2 人工抽样，覆盖每局完整的 replan 后首个 Action，区分 vague/wrong subgoal、wrong action、forgotten fact 和 ineffective replan。
@@ -179,6 +223,6 @@ uv run pytest
 
 ### P2：范围与外部条件
 
-1. Streamlit、ReflectionAgent、第二 world version 和第二种模型的对照仍未交付；PlanningAgent v1 工程实现已交付，但真实模型对照仍需运行。
+1. Streamlit、ReflectionAgent、第二 world version 和第二种模型的对照仍未交付；PlanningAgent v1 工程实现与真实 5 seeds 对照（含 Evaluation v2 重跑，均为 0/5）已完成，缺的是统一归档与单变量消融。
 2. `qwen2.5:14b` 受本机资源限制暂缓，不纳入当前实验矩阵。
 3. 本次 Hiyo Responses 链路曾返回 `401 INVALID_API_KEY`；这是本地凭据或服务端配置的外部阻塞，不记录或输出密钥。更新有效本地配置后才可继续该 provider 的复验。
