@@ -13,7 +13,7 @@ T7-Reflection deferred 为合法终态，不硬做。
 UI 测试 10 新增/同步。
 验证：`PYTHONPATH=src python -m pytest -q` 全套通过；E1 扫描零新调用。
 下一步：全量 seeded 推广与跨任务泛化讨论（V1 T6）；commit/push。
-关联提交：待提交。
+关联提交：`a3ec4f5`。
 
 ## 2026-10-11 pilot/seeded 7 配置真实模型 35/35 通关
 
