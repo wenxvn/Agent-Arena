@@ -64,7 +64,7 @@ class RuntimeSettings(BaseSettings):
     seed: int
     runs_dir: Path
     results_dir: Path
-    step_limit: int = Field(gt=0)
+    step_limit: int = Field(ge=0, description="0 表示步数不限。")
     request_timeout_seconds: int = Field(gt=0)
     retry_count: int = Field(ge=0)
     retry_backoff_seconds: list[int] = Field(default_factory=list)

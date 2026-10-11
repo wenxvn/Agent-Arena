@@ -17,6 +17,20 @@
 关联提交：Git commit，若有
 ```
 
+## 2026-10-11 飞船扩建 v3 与不限步数 5/5
+
+事件：飞船扩建为 8 房 v3（诱饵 + 新授权码），`step_limit=0` 支持不限步数；Muse 自主组合在 v3 以 5/5 成功逃生。
+
+原因：检验更大地图与诱饵下的探索效率；此前成功路径 35–57 步，30 步预算成为人为瓶颈。
+
+改动：`worlds/data/spaceship_escape_v2.json`、`SpaceshipV2Definition`/`SpaceshipV2Environment`（规则复用，仅换 definition）、储物箱可见逻辑按容器房间泛化、`config` 允许 `step_limit=0`、Runner 循环与 CLI 显示适配；`tests/test_spaceship_v2.py`。
+
+验证：全套 `pytest` 132 passed；19 步公开路径通关测试通过；Muse 自主组合 v3 5 seeds 5/5（152/125/153/93/65 步），trace 归档于 `results/muse-shipv3-unlimited(-s24)/`。中途一次后台进程静默死亡（seed 2–4 未跑），改用 `-u` 无缓冲输出并凭进程与 trace 双重确认存活后重跑解决。
+
+下一步：Planning 配相同公开上下文；ReflectionAgent；Streamlit；commit/push 本轮全部改动。
+
+关联提交：待提交。
+
 ## 2026-10-11 雾岛灯塔世界与迁移 5/5
 
 事件：新增第二个确定性世界（雾岛灯塔，spec 0007），Muse 自主组合在新地图 5/5 成功逃生；阶段上下文泛化为世界声明里程碑，Runner 不再内置飞船知识。

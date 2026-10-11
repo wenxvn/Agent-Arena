@@ -72,11 +72,33 @@ class WorldDefinition(BaseModel):
     items: tuple[ItemDefinition, ...]
 
 
+class SpaceshipV2Definition(BaseModel):
+    """Versioned data for the expanded eight room ship; same rule contract."""
+
+    model_config = ConfigDict(frozen=True)
+
+    world_id: Literal["spaceship_escape_v2"]
+    version: str
+    goal: str
+    start_room: str
+    authorization_code: str
+    rooms: tuple[RoomDefinition, ...]
+    objects: tuple[ObjectDefinition, ...]
+    items: tuple[ItemDefinition, ...]
+
+
 def load_spaceship_escape_definition() -> WorldDefinition:
     """Load the checked in static definition for the first world version."""
 
     definition_path = files("agent_arena.worlds").joinpath("data/spaceship_escape_v1.json")
     return WorldDefinition.model_validate_json(definition_path.read_text(encoding="utf-8"))
+
+
+def load_spaceship_v2_definition() -> SpaceshipV2Definition:
+    """Load the checked in static definition for the expanded ship version."""
+
+    definition_path = files("agent_arena.worlds").joinpath("data/spaceship_escape_v2.json")
+    return SpaceshipV2Definition.model_validate_json(definition_path.read_text(encoding="utf-8"))
 
 
 SPACESHIP_MILESTONES: tuple[PublicMilestone, ...] = (
@@ -189,15 +211,24 @@ class SpaceshipEscapeEnvironment(Environment):
 
     def _visible_objects(self) -> tuple[str, ...]:
         visible = list(self._current_room().object_ids)
-        if self._state.current_room == "storage_room" and all(
-            item_id in self._state.inventory for item_id in self._items
+        for container_id in sorted(
+            {item.container_id for item in self._items.values()}
         ):
-            visible = [object_id for object_id in visible if object_id != "storage_crate"]
-        if self._state.current_room == "storage_room":
+            if self._state.current_room != self._objects[container_id].room_id:
+                continue
+            contained = [
+                item_id
+                for item_id, item in self._items.items()
+                if item.container_id == container_id
+            ]
+            if all(item_id in self._state.inventory for item_id in contained):
+                visible = [object_id for object_id in visible if object_id != container_id]
             visible.extend(
                 item_id
                 for item_id in sorted(self._state.revealed_items)
                 if item_id not in self._state.inventory
+                and self._items.get(item_id) is not None
+                and self._items[item_id].container_id == container_id
             )
         if self._state.control_terminal_blocked:
             visible = [object_id for object_id in visible if object_id != "control_terminal"]
@@ -223,8 +254,12 @@ class SpaceshipEscapeEnvironment(Environment):
             return self._rejected(ToolReason.NOT_VISIBLE)
         if self._objects[action.target].kind == "terminal":
             return self._rejected(ToolReason.READ_TERMINAL_REQUIRED)
-        if action.target == "storage_crate":
-            self._state.revealed_items.update(self._items)
+        if self._objects[action.target].kind == "container":
+            self._state.revealed_items.update(
+                item_id
+                for item_id, item in self._items.items()
+                if item.container_id == action.target
+            )
         return self._success(ToolReason.INSPECTED, self._objects[action.target].inspect_result)
 
     def _pickup(self, action: PickupAction) -> ToolResult:
@@ -318,6 +353,17 @@ class SpaceshipEscapeEnvironment(Environment):
     @staticmethod
     def _rejected(reason: ToolReason) -> ToolResult:
         return ToolResult(status=ToolStatus.REJECTED, reason=reason, summary=_SUMMARIES[reason])
+
+
+class SpaceshipV2Environment(SpaceshipEscapeEnvironment):
+    """The expanded eight room ship; identical rules, new map and code."""
+
+    def __init__(self, definition: SpaceshipV2Definition | None = None, seed: int = 0) -> None:
+        self.definition = definition or load_spaceship_v2_definition()
+        self._rooms = {room.id: room for room in self.definition.rooms}
+        self._objects = {item.id: item for item in self.definition.objects}
+        self._items = {item.id: item for item in self.definition.items}
+        self._state = self._initial_state(seed)
 
 
 _SUMMARIES: dict[ToolReason, str] = {

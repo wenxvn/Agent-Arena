@@ -21,6 +21,7 @@
 | 10 | ReflectionAgent | Deferred | planned |
 | 11 | Planning v1 Failure Analysis & Evaluation v2 | Research Core | done |
 | 12 | 雾岛灯塔第二世界与迁移对照 | Research Core | done |
+| 13 | 飞船扩建 v3 与不限步数 | Research Core | done |
 
 ## Foundation
 
@@ -182,6 +183,12 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 - [x] 雾岛灯塔世界：6 房链式拓扑、新名称新授权码（`TIDE-2049`）、15 步最优公开路径；规则测试与人可通关验证通过（spec 0007）。
 - [x] 阶段上下文泛化为世界声明里程碑（`PublicMilestone`），飞船旧文本逐字保留（回归测试锁定）；Runner 不再内置飞船知识。
 - [x] Muse 自主组合（memory + history5 + recovery + 通用 phase，无辅助）灯塔 5 seeds：**5/5 成功**（27/28/28/55/57 步），证明能力迁移到未见地图，而非背下飞船路线。
+
+### G. 飞船扩建 v3 与不限步数（2026-10-11，done）
+
+- [x] v3 地图：8 房（货舱藏箱、观察甲板/船员舱/胶带三处诱饵）、新授权码 `BETA-512`、19 步最优公开路径；规则测试通过（spec 0008）。
+- [x] `step_limit=0` 表示不限步数：非法输出上限与网关错误照常兜底；探索运行由实验者监督。
+- [x] Muse 自主组合（同获胜配置，不限步）v3 5 seeds：**5/5 成功**（152/125/153/93/65 步）；诱饵被查看/拾取均未阻止通关。
 
 ## Release 3
 

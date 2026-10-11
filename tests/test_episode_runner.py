@@ -80,6 +80,14 @@ def run(responses: list[object], *, step_limit: int = 30):
     return runner.run(), provider
 
 
+def test_step_limit_zero_runs_until_success() -> None:
+    trace, _ = run(escape_decisions(), step_limit=0)
+
+    assert trace.outcome is EpisodeOutcome.SUCCESS
+    assert trace.executed_action_count == 20
+    assert trace.provenance.step_limit == 0
+
+
 def test_runner_completes_the_public_escape_path_and_records_decision_observations() -> None:
     trace, provider = run(escape_decisions())
 

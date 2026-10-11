@@ -150,7 +150,7 @@ def run(
     if settings.provider in {"bailian", "openai", "ollama"}:
         typer.echo(
             f"真实模型实验开始：Agent={settings.agent}，seed={settings.seed}，"
-            f"每局最多 {settings.step_limit} 步。"
+            f"{_format_step_budget(settings.step_limit)}。"
         )
     episode = EpisodeRunner(
         environment,
@@ -274,7 +274,7 @@ def benchmark(
         total_episodes = len(selected_agents) * episodes
         typer.echo(
             f"基准测试开始：共 {total_episodes} 局，Agent={','.join(selected_agents)}，"
-            f"每局最多 {settings.step_limit} 步。"
+            f"{_format_step_budget(settings.step_limit)}。"
         )
         for selected_agent in selected_agents:
             for seed_offset in range(episodes):
@@ -490,12 +490,21 @@ def _real_model_step_report(
 
     def report(step: int, correction: bool) -> None:
         phase = "格式修正" if correction else "决策"
+        total = (
+            str(settings.step_limit) if settings.step_limit > 0 else "不限"
+        )
         typer.echo(
-            f"{prefix}正在请求第 {step}/{settings.step_limit} 步{phase}："
+            f"{prefix}正在请求第 {step}/{total} 步{phase}："
             f"Agent={settings.agent}，seed={settings.seed}。"
         )
 
     return report
+
+
+def _format_step_budget(step_limit: int) -> str:
+    if step_limit == 0:
+        return "步数不限"
+    return f"每局最多 {step_limit} 步"
 
 
 def _step_report(*, prefix: str = "") -> Callable[[StepTrace], None]:

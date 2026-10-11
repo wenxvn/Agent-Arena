@@ -174,7 +174,7 @@ class EpisodeRunner:
             )
         recent_history: list[tuple[Observation, Action, ToolResult]] = []
 
-        while decision_attempts < self._settings.step_limit:
+        while self._settings.step_limit == 0 or decision_attempts < self._settings.step_limit:
             corrected = False
             candidates = candidate_tracker.candidates(observation)
             request_feedback = runtime_feedback
