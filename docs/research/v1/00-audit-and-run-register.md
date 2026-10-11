@@ -82,8 +82,8 @@
 | EXP-ReactC111 | react, H5 R1 P1, B60, seeds 0–4（5 局 +1 重跑） | 5×60 | ≤350 | done：**0/4 完成**（seed4 两次 provider_error 记 censored） |
 | EXP-E1-pilot | memory+E1, H5 R1 P1, B60, seed 0（1 局） | ≤60 | ≤70 | done：success/44 步（见 04 §5） |
 | EXP-E1 | memory+E1, H5 R1 P1, B60, seeds 0–4（5 局） | 5×60 | ≤350 | done：**5/5**（均值 30.6，零误用；C111 3/5 均值 47.2） |
-| EXP-Pctx-pilot | planning, H5 R1 P1, B60, seed 0（1 局） | ≤60×2 调用 | ≤140 | 待跑 |
-| EXP-Pctx | planning, H5 R1 P1, B60, seeds 0–4（5 局） | 5×60 | ≤700 | 待跑 |
+| EXP-Pctx-pilot | planning, H5 R1 P1, B60, seed 0（1 局） | ≤60×2 调用 | ≤140 | done：step_limit（见 05 §7） |
+| EXP-Pctx | planning, H5 R1 P1, B60, seeds 0–4（5 局 +2 基础设施中断 +1 重跑） | 5×60 | ≤700 | done：**0/4 完成**（seed4 censored；不提议 Planning v2） |
 
 对照声明：EXP-C011/ ReactC111 /E1/Pctx 均与既有 `muse-memory-s60*` 同模型同 world 同 B60；
 与 B30 自主基线比较时必须声明预算差。不得修改已冻结实验定义追逐成功率。

@@ -32,3 +32,31 @@ Executor 可见“同子目标已试无进展/已拒绝动作排除列表”，P
 
 - 0/5 是合法结果，不得为漂亮数据给唯一下一动作答案。
 - 只在有明确收益/诊断依据时提议 Planning v2。本轮：对照设计完成，在线实验 **not run**（blocked：需 T3 冻结的最优合法机制 + 预算）。
+
+## 7. 在线对照进展（2026-10-11 EXP-Pctx）
+
+- EXP-Pctx-pilot（planning v1 原 prompt, H5 R1 P1, B60, 飞船 v1, seed 0）：**`step_limit` 失败**。
+  trace `runs/episode_20261011T115325Z_planning_seed-0_27d7d0ff.json`：
+  22/25/31/37/45 步 5 次 `CODE_READ`，corridor↔control_room 循环；
+  50–55 步曾到逃生舱（2 次 `inspect`）但未用码即离开，56–60 步游荡结束。
+  行为归类：Executor 落地失败（到终点而不用码）+ 重读循环，与 qwen 时代
+  `INEFFECTIVE_REPLAN` 同构——补齐 H/R/P 未修复 grounding。
+  注意：planning 系 prompt（`planning_v1`/`planning_executor_v1`）不含 E1 第 7 条，
+  prompt 差异本身是待测变量之一，如实披露。
+- EXP-Pctx 最终：**0/4 完成**（seeds 0–3 全部 `step_limit`；seed 4 两次基础设施杀死 +
+  第三次首步 `provider_error`，记 censored，不进分母）。
+
+| seed | outcome | 读码 | Planner 调用/子目标(生成/完成) | input/output tokens | trace |
+|---|---|---|---|---|---|
+| 0 | step_limit | 5 | 1/1/0 | 77k/76k | `runs/episode_20261011T115325Z_planning_seed-0_27d7d0ff.json` |
+| 1 | step_limit | 2 | 2/2/0 | 79k/74k | `runs/episode_20261011T120540Z_planning_seed-1_7f9dff09.json` |
+| 2 | step_limit | 5 | 1/1/0 | 77k/66k | `runs/episode_20261011T121908Z_planning_seed-2_b93c10a4.json` |
+| 3 | step_limit | 1 | 6/6/5 | 89k/93k | `runs/episode_20261011T122857Z_planning_seed-3_35b9247d.json` |
+| 4 | censored | — | — | — | `runs/episode_20261011T125156Z_planning_seed-4_568a7121.json` |
+
+- 结论：同 H5/R1/P1/B60/同模型下，planning 0/4 vs memory+E1 5/5（同代码版本）vs memory C111 3/5。
+  **显式规划在本任务上更差，而非更好**——证据充分（4 局一致失败 + 双倍 token 成本），
+  故**不提议 Planning v2**，v1 冻结保持。失败定位：Executor 落地失败为主
+  （seed 0 到终点而不用码；seeds 1–2 重读循环），seed 3 虽完成 5/6 子目标仍未逃生，
+  证明 PlanMonitor 的子目标完成 ≠ 真实逃生进展（0/5 也是合法结果，如实交付）。
+- 成本：5 次完成局 ≈ input 322k / output 308k（约 memory 的 2 倍，Planner/Executor 双调用所致）。
