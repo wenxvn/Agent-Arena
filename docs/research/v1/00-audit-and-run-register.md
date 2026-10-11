@@ -76,6 +76,8 @@
 
 | 实验 ID | 条件 | 预算/规模 | 预期调用 | 状态 |
 |---|---|---|---|---|
+| EXP-C010-pilot | memory, H0 R1 P0, B60, seed 0（1 局） | ≤60 | ≤70 | done：step_limit |
+| EXP-C010 | memory, H0 R1 P0, B60, seeds 0–4（5 局） | 5×60 | ≤350 | done：**0/5**（八格 8/8 闭合） |
 | EXP-C011-pilot | memory, H0 R1 P1, B60, seed 0（1 局） | ≤60 动作 | ≤70 请求 | done：step_limit |
 | EXP-C011 | memory, H0 R1 P1, B60, seeds 0–4（5 局 +1 重跑） | 5×60 | ≤350 请求 | done：**0/5**（seed1 首跑 provider_error→重跑仍 step_limit） |
 | EXP-ReactC111-pilot | react, H5 R1 P1, B60, seed 0（1 局） | ≤60 | ≤70 | done：step_limit（遗忘授权码，见 03 §9） |

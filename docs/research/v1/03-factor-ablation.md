@@ -33,7 +33,7 @@
 |---|---|---|---|---|---|
 | C000 | 0 | 0 | 0 | 0/5 | `results/muse-memory-s60` |
 | C100 | 1 | 0 | 0 | 0/5 | `results/muse-memory-s60-h5` |
-| C010 | 0 | 1 | 0 | **缺失** | 需补 |
+| C010 | 0 | 1 | 0 | **0/5（本轮新跑，见 §8）** | `results/exp-C010-pilot` + `results/exp-C010` |
 | C001 | 0 | 0 | 1 | 0/5 | `results/muse-memory-s60-p` |
 | C110 | 1 | 1 | 0 | 0/5 | `results/muse-memory-s60-h5r` |
 | C101 | 1 | 0 | 1 | 1/5 | `results/muse-memory-s60-h5p` |
@@ -45,21 +45,23 @@ Memory vs React（M 主效应）：代码正交（`cli.py:417-431` agent 选择�
 
 ## 5. 结论（可判/不可判）
 
-- 可判：单变量 H-only/P-only/H+R 均为 0/5（B60），P 必须与 H 联动才有 1/5（C101）；C111 3/5 高出 C101 2/5，疑为 R 贡献，但 R 从未在无 H 下测过——**交互不可判**，缺 C011。
+- 可判：单变量 H-only/P-only/H+R 均为 0/5（B60），P 必须与 H 联动才有 1/5（C101）；C111 3/5 高出 C101 2/5；
+  本轮补完 C010（R-only）0/5、C011（R+P）0/5——R 在无 H 的一切组合下均为 0/5，
+  **R 无独立主效应，只在 H+P 齐备时起放大作用（1/5→3/5）**。八格 8/8 闭合。
 - 可判：预算效应独立存在（C111 在 B30 0/5、B60 3/5、unlimited 主成绩 45/45），不得把跨预算差值当架构收益。
 - 不可判：M 本身增益（缺 React-C111）；P 中“物品名”与“阶段顺序”各自贡献（需第二层拆分：`no phase` vs `observation-derived progress` vs `world-declared milestone`，后者已立项未跑）。
 - 小样本声明：n=5，只报效应大小与逐局轨迹，不做显著性包装。
 
-## 6. 最小补测（登记后执行，本轮未跑）
+## 6. 最小补测（已执行，见 §8–§9）
 
-1. 首选 `C011`（H0 R1 P1，B60，飞船 v1，seeds0-4）：闭合三阶交互缺环。若 >0 则 R+P 可部分替代 H；若 =0 则 R 必须与 H 联动。
-2. 次选 `React-C111`（同 H/R/P/B，agent=react）：隔离 M 主效应。
-3. 命令形（示意）：`benchmark --agent memory --recent-history 0 --stuck-recovery --phase-context`（B60，seeds0-4，`--autonomous` 基座）。
-4. 预算表：每格 5 局 × 均值 60 步 × 单步 1 模型调用 ≈ 300 调用 + Planner 外；`provider_error` 中断单列重跑，不混分母。
+1. ~~首选 `C011`~~ done：0/5——R 必须与 H 联动，不能替代。
+2. ~~次选 `React-C111`~~ done：0/4——M 主效应成立（FORGOTTEN_FACT 双分离）。
+3. ~~`C010`（R-only）~~ done：0/5——R 无独立主效应。八格 8/8 闭合。
+4. 预算实耗：C011 6 尝试、C010 5 局、React-C111 7 尝试；`provider_error`/基础设施中断单列记账，不混分母。
 
 ## 7. 测试与 CI
 
-- `tests/test_phase_prior_audit.py` 通过（见 `01`）。在线补测见 §8（C011 已完成 0/5；C010 仍缺）、§9（React-C111 pilot 完成）。
+- `tests/test_phase_prior_audit.py` 通过（见 `01`）。在线补测见 §8（C011 与 C010 已完成 0/5，八格闭合）、§9（React-C111 完成）。
 
 ## 8. 在线补测进展（2026-10-11 EXP-C011，已完成）
 
@@ -83,7 +85,7 @@ Memory vs React（M 主效应）：代码正交（`cli.py:417-431` agent 选择�
 
 - 交互结论更新：C101（H+P）1/5 vs C011（R+P）**0/5** vs C111（H+R+P）3/5。
   R 在无 H 时不能替代 H（0/5），R 只在有 H 时把 1/5 抬到 3/5——**R 是 H 的放大器，不是独立驱动**。
-  H 必要性成立（无 H 的 C000/C010 未测但 C001/C011 均为 0/5；C010 仍缺，R 主效应不可单独判定）。
+  H 必要性成立（无 H 的 C000/C001/C010/C011 均为 0/5）；R 无独立主效应，只在 H+P 齐备时放大（C101 1/5→C111 3/5）。
 - 附带观察（reported，需后续验证）：C011 后半程 `decision_reason` 质量坍缩，
   出现 `placeholder`/`abc`/`123`/`1234567890` 等无意义短理由（尤其 seed 3/4 的 look 簇），
   但 Action 仍合法（`invalid_output=0`）。长循环下理由字段先退化，动作接地随后停滞。
