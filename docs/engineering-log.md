@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V2 S2 M1 pilot 因 provider error fail closed
+
+事件：按冻结登记启动 Memory v2 的 seed 1；第 2 次 provider 请求报错后，budget guard 关闭账本并以 exit code 2 停止串行矩阵。
+
+证据：请求 `af4ea921-3723-477a-b5e9-2b5a44d9d76e` 完成，usage 为 input 749 / output 760；请求 `087ee418-82cf-4a67-8cad-7e2f6bd21c33` 状态为 `unknown_spend_after_provider_error`，按预留 22,577 tokens 记账。ledger 为 2/500 requests、24,086/4,000,000 tokens，`provider_error_unknown_spend`，无 in-flight request。该 token 总额是本地预算记账，不代表 provider 确认消耗。
+
+结果：v2 benchmark 汇总 0/2 episode、0 条结果行、无完成 trace；v2 seed 2 与 v3 两个 seed 未启动。部分 JSON/CSV、ledger 与请求 ID 均保留在本地 `results/`，不重置、不以同一 budget experiment ID 重试。没有 GPU 运行。
+
+只读核查：OpenAI adapter 将 SDK exception 包装成通用 `DecisionProviderError`，budget wrapper 再包装成通用 `ProviderBudgetExceeded`；ledger 按 spec 不保留 provider 响应或异常元数据。因此无法从当前运行证据确定根因；该分类缺口与实际 provider 侧故障是两件事。
+
+下一步：先评估是否需要添加仅含 allowlisted exception class / HTTP status 的安全分类，再单独登记任何恢复运行；不重置当前 ledger。S2 Gate 保持未完成，不能据此计算模型成效。
+
+关联实现提交：`0d3bb0ba0b81ca682ea714941de7b5bd17fd03f9`；运行登记与本事件记录提交待完成。
+
 ## 2026-10-13 V2 seeded world identity hash 稳定性修复
 
 事件：pilot 的两次 CLI 前置检查均在 world identity 门禁被拒绝；未到 provider adapter，没有 API 请求、预算账本或 benchmark 输出。

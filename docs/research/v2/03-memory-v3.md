@@ -2,7 +2,7 @@
 
 ## 状态
 
-Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实现和验证；seeded world identity 的跨进程不稳定问题已修复，真实模型 pilot 尚未运行，S2 Gate 尚未完成。当前新增 provider API 调用为 0，也没有 GPU 运行。预算门禁、hash 差异说明和 4 个配对计划 cell 见 [V2 在线运行登记表](00-run-registry.md)。
+Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实现和验证；seeded world identity 的跨进程不稳定问题已修复。v2 pilot 已启动，但在 2 次 API 请求后因未知 spend provider error 封账；没有完成 episode，v3 未启动，S2 Gate 尚未完成。本次没有 GPU 运行。预算门禁、hash 差异和执行记录见 [V2 在线运行登记表](00-run-registry.md)。
 
 ## 实现范围
 
@@ -29,6 +29,6 @@ Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实�
 
 ## Pilot 决策
 
-候选比较预登记为 `lunar_escape_v2_seeded` 的 seed 1、2，Memory v2 与 v3 配对，每局 100 decisions，E1 ON / H5 / R1 / P2(world-declared) 条件固定，串行运行。共享上限、输出 cap、全局超时、ledger 和两条执行命令已写入 run registry；每次决策调用都在发出前预留并落盘，请求/重试/usage 不确定时 fail closed。计划报告 first-recorded attempt、Success@60/100、动作数、重复边/动作、输入/输出 Token、token/success、provider_error 和延迟。world identity hash 的无序 milestone 字段已规范化，跨进程验证稳定值为 `bd1f77eabdcd032e80dbbaaad29163e85cbea34caf7486c22babcb3b85cb8373`；修复代码 SHA `0d3bb0ba0b81ca682ea714941de7b5bd17fd03f9` 已在运行登记表冻结，pilot 尚未启动，API 尝试仍为 0。S2 仍未完成。
+候选比较预登记为 `lunar_escape_v2_seeded` 的 seed 1、2，Memory v2 与 v3 配对，每局 100 decisions，E1 ON / H5 / R1 / P2(world-declared) 条件固定，串行运行。共享上限、输出 cap、全局超时、ledger 和两条执行命令已写入 run registry；每次决策调用都在发出前预留并落盘，请求/重试/usage 不确定时 fail closed。计划报告 first-recorded attempt、Success@60/100、动作数、重复边/动作、输入/输出 Token、token/success、provider_error 和延迟。world identity hash 的无序 milestone 字段已规范化，稳定值为 `bd1f77eabdcd032e80dbbaaad29163e85cbea34caf7486c22babcb3b85cb8373`；修复代码 SHA `0d3bb0ba0b81ca682ea714941de7b5bd17fd03f9` 已冻结。v2 seed 1 episode 在第 2 次请求后中断，budget ledger 记账 2 次请求 / 24,086 tokens 并以 `provider_error_unknown_spend` 关闭；v2 汇总 0/2，v2 seed 2 与 v3 未启动。不得重置账本或以同一 budget experiment ID 重试。S2 仍未完成。
 
-离线指标、源 Trace 与既有 232-action 月球长尾事实仍只支持“值得检验”的 M1 假设；没有同条件 v2/v3 结果，不能声称成功率、步数、重复边或 token-efficiency 改善。当前稳定 world definition hash 与旧长尾 trace 记录不同，原因仍未确认；因此旧 trace 只作假设来源，不作本轮 hash-matched 对照。代码 SHA 已冻结，接下来按登记预算执行 pilot；完成前不推进 S3。
+离线指标、源 Trace 与既有 232-action 月球长尾事实仍只支持“值得检验”的 M1 假设；没有同条件 v2/v3 结果，不能声称成功率、步数、重复边或 token-efficiency 改善。当前稳定 world definition hash 与旧长尾 trace 记录不同，原因仍未确认；因此旧 trace 只作假设来源，不作本轮 hash-matched 对照。只读源码核查发现错误被 adapter/wrapper 转成通用异常，ledger 不保存异常元数据；当前 provider error 根因不可追溯。后续需先决定是否加入不包含响应正文的安全错误分类，并单独登记任何恢复运行；完成前不推进 S3。
