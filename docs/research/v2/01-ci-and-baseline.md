@@ -26,6 +26,8 @@ S1 审计脚本增加两项离线单元测试后，当前本地质量检查复�
 
 2026-10-13 首次加入 S2 provider budget guard 后为 329 passed；复审修复 expected provider、活跃请求 lease、超时后记账、账本状态一致性、invocation 串行化、benchmark 非零退出及后续 cell 身份不匹配时保留已完成汇总后，Python 3.13 临时隔离环境最终验证为 Ruff 通过、mypy 49 个源文件通过、pytest 338 passed、`uv lock --check` 与 `git diff --check` 通过。实现提交 SHA `0a09a4f479cd8b6ba49dd0eeefed80a47d623c06` 已冻结登记；真实 provider 调用尚未开始。
 
+2026-10-13 pilot 前置运行又发现 seeded flex world identity 受 `frozenset` 输出顺序影响。新增跨进程 `PYTHONHASHSEED` 稳定性修复与回归；最终 Ruff、mypy 49 个源文件、pytest 339 passed、`uv lock --check`、`git diff --check` 通过。seed 1、2 在 hash seed 1/2/3 下均为 `bd1f77eabdcd032e80dbbaaad29163e85cbea34caf7486c22babcb3b85cb8373`。两次 CLI preflight 都在 API 调用前拒绝，真实请求数为 0。修复代码提交 `0d3bb0ba0b81ca682ea714941de7b5bd17fd03f9`，已在运行登记表冻结。
+
 ## S0 修复范围
 
 - 清理 scripts/audit_maps.py 的未使用绑定与死代码；将 scripts/build_run_register.py 的 lambda 改成局部函数。

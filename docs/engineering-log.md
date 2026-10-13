@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V2 seeded world identity hash 稳定性修复
+
+事件：pilot 的两次 CLI 前置检查均在 world identity 门禁被拒绝；未到 provider adapter，没有 API 请求、预算账本或 benchmark 输出。
+
+原因：同一 seeded flex world 在不同 Python 进程中得到不同 hash。隔离 `PYTHONHASHSEED=1/2` 后复现为 Pydantic 将 `FlexMilestone.key_items` 这个 `frozenset` 按迭代顺序序列化为数组。
+
+改动：hash 前对 `key_items` 和 `trigger_reasons` 排序；新增跨进程、跨 hash seed 回归；运行登记表将使用修复后实测的稳定 hash。
+
+验证：跨进程 `PYTHONHASHSEED=1/2/3` 下，seed 1、2 均得到 `bd1f77eabdcd032e80dbbaaad29163e85cbea34caf7486c22babcb3b85cb8373`；Ruff、mypy 49 个源文件、`uv lock --check` 通过，全量 pytest 339 passed，`git diff --check` 通过。没有真实 provider API 请求。
+
+下一步：登记并发布修复后的源代码 SHA，随后启动同一组预算受限 pilot。
+
+关联实现提交：`0d3bb0ba0b81ca682ea714941de7b5bd17fd03f9`。
+
 ## 2026-10-13 V2 S2 Provider Budget Guard 与 pilot 前置门禁
 
 事件：完成 fail-closed provider request/token 预算门禁，并修复 provider 身份校验、活跃请求恢复和未完成 episode Trace 边界。
@@ -14,7 +28,7 @@
 
 关联实现提交：`0a09a4f479cd8b6ba49dd0eeefed80a47d623c06`。
 
-前置核验补记：首次 CLI 启动在 world identity 门禁处被拒绝，未到达 provider adapter；尝试数为 0，账本与结果目录未创建。只读计算冻结版本 seed 1、2 的运行时 hash 均为 `418ccc79d48ad99b880361b3996eae4fb496cf8f6512c54de9177669e252a702`，与原预登记值 `118e8e8f7b930aa3841d6081b5b3de7ab94d1151e5fdee2e81f26f02561a7550` 不符，故已先修正登记再重试；provider/model 与 prompt 身份检查匹配。
+前置核验更正：以 `118e8e…` 和随后单进程计算值 `418ccc…` 启动的两次 CLI 检查均因 world identity 不匹配而拒绝；API 尝试数为 0，未创建账本或结果目录。复现发现两值都不是稳定 identity，根因与修复见上方“V2 seeded world identity hash 稳定性修复”事件。provider/model 与 prompt 身份检查匹配。
 
 ## 2026-10-13 V2 S2 Memory v3 离线实现与 pilot 门禁
 
