@@ -152,7 +152,13 @@ class FlexEnvironment(Environment):
 
     @property
     def identity(self) -> tuple[str, str, str, str]:
-        serialized = json.dumps(self.definition.model_dump(mode="json"), sort_keys=True)
+        definition_data = self.definition.model_dump(mode="json")
+        # Pydantic preserves frozenset iteration order in JSON arrays; normalize the
+        # unordered milestone fields so this world hash is stable across processes.
+        for milestone in definition_data["milestones"]:
+            milestone["key_items"] = sorted(milestone["key_items"])
+            milestone["trigger_reasons"] = sorted(milestone["trigger_reasons"])
+        serialized = json.dumps(definition_data, sort_keys=True)
         return (
             self.definition.slug,
             f"{self.definition.slug}-{self.definition.version}",
