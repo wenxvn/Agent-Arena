@@ -12,7 +12,7 @@
 
 结论：S1 离线瓶颈定位与可观察案例复核完成；旧 Trace 不能证明记忆遗忘或自主阶段判断的内部根因。S2 matched-pilot Gate 仍未通过，BUDGET-01/02/03 保持关闭，不推进 S3。
 
-关联复核基线：`a7843067746350d5d2afb0ca017cd66196ab130b`。
+关联复核基线：`a7843067746350d5d2afb0ca017cd66196ab130b`；案例复核提交 `5cb3353f5a05a5b139d9d29c7c0486f77375c8aa` 的 [GitHub Actions run #85](https://github.com/wenxvn/Agent-Arena/actions/runs/38386424743) 成功。
 
 ## 2026-10-13 S1 Trace 审计可复现性复核
 
