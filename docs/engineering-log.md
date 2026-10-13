@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V2 S1 逐家族 Trace 案例复核
+
+事件：按 V2 原始提纲 S1.4 对深海站、古堡、丛林、灯塔、月球、极地、金字塔、飞船、地铁、火山逐家族复核代表性 Trace。
+
+原因：此前 V2-02 有总体统计和长尾假设，但没有覆盖全部世界家族的短成功、长尾及异常/删失样本索引，无法核对不同家族是否呈现同类症状。
+
+改动：新增 `docs/research/v2/assets/trace-case-review.csv`，索引 31 条 episode；更新 V2-02，列明选样规则、逐步公开事件、outcome 分类和 Trace 可观测性限制，并将既有长尾表拆分 `world_version` 与 `world_definition_id`。
+
+验证：31 条索引的 episode_id 唯一且本地源路径均存在，10 个家族各有最短/长尾成功样本；8 个家族仅选 provider-error 删失，灯塔含 step_limit，飞船含 step_limit 与 invalid_action_limit。474 条 Trace 的 `memory_statistics` 均缺失，422 条启用 world-declared phase context；所选 20 条成功 Trace 的 subgoal/suggested-action/planner-feedback 记录为空。仅复核公开 Observation/Action/ToolResult/progress，不读取或导出 `decision_reason`。无 provider API 调用、无 GPU 运行。
+
+结论：S1 离线瓶颈定位与可观察案例复核完成；旧 Trace 不能证明记忆遗忘或自主阶段判断的内部根因。S2 matched-pilot Gate 仍未通过，BUDGET-01/02/03 保持关闭，不推进 S3。
+
+关联复核基线：`a7843067746350d5d2afb0ca017cd66196ab130b`。
+
 ## 2026-10-13 S1 Trace 审计可复现性复核
 
 事件：重新运行 V2 S1 离线 Trace 审计，并将输出写入独立临时目录，与版本库中的 CSV/JSON 逐字节比较。

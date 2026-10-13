@@ -77,18 +77,41 @@ hash 同时混合地图、配置、prompt 周边设置与运行批次。表中�
 
 下表为每个家族已记录成功 trace 中动作数最大的样本，便于逐步复核。成功样本不是行为失败；provider_error 不参与这张表，也不当作失败案例。
 
-| 家族 | 动作数 | 世界版本 / seed 角色 | 本地 trace 相对路径 |
-|---|---:|---|---|
-| 深海站 | 168 | abyss_escape_hard / replicate_id | runs/muse-9maps-abyss-hard/episode_20261011T074539Z_memory_seed-2_dbad0ed7.json |
-| 古堡 | 69 | castle_escape_hard / replicate_id | runs/muse-21maps-castle-hard/episode_20261011T131606Z_memory_seed-0_8f807e05.json |
-| 丛林 | 53 | jungle_escape_hard / replicate_id | runs/muse-21maps-jungle-hard/episode_20261011T131206Z_memory_seed-2_da140ef7.json |
-| 灯塔 | 261 | lighthouse_escape_v3 / replicate_id | runs/muse-9maps-light-hard/episode_20261011T074453Z_memory_seed-1_fa596cf4.json |
-| 月球 | 232 | lunar_escape_v2_seeded / seeded_instance | runs/muse-flex-lunar-v2s/episode_20261011T142412Z_memory_seed-1_30323f7d.json |
-| 极地 | 51 | polar_escape_hard / replicate_id | runs/muse-21maps-polar-hard/episode_20261011T130327Z_memory_seed-2_71be5ad2.json |
-| 金字塔 | 159 | pyramid_escape_v2_seeded / seeded_instance | runs/muse-flex-pyramid-v2s/episode_20261011T142750Z_memory_seed-2_e46fe34f.json |
-| 飞船 | 440 | spaceship_escape_v3 / replicate_id | runs/muse-9maps-ship-hard/episode_20261011T074451Z_memory_seed-3_ae173aea.json |
-| 地铁 | 50 | subway_escape_hard / replicate_id | runs/muse-21maps-subway-hard/episode_20261011T130725Z_memory_seed-2_33208099.json |
-| 火山 | 37 | volcano_escape_v1 / replicate_id | runs/muse-21maps-volcano-med/episode_20261011T130905Z_memory_seed-3_3b175310.json |
+| 家族 | 动作数 | `world_version` | `world_definition_id` / seed 角色 | 本地 trace 相对路径 |
+|---|---:|---|---|---|
+| 深海站 | 168 | abyss-escape-hard-zh | abyss_escape_hard / replicate_id | runs/muse-9maps-abyss-hard/episode_20261011T074539Z_memory_seed-2_dbad0ed7.json |
+| 古堡 | 69 | castle-escape-hard-zh | castle_escape_hard / replicate_id | runs/muse-21maps-castle-hard/episode_20261011T131606Z_memory_seed-0_8f807e05.json |
+| 丛林 | 53 | jungle-escape-hard-zh | jungle_escape_hard / replicate_id | runs/muse-21maps-jungle-hard/episode_20261011T131206Z_memory_seed-2_da140ef7.json |
+| 灯塔 | 261 | lighthouse-escape-v3-zh | lighthouse_escape_v3 / replicate_id | runs/muse-9maps-light-hard/episode_20261011T074453Z_memory_seed-1_fa596cf4.json |
+| 月球 | 232 | lunar-escape-v2-seeded-zh | lunar_escape_v2_seeded / seeded_instance | runs/muse-flex-lunar-v2s/episode_20261011T142412Z_memory_seed-1_30323f7d.json |
+| 极地 | 51 | polar-escape-hard-zh | polar_escape_hard / replicate_id | runs/muse-21maps-polar-hard/episode_20261011T130327Z_memory_seed-2_71be5ad2.json |
+| 金字塔 | 159 | pyramid-escape-v2-seeded-zh | pyramid_escape_v2_seeded / seeded_instance | runs/muse-flex-pyramid-v2s/episode_20261011T142750Z_memory_seed-2_e46fe34f.json |
+| 飞船 | 440 | spaceship-escape-v4-zh | spaceship_escape_v3 / replicate_id | runs/muse-9maps-ship-hard/episode_20261011T074451Z_memory_seed-3_ae173aea.json |
+| 地铁 | 50 | subway-escape-hard-zh | subway_escape_hard / replicate_id | runs/muse-21maps-subway-hard/episode_20261011T130725Z_memory_seed-2_33208099.json |
+| 火山 | 37 | volcano-escape-v1-zh | volcano_escape_v1 / replicate_id | runs/muse-21maps-volcano-med/episode_20261011T130905Z_memory_seed-3_3b175310.json |
+
+## S1.4 逐世界家族案例复核
+
+按未跟踪原始提纲的 S1.4，对 10 个世界家族各选一条最短已记录成功和一条已登记的长尾成功；异常样本优先选 `invalid_action_limit` / `step_limit`，若该家族没有这两类，则选动作数最多的 `provider_error` 并明确标为基础设施删失。短/长样本的地图难度、`world_version`、实例或条件可能不同，只用于逐步案例审阅，不构成效率或机制对照。精确 episode ID、相对路径、配置/地图身份和可观察指标见[案例索引 CSV](assets/trace-case-review.csv)。
+
+| 家族 | 最短成功（动作 / `world_version`） | 长尾成功（动作 / `world_version`） | 非成功 outcome 计数（`provider_error` / `step_limit` / `invalid_action_limit`） |
+|---|---|---|---:|
+| 深海站 | 19 / abyss-escape-easy-zh | 168 / abyss-escape-hard-zh | 1 / 0 / 0 |
+| 古堡 | 22 / castle-escape-easy-zh | 69 / castle-escape-hard-zh | 16 / 0 / 0 |
+| 丛林 | 22 / jungle-escape-easy-zh | 53 / jungle-escape-hard-zh | 16 / 0 / 0 |
+| 灯塔 | 21 / lighthouse-escape-v4-zh | 261 / lighthouse-escape-v3-zh | 9 / 5 / 0 |
+| 月球 | 21 / lunar-escape-easy-zh | 232 / lunar-escape-v2-seeded-zh | 15 / 0 / 0 |
+| 极地 | 17 / polar-escape-easy-zh | 51 / polar-escape-hard-zh | 15 / 0 / 0 |
+| 金字塔 | 18 / pyramid-escape-easy-zh | 159 / pyramid-escape-v2-seeded-zh | 16 / 0 / 0 |
+| 飞船 | 28 / spaceship-escape-v2-zh | 440 / spaceship-escape-v4-zh | 17 / 71 / 1 |
+| 地铁 | 20 / subway-escape-easy-zh | 50 / subway-escape-hard-zh | 15 / 0 / 0 |
+| 火山 | 19 / volcano-escape-easy-zh | 37 / volcano-escape-v1-zh | 15 / 0 / 0 |
+
+逐步复核只使用 `Observation`、实际 `Action`、公开 `ToolResult` 和公开 progress 字段，不读取或导出 `decision_reason`。长尾样本的可复核事件包括：深海站在 panel/power/code 的 step 22/24/46 后到 step 168 才逃出，期间 5 次 wrong-target、4 次重复读码和 14 个导航二循环；灯塔相应事件在 step 27/29/33，step 261 才逃出，观察到 6 次 wrong-target、23 次重复读码和 173 个读码后的 move/look；飞船事件在 step 24/26/32，首次 wrong-target 在 code_read 之前的 step 12，随后 52 次重复读码、330 个读码后的 move/look，step 440 逃出。月球 seeded 样本在 step 17 打开 panel，到 step 221 才恢复供电、step 226 读码，记录到 41 次重复 look 和 42 个二边往返代理；金字塔 seeded 样本先在 step 8 读码，step 155/157 才打开 panel/恢复供电，step 159 逃出，记录到 18 个二边往返代理。这些都是已观察到的成功长尾，不证明当时可避免或由记忆遗忘导致。
+
+其余长尾案例在该条 trace 中没有 wrong-target terminal 或重复读码；古堡与极地各有一次相同失败动作/理由重复。灯塔有 5 条 `step_limit`，飞船有 71 条 `step_limit` 和 1 条 `invalid_action_limit`；其余 8 个家族在当前 474 个唯一 episode 中没有记录这两类行为 outcome。135 条 `provider_error` 跨家族单列为基础设施删失，不作行为失败。案例索引为每个家族保留了一条异常记录：8 个家族为 provider-error 删失样本，灯塔为 step-limit，飞船另含 step-limit 与 invalid-action-limit。
+
+Trace 能回答的是公开输入/已执行动作/工具结果序列，不能回答内部记忆事实、阶段判断或未选动作候选：474 条 Trace 中 `memory_statistics` 为 0；所选成功案例没有非空的 `current_subgoal`、`suggested_action` 或 `planner_feedback`。422/474 条 Trace 的 `public_phase_context_enabled` 为 true，但开关值不是模型的阶段判断记录。因此「忘记事实」与「阶段推断错误」仍是待检验假设；该数据不足以作认知根因结论，也不能当作 P1 自主 Phase 证据。
 
 ## Top 5 可检验瓶颈
 
