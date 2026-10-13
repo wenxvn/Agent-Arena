@@ -133,7 +133,14 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 BUDGET-03 执行结果（2026-10-13 17:23:29 +08:00）：第一个 v2 episode 的第 7 次 provider request 以 `error_category=provider_error` fail closed；没有 HTTP status，不能从 allowlisted 元数据确定根因。前 6 次均有 usage，合计 10,043 tokens；失败请求按 reservation 25,156 tokens 记账。账本为 7/488 requests、35,199/3,935,062 locally charged tokens，closed reason 为 `provider_error_unknown_spend`，无 in-flight request。v2 汇总 0/2，v3 未启动，partial JSON/CSV 保留。
 
-BUDGET-01/02/03 合计 19/500 requests、100,137/4,000,000 locally charged tokens；三笔失败 reservation 都不代表 provider 确认 usage。按 BUDGET-03 最终停止规则，不创建 BUDGET-04，不再从此登记发起 provider API 调用。S2 经验 Gate 保持未完成；没有完整 episode 时不报告模型收益，也不推进 S3。
+| Ledger | Provider calls | 有 usage 的调用 | 已确认 usage tokens | unknown-spend reservation | 本地记账 tokens | provider error 分类 |
+|---|---:|---:|---:|---:|---:|---|
+| BUDGET-01 | 2 | 1 | 1,509 | 22,577 | 24,086 | 第 2 次：unknown（schema 1 无分类） |
+| BUDGET-02 | 10 | 9 | 15,374 | 25,478 | 40,852 | 第 10 次：`timeout` |
+| BUDGET-03 | 7 | 6 | 10,043 | 25,156 | 35,199 | 第 7 次：`provider_error` |
+| 合计 | 19 | 16 | 26,926 | 73,211 | 100,137 | 3 次 unknown spend |
+
+BUDGET-01/02/03 合计占原上限 19/500 requests、100,137/4,000,000 locally charged tokens；73,211 tokens 是三笔失败 reservation，不是 provider 确认 usage。按 BUDGET-03 最终停止规则，不创建 BUDGET-04，不再从此登记发起 provider API 调用。S2 经验 Gate 保持未完成；没有完整 episode 时不报告模型收益，也不推进 S3。
 
 ## 执行命令
 
@@ -166,10 +173,10 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 ## 门禁与解除条件
 
-- 截至 2026-10-13，本登记新增真实模型 API 尝试数为 2；本轮没有读取或输出 `.env` 内容。
-- fail-closed budget guard 已提交并通过 Ruff、mypy、pytest 与 `uv lock --check` 离线验证；pilot 已启动并因 `provider_error_unknown_spend` fail closed，明细见上方执行记录。
+- 截至 2026-10-13，本登记共发生 19 次真实模型 API 尝试：BUDGET-01/02/03 分别为 2/10/7；其中 16 次返回 usage，3 次 unknown spend，三笔均按 reservation 本地记账。总本地记账 100,137/4,000,000 tokens；本轮没有读取或输出 `.env` 内容。
+- fail-closed budget guard 已提交并通过 Ruff、Windows/Linux-targeted mypy、pytest 与 `uv lock --check` 离线验证，最新相关 GitHub Actions 全绿。三份账本都以 `provider_error_unknown_spend` 关闭；各 v2 运行均为 0/2 episode 完成，v3 未启动。S2 Gate 未满足，按 BUDGET-03 停止规则不再追加该矩阵 API 调用。
 - 首个决策请求本身兼作受限 gateway probe：若 gateway 不接受输出 cap，provider error 将按整笔预留记账、关闭账本，且不会自动重试。
 - 任一 usage 缺失、usage 超过预留、provider error、账本不匹配或预算触顶均停止后续请求。本次未知 spend 已关闭账本；不得重置账本或复用同一 experiment ID。中断 cell 与已完成 cell 分别报告；不把未完成运行写成最终 Episode Trace。
-- 本 pilot 仍只有四个 cell，单模型、单地图家族、两个 seeds。即使全部结束，也只作小样本方向性结果；token/成功和行为指标必须基于完成运行的真实 trace/ledger 计算，不能根据预算 cap 推测。
+- 原 pilot 计划为四个 cell、单模型、单地图家族、两个 seeds；实际三次尝试都未完成首个 v2 episode，所以没有可报告的成功率、步数、token/成功或行为对照。不能根据 partial actions 或预算 cap 推测这些指标。
 
 本表保留预登记和实际执行记录；运行完成不代表模型收益已成立，也不代表本机 provider 配置长期有效。
