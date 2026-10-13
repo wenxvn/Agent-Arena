@@ -6,7 +6,7 @@
 
 改动：v3 按 room 键保存最新 Observation 描述，同房间更正替换旧值并计为 update；allowlisted 事件摘要只保存在事件记录中。渲染压缩可省略非当前房间的旧 room facts，但保留当前房间描述。新增非法候选/correction request、已读码后移动回程、单向出口、事件摘要更正及 Observation 更正 fixtures；v2 路径未改。
 
-验证：加入 room-fact 压缩回归，确认超限时省略旧房间描述并保留当前房间描述；普通事实压缩用例精确断言 24 条中省略 8 条、保留 16 条、20 条失败动作仍在且 omission map 计数准确。新增默认 v2 provider memory-data golden fixture，并让 legacy trace fixture 移除 `memory_statistics` 后验证读取兼容。全量 pytest 357 passed、`ruff check .` 通过、`mypy src` 49 个源文件通过、`git diff --check` 通过。实现提交 `b29fe93f92761808cccff918071b742f908cde45` 的 [GitHub Actions run #76](https://github.com/wenxvn/Agent-Arena/actions/runs/38381561646) 和既有 fixture 补充提交 `077a8a346222242be51acb087e9d29b3b0846e56` 的 [GitHub Actions run #78](https://github.com/wenxvn/Agent-Arena/actions/runs/38382016747) 均通过；本轮兼容 fixture 和 golden fixture 的 CI 待推送后核验。依赖未改动；未调用 provider API。
+验证：加入 room-fact 压缩回归，确认超限时省略旧房间描述并保留当前房间描述；普通事实压缩用例精确断言 24 条中省略 8 条、保留 16 条、20 条失败动作仍在且 omission map 计数准确。新增默认 v2 provider memory-data golden fixture，并让 legacy trace fixture 移除 `memory_statistics` 后验证读取兼容。全量 pytest 357 passed、`ruff check .` 通过、`mypy src` 49 个源文件通过、`git diff --check` 通过。实现提交 `b29fe93f92761808cccff918071b742f908cde45` 的 [GitHub Actions run #76](https://github.com/wenxvn/Agent-Arena/actions/runs/38381561646) 和既有 fixture 补充提交 `077a8a346222242be51acb087e9d29b3b0846e56` 的 [GitHub Actions run #78](https://github.com/wenxvn/Agent-Arena/actions/runs/38382016747) 均通过；本轮验收夹具提交 `29d6917c8f2825b175735f92443d1692b14e843d` 的 [GitHub Actions run #81](https://github.com/wenxvn/Agent-Arena/actions/runs/38383303143) 成功。依赖未改动；未调用 provider API。
 
 下一步：继续核对 S2 离线验收与研究报告的一致性；在线 Gate 未通过，按 BUDGET-03 停止规则不再发起矩阵请求，不推进 S3。
 

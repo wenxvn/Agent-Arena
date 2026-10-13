@@ -36,7 +36,7 @@ Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实�
 
 定向 fixture 覆盖公开 frontier 与成功边、v3 访问集合在 v2 12 项短列表达到容量后的正确性、必需房间/出口/边/事件容量边界、事件顺序不预设、episode reset、公开前置条件修复、超限压缩与显式失败、v3 provenance/step statistics、config 兼容及旧 trace 审计读取。测试和静态检查不证明模型收益。
 
-后续 S2.4 离线复核补充覆盖非法 provider 候选与 correction request 不生成执行记忆、已读码后继续移动并回程、单向出口不推断反边、同一公开事件修正摘要，以及同一房间 Observation 更正后只保留最新 room fact。room-fact 压缩回归验证超限时保留当前房间描述；普通事实压缩 fixture 精确验证删除 8/24 条、保留 16 条、20 条失败动作仍保留且 omission map 准确；新增默认 v2 provider memory-data golden fixture。全量 pytest 357 passed、Ruff 和 mypy（49 个源文件）通过；实现提交 `b29fe93f92761808cccff918071b742f908cde45` 的 [GitHub Actions run #76](https://github.com/wenxvn/Agent-Arena/actions/runs/38381561646) 与既有 fixture 补充提交 `077a8a346222242be51acb087e9d29b3b0846e56` 的 [GitHub Actions run #78](https://github.com/wenxvn/Agent-Arena/actions/runs/38382016747) 均通过；本轮 golden fixture 的 CI 待推送后核验。该工作未发起 provider 请求，不改变三份 pilot ledger，也不构成模型效果证据。
+后续 S2.4 离线复核补充覆盖非法 provider 候选与 correction request 不生成执行记忆、已读码后继续移动并回程、单向出口不推断反边、同一公开事件修正摘要，以及同一房间 Observation 更正后只保留最新 room fact。room-fact 压缩回归验证超限时保留当前房间描述；普通事实压缩 fixture 精确验证删除 8/24 条、保留 16 条、20 条失败动作仍保留且 omission map 准确；新增默认 v2 provider memory-data golden fixture。全量 pytest 357 passed、Ruff 和 mypy（49 个源文件）通过；实现提交 `b29fe93f92761808cccff918071b742f908cde45` 的 [GitHub Actions run #76](https://github.com/wenxvn/Agent-Arena/actions/runs/38381561646) 与既有 fixture 补充提交 `077a8a346222242be51acb087e9d29b3b0846e56` 的 [GitHub Actions run #78](https://github.com/wenxvn/Agent-Arena/actions/runs/38382016747) 均通过；本轮验收夹具提交 `29d6917c8f2825b175735f92443d1692b14e843d` 的 [GitHub Actions run #81](https://github.com/wenxvn/Agent-Arena/actions/runs/38383303143) 成功。该工作未发起 provider 请求，不改变三份 pilot ledger，也不构成模型效果证据。
 
 2026-10-13 离线验收补充：发现并补齐“完整公开 Trace 重放得到稳定 v3 memory digest”的实现缺口。`MemoryV3State.memory_digest` 对逻辑状态做排序键、紧凑 JSON 的 SHA-256，不含派生运行计数器；新增测试将 10 步公开 Trace 写入并重新读取，再独立重放两次，断言 digest、frontier、事件顺序一致。全量本地检查为 pytest 349 passed、Ruff 全仓通过、mypy 49 个源文件通过；提交 `e907237ca4c1dd4f06a48690a44a59c8568865c2` 的 [GitHub Actions run #70](https://github.com/wenxvn/Agent-Arena/actions/runs/38378309801) 通过。当前 shell 没有 `uv` 命令，未执行 `uv lock --check`；依赖文件未改动。此项只补齐离线确定性验收，不改变模型结果：三份 pilot ledger 无完整 episode，S2 Gate 仍未通过，不推进 S3。
 
@@ -53,9 +53,9 @@ Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实�
 | 3. 路线、方向、阶段、前置条件与纠正 | 通过 | 回程/已读码、单向出口、事件顺序、前置条件修复、重复事件摘要及同房间 Observation 更正用例 |
 | 4. 压缩、计数与容量边界 | 通过 | 普通 facts 精确省略 8/24、保留 16/24 和 20 个失败动作；当前 room fact 在压缩后保留；必需空间/事件超容量或字符上限时失败 |
 | 5. v2 兼容、配置、provenance、旧 Trace | 通过 | `test_default_memory_agent_keeps_the_v2_provider_memory_fixture` 精确锁定默认 provider `memory_data`；legacy fixture 删除 `memory_statistics` 后仍可读取且值为 `None`；config 和 v3 provenance fixtures 通过 |
-| 6. 本机与 CI 质量门禁 | 本机通过；当前改动的 CI 待核验 | Python 3.13 本机 pytest 357 passed、Ruff 全仓、mypy 49 个源文件通过；S1 Trace audit 为 518 文件/474 唯一 episodes；此前实现/fixture Actions #76/#78 与文档同步 Actions #80 成功 |
+| 6. 本机与 CI 质量门禁 | 通过 | Python 3.13 本机 pytest 357 passed、Ruff 全仓、mypy 49 个源文件通过；S1 Trace audit 为 518 文件/474 唯一 episodes；Actions #81（验收夹具 SHA `29d6917`）成功 |
 
-本次复核为 0014 条件 1–5 核对了直接 fixtures；条件 6 的本机 pytest/Ruff/mypy 与 S1 audit 证据齐全，但本轮新兼容/golden fixture 的 push CI 尚待核验。该结论只表示离线实现与契约正在完成验证，不表示 M1 机制有效。真实 matched pilot 仍未完成：只读复核确认 BUDGET-01/02/03 均 closed，分别记录 2/10/7 次请求、无 in-flight request；v2 0/2、v3 未启动。按 BUDGET-03 停止规则，不创建新 ledger、不追加 provider 请求，也不推进 S3。
+本次复核确认 0014 条件 1–6 均通过直接 fixtures、S1 audit、本机质量检查及本轮 Actions #81。该结论只表示离线实现与契约已验证，不表示 M1 机制有效。真实 matched pilot 仍未完成：只读复核确认 BUDGET-01/02/03 均 closed，分别记录 2/10/7 次请求、无 in-flight request；v2 0/2、v3 未启动。按 BUDGET-03 停止规则，不创建新 ledger、不追加 provider 请求，也不推进 S3。
 
 ## Pilot 决策
 
