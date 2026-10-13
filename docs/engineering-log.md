@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-14 V3 世界设计 Gate 0 启动
+
+事件：开始执行用户已提供的 V3 世界设计提纲，目标为 10 家族 × 3 难度的 30 关独立确定性场景。
+
+原因：既有 10×3 地图虽然拓扑不同，仍主要共享维修、供电、读码与逃生链；V3 需要将主题机制落实为独立动作、状态转移、成功谓词与失败反馈。
+
+改动：新增 spec 0017 与 V3 状态页；确认旧 `Action`、Legacy selector、Trace 和 V2 ledger/seeded holdout 的隔离边界。用户提供的 `研究提纲/V3世界设计提纲.md` 保持原文，作为本轮采用的设计输入。
+
+验证：HEAD 为 `e23fca0ac2b7cf339c6f16dc21872ea456d45a54`，工作树起初没有 tracked 改动；冻结的 seeded v3 manifest 仍由 spec 0016 与测试锁定。V3 代码开始前基线 Ruff 通过、mypy 49 个源文件通过、pytest 364 passed。当前 Python 3.13 虚拟环境没有 `uv` 命令，`uv lock --check` 未执行；没有 Provider API 请求、GPU 任务或账本改动。
+
+下一步：完成 30 张设计卡与参考策略静态核对；按 spec 0017 的 Gate 1 建立版本化 Scenario 契约和 PY/SU/AB 纵向原型。
+
+关联提交：待完成。
+
 ## 2026-10-13 V2 末轮只读失败诊断
 
 事件：按用户要求完成最后一轮 V2 探索；S2 matched-pilot Gate 仍未通过，进一步核查三份 provider failure 的安全 ledger、BUDGET-03 的 timeout 覆盖和 adapter 异常分类。
@@ -1067,3 +1081,17 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 下一步：先设计并实现 world 加载契约、循环检测修复及指标补齐，再验证 guarded 和 planner 生命周期；纯模型与辅助模式继续独立统计。
 
 关联提交：`29cb000`。
+
+## 2026-10-14 V3 世界设计提纲交付
+
+事件：完成研究提纲中的十家族 30 个 Scenario 关卡，实现、逐关公开 Oracle、规则边界、设计审计和 Legacy/Trace 兼容收口。
+
+原因：将 V3 从设计输入推进为可运行且可复播的离线工程交付，同时保留 V2 seeded 定义、provider ledger 和 holdout 的冻结边界。
+
+改动：新增 Scenario Action/Observation、显式 selector、十家族规则、V3 prompt/Runner/Trace/CLI/UI 适配、30 关设计卡、机制交叉核对、六维评分与 hash 验收报告。修正 PO-H 六相天气/共享燃料/单人护送，及 SU-H 由 B 车入线触发的维护锁。旧 Action 运行时判断与 subclass prompt 版本标识保留 Legacy 兼容。
+
+验证：全量 `pytest -q` 为 466 passed；`ruff check .` 通过；`mypy src` 对 64 个源文件无问题；项目改动通过 staged whitespace 检查。V3 原始提纲保留原样，其 Markdown 硬换行行尾空格未纳入改动检查。公开 Oracle 在 seed 31 下分两次独立执行均为 30/30 成功、拒绝动作 0，逐关 Replay SHA 与报告相同。当前 shell 无 `uv`，未执行 `uv lock --check`；依赖文件未修改。没有真实 Provider 请求或 GPU 运行。
+
+下一步：交付提交推送后，任何 V3 模型行为比较另行设计并登记，不从离线 Oracle 推断模型通关能力。
+
+关联提交：本记录随 V3 交付提交；推送后补记短 SHA。

@@ -87,6 +87,7 @@ from agent_arena.worlds.pyramid import (
     load_pyramid_easy_definition,
     load_pyramid_hard_definition,
 )
+from agent_arena.worlds.scenario.catalog import create_scenario_environment
 from agent_arena.worlds.spaceship_escape import (
     SpaceshipEscapeEnvironment,
     SpaceshipV2Definition,
@@ -236,11 +237,12 @@ __all__ = [
     "load_volcano_hard_definition",
 ]
 
-def create_environment(
-    world: str, world_version: str, *, seed: int = 0
-) -> Environment:
+
+def create_environment(world: str, world_version: str, *, seed: int = 0) -> Environment:
     """Resolve the supported selector; never silently fall back to a different world."""
     environment: Environment
+    if "-world-v3-" in world_version:
+        return create_scenario_environment(world, world_version, seed=seed)
     if (world, world_version) == ("spaceship-escape", "spaceship-escape-v2-zh"):
         environment = SpaceshipEscapeEnvironment(seed=seed)
     elif (world, world_version) == ("lighthouse-escape", "lighthouse-escape-v1-zh"):

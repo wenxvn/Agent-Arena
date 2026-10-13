@@ -50,6 +50,7 @@ from agent_arena.worlds import (
     Environment,
     create_environment,
 )
+from agent_arena.worlds.scenario.base import ScenarioEnvironment
 
 app = typer.Typer(help="运行本地 Agent Arena 实验。", no_args_is_help=True)
 
@@ -256,6 +257,14 @@ def run(
         )
         raise typer.Exit(code=2)
     environment = _load_environment(settings)
+    if isinstance(environment, ScenarioEnvironment) and settings.agent != "react":
+        typer.echo("V3 Scenario 当前仅支持 --agent react。", err=True)
+        raise typer.Exit(code=2)
+    scenario_prompt_path = (
+        Path(__file__).resolve().parents[2] / "prompts" / "react_scenario_v3.txt"
+        if isinstance(environment, ScenarioEnvironment)
+        else None
+    )
     budget_controller: ProviderBudgetController | None = None
     budget_snapshot: ProviderBudgetSnapshot | None = None
     try:
@@ -271,12 +280,11 @@ def run(
             decision_provider,
             structured_milestones=structured_milestones,
             memory_version=settings.memory_version,
+            prompt_path=scenario_prompt_path,
         )
         _validate_budget_prompt_identity(settings, agent_instance.base_prompt_hash)
         invocation_context = (
-            budget_controller.invocation_lease()
-            if budget_controller is not None
-            else nullcontext()
+            budget_controller.invocation_lease() if budget_controller is not None else nullcontext()
         )
         with invocation_context:
             episode = EpisodeRunner(
@@ -502,9 +510,7 @@ def benchmark(
                 "The registered experiment budget is already closed or exhausted."
             )
         invocation_context = (
-            budget_controller.invocation_lease()
-            if budget_controller is not None
-            else nullcontext()
+            budget_controller.invocation_lease() if budget_controller is not None else nullcontext()
         )
         interrupted_by_budget = False
         with invocation_context:
@@ -539,6 +545,13 @@ def benchmark(
                             decision_provider,
                             structured_milestones=structured_milestones,
                             memory_version=episode_settings.memory_version,
+                            prompt_path=(
+                                Path(__file__).resolve().parents[2]
+                                / "prompts"
+                                / "react_scenario_v3.txt"
+                                if isinstance(episode_environment, ScenarioEnvironment)
+                                else None
+                            ),
                         )
                         _validate_budget_world_identity(episode_settings, episode_environment)
                         _validate_budget_prompt_identity(
@@ -777,6 +790,7 @@ def _create_agent(
     *,
     structured_milestones: bool = False,
     memory_version: Literal["v2", "v3_spatial_event"] = "v2",
+    prompt_path: Path | None = None,
 ) -> ReactAgent:
     if agent == "memory":
         return MemoryAgent(
@@ -790,7 +804,7 @@ def _create_agent(
         return PlannerAssistedAgent(provider)
     if agent == "candidate_select":
         return CandidateSelectionAgent(provider)
-    return ReactAgent(provider)
+    return ReactAgent(provider, prompt_path=prompt_path)
 
 
 def _trace_paths(path: Path) -> list[Path]:
@@ -974,6 +988,9 @@ def _default_planning_fake_responses() -> list[object]:
 
 _OUTCOME_LABELS: dict[EpisodeOutcome, str] = {
     EpisodeOutcome.SUCCESS: "成功逃离飞船",
+    EpisodeOutcome.SCENARIO_SUCCESS: "V3 Scenario 完整成功",
+    EpisodeOutcome.PARTIAL_SUCCESS: "V3 Scenario 代价成功",
+    EpisodeOutcome.SCENARIO_FAILURE: "V3 Scenario 失败",
     EpisodeOutcome.STEP_LIMIT: "达到步数上限，未完成逃生",
     EpisodeOutcome.INVALID_ACTION_LIMIT: "连续输出格式错误，实验已停止",
     EpisodeOutcome.PROVIDER_ERROR: "模型服务请求失败，实验已停止",

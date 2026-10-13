@@ -6,7 +6,7 @@ from collections.abc import Iterable
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from agent_arena.arena import Action, Observation, ToolReason, ToolResult
+from agent_arena.arena import Observation, ScenarioAction, ToolReason, ToolResult
 
 
 class PublicFact(BaseModel):
@@ -74,7 +74,7 @@ _FACT_REASONS = frozenset(
 
 def extract_public_facts(
     observation: Observation,
-    action: Action | None,
+    action: ScenarioAction | None,
     result: ToolResult | None,
 ) -> tuple[PublicFact, ...]:
     """Extract allowlisted facts without parsing free-form result text.
@@ -87,12 +87,10 @@ def extract_public_facts(
     if result is None or result.reason not in _FACT_REASONS:
         return ()
     subject = _action_subject(action) or observation.current_room
-    return (
-        PublicFact(subject=subject, predicate="result", value=result.reason.value),
-    )
+    return (PublicFact(subject=subject, predicate="result", value=result.reason.value),)
 
 
-def _action_subject(action: Action | None) -> str | None:
+def _action_subject(action: ScenarioAction | None) -> str | None:
     if action is None:
         return None
     data = action.model_dump(mode="python")

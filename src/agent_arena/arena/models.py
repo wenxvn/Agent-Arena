@@ -80,6 +80,10 @@ class ToolReason(StrEnum):
     CODE_UNREAD = "code_unread"
     INCORRECT_CODE = "incorrect_code"
     NO_POWER = "no_power"
+    SCENARIO_ACTION_APPLIED = "scenario_action_applied"
+    SCENARIO_ACTION_REJECTED = "scenario_action_rejected"
+    SCENARIO_COMPLETED = "scenario_completed"
+    SCENARIO_FAILED = "scenario_failed"
 
 
 class ToolResult(BaseModel):

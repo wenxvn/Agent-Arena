@@ -165,7 +165,7 @@ def _response_format(mode: str, request: DecisionRequest) -> dict[str, object]:
                 else (
                     planner_response_schema_strict()
                     if request.output_contract == "planner"
-                    else decision_response_schema_strict()
+                    else decision_response_schema_strict(request.action_contract_version)
                 )
             ),
         }

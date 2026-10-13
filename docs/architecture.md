@@ -50,6 +50,13 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 - Trace schema v2 为已执行步骤记录 `ProgressEvent`，旧 trace 缺失字段时仍可读取，但对应指标必须标记为不可用；失败分析 CLI 输出独立的 JSON/CSV 报告。
 - 核心实验仍通过本地 CLI 运行并输出 JSON/CSV。研究阶段另有只读 Streamlit MVP，读取本地 `runs/`、`results/`，不访问 `.env` 或调用 Provider；可配置并启动实验的完整界面仍属于 Release 3。
 
+## V3 Scenario 边界
+
+- V3 的 30 个 allowlist selector 由 `worlds/scenario/catalog.py` 注册，定义、十家族规则与只读公开 Oracle 位于 `worlds/scenario/`。旧世界和 V2 seeded 定义保持原有 selector 与行为。
+- `arena/scenario_models.py` 定义 V3 专用 `ScenarioAction`、`ScenarioObservation`、结果和终态。Scenario Environment 私有持有完整状态，只将当前房间、可行出口、可见互动、背包和公开状态事实返回给 Agent。
+- Runner 根据显式 `world_version` 选择 `legacy_v1` 或 `scenario_v3` Action contract；V3 Episode Trace 以可选字段保留兼容读取，提交答案在持久化 Trace 中脱敏。UI 只显示 Trace 中已保存的公开数据。
+- V3 当前 ReactAgent 使用版本化 `prompts/react_scenario_v3.txt`。候选动作、Memory/Planning 的未声明 V3 行为会被拒绝；离线 Oracle 只用于确定性验收，真实 Provider 对照须另立实验。
+
 ## 更新规则
 
 - 新功能开始前先读取本文件和对应 spec，再读取相关代码。

@@ -11,15 +11,33 @@ from time import perf_counter
 from pydantic import ValidationError
 
 from agent_arena.agents.candidate import CandidateSelectionAgent, candidate_selection_adapter
-from agent_arena.agents.react import AgentDecision, ReactAgent, agent_decision_adapter
+from agent_arena.agents.react import (
+    AgentDecision,
+    ReactAgent,
+    ScenarioAgentDecision,
+    agent_decision_adapter,
+    scenario_agent_decision_adapter,
+)
 from agent_arena.arena import (
     Action,
     Environment,
     Observation,
     PublicMilestone,
+    ScenarioAction,
+    ScenarioObservation,
+    ScenarioStatus,
+    SubmitAction,
     ToolResult,
     ToolStatus,
     action_adapter,
+)
+from agent_arena.arena.models import (
+    InspectAction,
+    LookAction,
+    MoveAction,
+    PickupAction,
+    ReadTerminalAction,
+    UseAction,
 )
 from agent_arena.config import RuntimeSettings
 from agent_arena.evaluation.loop import PublicLoopDetector
@@ -35,8 +53,9 @@ from agent_arena.evaluation.trace import (
     TraceEvent,
 )
 from agent_arena.llm.budget import ProviderBudgetExceeded
-from agent_arena.llm.protocol import ProviderResponse
+from agent_arena.llm.protocol import ActionContractVersion, ProviderResponse
 from agent_arena.safety import sanitize_text
+from agent_arena.worlds.scenario.base import ScenarioEnvironment
 
 
 class EpisodeRunner:
@@ -62,6 +81,12 @@ class EpisodeRunner:
         self._environment = environment
         self._agent = agent
         self._settings = settings
+        self._is_scenario_environment = isinstance(environment, ScenarioEnvironment)
+        self._action_contract_version: ActionContractVersion = (
+            "scenario_v3" if self._is_scenario_environment else "legacy_v1"
+        )
+        if self._is_scenario_environment and (agent.name != "react" or enable_candidate_selection):
+            raise ValueError("V3 Scenario 当前只支持 ReactAgent 的公开 Action 契约。")
         if (
             agent.name == "memory"
             and getattr(agent, "memory_version", "v2") != settings.memory_version
@@ -99,11 +124,50 @@ class EpisodeRunner:
             agent=self._agent.name,
             prompt_version=self._agent.prompt_version,
             provider=self._settings.provider,
+            scenario_id=(
+                self._require_scenario_environment().scenario_id
+                if self._is_scenario_environment
+                else None
+            ),
+            trace_schema_version=3 if self._is_scenario_environment else 2,
             provenance=ExperimentProvenance(
-                trace_contract_version="experiment_v2",
+                trace_contract_version=(
+                    "scenario_v3" if self._is_scenario_environment else "experiment_v2"
+                ),
                 world=world,
                 world_definition_id=definition_id,
                 world_definition_hash=definition_hash,
+                action_contract_version=self._action_contract_version,
+                source_design_id=(
+                    self._require_scenario_environment().source_design_id
+                    if self._is_scenario_environment
+                    else None
+                ),
+                source_design_hash=(
+                    self._require_scenario_environment().source_design_hash
+                    if self._is_scenario_environment
+                    else None
+                ),
+                scenario_family=(
+                    self._require_scenario_environment().family
+                    if self._is_scenario_environment
+                    else None
+                ),
+                scenario_difficulty=(
+                    self._require_scenario_environment().difficulty
+                    if self._is_scenario_environment
+                    else None
+                ),
+                mechanic_version=(
+                    self._require_scenario_environment().mechanic_version
+                    if self._is_scenario_environment
+                    else None
+                ),
+                ruleset_sha=(
+                    self._require_scenario_environment().ruleset_sha
+                    if self._is_scenario_environment
+                    else None
+                ),
                 max_output_tokens=(
                     self._settings.max_provider_output_tokens
                     if self._settings.max_provider_output_tokens is not None
@@ -190,7 +254,9 @@ class EpisodeRunner:
             )
         if phase_milestones:
             runtime_feedback = _join_feedback(runtime_feedback, phase_tracker.render(observation))
-        recent_history: list[tuple[Observation, Action, ToolResult]] = []
+        recent_history: list[
+            tuple[Observation | ScenarioObservation, ScenarioAction, ToolResult]
+        ] = []
 
         while self._settings.step_limit == 0 or decision_attempts < self._settings.step_limit:
             corrected = False
@@ -339,7 +405,10 @@ class EpisodeRunner:
                         correction=corrected,
                         observation=observation,
                         decision_reason=decision.decision_reason,
-                        action=decision.action,
+                        action=_trace_action(
+                            decision.action,
+                            redact_scenario_answer=self._is_scenario_environment,
+                        ),
                         latency_ms=latency_ms,
                         input_tokens=input_tokens,
                         output_tokens=output_tokens,
@@ -351,8 +420,23 @@ class EpisodeRunner:
                     if self._on_step_complete:
                         self._on_step_complete(guarded_step)
                     continue
-            result, observation = self._environment.step(decision.action)
-            self._agent.observe(decision.action, result, observation)
+            if self._is_scenario_environment:
+                result, observation = self._require_scenario_environment().step(decision.action)
+            else:
+                if not isinstance(
+                    decision.action,
+                    (
+                        LookAction,
+                        MoveAction,
+                        InspectAction,
+                        PickupAction,
+                        UseAction,
+                        ReadTerminalAction,
+                    ),
+                ):
+                    raise TypeError("Legacy environment received a V3-only Action.")
+                result, observation = self._environment.step(decision.action)
+                self._agent.observe(decision.action, result, observation)
             progress_event = progress_detector.evaluate(
                 decision_observation, decision.action, result, observation
             )
@@ -387,7 +471,10 @@ class EpisodeRunner:
                 correction=corrected,
                 observation=decision_observation,
                 decision_reason=decision.decision_reason,
-                action=decision.action,
+                action=_trace_action(
+                    decision.action,
+                    redact_scenario_answer=self._is_scenario_environment,
+                ),
                 result=result,
                 next_observation=observation,
                 progress=progress_event,
@@ -399,6 +486,26 @@ class EpisodeRunner:
                     if self._agent.memory_statistics is not None
                     else None
                 ),
+                scenario_event=(
+                    self._require_scenario_environment().step_metadata.scenario_event
+                    if self._is_scenario_environment
+                    else None
+                ),
+                scenario_status=(
+                    self._require_scenario_environment().step_metadata.scenario_status
+                    if self._is_scenario_environment
+                    else None
+                ),
+                failure_reason=(
+                    self._require_scenario_environment().step_metadata.failure_reason
+                    if self._is_scenario_environment
+                    else None
+                ),
+                score_components=(
+                    self._require_scenario_environment().step_metadata.score_components
+                    if self._is_scenario_environment
+                    else None
+                ),
                 runtime_feedback=(
                     sanitize_text(runtime_feedback, max_length=500) if runtime_feedback else None
                 ),
@@ -407,10 +514,11 @@ class EpisodeRunner:
             steps.append(completed_step)
             if self._on_step_complete:
                 self._on_step_complete(completed_step)
-            if self._environment.is_success():
+            terminal_outcome = self._terminal_outcome()
+            if terminal_outcome is not None:
                 return self._complete(
                     trace_header,
-                    EpisodeOutcome.SUCCESS,
+                    terminal_outcome,
                     executed_actions,
                     invalid_outputs,
                     rejected_actions,
@@ -438,7 +546,7 @@ class EpisodeRunner:
         recent_history: str | None,
         candidates: PublicCandidateSet,
     ) -> tuple[
-        AgentDecision | None,
+        AgentDecision | ScenarioAgentDecision | None,
         int,
         bool,
         int | None,
@@ -447,12 +555,13 @@ class EpisodeRunner:
     ]:
         started_at = perf_counter()
         try:
-            response = self._agent.request(
+            response = self._agent.request_for_contract(
                 observation,
                 correction=correction,
                 runtime_feedback=runtime_feedback,
                 invalid_output_reason=invalid_output_reason,
                 recent_history=recent_history,
+                action_contract_version=self._action_contract_version,
             )
         except ProviderBudgetExceeded:
             raise
@@ -482,8 +591,10 @@ class EpisodeRunner:
 
     def _validate_decision(
         self, response: ProviderResponse, candidates: PublicCandidateSet
-    ) -> AgentDecision:
+    ) -> AgentDecision | ScenarioAgentDecision:
         if not self._enable_candidate_selection:
+            if self._is_scenario_environment:
+                return scenario_agent_decision_adapter.validate_python(response.candidate)
             return agent_decision_adapter.validate_python(response.candidate)
         if not isinstance(self._agent, CandidateSelectionAgent):
             raise ValueError("Candidate selection requires CandidateSelectionAgent.")
@@ -570,21 +681,53 @@ class EpisodeRunner:
         steps: list[StepTrace],
     ) -> EpisodeTrace:
         self._agent.finish(outcome)
-        return EpisodeTrace.model_validate(
-            {
-                **header.model_dump(),
-                "outcome": outcome,
-                "executed_action_count": executed_actions,
-                "invalid_output_count": invalid_outputs,
-                "rejected_action_count": rejected_actions,
-                "latency_ms": total_latency_ms,
-                "steps": tuple(steps),
-            }
-        )
+        trace_data: dict[str, object] = {
+            **header.model_dump(),
+            "outcome": outcome,
+            "executed_action_count": executed_actions,
+            "invalid_output_count": invalid_outputs,
+            "rejected_action_count": rejected_actions,
+            "latency_ms": total_latency_ms,
+            "steps": tuple(steps),
+        }
+        if self._is_scenario_environment:
+            scenario = self._require_scenario_environment()
+            terminal = scenario.terminal_status
+            trace_data.update(
+                {
+                    "scenario_status": terminal.status,
+                    "failure_reason": terminal.failure_reason,
+                    "score_components": dict(scenario.scenario_state.score_components),
+                }
+            )
+        return EpisodeTrace.model_validate(trace_data)
+
+    def _require_scenario_environment(self) -> ScenarioEnvironment:
+        if not isinstance(self._environment, ScenarioEnvironment):
+            raise TypeError("Scenario action contract requires ScenarioEnvironment.")
+        return self._environment
+
+    def _terminal_outcome(self) -> EpisodeOutcome | None:
+        if not self._is_scenario_environment:
+            return EpisodeOutcome.SUCCESS if self._environment.is_success() else None
+        status = self._require_scenario_environment().terminal_status.status
+        if status is ScenarioStatus.SUCCESS:
+            return EpisodeOutcome.SCENARIO_SUCCESS
+        if status is ScenarioStatus.PARTIAL_SUCCESS:
+            return EpisodeOutcome.PARTIAL_SUCCESS
+        if status is ScenarioStatus.FAILURE:
+            return EpisodeOutcome.SCENARIO_FAILURE
+        return None
 
 
 def _elapsed_ms(started_at: float) -> int:
     return max(0, round((perf_counter() - started_at) * 1_000))
+
+
+def _trace_action(action: ScenarioAction, *, redact_scenario_answer: bool) -> ScenarioAction:
+    if redact_scenario_answer and isinstance(action, SubmitAction):
+        return action.model_copy(update={"answer": "[redacted]"})
+    return action
 
 
 def _classify_invalid_candidate(candidate: object) -> InvalidOutputReason:
@@ -609,6 +752,9 @@ def _classify_invalid_candidate(candidate: object) -> InvalidOutputReason:
         "pickup": ("item",),
         "use": ("item", "target"),
         "read_terminal": ("target",),
+        "interact": ("target", "choice"),
+        "wait": ("turns",),
+        "submit": ("target", "answer"),
     }
     if not isinstance(tool, str) or tool not in required_arguments:
         return InvalidOutputReason.UNKNOWN_TOOL
@@ -736,7 +882,7 @@ class PublicCandidateTracker:
     def observe(
         self,
         observation: Observation,
-        action: Action,
+        action: ScenarioAction,
         result: ToolResult,
         next_observation: Observation,
     ) -> None:
@@ -788,7 +934,7 @@ def _public_concrete_actions(
     return tuple(action_adapter.validate_python(action) for action in raw_actions)
 
 
-def _action_identity(action: Action) -> str:
+def _action_identity(action: ScenarioAction) -> str:
     return json.dumps(action.model_dump(mode="json"), ensure_ascii=False, sort_keys=True)
 
 
@@ -806,7 +952,7 @@ def _public_state_key(observation: Observation) -> str:
     )
 
 
-def _render_action(action: Action) -> str:
+def _render_action(action: ScenarioAction) -> str:
     values = action.model_dump(mode="json")
     tool = values.pop("tool")
     arguments = ",".join(f"{name}={value}" for name, value in values.items())
@@ -852,7 +998,9 @@ class PublicPhaseTracker:
         return None
 
 
-def _render_recent_history(history: list[tuple[Observation, Action, ToolResult]]) -> str | None:
+def _render_recent_history(
+    history: list[tuple[Observation | ScenarioObservation, ScenarioAction, ToolResult]],
+) -> str | None:
     if not history:
         return None
     values = []
@@ -867,7 +1015,7 @@ def _render_recent_history(history: list[tuple[Observation, Action, ToolResult]]
     return json.dumps(values, ensure_ascii=False, separators=(",", ":"))
 
 
-def _public_action_violation(action: Action, observation: Observation) -> str | None:
+def _public_action_violation(action: ScenarioAction, observation: Observation) -> str | None:
     """Check only arguments that are directly decidable from public Observation."""
 
     data = action.model_dump(mode="json")
@@ -889,4 +1037,15 @@ def _public_action_violation(action: Action, observation: Observation) -> str | 
             return "公开动作校验：use 的 target 不在 visible_objects 中。"
         if data["target"] != "escape_pod" and data["item"] not in observation.inventory:
             return "公开动作校验：维修动作的 item 不在 inventory 中。"
+    if tool == "interact":
+        valid_choices = {
+            option.target: option.choices
+            for option in getattr(observation, "available_interactions", ())
+        }
+        if data["target"] not in observation.visible_objects:
+            return "公开动作校验：交互目标当前不可见。"
+        if data["choice"] not in valid_choices.get(data["target"], ()):
+            return "公开动作校验：交互选择不在当前公开选项中。"
+    if tool == "submit" and data["target"] not in observation.visible_objects:
+        return "公开动作校验：提交目标当前不可见。"
     return None

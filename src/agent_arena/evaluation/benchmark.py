@@ -265,7 +265,10 @@ def write_benchmark(rows: list[BenchmarkRow], output_dir: Path) -> tuple[Path, P
 
 def _aggregate(rows: list[BenchmarkRow]) -> dict[str, object]:
     attempted = len(rows)
-    succeeded = sum(row.outcome == EpisodeOutcome.SUCCESS.value for row in rows)
+    succeeded = sum(
+        row.outcome in {EpisodeOutcome.SUCCESS.value, EpisodeOutcome.SCENARIO_SUCCESS.value}
+        for row in rows
+    )
     comparable = sum(row.guidance_comparable_count for row in rows)
     deviations = sum(row.guidance_deviation_count for row in rows)
     deviating_episodes = [row for row in rows if row.guidance_deviation_count > 0]
@@ -345,7 +348,11 @@ def _aggregate(rows: list[BenchmarkRow]) -> dict[str, object]:
         "guidance_deviation_rate": deviations / comparable if comparable else None,
         "deviating_episode_count": len(deviating_episodes),
         "success_rate_after_guidance_deviation": (
-            sum(row.outcome == EpisodeOutcome.SUCCESS.value for row in deviating_episodes)
+            sum(
+                row.outcome
+                in {EpisodeOutcome.SUCCESS.value, EpisodeOutcome.SCENARIO_SUCCESS.value}
+                for row in deviating_episodes
+            )
             / len(deviating_episodes)
             if deviating_episodes
             else None

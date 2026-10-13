@@ -8,6 +8,9 @@ from typing import Literal, Protocol
 from pydantic import TypeAdapter
 
 from agent_arena.arena import Action
+from agent_arena.arena.scenario_models import ScenarioAction
+
+ActionContractVersion = Literal["legacy_v1", "scenario_v3"]
 
 
 @dataclass(frozen=True)
@@ -22,6 +25,7 @@ class DecisionRequest:
     output_contract: Literal["action", "candidate_selection", "planner"] = "action"
     plan_data: str | None = None
     max_output_tokens: int | None = None
+    action_contract_version: ActionContractVersion = "legacy_v1"
 
 
 @dataclass(frozen=True)
@@ -38,7 +42,9 @@ class DecisionProvider(Protocol):
         """Return a response candidate for the supplied public observation."""
 
 
-def decision_response_schema() -> dict[str, object]:
+def decision_response_schema(
+    action_contract_version: ActionContractVersion = "legacy_v1",
+) -> dict[str, object]:
     """Return the shared JSON Schema for a decision without importing Agent policy."""
 
     return {
@@ -47,12 +53,16 @@ def decision_response_schema() -> dict[str, object]:
         "required": ["decision_reason", "action"],
         "properties": {
             "decision_reason": {"type": "string", "maxLength": 280},
-            "action": TypeAdapter(Action).json_schema(),
+            "action": TypeAdapter(
+                Action if action_contract_version == "legacy_v1" else ScenarioAction
+            ).json_schema(),
         },
     }
 
 
-def decision_response_schema_strict() -> dict[str, object]:
+def decision_response_schema_strict(
+    action_contract_version: ActionContractVersion = "legacy_v1",
+) -> dict[str, object]:
     """Return a $ref-free strict schema for Responses API gateways.
 
     Semantically identical to :func:`decision_response_schema`, but inlines
@@ -61,7 +71,7 @@ def decision_response_schema_strict() -> dict[str, object]:
     the canonical definition; this helper is only a transport encoding.
     """
 
-    return {
+    legacy_schema: dict[str, object] = {
         "type": "object",
         "additionalProperties": False,
         "required": ["decision_reason", "action"],
@@ -116,6 +126,49 @@ def decision_response_schema_strict() -> dict[str, object]:
             },
         },
     }
+    if action_contract_version == "legacy_v1":
+        return legacy_schema
+
+    properties = legacy_schema.get("properties")
+    if not isinstance(properties, dict):
+        raise AssertionError("Decision schema must contain properties.")
+    action_schema = properties.get("action")
+    if not isinstance(action_schema, dict):
+        raise AssertionError("Legacy action schema must be an object.")
+    action_variants = action_schema["anyOf"]
+    if not isinstance(action_variants, list):
+        raise AssertionError("Legacy action schema must contain variants.")
+    action_variants.extend(
+        [
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["tool", "target", "choice"],
+                "properties": {
+                    "tool": {"const": "interact"},
+                    "target": {"type": "string", "minLength": 1, "maxLength": 100},
+                    "choice": {"type": "string", "minLength": 1, "maxLength": 100},
+                },
+            },
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["tool", "turns"],
+                "properties": {"tool": {"const": "wait"}, "turns": {"const": 1}},
+            },
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["tool", "target", "answer"],
+                "properties": {
+                    "tool": {"const": "submit"},
+                    "target": {"type": "string", "minLength": 1, "maxLength": 100},
+                    "answer": {"type": "string", "minLength": 1, "maxLength": 240},
+                },
+            },
+        ]
+    )
+    return legacy_schema
 
 
 def candidate_selection_response_schema() -> dict[str, object]:

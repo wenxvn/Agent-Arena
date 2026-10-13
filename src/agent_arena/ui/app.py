@@ -183,7 +183,7 @@ def _matrix_view(st: Any) -> None:
     st.table(aggregate_traces(traces))
     steps: list[int | float] = []
     for trace in traces:
-        if trace.get("outcome") != "success":
+        if trace.get("outcome") not in {"success", "scenario_success"}:
             continue
         value = trace.get("executed_action_count")
         if isinstance(value, (int, float)):

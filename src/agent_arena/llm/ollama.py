@@ -15,6 +15,7 @@ from agent_arena.llm.protocol import (
     DecisionRequest,
     ProviderResponse,
     candidate_selection_response_schema,
+    decision_response_schema,
     planner_response_schema,
 )
 
@@ -153,7 +154,11 @@ class OllamaDecisionProvider:
             else (
                 planner_response_schema()
                 if request.output_contract == "planner"
-                else ACTION_RESPONSE_SCHEMA
+                else (
+                    ACTION_RESPONSE_SCHEMA
+                    if request.action_contract_version == "legacy_v1"
+                    else decision_response_schema("scenario_v3")
+                )
             )
         )
         response = self._client.chat(

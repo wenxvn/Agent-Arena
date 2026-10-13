@@ -5,6 +5,7 @@
 - `0001-project-architecture` 架构 spec 已确认生效，状态为 `Accepted`。
 - Release 2 的确定性 Spaceship Escape、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 对照已完成；PlanningAgent v1 的工程闭环及真实对照已完成（qwen 与 Muse 基线均为 0/5，见 spec 0006 与失败分析）。
 - 十世界三十图（飞船/灯塔/深海站/极地/金字塔/地铁/火山/丛林/月球/古堡 × 简单 6 房/中等 8 房/困难 10 房，spec 0007–0011）已建成，规则零改动；最新完整测试记录见 `docs/engineering-log.md`。
+- V3 世界设计提纲已完成十家族 30 个独立 Scenario 的离线实现、机制核对、设计评分、公开 Oracle 与 Legacy/Trace 兼容验收；细节见 spec 0017 与 `docs/world-design-v3/`。该结果不包含真实模型实验。
 - Muse 自主组合（memory + history5 + recovery + phase，不限步）在 9 配置 × 5 seeds = 45/45 成功通关，均值步数三图全部随难度单调递增；终点 `read_terminal` 误用与读码后迷路是已确认的下一步消融靶子。
 - 后续十世界三十图矩阵 150/150 成功；flex pilot 与 seeded 变体另有 30/30 和 15/15 成功，长尾分析与更广 seeded 覆盖仍待推进，详见 `docs/scope/scope.md`。
 - Research V1 已提供只读 Streamlit MVP（单局回放、矩阵总览、错误热点、条件对照）；完整的实验配置与启动界面仍是 Release 3 计划项，运行命令见 README。

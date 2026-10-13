@@ -42,6 +42,10 @@ def summarize_trace(trace: dict[str, Any]) -> list[dict[str, Any]]:
                 "target": action.get("target") or action.get("destination") or action.get("item"),
                 "reason": result.get("reason"),
                 "progress": progress.get("progress"),
+                "scenario_event": step.get("scenario_event"),
+                "scenario_status": step.get("scenario_status"),
+                "failure_reason": step.get("failure_reason"),
+                "score_components": step.get("score_components"),
                 "decision_reason": (step.get("decision_reason") or "")[:280],
                 "input_tokens": step.get("input_tokens"),
                 "output_tokens": step.get("output_tokens"),
@@ -53,7 +57,7 @@ def summarize_trace(trace: dict[str, Any]) -> list[dict[str, Any]]:
 def compare_conditions(rows: list[dict[str, Any]]) -> dict[str, Any]:
     """按行计算单个条件的聚合（成功率、步数、token），缺值记 N/A。"""
     outcomes = [row.get("outcome") for row in rows]
-    successes = sum(1 for outcome in outcomes if outcome == "success")
+    successes = sum(1 for outcome in outcomes if outcome in {"success", "scenario_success"})
     steps = _numeric_values(rows, "steps")
     input_tokens = _numeric_values(rows, "input_tokens")
     output_tokens = _numeric_values(rows, "output_tokens")
@@ -82,6 +86,14 @@ def trace_overview(trace: dict[str, Any]) -> dict[str, Any]:
         "model": provenance.get("model_name", "N/A"),
         "seed": trace.get("seed", "N/A"),
         "outcome": trace.get("outcome", "N/A"),
+        "scenario_id": trace.get("scenario_id", "N/A"),
+        "scenario_status": trace.get("scenario_status", "N/A"),
+        "failure_reason": trace.get("failure_reason", "N/A"),
+        "scenario_family": provenance.get("scenario_family", "N/A"),
+        "scenario_difficulty": provenance.get("scenario_difficulty", "N/A"),
+        "mechanic_version": provenance.get("mechanic_version", "N/A"),
+        "source_design_id": provenance.get("source_design_id", "N/A"),
+        "score_components": trace.get("score_components", "N/A"),
         "steps": trace.get("executed_action_count", len(steps)),
         "invalid_outputs": trace.get("invalid_output_count", "N/A"),
         "rejected_actions": trace.get("rejected_action_count", "N/A"),
@@ -149,7 +161,9 @@ def aggregate_traces(traces: list[dict[str, Any]]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for version in sorted(groups):
         group = groups[version]
-        successful_traces = [trace for trace in group if trace.get("outcome") == "success"]
+        successful_traces = [
+            trace for trace in group if trace.get("outcome") in {"success", "scenario_success"}
+        ]
         successes = sorted(
             seed for trace in successful_traces if isinstance(seed := trace.get("seed"), int)
         )

@@ -8,9 +8,9 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
-from agent_arena.arena import Action, Observation
+from agent_arena.arena import Action, Observation, ScenarioAction
 from agent_arena.llm import DecisionProvider
-from agent_arena.llm.protocol import DecisionRequest, ProviderResponse
+from agent_arena.llm.protocol import ActionContractVersion, DecisionRequest, ProviderResponse
 from agent_arena.planning import PlanningMetadata
 
 
@@ -26,6 +26,20 @@ class AgentDecision(BaseModel):
 agent_decision_adapter: TypeAdapter[AgentDecision] = TypeAdapter(AgentDecision)
 
 
+class ScenarioAgentDecision(BaseModel):
+    """The explicit V3 action response; never used for legacy worlds."""
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    decision_reason: Annotated[str, Field(min_length=1, max_length=280)]
+    action: ScenarioAction
+
+
+scenario_agent_decision_adapter: TypeAdapter[ScenarioAgentDecision] = TypeAdapter(
+    ScenarioAgentDecision
+)
+
+
 class ReactAgent:
     """Request candidate decisions without accessing environment internals."""
 
@@ -37,6 +51,9 @@ class ReactAgent:
         self._provider = provider
         path = prompt_path or self._default_prompt_path()
         self._prompt = path.read_text(encoding="utf-8")
+        if type(self) is ReactAgent:
+            self.prompt_version = path.stem
+            self.base_prompt_version = path.stem
 
     @property
     def planner_feedback(self) -> str | None:
@@ -93,6 +110,38 @@ class ReactAgent:
                 runtime_feedback=runtime_feedback,
                 invalid_output_reason=invalid_output_reason,
                 recent_history=recent_history,
+            )
+        )
+
+    def request_for_contract(
+        self,
+        observation: Observation,
+        *,
+        correction: bool,
+        runtime_feedback: str | None = None,
+        invalid_output_reason: str | None = None,
+        recent_history: str | None = None,
+        action_contract_version: ActionContractVersion = "legacy_v1",
+    ) -> ProviderResponse:
+        """Request under an explicitly selected versioned Action contract."""
+
+        if action_contract_version == "legacy_v1":
+            return self.request(
+                observation,
+                correction=correction,
+                runtime_feedback=runtime_feedback,
+                invalid_output_reason=invalid_output_reason,
+                recent_history=recent_history,
+            )
+        return self._provider.decide(
+            DecisionRequest(
+                observation=observation,
+                system_prompt=self._prompt,
+                correction=correction,
+                runtime_feedback=runtime_feedback,
+                invalid_output_reason=invalid_output_reason,
+                recent_history=recent_history,
+                action_contract_version=action_contract_version,
             )
         )
 

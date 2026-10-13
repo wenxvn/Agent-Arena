@@ -706,8 +706,8 @@ def estimate_input_tokens_upper_bound(request: DecisionRequest, *, overhead_toke
     ]
     text_bytes = sum(len(part.encode("utf-8")) for part in text_parts)
     schemas = (
-        decision_response_schema(),
-        decision_response_schema_strict(),
+        decision_response_schema(request.action_contract_version),
+        decision_response_schema_strict(request.action_contract_version),
         candidate_selection_response_schema(),
         planner_response_schema(),
         planner_response_schema_strict(),

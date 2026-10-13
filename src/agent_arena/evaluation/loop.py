@@ -5,7 +5,13 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 
-from agent_arena.arena import Action, Observation, ToolResult, ToolStatus
+from agent_arena.arena import (
+    Observation,
+    ScenarioAction,
+    ScenarioObservation,
+    ToolResult,
+    ToolStatus,
+)
 
 PublicState = str
 PublicOutcome = tuple[PublicState, str, str, str]
@@ -34,7 +40,7 @@ class PublicLoopDetector:
     def observe(
         self,
         before: Observation,
-        action: Action,
+        action: ScenarioAction,
         result: ToolResult,
         after: Observation,
     ) -> str | None:
@@ -89,22 +95,32 @@ class PublicLoopDetector:
         return f"{message} 请使用当前可见对象或出口选择不同的推进动作。"
 
 
-def public_state_key(observation: Observation) -> PublicState:
+def public_state_key(observation: Observation | ScenarioObservation) -> PublicState:
     """Canonical persistent public state; the latest result is an event."""
+    public_state: dict[str, object] = {
+        "room": observation.current_room,
+        "description": observation.description,
+        "objects": sorted(observation.visible_objects),
+        "inventory": sorted(observation.inventory),
+        "exits": sorted(observation.available_exits),
+    }
+    if isinstance(observation, ScenarioObservation):
+        public_state["scenario"] = {
+            "scenario_id": observation.scenario_id,
+            "tick": observation.tick,
+            "public_status": [fact.model_dump(mode="json") for fact in observation.public_status],
+            "available_interactions": [
+                option.model_dump(mode="json") for option in observation.available_interactions
+            ],
+        }
     return json.dumps(
-        {
-            "room": observation.current_room,
-            "description": observation.description,
-            "objects": sorted(observation.visible_objects),
-            "inventory": sorted(observation.inventory),
-            "exits": sorted(observation.available_exits),
-        },
+        public_state,
         ensure_ascii=False,
         sort_keys=True,
     )
 
 
-def _action_key(action: Action) -> str:
+def _action_key(action: ScenarioAction) -> str:
     return json.dumps(
         action.model_dump(mode="json"),
         ensure_ascii=False,

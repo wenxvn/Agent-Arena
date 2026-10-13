@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from pydantic import BaseModel, ConfigDict, model_validator
 
-from agent_arena.arena import Action, Observation, ToolResult
+from agent_arena.arena import Observation, ScenarioAction, ToolResult
 from agent_arena.evaluation.public_facts import EpisodeKnowledge, PublicFact, extract_public_facts
 
 
@@ -76,7 +76,7 @@ class ProgressDetector:
     def evaluate(
         self,
         before: Observation,
-        action: Action,
+        action: ScenarioAction,
         result: ToolResult,
         after: Observation,
     ) -> ProgressEvent:

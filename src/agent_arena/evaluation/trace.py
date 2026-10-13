@@ -13,7 +13,13 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from agent_arena.arena import Action, Observation, ToolResult
+from agent_arena.arena import (
+    Observation,
+    ScenarioAction,
+    ScenarioObservation,
+    ScenarioStatus,
+    ToolResult,
+)
 from agent_arena.evaluation.progress import ProgressEvent
 
 
@@ -24,6 +30,9 @@ class EpisodeOutcome(StrEnum):
     STEP_LIMIT = "step_limit"
     INVALID_ACTION_LIMIT = "invalid_action_limit"
     PROVIDER_ERROR = "provider_error"
+    SCENARIO_SUCCESS = "scenario_success"
+    PARTIAL_SUCCESS = "partial_success"
+    SCENARIO_FAILURE = "scenario_failure"
 
 
 class TraceEvent(StrEnum):
@@ -66,20 +75,20 @@ class StepTrace(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     event: TraceEvent
-    observation: Observation
+    observation: Observation | ScenarioObservation
     correction: bool = False
     decision_reason: str | None = Field(default=None, max_length=280)
-    action: Action | None = None
+    action: ScenarioAction | None = None
     result: ToolResult | None = None
     latency_ms: int = Field(ge=0)
     input_tokens: int | None = Field(default=None, ge=0)
     output_tokens: int | None = Field(default=None, ge=0)
     runtime_feedback: str | None = Field(default=None, max_length=500)
-    next_observation: Observation | None = None
+    next_observation: Observation | ScenarioObservation | None = None
     progress: ProgressEvent | None = None
     planner_feedback: str | None = Field(default=None, max_length=500)
     planner_feedback_hash: str | None = None
-    suggested_action: Action | None = None
+    suggested_action: ScenarioAction | None = None
     plan_id: str | None = None
     plan_version: str | None = None
     current_subgoal: str | None = Field(default=None, max_length=240)
@@ -96,6 +105,10 @@ class StepTrace(BaseModel):
     memory_statistics: MemoryStatisticsTrace | None = None
     summary: str | None = Field(default=None, max_length=1_000)
     invalid_output_reason: InvalidOutputReason | None = None
+    scenario_event: str | None = Field(default=None, max_length=240)
+    scenario_status: ScenarioStatus | None = None
+    failure_reason: str | None = Field(default=None, max_length=240)
+    score_components: dict[str, int | float | str | bool] | None = None
 
 
 class ExperimentProvenance(BaseModel):
@@ -104,6 +117,13 @@ class ExperimentProvenance(BaseModel):
     world: str | None = None
     world_definition_id: str | None = None
     world_definition_hash: str | None = None
+    action_contract_version: str = "legacy_v1"
+    source_design_id: str | None = None
+    source_design_hash: str | None = None
+    scenario_family: str | None = None
+    scenario_difficulty: str | None = None
+    mechanic_version: str | None = None
+    ruleset_sha: str | None = None
     max_output_tokens: int | None = None
     max_provider_requests: int | None = Field(default=None, ge=1)
     max_provider_tokens: int | None = Field(default=None, ge=1)
@@ -153,6 +173,7 @@ class EpisodeTraceHeader(BaseModel):
     agent: str
     prompt_version: str
     provider: str
+    scenario_id: str | None = None
     trace_schema_version: int = 2
     provenance: ExperimentProvenance
 
@@ -169,9 +190,13 @@ class EpisodeTrace(BaseModel):
     agent: str
     prompt_version: str
     provider: str
+    scenario_id: str | None = None
     trace_schema_version: int = 2
     provenance: ExperimentProvenance
     outcome: EpisodeOutcome
+    scenario_status: ScenarioStatus | None = None
+    failure_reason: str | None = None
+    score_components: dict[str, int | float | str | bool] | None = None
     executed_action_count: int = Field(ge=0)
     invalid_output_count: int = Field(ge=0)
     rejected_action_count: int = Field(ge=0)
@@ -188,6 +213,8 @@ class EpisodeTrace(BaseModel):
         prompt_version: str,
         provider: str,
         provenance: ExperimentProvenance,
+        scenario_id: str | None = None,
+        trace_schema_version: int = 2,
     ) -> EpisodeTraceHeader:
         """Return stable header values for the runner while outcome is unknown."""
 
@@ -199,6 +226,8 @@ class EpisodeTrace(BaseModel):
             agent=agent,
             prompt_version=prompt_version,
             provider=provider,
+            scenario_id=scenario_id,
+            trace_schema_version=trace_schema_version,
             provenance=provenance,
         )
 

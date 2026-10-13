@@ -13,7 +13,13 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from agent_arena.arena import Action, Observation, ToolResult, ToolStatus
+from agent_arena.arena import (
+    Observation,
+    ScenarioAction,
+    ScenarioObservation,
+    ToolResult,
+    ToolStatus,
+)
 from agent_arena.evaluation.progress import ProgressDetector, ProgressEvent
 from agent_arena.evaluation.public_facts import extract_public_facts
 from agent_arena.evaluation.trace import EpisodeTrace, StepTrace, TraceEvent
@@ -127,9 +133,7 @@ def analyze_trace(trace: EpisodeTrace) -> FailureAnalysis:
     unavailable_metrics: list[str] = []
     if trace.provenance.trace_contract_version == "legacy":
         if any(
-            step.action is not None
-            and step.result is not None
-            and step.next_observation is None
+            step.action is not None and step.result is not None and step.next_observation is None
             for step in trace.steps
         ):
             unavailable_metrics.extend(("progress", "knowledge"))
@@ -156,8 +160,10 @@ def analyze_trace(trace: EpisodeTrace) -> FailureAnalysis:
         before_knowledge = detector.knowledge
         observed = extract_public_facts(after, action, result)
         event = detector.evaluate(step.observation, action, result, after)
-        if observed and not event.new_facts and all(
-            before_knowledge.contains(fact) for fact in observed
+        if (
+            observed
+            and not event.new_facts
+            and all(before_knowledge.contains(fact) for fact in observed)
         ):
             repeated_known_fact_action_count += 1
 
@@ -170,14 +176,11 @@ def analyze_trace(trace: EpisodeTrace) -> FailureAnalysis:
     completed_subgoals = sum(step.subgoal_completed for _, step, *_ in records)
     subgoals = [step.current_subgoal for _, step, *_ in records if step.current_subgoal]
     unique_subgoals = tuple(dict.fromkeys(subgoals))
-    switches = sum(
-        first != second for first, second in zip(subgoals, subgoals[1:], strict=False)
-    )
+    switches = sum(first != second for first, second in zip(subgoals, subgoals[1:], strict=False))
 
     same_subgoal_repeated = _same_subgoal_repeated_actions(records)
     same_subgoal_rejected = sum(
-        step.current_subgoal is not None
-        and result.status is ToolStatus.REJECTED
+        step.current_subgoal is not None and result.status is ToolStatus.REJECTED
         for _, step, _, result, _ in records
     )
     rooms = {
@@ -231,9 +234,7 @@ def analyze_trace(trace: EpisodeTrace) -> FailureAnalysis:
     )
 
 
-def write_failure_analysis(
-    analyses: list[FailureAnalysis], output_dir: Path
-) -> tuple[Path, Path]:
+def write_failure_analysis(analyses: list[FailureAnalysis], output_dir: Path) -> tuple[Path, Path]:
     """Write the JSON and CSV report for one or more analyzed traces."""
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -313,9 +314,7 @@ def _atomic_write(destination: Path, contents: str) -> None:
         raise
 
 
-def _atomic_write_csv(
-    destination: Path, fields: list[str], rows: list[dict[str, object]]
-) -> None:
+def _atomic_write_csv(destination: Path, fields: list[str], rows: list[dict[str, object]]) -> None:
     temporary_path: Path | None = None
     try:
         with NamedTemporaryFile(
@@ -342,7 +341,7 @@ def _atomic_write_csv(
 
 def _records(
     steps: tuple[StepTrace, ...],
-) -> list[tuple[int, StepTrace, Action, ToolResult, Observation]]:
+) -> list[tuple[int, StepTrace, ScenarioAction, ToolResult, Observation | ScenarioObservation]]:
     return [
         (index, step, step.action, step.result, step.next_observation)
         for index, step in enumerate(steps, start=1)
@@ -486,7 +485,9 @@ def _automatic_annotations(
 
 
 def _same_subgoal_repeated_actions(
-    records: list[tuple[int, StepTrace, Action, ToolResult, Observation]],
+    records: list[
+        tuple[int, StepTrace, ScenarioAction, ToolResult, Observation | ScenarioObservation]
+    ],
 ) -> int:
     seen: set[tuple[str, str]] = set()
     repeated = 0
@@ -514,9 +515,7 @@ def _annotation(
         category=category,
         failure_type=failure_type,
         current_subgoal=(
-            sanitize_text(step.current_subgoal, max_length=240)
-            if step.current_subgoal
-            else None
+            sanitize_text(step.current_subgoal, max_length=240) if step.current_subgoal else None
         ),
         action=step.action.tool if step.action is not None else None,
         evidence=sanitize_text(evidence, max_length=500),
@@ -525,7 +524,7 @@ def _annotation(
     )
 
 
-def _action_target(action: Action) -> str | None:
+def _action_target(action: ScenarioAction) -> str | None:
     data = action.model_dump(mode="python")
     for key in ("target", "item", "destination"):
         value = data.get(key)

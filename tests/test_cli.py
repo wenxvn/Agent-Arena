@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
 from agent_arena.cli import _default_fake_responses, app
@@ -26,6 +27,27 @@ def test_cli_exposes_foundation_commands() -> None:
     assert "run" in result.output
     assert "benchmark" in result.output
     assert "verify-model" in result.output
+
+
+@pytest.mark.parametrize("agent", ["memory", "planning", "planner_assisted", "candidate_select"])
+def test_v3_cli_rejects_agents_without_declared_scenario_contract(agent: str) -> None:
+    result = runner.invoke(
+        app,
+        [
+            "run",
+            "--provider",
+            "fake",
+            "--agent",
+            agent,
+            "--world",
+            "polar-escape",
+            "--world-version",
+            "polar-escape-world-v3-hard-zh",
+        ],
+    )
+
+    assert result.exit_code == 2
+    assert "V3 Scenario 当前仅支持 --agent react" in result.output
 
 
 def test_run_writes_a_terminal_allowlisted_episode(monkeypatch, tmp_path: Path) -> None:

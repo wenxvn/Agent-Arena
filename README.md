@@ -4,6 +4,27 @@ Agent Arena 是一个用于学习和比较 LLM Agent 行为的轻量实验环境
 
 当前已完成 Release 2、PlanningAgent v1 工程闭环和十世界三十图（飞船/灯塔/深海站/极地/金字塔/地铁/火山/丛林/月球/古堡 × 简单/中等/困难，见 `docs/specs/0007-*`～`0011-*`）：确定性世界、ReactAgent、MemoryAgent、PlanningAgent、不限步数执行循环、每局 JSON 运行记录，以及可重复的 benchmark 对照。
 
+V3 另有十个主题家族、三十个独立 Scenario 关卡，使用明确的 `--world` 与 `--world-version` allowlist，不改变旧世界和冻结的 V2 seeded 定义。机制、逐关验收、评分和限制见 [`docs/world-design-v3/README.md`](docs/world-design-v3/README.md)。
+
+离线重播全部 30 条公开 Oracle 路线（不连接模型服务）：
+
+```bash
+uv run python scripts/replay_v3_oracles.py
+```
+
+若要调用本机 Ollama 测试一个 V3 关卡，需明确选择 ReactAgent 和 V3 selector；这条命令会向已配置的本地模型发送请求：
+
+```bash
+uv run agent-arena run \
+  --provider ollama \
+  --agent react \
+  --world polar-escape \
+  --world-version polar-escape-world-v3-hard-zh \
+  --output-dir runs/v3
+```
+
+模型实验需单独记录配置与结果。离线 Oracle 路线成功不能作为真实模型通关证据。
+
 另外提供独立的 `planner_assisted` 实验模式：规划器只根据公开信息给出阶段和下一动作建议，模型仍需返回并执行合法的 JSON Action。它用于研究“公开辅助能否提高通关可靠性”，不能当作纯模型自主规划结果。
 
 ## 快速开始

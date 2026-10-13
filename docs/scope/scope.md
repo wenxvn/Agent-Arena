@@ -27,6 +27,7 @@
 | 16 | 七个新世界：十世界三十图 | Research Core | done |
 | 17 | 任务结构 pilot：分支/并行/反转 + seeded（flex 引擎） | Research Core | done |
 | 18 | 旧三世界重制图：去换皮，新 10×3 矩阵 | Research Core | done |
+| 19 | V3 主题世界：10 家族 × 3 难度 × 30 手工关卡 | Research Core | in progress |
 
 ## Foundation
 
@@ -365,4 +366,17 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 - [x] V2 基线文档口径复核：README 与 Scope 的 45/45、46/51 尝试率、150/150 配置覆盖和 E1-ON 条件相符；Scope 明确保留火山困难均值低于中等的例外，README 未将其概括为七图全单调。README 中“预算门禁尚未实现”已依据 spec 0015 与运行登记表更正为门禁已实现、三次 pilot fail-closed、S2 Gate 未通过。未增加实验调用。
 - [~] S2 Memory v3：M1 空间边、frontier、公开事件记忆的可选 v3 实现与离线验证已完成；默认 v2 保持。新增规范化 `memory_digest`，并对落盘后重新读取的完整 10 步公开 Trace 做双次回放，digest、frontier 和因果事件顺序一致。trace statistics 经两轮容量/字段复核，已覆盖 v3 房间、初始/新增事实、失败动作、问题、揭示物品、出口、成功边、事件，以及 current-room/inventory/里程碑/question/event 更新；v2 `visited_locations` 不重复计数。此前提交 a336bd6 时，Python 3.13.3 全量 pytest 350 passed、Ruff/mypy 通过；提交 `a336bd68768f32a35e5c6a906b60045571b63669` 的 [Actions run #74](https://github.com/wenxvn/Agent-Arena/actions/runs/38379921434) 通过。该环境没有 `uv` 命令，未执行 `uv lock --check`，依赖文件未改动。fail-closed provider budget guard 与 world identity 稳定性修复已验证；三次隔离尝试均在 v2 首个 episode 中因 provider error fail closed：BUDGET-01 为 2 次（1,509 usage + 22,577 reservation = 24,086 本地记账 tokens，unknown-spend），BUDGET-02 为 10 次（15,374 usage + 25,478 reservation = 40,852 本地记账 tokens，timeout），BUDGET-03 为 7 次（10,043 usage + 25,156 reservation = 35,199 本地记账 tokens，provider_error）。合计 19/500 requests、26,926 confirmed usage + 73,211 reservation = 100,137/4,000,000 本地记账 tokens；三笔 reservation 的 provider 实际扣费未知。三份 ledger 与 partial 输出保留，当前登记矩阵不再发送 API 请求，v2 为 0/2 完成且 v3 未启动。S2 Gate 未完成，不推进 S3。详见 [V2-03](../research/v2/03-memory-v3.md)、[运行登记表](../research/v2/00-run-registry.md)、spec [0014](../specs/0014-memory-v3-spatial-event/index.md) 与 [0015](../specs/0015-v2-provider-budget-guard/index.md)。
 - [x] S2 末轮只读失败诊断：逐条核对三份 ledger 的计数、状态、错误分类与本地耗时；BUDGET-03 的 120 秒环境覆盖已通过配置前缀和 adapter 传参核实，失败事件约 10 秒且为无 HTTP status 的 `provider_error`。现有安全记录无法区分无输出响应与未分类 SDK/网关异常；BUDGET-01 约 30 秒但 schema 1 无类别，不能追溯定性。没有额外 provider 请求或 GPU 运行，不创建 BUDGET-04、不推进 S3。详见 [V2-03 末轮诊断](../research/v2/03-memory-v3.md) 与[运行登记表](../research/v2/00-run-registry.md)。
+
+## V3 主题世界设计与实现（2026-10-14）
+
+V3 按 [spec 0017](../specs/0017-world-redesign-v3/index.md) 推进，内容来源为仓库根目录 `研究提纲/V3世界设计提纲.md`。新增独立 Scenario Action/Observation 与 selector，分十家族逐关实现，不改 Legacy 世界或冻结的 V2 seeded 定义。当前只做离线工程，不复用 V2 provider ledger、holdout 或真实模型预算。
+
+- [x] Gate 0：固定基线 `main@e23fca0ac2b7cf339c6f16dc21872ea456d45a54` 与 V2 seeded 文件边界；完成 30 个 scenario ID、设计卡、地图/初值/路线与机制的静态核对。依赖文件未修改；当前环境无 `uv`，未执行 lock 专项命令。
+- [x] Gate 1：Scenario 契约；PY-E/M/H、SU-E/M、AB-E/M 纵向原型完成，规则负例和公开 Oracle 纳入测试。
+- [x] Gate 2：其余七家族 easy 关卡通过逐关 Oracle 与边界检查。
+- [x] Gate 3：其余七家族 medium 关卡通过逐关 Oracle 与边界检查。
+- [x] Gate 4：十个 hard 关卡通过公开状态驱动路线回放；每条路线限制 100 个动作，动态/谜题/资源/调度边界另有规则用例。路线见证不等于穷举搜索或最短解证明。
+- [x] Gate 5：30/30 Oracle、六维评分、机制差异、Legacy 与 Trace 兼容、完整文档和基础质量门禁完成。详细 hash 与重播证据见 [`oracle-acceptance.md`](../world-design-v3/oracle-acceptance.md)。
+
+最终验证：全量 pytest、Ruff、mypy 和 `git diff --check` 的准确结果追加在 `docs/engineering-log.md`。项目虚拟环境 Python 3.13 可用；当前 shell 没有 `uv`，`uv lock --check` 未运行且依赖文件未改。未进行真实 Provider 请求、GPU 训练或模型行为对照；离线 Oracle 不构成模型能力证据。
 - [x] S2.4 离线负例与公开事实更正：新增非法 provider 候选/correction request、回程导航、单向出口、重复事件摘要、同房间 Observation 更正及 room-fact 压缩保留当前描述用例；普通 facts 压缩精确断言删 8/24、留 16/24，20 条失败动作仍保留；默认 v2 provider memory-data 有 golden fixture，legacy Trace 缺少 `memory_statistics` 时仍可读取。全量 pytest 357 passed、Ruff 和 mypy 49 个源文件通过，`git diff --check` 通过。此前实现/fixture 提交的 Actions #76/#78 均通过，本轮 fixture 提交 `29d6917c8f2825b175735f92443d1692b14e843d` 的 [Actions #81](https://github.com/wenxvn/Agent-Arena/actions/runs/38383303143) 通过。S2 Gate 仍未通过，不推进 S3；无 provider 请求。
