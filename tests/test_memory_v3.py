@@ -83,6 +83,8 @@ def test_memory_v3_frontier_uses_visited_rooms_beyond_the_v2_location_limit() ->
     for _source, destination in zip(route, route[1:], strict=False):
         prior_room_count = len(state.visited_rooms)
         prior_insertions = state.statistics.insertions
+        prior_updates = state.statistics.updates
+        prior_current_room = state.current_room
         state = reducer.apply(
             state,
             MoveAction(tool="move", destination=destination),
@@ -92,6 +94,8 @@ def test_memory_v3_frontier_uses_visited_rooms_beyond_the_v2_location_limit() ->
         if prior_room_count == 12:
             assert len(state.visited_locations) == 12
             assert state.statistics.insertions - prior_insertions == 4
+        if state.current_room != prior_current_room:
+            assert state.statistics.updates - prior_updates == 1
 
     state = reducer.apply(
         state,
@@ -156,6 +160,68 @@ def test_memory_v3_events_are_public_successes_and_reset_between_episodes() -> N
     assert "power_restored" not in reset_data
     assert agent.memory_statistics is not None
     assert agent.memory_statistics["invalidations"] == 0
+
+
+def test_memory_v3_statistics_count_base_memory_insertions_and_updates() -> None:
+    reducer = MemoryV3Reducer()
+    initial = make_observation(
+        "room_a", exits=("room_b",), inventory=("key",)
+    ).model_copy(update={"visible_objects": ("screwdriver",)})
+    state = reducer.initialize(initial)
+
+    assert state.statistics.insertions == 5
+
+    observation = make_observation(
+        "room_a", inventory=("key", "replacement_fuse")
+    ).model_copy(update={"visible_objects": ("screwdriver", "replacement_fuse")})
+    state = reducer.apply(
+        state,
+        LookAction(tool="look"),
+        ToolResult(status=ToolStatus.SUCCESS, reason=ToolReason.LOOKED, summary="发现新物品。"),
+        observation,
+    )
+    assert state.statistics.insertions == 7
+    assert state.statistics.updates == 1
+
+    action = UseAction(tool="use", item="screwdriver", target="reactor_panel")
+    state = reducer.apply(
+        state,
+        action,
+        ToolResult(
+            status=ToolStatus.REJECTED,
+            reason=ToolReason.PANEL_CLOSED,
+            summary="需要先打开面板。",
+        ),
+        observation,
+    )
+    assert state.statistics.insertions == 9
+    assert state.statistics.updates == 1
+
+    state = reducer.apply(
+        state,
+        action,
+        ToolResult(
+            status=ToolStatus.SUCCESS,
+            reason=ToolReason.PANEL_OPENED,
+            summary="面板已打开。",
+        ),
+        observation,
+    )
+    assert state.statistics.insertions == 11
+    assert state.statistics.updates == 3
+    assert state.statistics.invalidations == 0
+
+    state = reducer.apply(
+        state,
+        action,
+        ToolResult(
+            status=ToolStatus.SUCCESS,
+            reason=ToolReason.PANEL_OPENED,
+            summary="面板已打开。",
+        ),
+        observation,
+    )
+    assert state.statistics.updates == 4
 
 
 def test_memory_v3_complete_trace_replay_has_a_stable_digest_frontier_and_event_order(

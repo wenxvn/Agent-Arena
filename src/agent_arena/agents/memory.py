@@ -166,6 +166,9 @@ class MemoryV3Reducer:
                     len(base.visited_locations)
                     + len(base.inventory)
                     + len(base.facts)
+                    + len(base.failed_actions)
+                    + len(base.open_questions)
+                    + len(base.revealed_items)
                     + len(exits)
                 )
             ),
@@ -217,9 +220,26 @@ class MemoryV3Reducer:
         added_visited_rooms = int(observation.current_room not in state.visited_rooms)
         added_facts = set(base.facts) - set(state.facts)
         added_failures = max(0, len(base.failed_actions) - len(state.failed_actions))
+        previous_questions = {question.key: question.text for question in state.open_questions}
+        current_questions = {question.key: question.text for question in base.open_questions}
+        added_questions = len(current_questions.keys() - previous_questions.keys())
+        resolved_questions = len(previous_questions.keys() - current_questions.keys())
+        updated_questions = sum(
+            previous_questions[key] != current_questions[key]
+            for key in previous_questions.keys() & current_questions.keys()
+        )
+        added_revealed_items = len(set(base.revealed_items) - set(state.revealed_items))
         added_exits = len(known_exits) - len(state.known_exits)
         added_edges = len(traversed_edges) - len(state.traversed_edges)
         inventory_updated = base.inventory != state.inventory
+        current_room_updated = observation.current_room != state.current_room
+        milestone_updates = sum(
+            (
+                base.panel_open != state.panel_open,
+                base.power_restored != state.power_restored,
+                base.authorization_code_read != state.authorization_code_read,
+            )
+        )
         statistics = state.statistics.model_copy(
             update={
                 "insertions": (
@@ -227,6 +247,8 @@ class MemoryV3Reducer:
                     + added_visited_rooms
                     + len(added_facts)
                     + added_failures
+                    + added_questions
+                    + added_revealed_items
                     + max(0, added_exits)
                     + max(0, added_edges)
                     + event_inserted
@@ -234,6 +256,10 @@ class MemoryV3Reducer:
                 "updates": (
                     state.statistics.updates
                     + int(inventory_updated)
+                    + int(current_room_updated)
+                    + milestone_updates
+                    + resolved_questions
+                    + updated_questions
                     + event_updated
                 ),
             }

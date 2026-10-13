@@ -1,5 +1,17 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 完整覆盖 Memory v3 insertion/update 计数
+
+事件：继续审计全部持久记忆字段时，发现初始化时的 `revealed_items`、后续新增 open question、题目解决、current-room 指针和里程碑状态变化未进入统计。
+
+改动：扩展 insertion/update 计数，初始化和增量分别纳入 revealed items、questions 等集合记录；inventory/current-room/milestone/event/question 生命周期变化计为 updates。spec 0014 写明计数口径：M1 的 invalidations 专指显式事实失效，保持为 0；成功后关闭问题计作 update。新增针对初始记忆、发现物品、拒绝/修复动作和重复事件的统计回归。
+
+验证：Python 3.13.3 本地全量 pytest 350 passed、`ruff check .`、`mypy src`（49 个源文件）和 `git diff --check` 通过。`uv` 不可用，未运行 `uv lock --check`，依赖文件未改动；对应远端 Actions 待提交后验证。没有 provider 请求。
+
+下一步：推送后核验 Actions；维持 S2 在线 Gate 未通过、当前矩阵停止，不推进 S3。
+
+关联提交：本记录所在提交。
+
 ## 2026-10-13 修正 Memory v3 容量边界的 insertion 统计
 
 事件：离线复核发现 v2 的 12 项访问地点列表填满后，v3 仍能新增 `visited_rooms`，但累计 `insertions` 少记新房间。

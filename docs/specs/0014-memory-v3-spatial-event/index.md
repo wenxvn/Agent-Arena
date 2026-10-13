@@ -35,8 +35,8 @@
 
 - v3 memory-data 上限 12,000 字符；访问房间、有向出口、成功边和事件集合分别有显式数量上限，所有文本仍经过既有脱敏器。
 - 字符预算超限时按固定顺序省略普通旧事实、旧失败摘要和 v2 短访问列表，并输出 omission counts。v3 的访问房间、出口、边、frontier 和因果事件会影响后续导航语义，不静默淘汰；任一必需集合超过数量或字符上限时，在 provider 请求前明确失败。
-- v3 的每个 executed step 记录累计 insertions、updates、invalidations、compactions、rendered_chars 与 estimated_tokens；estimated_tokens 明确标作字符估算值。M1 的 invalidations 应为 0。
-- 统计结构是可选 Trace 字段；缺字段的历史 trace 继续可读取。Trace 不记录记忆文本快照或完整 reasoning。
+- v3 的每个 executed step 记录累计 insertions、updates、invalidations、compactions、rendered_chars 与 estimated_tokens；estimated_tokens 明确标作字符估算值。insertions 计入新增的访问房间、初始背包项、事实、失败动作、问题、revealed items、出口、成功边和公开事件；v2 `visited_locations` 是 v3 `visited_rooms` 的兼容镜像，不重复计数。updates 计入当前房间指针、背包快照、里程碑状态、已解决/文本变化的问题及重复公开事件的变化。invalidations 仅用于显式事实失效，M1 应为 0；成功后关闭 open question 计为 update，不计为 invalidation。
+- `compactions` 累计每次实际渲染省略的发生次数；`rendered_chars` 与 `estimated_tokens` 记录最近一次渲染值。统计结构是可选 Trace 字段；缺字段的历史 trace 继续可读取。Trace 不记录记忆文本快照或完整 reasoning。
 
 ## 验收条件
 
