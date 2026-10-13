@@ -207,7 +207,7 @@ def test_memory_v3_statistics_count_base_memory_insertions_and_updates() -> None
         ),
         observation,
     )
-    assert state.statistics.insertions == 11
+    assert state.statistics.insertions == 10
     assert state.statistics.updates == 3
     assert state.statistics.invalidations == 0
 
@@ -222,6 +222,176 @@ def test_memory_v3_statistics_count_base_memory_insertions_and_updates() -> None
         observation,
     )
     assert state.statistics.updates == 4
+
+
+def test_memory_v3_replays_only_executed_actions_after_invalid_candidate_and_correction() -> None:
+    settings = RuntimeSettings.load(
+        {
+            "provider": "fake",
+            "world": "spaceship-escape",
+            "world_version": "spaceship-escape-v2-zh",
+            "agent": "memory",
+            "memory_version": "v3_spatial_event",
+            "step_limit": 1,
+        },
+        env_file=None,
+    )
+    provider = FakeDecisionProvider(
+        [
+            {"not": "a decision"},
+            {
+                "decision_reason": "尝试移动",
+                "action": {"tool": "move", "destination": "reactor_room"},
+            },
+        ]
+    )
+    trace = EpisodeRunner(
+        SpaceshipEscapeEnvironment(),
+        MemoryAgent(provider, memory_version="v3_spatial_event"),
+        settings,
+    ).run()
+
+    assert [step.event.value for step in trace.steps] == [
+        "action_invalid",
+        "correction_requested",
+        "action_rejected",
+    ]
+    assert trace.steps[0].action is None
+    assert trace.steps[1].action is None
+    assert trace.steps[1].result is None
+
+    replay_agent = MemoryAgent(
+        FakeDecisionProvider([]), memory_version="v3_spatial_event"
+    )
+    replay_agent.reset(trace.steps[0].observation)
+    for step in trace.steps:
+        if (
+            step.action is not None
+            and step.result is not None
+            and step.next_observation is not None
+        ):
+            replay_agent.observe(step.action, step.result, step.next_observation)
+
+    assert isinstance(replay_agent._memory, MemoryV3State)
+    assert replay_agent._memory.traversed_edges == ()
+    assert replay_agent._memory.public_events == ()
+
+
+def test_memory_v3_tracks_code_read_through_move_and_backtracking() -> None:
+    reducer = MemoryV3Reducer()
+    state = reducer.initialize(
+        make_observation("room_a", exits=("room_b", "room_dead_end"))
+    )
+    state = reducer.apply(
+        state,
+        LookAction(tool="look"),
+        ToolResult(
+            status=ToolStatus.SUCCESS,
+            reason=ToolReason.CODE_READ,
+            summary="公开终端返回授权码。",
+        ),
+        make_observation("room_a", exits=("room_b", "room_dead_end")),
+    )
+    state = reducer.apply(
+        state,
+        MoveAction(tool="move", destination="room_b"),
+        ToolResult(status=ToolStatus.SUCCESS, reason=ToolReason.MOVED, summary="已移动。"),
+        make_observation("room_b", exits=("room_a", "room_c")),
+    )
+    state = reducer.apply(
+        state,
+        MoveAction(tool="move", destination="room_a"),
+        ToolResult(status=ToolStatus.SUCCESS, reason=ToolReason.MOVED, summary="已返回。"),
+        make_observation("room_a", exits=("room_b", "room_dead_end")),
+    )
+
+    assert state.current_room == "room_a"
+    assert state.visited_rooms == ("room_a", "room_b")
+    assert {(edge.source, edge.destination) for edge in state.traversed_edges} == {
+        ("room_a", "room_b"),
+        ("room_b", "room_a"),
+    }
+    assert {(link.source, link.destination) for link in state.frontier} == {
+        ("room_a", "room_dead_end"),
+        ("room_b", "room_c"),
+    }
+    assert [(event.reason, event.first_seen_step) for event in state.public_events] == [
+        ("code_read", 1)
+    ]
+
+
+def test_memory_v3_does_not_infer_a_reverse_one_way_exit() -> None:
+    reducer = MemoryV3Reducer()
+    state = reducer.initialize(make_observation("room_a", exits=("room_b",)))
+    state = reducer.apply(
+        state,
+        MoveAction(tool="move", destination="room_b"),
+        ToolResult(status=ToolStatus.SUCCESS, reason=ToolReason.MOVED, summary="已移动。"),
+        make_observation("room_b"),
+    )
+
+    assert [(link.source, link.destination) for link in state.known_exits] == [
+        ("room_a", "room_b")
+    ]
+    assert state.frontier == ()
+
+
+def test_memory_v3_replaces_stale_summary_for_the_same_public_event() -> None:
+    agent = MemoryAgent(FakeDecisionProvider([]), memory_version="v3_spatial_event")
+    observation = make_observation("reactor_room")
+    stale_summary = "旧公开摘要：供电状态尚未稳定。"
+    corrected_summary = "更正后的公开摘要：主电源稳定恢复。"
+    agent.reset(observation)
+    agent.observe(
+        LookAction(tool="look"),
+        ToolResult(
+            status=ToolStatus.SUCCESS,
+            reason=ToolReason.POWER_RESTORED,
+            summary=stale_summary,
+        ),
+        observation,
+    )
+    agent.observe(
+        LookAction(tool="look"),
+        ToolResult(
+            status=ToolStatus.SUCCESS,
+            reason=ToolReason.POWER_RESTORED,
+            summary=corrected_summary,
+        ),
+        observation,
+    )
+
+    payload = json.loads(agent._render_memory_data().split("\n", 2)[2])
+
+    assert len(payload["public_events"]) == 1
+    assert payload["public_events"][0]["summary"] == corrected_summary
+    assert stale_summary not in json.dumps(payload, ensure_ascii=False)
+    assert corrected_summary not in payload["facts"]
+
+
+def test_memory_v3_replaces_a_stale_public_room_description() -> None:
+    agent = MemoryAgent(FakeDecisionProvider([]), memory_version="v3_spatial_event")
+    stale_description = "旧公开状态：反应堆仍然断电。"
+    corrected_description = "更正后的公开状态：反应堆供电已恢复。"
+    observation = make_observation("reactor_room").model_copy(
+        update={"description": stale_description}
+    )
+    agent.reset(observation)
+    agent.observe(
+        LookAction(tool="look"),
+        ToolResult(status=ToolStatus.SUCCESS, reason=ToolReason.LOOKED, summary="观察完成。"),
+        observation.model_copy(update={"description": corrected_description}),
+    )
+
+    assert isinstance(agent._memory, MemoryV3State)
+    payload = json.loads(agent._render_memory_data().split("\n", 2)[2])
+
+    assert payload["room_facts"] == [
+        {"room": "reactor_room", "description": corrected_description}
+    ]
+    assert stale_description not in json.dumps(payload, ensure_ascii=False)
+    assert agent._memory.statistics.updates == 1
+    assert agent._memory.statistics.invalidations == 0
 
 
 def test_memory_v3_complete_trace_replay_has_a_stable_digest_frontier_and_event_order(

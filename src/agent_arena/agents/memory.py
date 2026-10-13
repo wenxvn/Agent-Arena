@@ -79,12 +79,19 @@ class PublicMemoryEvent(BaseModel):
     summary: str
 
 
+class PublicRoomFact(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    room: str
+    description: str
+
+
 class MemoryV3State(MemoryState):
     current_room: str
     visited_rooms: tuple[str, ...] = ()
     known_exits: tuple[SpatialLink, ...] = ()
     traversed_edges: tuple[SpatialLink, ...] = ()
     public_events: tuple[PublicMemoryEvent, ...] = ()
+    room_facts: tuple[PublicRoomFact, ...] = ()
     step_index: int = 0
     statistics: MemoryStatistics = MemoryStatistics()
 
@@ -142,7 +149,8 @@ class MemoryV3Reducer:
         limits: MemoryLimits | None = None,
         v3_limits: MemoryV3Limits | None = None,
     ) -> None:
-        self._base = MemoryReducer(limits)
+        self._memory_limits = limits or MemoryLimits()
+        self._base = MemoryReducer(self._memory_limits)
         self._limits = v3_limits or MemoryV3Limits()
 
     @property
@@ -150,12 +158,13 @@ class MemoryV3Reducer:
         return self._limits
 
     def initialize(self, observation: Observation) -> MemoryV3State:
-        base = self._base.initialize(observation)
+        base = self._base.initialize(observation.model_copy(update={"description": ""}))
         exits = self._observed_exits(observation)
         if len(exits) > self._limits.max_known_exits:
             raise ValueError("Memory v3 spatial memory exceeded its declared limit.")
         if self._limits.max_visited_rooms < 1:
             raise ValueError("Memory v3 visited-room memory exceeded its declared limit.")
+        room_facts, _, _ = self._upsert_room_fact((), observation)
         return MemoryV3State(
             **base.model_dump(),
             current_room=observation.current_room,
@@ -170,8 +179,10 @@ class MemoryV3Reducer:
                     + len(base.open_questions)
                     + len(base.revealed_items)
                     + len(exits)
+                    + len(room_facts)
                 )
             ),
+            room_facts=room_facts,
         )
 
     def apply(
@@ -181,12 +192,23 @@ class MemoryV3Reducer:
         result: ToolResult,
         observation: Observation,
     ) -> MemoryV3State:
-        base = self._base.apply(state, action, result, observation)
+        base_result = result
+        if result.status is ToolStatus.SUCCESS and result.reason in self._EVENT_REASONS:
+            base_result = result.model_copy(update={"summary": ""})
+        base = self._base.apply(
+            state,
+            action,
+            base_result,
+            observation.model_copy(update={"description": ""}),
+        )
         visited_rooms = state.visited_rooms
         if observation.current_room not in visited_rooms:
             if len(visited_rooms) >= self._limits.max_visited_rooms:
                 raise ValueError("Memory v3 visited-room memory exceeded its declared limit.")
             visited_rooms = (*visited_rooms, observation.current_room)
+        room_facts, room_fact_inserted, room_fact_updated = self._upsert_room_fact(
+            state.room_facts, observation
+        )
         known_exits = self._merge_links(
             state.known_exits,
             self._observed_exits(observation),
@@ -252,6 +274,7 @@ class MemoryV3Reducer:
                     + max(0, added_exits)
                     + max(0, added_edges)
                     + event_inserted
+                    + room_fact_inserted
                 ),
                 "updates": (
                     state.statistics.updates
@@ -261,6 +284,7 @@ class MemoryV3Reducer:
                     + resolved_questions
                     + updated_questions
                     + event_updated
+                    + room_fact_updated
                 ),
             }
         )
@@ -271,9 +295,40 @@ class MemoryV3Reducer:
             known_exits=known_exits,
             traversed_edges=traversed_edges,
             public_events=public_events,
+            room_facts=room_facts,
             step_index=step_index,
             statistics=statistics,
         )
+
+    def _upsert_room_fact(
+        self,
+        current: tuple[PublicRoomFact, ...],
+        observation: Observation,
+    ) -> tuple[tuple[PublicRoomFact, ...], int, int]:
+        description = sanitize_text(
+            observation.description, max_length=self._memory_limits.max_text_chars
+        )
+        if not description:
+            return current, 0, 0
+        existing_index = next(
+            (index for index, fact in enumerate(current) if fact.room == observation.current_room),
+            None,
+        )
+        if existing_index is not None:
+            if current[existing_index].description == description:
+                return current, 0, 0
+            updated = list(current)
+            updated[existing_index] = PublicRoomFact(
+                room=observation.current_room,
+                description=description,
+            )
+            return tuple(updated), 0, 1
+        if len(current) >= self._limits.max_visited_rooms:
+            raise ValueError("Memory v3 visited-room memory exceeded its declared limit.")
+        return (
+            *current,
+            PublicRoomFact(room=observation.current_room, description=description),
+        ), 1, 0
 
     def _observed_exits(self, observation: Observation) -> tuple[SpatialLink, ...]:
         return tuple(
@@ -603,7 +658,7 @@ class MemoryAgent(ReactAgent):
             return prefix + json.dumps(data, ensure_ascii=False, separators=(",", ":"))
 
         rendered = serialize()
-        for key in ("facts", "failed_actions", "visited_locations"):
+        for key in ("facts", "room_facts", "failed_actions", "visited_locations"):
             values = data.get(key)
             if not isinstance(values, list):
                 continue
@@ -612,6 +667,20 @@ class MemoryAgent(ReactAgent):
                     current_room = self._memory.current_room
                     index = next(
                         (i for i, value in enumerate(values) if value != current_room), None
+                    )
+                    if index is None:
+                        break
+                    values.pop(index)
+                elif key == "room_facts":
+                    current_room = self._memory.current_room
+                    index = next(
+                        (
+                            i
+                            for i, value in enumerate(values)
+                            if not isinstance(value, dict)
+                            or value.get("room") != current_room
+                        ),
+                        None,
                     )
                     if index is None:
                         break

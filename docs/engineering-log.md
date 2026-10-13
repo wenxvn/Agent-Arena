@@ -1,5 +1,17 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 S2.4 公开事实更正与负例补充
+
+事件：离线审计 S2.4 fixture 时发现 v3 同一房间的不同 Observation 描述会累积为普通事实，重复里程碑事件摘要也可能在事件记录之外残留。
+
+改动：v3 按 room 键保存最新 Observation 描述，同房间更正替换旧值并计为 update；allowlisted 事件摘要只保存在事件记录中。渲染压缩可省略非当前房间的旧 room facts，但保留当前房间描述。新增非法候选/correction request、已读码后移动回程、单向出口、事件摘要更正及 Observation 更正 fixtures；v2 路径未改。
+
+验证：定向 `tests/test_memory_v3.py` 为 16 passed；全量 pytest 355 passed、`ruff check .` 通过、`mypy src` 49 个源文件通过、`git diff --check` 通过。依赖未改动；未调用 provider API。此次变更的 GitHub Actions 尚待提交后验证。
+
+下一步：提交并推送限定文件，检查该 SHA 的 GitHub Actions；保持 S2 online Gate 未通过，不推进 S3。
+
+关联实现提交：待提交。
+
 ## 2026-10-13 完整覆盖 Memory v3 insertion/update 计数
 
 事件：继续审计全部持久记忆字段时，发现初始化时的 `revealed_items`、后续新增 open question、题目解决、current-room 指针和里程碑状态变化未进入统计。

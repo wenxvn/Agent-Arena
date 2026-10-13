@@ -1,7 +1,7 @@
 # 0014. Memory v3 Spatial/Event
 
 **日期**：2026-10-13
-**状态**：Accepted（离线实现已完成；预算门禁已实现并验证；真实模型 pilot 待提交 SHA 冻结）
+**状态**：Accepted（离线实现与预算门禁已验证；真实模型 pilot 未完成，S2 Gate 未通过）
 
 ## 摘要
 
@@ -29,20 +29,20 @@
 - 仅当已校验的 MoveAction 获得成功 ToolResult 时，从上一个公开 room 与新的 Observation 推导 traversed directed edge；拒绝的 move 不构成已走通边。
 - 按历史公开 Observation 保存已知 room→exit 对。frontier 是目标 room 尚未访问且边尚未成功 traversed 的已观察有向出口；回到已访问 room 的出口不计入 frontier。不查询地图 JSON、WorldState 或 Environment 私有邻接表。
 - 从成功 ToolResult 的公开原因与摘要记录 panel_opened、cell_staged、power_restored、code_read、escaped 事件及 step index。重复事件更新 last_seen_step，不推断未经历阶段或目标顺序。
-- 继续沿用 v2 的公开背包、事实、失败动作与问题；不永久封禁失败 action，不在 M1 引入 M3 条件失效规则。
+- 继续沿用 v2 的公开背包、事实、失败动作与问题；v3 将 Observation 描述按 room 键保存为唯一最新值，后续同房间 Observation 会替换旧描述。allowlisted 里程碑事件的 ToolResult 摘要只保存在对应事件记录，不再重复进入通用 facts；重复事件以最新公开摘要更新原事件。修正计为 update，不计为 invalidation。v2 路径不变；不永久封禁失败 action，不在 M1 引入 M3 条件失效规则。
 
 ### 容量、压缩与统计
 
-- v3 memory-data 上限 12,000 字符；访问房间、有向出口、成功边和事件集合分别有显式数量上限，所有文本仍经过既有脱敏器。
-- 字符预算超限时按固定顺序省略普通旧事实、旧失败摘要和 v2 短访问列表，并输出 omission counts。v3 的访问房间、出口、边、frontier 和因果事件会影响后续导航语义，不静默淘汰；任一必需集合超过数量或字符上限时，在 provider 请求前明确失败。
-- v3 的每个 executed step 记录累计 insertions、updates、invalidations、compactions、rendered_chars 与 estimated_tokens；estimated_tokens 明确标作字符估算值。insertions 计入新增的访问房间、初始背包项、事实、失败动作、问题、revealed items、出口、成功边和公开事件；v2 `visited_locations` 是 v3 `visited_rooms` 的兼容镜像，不重复计数。updates 计入当前房间指针、背包快照、里程碑状态、已解决/文本变化的问题及重复公开事件的变化。invalidations 仅用于显式事实失效，M1 应为 0；成功后关闭 open question 计为 update，不计为 invalidation。
+- v3 memory-data 上限 12,000 字符；访问房间、有向出口、成功边和事件集合分别有显式数量上限，room facts 数量不超过访问房间上限，所有文本仍经过既有脱敏器。
+- 字符预算超限时按固定顺序省略普通旧 facts、非当前房间的旧 room facts、旧失败摘要和 v2 短访问列表，并输出 omission counts；当前房间描述始终保留。v3 的访问房间、出口、边、frontier 和因果事件会影响后续导航语义，不静默淘汰；任一必需集合超过数量或字符上限时，在 provider 请求前明确失败。
+- v3 的每个 executed step 记录累计 insertions、updates、invalidations、compactions、rendered_chars 与 estimated_tokens；estimated_tokens 明确标作字符估算值。insertions 计入新增的访问房间、初始背包项、普通 facts、room facts、失败动作、问题、revealed items、出口、成功边和公开事件；v2 `visited_locations` 是 v3 `visited_rooms` 的兼容镜像，不重复计数。updates 计入当前房间指针、背包快照、里程碑状态、已解决/文本变化的问题、同一 room fact 的更正及重复公开事件的变化。invalidations 仅用于显式事实失效，M1 应为 0；成功后关闭 open question 计为 update，不计为 invalidation。
 - `compactions` 累计每次实际渲染省略的发生次数；`rendered_chars` 与 `estimated_tokens` 记录最近一次渲染值。统计结构是可选 Trace 字段；缺字段的历史 trace 继续可读取。Trace 不记录记忆文本快照或完整 reasoning。
 
 ## 验收条件
 
 1. 相同完整公开 trace 回放得到相同 v3 memory digest、frontier 和事件顺序；两个 episode 间无状态泄漏。
 2. 状态只从 Observation、经过校验的 Action、ToolResult 更新。Move 拒绝、非法 provider 候选与 correction request 不创建 traversed edge 或因果事件。
-3. 测试覆盖回程、单向出口、已读码后的导航、任务顺序反转、前置条件修复和错误公开事实更新；不访问 hidden WorldState。
+3. 测试覆盖回程、单向出口、已读码后的导航、任务顺序反转、前置条件修复、同房间公开描述更正及重复事件摘要更新；不访问 hidden WorldState。
 4. 强制超预算 fixture 验证可省略字段的压缩顺序、omission counts、保留必需信息、统计递增，以及必需房间/出口/边/事件超容量或超字符预算时的失败行为。
 5. 默认 v2 的 provider 请求与现有 fixture 等价；CLI/config 可显式选择 v3；trace provenance 能区分 v2/v3；旧 Trace 无新统计字段时仍能读取。
 6. Ruff、mypy、pytest、本机 audit 与 GitHub Actions 通过。真实 pilot 未运行前不得声称机制改善。

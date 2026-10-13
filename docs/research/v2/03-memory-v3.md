@@ -12,7 +12,8 @@ Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实�
 - v3 状态仅由公开 Observation、已校验 Action 和 ToolResult 更新：记录当前房间、episode 内全部已观察到的访问房间、有向可见出口、成功移动边和成功公开因果事件。Frontier 排除已访问目标和已走通的同向边；反向边独立保留。
 - v2 的 12 项访问地点列表是有损短列表；v3 另保留上限 64 的 episode 访问房间集合，避免已进入房间因短列表容量而被误判成 frontier。
 - 记忆渲染上限为 12,000 字符。超限按固定顺序省略旧普通事实、失败摘要和 v2 短访问列表，并记录 omission counts；影响导航语义的 v3 房间/出口/边/事件超过数量或字符预算时，在下一次 provider 请求前失败，不静默淘汰。
-- Trace 可选地记录累计 insertions、updates、invalidations、compactions、rendered_chars 和字符估算 token 数。初始背包项、事实、失败动作、问题、revealed items、访问房间、出口、成功边和事件纳入 insertions；背包/current room/里程碑状态、问题解决或变化、重复事件纳入 updates；显式事实失效单独计入 invalidations，M1 为 0。兼容用的 v2 `visited_locations` 不重复计数。`rendered_chars` 和估算 tokens 记录最近一次渲染值，历史 trace 缺少统计字段时仍可读取。
+- Trace 可选地记录累计 insertions、updates、invalidations、compactions、rendered_chars 和字符估算 token 数。初始背包项、普通 facts、room facts、失败动作、问题、revealed items、访问房间、出口、成功边和事件纳入 insertions；背包/current room/里程碑状态、问题解决或变化、room fact 更正、重复事件纳入 updates；显式事实失效单独计入 invalidations，M1 为 0。兼容用的 v2 `visited_locations` 不重复计数。`rendered_chars` 和估算 tokens 记录最近一次渲染值，历史 trace 缺少统计字段时仍可读取。
+- v3 将 Observation 描述按 room 键保存为最新 room fact；同一房间的更正替换旧值，并计为 update。allowlisted 里程碑事件的摘要只保存在其 event 记录内，重复事件更新最新摘要，不再让旧摘要残留在通用 facts。渲染压缩会先省略旧通用 facts，再省略非当前房间 room facts，同时保留当前房间描述；v2 不变。
 
 ## 离线验证
 
@@ -34,6 +35,8 @@ Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实�
 2026-10-13 BUDGET-03 将 per-request timeout 提至 120 秒后，第 7 次请求仍以通用 `provider_error` fail closed；前 6 次 usage 合计 10,043 tokens、失败 reservation 25,156 tokens，账本累计 7 次 / 35,199 tokens，v2 0/2、v3 未启动。三账本累计 19 次 / 100,137 本地记账 tokens，三次失败 reservation 的 provider 实际 usage 均未知。通用类别无 HTTP status，无法确定 provider 端根因。按最终预登记停止后续 provider 调用；S2 未过 Gate，不推进 S3。
 
 定向 fixture 覆盖公开 frontier 与成功边、v3 访问集合在 v2 12 项短列表达到容量后的正确性、必需房间/出口/边/事件容量边界、事件顺序不预设、episode reset、公开前置条件修复、超限压缩与显式失败、v3 provenance/step statistics、config 兼容及旧 trace 审计读取。测试和静态检查不证明模型收益。
+
+后续 S2.4 离线复核补充覆盖非法 provider 候选与 correction request 不生成执行记忆、已读码后继续移动并回程、单向出口不推断反边、同一公开事件修正摘要，以及同一房间 Observation 更正后只保留最新 room fact。该工作不发起 provider 请求，不改变三份 pilot ledger，也不构成模型效果证据。
 
 2026-10-13 离线验收补充：发现并补齐“完整公开 Trace 重放得到稳定 v3 memory digest”的实现缺口。`MemoryV3State.memory_digest` 对逻辑状态做排序键、紧凑 JSON 的 SHA-256，不含派生运行计数器；新增测试将 10 步公开 Trace 写入并重新读取，再独立重放两次，断言 digest、frontier、事件顺序一致。全量本地检查为 pytest 349 passed、Ruff 全仓通过、mypy 49 个源文件通过；提交 `e907237ca4c1dd4f06a48690a44a59c8568865c2` 的 [GitHub Actions run #70](https://github.com/wenxvn/Agent-Arena/actions/runs/38378309801) 通过。当前 shell 没有 `uv` 命令，未执行 `uv lock --check`；依赖文件未改动。此项只补齐离线确定性验收，不改变模型结果：三份 pilot ledger 无完整 episode，S2 Gate 仍未通过，不推进 S3。
 
