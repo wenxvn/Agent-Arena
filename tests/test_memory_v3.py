@@ -16,6 +16,7 @@ from agent_arena.arena import Observation, ToolReason, ToolResult, ToolStatus
 from agent_arena.arena.models import LookAction, MoveAction, UseAction
 from agent_arena.config import RuntimeSettings
 from agent_arena.evaluation.runner import EpisodeRunner
+from agent_arena.evaluation.trace import read_episode_trace, write_episode_trace
 from agent_arena.llm import FakeDecisionProvider
 from agent_arena.worlds import SpaceshipEscapeEnvironment
 
@@ -150,6 +151,82 @@ def test_memory_v3_events_are_public_successes_and_reset_between_episodes() -> N
     assert "power_restored" not in reset_data
     assert agent.memory_statistics is not None
     assert agent.memory_statistics["invalidations"] == 0
+
+
+def test_memory_v3_complete_trace_replay_has_a_stable_digest_frontier_and_event_order(
+    tmp_path,
+) -> None:
+    def decision(reason: str, action: dict[str, str]) -> dict[str, object]:
+        return {"decision_reason": reason, "action": action}
+
+    decisions = [
+        decision("前往走廊", {"tool": "move", "destination": "corridor"}),
+        decision("前往储物室", {"tool": "move", "destination": "storage_room"}),
+        decision("检查储物箱", {"tool": "inspect", "target": "storage_crate"}),
+        decision("拿起螺丝刀", {"tool": "pickup", "item": "screwdriver"}),
+        decision("拿起备用保险丝", {"tool": "pickup", "item": "replacement_fuse"}),
+        decision("返回走廊", {"tool": "move", "destination": "corridor"}),
+        decision("前往维修室", {"tool": "move", "destination": "maintenance_room"}),
+        decision("前往反应堆室", {"tool": "move", "destination": "reactor_room"}),
+        decision(
+            "打开反应堆面板",
+            {"tool": "use", "item": "screwdriver", "target": "reactor_panel"},
+        ),
+        decision(
+            "更换损坏的保险丝",
+            {"tool": "use", "item": "replacement_fuse", "target": "damaged_fuse"},
+        ),
+    ]
+    settings = RuntimeSettings.load(
+        {
+            "provider": "fake",
+            "world": "spaceship-escape",
+            "world_version": "spaceship-escape-v2-zh",
+            "agent": "memory",
+            "memory_version": "v3_spatial_event",
+            "step_limit": len(decisions),
+        },
+        env_file=None,
+    )
+    trace = EpisodeRunner(
+        SpaceshipEscapeEnvironment(),
+        MemoryAgent(
+            FakeDecisionProvider(decisions), memory_version="v3_spatial_event"
+        ),
+        settings,
+    ).run()
+    public_trace = read_episode_trace(write_episode_trace(trace, tmp_path))
+
+    def replay():
+        agent = MemoryAgent(
+            FakeDecisionProvider([]), memory_version="v3_spatial_event"
+        )
+        agent.reset(public_trace.steps[0].observation)
+        for step in public_trace.steps:
+            if (
+                step.action is not None
+                and step.result is not None
+                and step.next_observation is not None
+            ):
+                agent.observe(step.action, step.result, step.next_observation)
+        assert isinstance(agent._memory, MemoryV3State)
+        return agent._memory
+
+    first = replay()
+    second = replay()
+    event_order = tuple(
+        (event.reason, event.first_seen_step) for event in first.public_events
+    )
+
+    assert public_trace.executed_action_count == len(decisions)
+    assert first.step_index == public_trace.executed_action_count
+    assert len(first.memory_digest) == 64
+    assert first.memory_digest == second.memory_digest
+    assert first.frontier == second.frontier
+    assert event_order == tuple(
+        (event.reason, event.first_seen_step) for event in second.public_events
+    )
+    assert event_order == (("panel_opened", 9), ("power_restored", 10))
 
 
 def test_memory_v3_tracks_event_order_without_assuming_a_fixed_phase_sequence() -> None:

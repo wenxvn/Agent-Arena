@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from hashlib import sha256
 from pathlib import Path
 from typing import Literal
 
@@ -86,6 +87,19 @@ class MemoryV3State(MemoryState):
     public_events: tuple[PublicMemoryEvent, ...] = ()
     step_index: int = 0
     statistics: MemoryStatistics = MemoryStatistics()
+
+    @property
+    def memory_digest(self) -> str:
+        """Hash logical memory state, excluding derived runtime counters."""
+
+        payload = self.model_dump(mode="json", exclude={"statistics"})
+        canonical = json.dumps(
+            payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        return sha256(canonical.encode("utf-8")).hexdigest()
 
     @property
     def frontier(self) -> tuple[SpatialLink, ...]:
