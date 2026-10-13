@@ -50,6 +50,7 @@ CSV_FIELDS = (
     "model",
     "prompt_version",
     "prompt_hash",
+    "memory_renderer_version",
     "step_limit",
     "recent_history_window",
     "stuck_recovery_enabled",
@@ -66,6 +67,13 @@ CSV_FIELDS = (
     "planner_calls",
     "planner_latency_ms",
     "latency_ms",
+    "memory_statistics_present",
+    "memory_insertions",
+    "memory_updates",
+    "memory_invalidations",
+    "memory_compactions",
+    "memory_rendered_chars",
+    "memory_estimated_tokens",
     "first_panel_opened_step",
     "first_power_restored_step",
     "first_code_read_step",
@@ -122,9 +130,13 @@ def audit_trace(trace: dict[str, Any]) -> dict[str, Any]:
     room_path: list[str] = []
     navigation_cycle_end_steps: list[int] = []
     public_event_steps: dict[str, int] = {}
+    memory_stats: list[dict[str, Any]] = []
     saw_code = False
 
     for index, step in enumerate(steps, start=1):
+        step_memory_stats = step.get("memory_statistics")
+        if isinstance(step_memory_stats, dict):
+            memory_stats.append(step_memory_stats)
         action = step.get("action")
         if not isinstance(action, dict):
             continue
@@ -187,6 +199,7 @@ def audit_trace(trace: dict[str, Any]) -> dict[str, Any]:
     recorded_actions = trace.get("executed_action_count")
     if not isinstance(recorded_actions, int):
         recorded_actions = len(action_steps)
+    final_memory_stats = memory_stats[-1] if memory_stats else {}
 
     return {
         "episode_id": str(trace.get("episode_id") or ""),
@@ -206,6 +219,7 @@ def audit_trace(trace: dict[str, Any]) -> dict[str, Any]:
         "model": provenance.get("model_name", "unavailable"),
         "prompt_version": trace.get("prompt_version", "unavailable"),
         "prompt_hash": provenance.get("base_prompt_hash", "unavailable"),
+        "memory_renderer_version": provenance.get("memory_renderer_version"),
         **{field: provenance.get(field) for field in SETTING_FIELDS},
         "settings": {field: provenance.get(field) for field in SETTING_FIELDS},
         "outcome": trace.get("outcome", "unavailable"),
@@ -218,6 +232,27 @@ def audit_trace(trace: dict[str, Any]) -> dict[str, Any]:
         "planner_calls": sum(step.get("planner_called") is True for step in steps),
         "planner_latency_ms": _sum_numeric(steps, "planner_latency_ms"),
         "latency_ms": trace.get("latency_ms"),
+        "memory_statistics_present": bool(memory_stats),
+        "memory_insertions": final_memory_stats.get("insertions"),
+        "memory_updates": final_memory_stats.get("updates"),
+        "memory_invalidations": final_memory_stats.get("invalidations"),
+        "memory_compactions": final_memory_stats.get("compactions"),
+        "memory_rendered_chars": max(
+            (
+                value["rendered_chars"]
+                for value in memory_stats
+                if isinstance(value.get("rendered_chars"), int)
+            ),
+            default=None,
+        ),
+        "memory_estimated_tokens": max(
+            (
+                value["estimated_tokens"]
+                for value in memory_stats
+                if isinstance(value.get("estimated_tokens"), int)
+            ),
+            default=None,
+        ),
         "first_panel_opened_step": public_event_steps.get("panel_opened", ""),
         "first_power_restored_step": public_event_steps.get("power_restored", ""),
         "first_code_read_step": public_event_steps.get("code_read", ""),
@@ -262,6 +297,7 @@ def _configuration_signature(row: dict[str, Any]) -> str:
             "model",
             "prompt_version",
             "prompt_hash",
+            "memory_renderer_version",
         )
     }
     data["settings"] = row.get("settings", {})
@@ -418,6 +454,9 @@ def summarize(rows: list[dict[str, Any]], counters: dict[str, int]) -> dict[str,
                 "configuration_signature": signature,
                 "attempts": len(group),
                 "outcomes": dict(Counter(str(row["outcome"]) for row in group)),
+                "memory_statistics_episodes": sum(
+                    row["memory_statistics_present"] is True for row in group
+                ),
                 "offline_success_at_k_all_recorded_attempts": _success_at_k(group),
                 "offline_success_at_k_earliest_recorded_per_seed": _success_at_k(
                     [row for row in group if row["recorded_attempt_index"] == 1]
@@ -439,6 +478,12 @@ def summarize(rows: list[dict[str, Any]], counters: dict[str, int]) -> dict[str,
         "schema_version": 1,
         "trace_files": counters.get("runs_files", 0) + counters.get("results_files", 0),
         "unique_episode_ids": len(rows),
+        "memory_schema_versions": dict(
+            Counter(str(row["memory_schema_version"]) for row in rows)
+        ),
+        "memory_statistics_episodes": sum(
+            row["memory_statistics_present"] is True for row in rows
+        ),
         "deduplicated_copies": counters.get("duplicate_files", 0),
         "conflicting_duplicate_ids": counters.get("conflicting_duplicate_ids", 0),
         "unreadable_files": counters.get("unreadable_files", 0),

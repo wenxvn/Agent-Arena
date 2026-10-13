@@ -43,6 +43,10 @@ class ReactAgent:
         return None
 
     @property
+    def memory_statistics(self) -> dict[str, int] | None:
+        return None
+
+    @property
     def suggested_action(self) -> Action | None:
         return None
 

@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V2 S2 Memory v3 离线实现与 pilot 门禁
+
+事件：按 S1 seeded 长尾证据实现可选 Memory v3 Spatial/Event，并完成离线验证。
+
+原因：V2 提纲要求先验证公开房间/边/frontier 与因果事件记忆，同时保持 Memory v2 默认行为；真实实验必须有可执行的全局请求数和 Token 预算。
+
+改动：新增 spec 0014、Memory v3 reducer/renderer、CLI/config 版本选择、可选逐步记忆统计、审计表统计字段和离线回归 fixture；补充 V2-03 报告及 S2 pilot 预登记。另保留有界的完整公开访问房间集合，避免 v2 的 12 项有损地点列表漏掉已访问房间后误报 frontier。
+
+验证：Ruff、mypy（48 个源文件）通过，pytest 316 passed；Trace 审计仍为 518 个文件、474 个唯一 episode。没有真实模型调用或 GPU 运行。检查 provider 代码确认目前不存在跨局 request/token 预留器，且非所有决策 provider 都有单请求输出上限，因此 pilot 明确 blocked。
+
+下一步：补齐 fail-closed 全局预算门禁并验证所选网关遵守输出限制；完成受限 pilot 前不推进 S3。
+
+关联提交：待提交。
+
 ## 2026-10-13 V2 S1 既有 Trace 离线审计完成
 
 事件：完成 V2 S1 离线瓶颈盘点，产出可复现脚本、CSV/JSON 审计产物和 Top 5 假设报告。

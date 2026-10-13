@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 from uuid import uuid4
 
 import typer
@@ -54,6 +54,7 @@ def _load_settings(
     seed: int | None = None,
     runs_dir: Path | None = None,
     reasoning_effort: str | None = None,
+    memory_version: str | None = None,
 ) -> RuntimeSettings:
     return RuntimeSettings.load(
         {
@@ -62,6 +63,7 @@ def _load_settings(
             "seed": seed,
             "runs_dir": runs_dir,
             "reasoning_effort": reasoning_effort,
+            "memory_version": memory_version,
         }
     )
 
@@ -70,6 +72,10 @@ def _load_settings(
 def run(
     provider: Annotated[str | None, typer.Option("--provider")] = None,
     agent: Annotated[str | None, typer.Option("--agent")] = None,
+    memory_version: Annotated[
+        str | None,
+        typer.Option("--memory-version", help="MemoryAgent 记忆策略：v2 或 v3_spatial_event。"),
+    ] = None,
     seed: Annotated[int | None, typer.Option("--seed")] = None,
     output_dir: Annotated[Path | None, typer.Option("--output-dir")] = None,
     autonomous: Annotated[
@@ -126,12 +132,16 @@ def run(
     if autonomous and guarded:
         typer.echo("--autonomous 不能与 --guarded 同时使用。", err=True)
         raise typer.Exit(code=2)
+    if memory_version == "v3_spatial_event" and agent not in {None, "memory"}:
+        typer.echo("--memory-version v3_spatial_event 需要 --agent memory。", err=True)
+        raise typer.Exit(code=2)
     settings = _load_settings(
         provider=provider,
         agent=agent,
         seed=seed,
         runs_dir=output_dir,
         reasoning_effort=reasoning_effort,
+        memory_version=memory_version,
     )
     if autonomous and settings.agent in {"planner_assisted", "candidate_select"}:
         typer.echo(
@@ -157,6 +167,7 @@ def run(
             settings.agent,
             decision_provider,
             structured_milestones=structured_milestones,
+            memory_version=settings.memory_version,
         ),
         settings,
         on_decision_start=_real_model_step_report(settings),
@@ -183,6 +194,10 @@ def benchmark(
     episodes: Annotated[int, typer.Option("--episodes", min=1)] = 1,
     provider: Annotated[str | None, typer.Option("--provider")] = None,
     agent: Annotated[str | None, typer.Option("--agent")] = None,
+    memory_version: Annotated[
+        str | None,
+        typer.Option("--memory-version", help="MemoryAgent 记忆策略：v2 或 v3_spatial_event。"),
+    ] = None,
     output_dir: Annotated[Path | None, typer.Option("--output-dir")] = None,
     autonomous: Annotated[
         bool,
@@ -253,13 +268,21 @@ def benchmark(
     if autonomous and guarded:
         typer.echo("--autonomous 不能与 --guarded 同时使用。", err=True)
         raise typer.Exit(code=2)
+    if memory_version == "v3_spatial_event" and agent != "memory":
+        typer.echo("--memory-version v3_spatial_event 需要 --agent memory。", err=True)
+        raise typer.Exit(code=2)
     if autonomous and agent in {"planner_assisted", "candidate_select"}:
         typer.echo(
             "--autonomous 只适用于 react 或 memory，不能与辅助 Agent 同时使用。",
             err=True,
         )
         raise typer.Exit(code=2)
-    settings = _load_settings(provider=provider, reasoning_effort=reasoning_effort)
+    settings = _load_settings(
+        provider=provider,
+        agent=agent if agent != "both" else None,
+        reasoning_effort=reasoning_effort,
+        memory_version=memory_version,
+    )
     _load_environment(settings)
     benchmark_id = str(uuid4())
     rows: list[BenchmarkRow] = []
@@ -292,6 +315,7 @@ def benchmark(
                         episode_settings.agent,
                         decision_provider,
                         structured_milestones=structured_milestones,
+                        memory_version=episode_settings.memory_version,
                     ),
                     episode_settings,
                     on_decision_start=_real_model_step_report(
@@ -419,9 +443,14 @@ def _create_agent(
     provider: DecisionProvider,
     *,
     structured_milestones: bool = False,
+    memory_version: Literal["v2", "v3_spatial_event"] = "v2",
 ) -> ReactAgent:
     if agent == "memory":
-        return MemoryAgent(provider, structured_milestones=structured_milestones)
+        return MemoryAgent(
+            provider,
+            structured_milestones=structured_milestones,
+            memory_version=memory_version,
+        )
     if agent == "planning":
         return PlanningAgent(provider)
     if agent == "planner_assisted":

@@ -30,6 +30,7 @@ from agent_arena.evaluation.trace import (
     EpisodeTraceHeader,
     ExperimentProvenance,
     InvalidOutputReason,
+    MemoryStatisticsTrace,
     StepTrace,
     TraceEvent,
 )
@@ -60,6 +61,11 @@ class EpisodeRunner:
         self._environment = environment
         self._agent = agent
         self._settings = settings
+        if (
+            agent.name == "memory"
+            and getattr(agent, "memory_version", "v2") != settings.memory_version
+        ):
+            raise ValueError("运行配置与 MemoryAgent 记忆策略不一致。")
         self._on_decision_start = on_decision_start
         self._on_step_complete = on_step_complete
         self._enable_runtime_feedback = enable_runtime_feedback
@@ -134,10 +140,14 @@ class EpisodeRunner:
                 public_phase_context_enabled=bool(phase_milestones),
                 candidate_selection_enabled=self._enable_candidate_selection,
                 memory_schema_version=(
-                    "memory_v1" if self._agent.name in {"memory", "planner_assisted"} else None
+                    getattr(self._agent, "memory_schema_version", "memory_v1")
+                    if self._agent.name in {"memory", "planner_assisted"}
+                    else None
                 ),
                 memory_renderer_version=(
-                    "memory_v1" if self._agent.name in {"memory", "planner_assisted"} else None
+                    getattr(self._agent, "memory_renderer_version", "memory_v1")
+                    if self._agent.name in {"memory", "planner_assisted"}
+                    else None
                 ),
                 planning_enabled=self._agent.planning_enabled,
                 planner_prompt_version=self._agent.planner_prompt_version,
@@ -376,6 +386,11 @@ class EpisodeRunner:
                 latency_ms=latency_ms,
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
+                memory_statistics=(
+                    MemoryStatisticsTrace.model_validate(self._agent.memory_statistics)
+                    if self._agent.memory_statistics is not None
+                    else None
+                ),
                 runtime_feedback=(
                     sanitize_text(runtime_feedback, max_length=500) if runtime_feedback else None
                 ),

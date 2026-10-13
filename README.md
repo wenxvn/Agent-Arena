@@ -43,6 +43,8 @@ uv run agent-arena run --provider ollama --agent memory --seed 0 --output-dir ru
 uv run agent-arena run --provider ollama --agent planner_assisted --seed 0 --output-dir runs
 ```
 
+`MemoryAgent` 默认使用 `memory_version=v2`。研究中的 `v3_spatial_event` 可通过 `--memory-version v3_spatial_event` 显式选择，当前仅完成离线验证；真实模型 pilot 因全局 API/token 硬预算门禁尚未实现而暂停。不要把 v3 离线验证视为行为收益证据，实验门禁见 [`docs/research/v2/03-memory-v3.md`](docs/research/v2/03-memory-v3.md)。
+
 目前已真实验证的是 `qwen2.5:7b + planner_assisted`：固定 seed 0、1、2 共 3 局全部成功，平均 19 步，0 次非法输出，0 次环境拒绝。这个结果证明端到端辅助流程可用；纯 `react`/`memory` 的自主规划成功率仍需单独实验。
 
  PlanningAgent v1 已完成工程验证，并以相同模型、world、seed 和 30 步预算运行真实 5 seeds：首轮 0/5 成功，平均 28 次 Planner 调用、子目标完成率 0%；Evaluation v2 独立重跑仍为 0/5，平均 25.6 次 Planner 调用、调用比例 85.3%、State Progress 0。这说明当前主要问题仍是高层子目标到有效动作的桥接，不能把 Fake 或辅助模式结果当作自主规划能力。

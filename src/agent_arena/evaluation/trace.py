@@ -50,6 +50,16 @@ class InvalidOutputReason(StrEnum):
     UNKNOWN_SCHEMA_ERROR = "unknown_schema_error"
 
 
+class MemoryStatisticsTrace(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    insertions: int = Field(ge=0)
+    updates: int = Field(ge=0)
+    invalidations: int = Field(ge=0)
+    compactions: int = Field(ge=0)
+    rendered_chars: int = Field(ge=0)
+    estimated_tokens: int = Field(ge=0)
+
+
 class StepTrace(BaseModel):
     """One allowlisted decision or execution event."""
 
@@ -83,6 +93,7 @@ class StepTrace(BaseModel):
     executor_latency_ms: int | None = Field(default=None, ge=0)
     executor_input_tokens: int | None = Field(default=None, ge=0)
     executor_output_tokens: int | None = Field(default=None, ge=0)
+    memory_statistics: MemoryStatisticsTrace | None = None
     summary: str | None = Field(default=None, max_length=1_000)
     invalid_output_reason: InvalidOutputReason | None = None
 

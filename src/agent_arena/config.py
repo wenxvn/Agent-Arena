@@ -61,6 +61,7 @@ class RuntimeSettings(BaseSettings):
     world: str
     world_version: str
     agent: Literal["react", "memory", "planning", "planner_assisted", "candidate_select"]
+    memory_version: Literal["v2", "v3_spatial_event"] = "v2"
     seed: int
     runs_dir: Path
     results_dir: Path
@@ -121,6 +122,8 @@ class RuntimeSettings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_retry_policy(self) -> RuntimeSettings:
+        if self.agent != "memory" and self.memory_version != "v2":
+            raise ValueError("memory_version=v3_spatial_event is only valid with agent=memory.")
         if len(self.retry_backoff_seconds) != self.retry_count:
             raise ValueError("retry_backoff_seconds must contain one delay for each retry.")
         if any(delay < 0 for delay in self.retry_backoff_seconds):

@@ -3,6 +3,7 @@
   "world": "spaceship-escape",
   "world_version": "spaceship-escape-v2-zh",
   "agent": "react",
+  "memory_version": "v2",
   "seed": 0,
   "runs_dir": "runs",
   "results_dir": "results",

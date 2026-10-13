@@ -22,6 +22,8 @@ S0 修复在隔离的 Python 3.13.16 / uv 0.13.0 临时环境验证，未重建�
 
 S1 审计脚本增加两项离线单元测试后，当前本地质量检查复跑为 Ruff 通过、mypy 48 个源文件通过、pytest 305 passed；GitHub Actions #57 全绿。依赖未变化，uv.lock 无需更新。
 
+2026-10-13 S2 Memory v3 离线实现增加后，Ruff 与 mypy 仍通过，pytest 为 316 passed。审计产物已重生成，仍为 518 个文件、474 个唯一 episode；没有真实模型调用。S2 的 pilot 因全局 API/token 硬预算未实现而 blocked，详情见 [V2-03](03-memory-v3.md) 与 [在线运行登记表](00-run-registry.md)。
+
 ## S0 修复范围
 
 - 清理 scripts/audit_maps.py 的未使用绑定与死代码；将 scripts/build_run_register.py 的 lambda 改成局部函数。

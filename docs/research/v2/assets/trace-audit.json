@@ -2,6 +2,11 @@
   "schema_version": 1,
   "trace_files": 518,
   "unique_episode_ids": 474,
+  "memory_schema_versions": {
+    "None": 33,
+    "memory_v1": 441
+  },
+  "memory_statistics_episodes": 0,
   "deduplicated_copies": 44,
   "conflicting_duplicate_ids": 0,
   "unreadable_files": 0,
@@ -60,12 +65,13 @@
     {
       "experiment_bucket": "muse-21maps-castle-easy",
       "world_version": "castle-escape-easy-zh",
-      "configuration_signature": "bbb3011390b6b5ab",
+      "configuration_signature": "5d532d2d2ea78d31",
       "attempts": 11,
       "outcomes": {
         "provider_error": 6,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 5,
@@ -154,12 +160,13 @@
     {
       "experiment_bucket": "muse-21maps-castle-hard",
       "world_version": "castle-escape-hard-zh",
-      "configuration_signature": "035dc04d53569ec9",
+      "configuration_signature": "dbc731e057eaade1",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -248,12 +255,13 @@
     {
       "experiment_bucket": "muse-21maps-castle-med",
       "world_version": "castle-escape-v1-zh",
-      "configuration_signature": "96e1b8926a6e1a2d",
+      "configuration_signature": "f4385a69791be3a5",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -342,12 +350,13 @@
     {
       "experiment_bucket": "muse-21maps-jungle-easy",
       "world_version": "jungle-escape-easy-zh",
-      "configuration_signature": "a9633ca4a2b3f1e8",
+      "configuration_signature": "883ee1e78246b65a",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 5,
@@ -436,12 +445,13 @@
     {
       "experiment_bucket": "muse-21maps-jungle-hard",
       "world_version": "jungle-escape-hard-zh",
-      "configuration_signature": "efc2c8d5542734d5",
+      "configuration_signature": "cb192e65ebbdf4c4",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -530,12 +540,13 @@
     {
       "experiment_bucket": "muse-21maps-jungle-med",
       "world_version": "jungle-escape-v1-zh",
-      "configuration_signature": "55f0f1a761e5f8ac",
+      "configuration_signature": "2f402bef8e320646",
       "attempts": 11,
       "outcomes": {
         "provider_error": 6,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -624,12 +635,13 @@
     {
       "experiment_bucket": "muse-21maps-lunar-easy",
       "world_version": "lunar-escape-easy-zh",
-      "configuration_signature": "91bbed9509c3f20b",
+      "configuration_signature": "6c6e3eabfe609128",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 5,
@@ -718,12 +730,13 @@
     {
       "experiment_bucket": "muse-21maps-lunar-hard",
       "world_version": "lunar-escape-hard-zh",
-      "configuration_signature": "69c5a4078e305e82",
+      "configuration_signature": "f498c6313dcd5f33",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -812,12 +825,13 @@
     {
       "experiment_bucket": "muse-21maps-lunar-med",
       "world_version": "lunar-escape-v1-zh",
-      "configuration_signature": "440235368feedb49",
+      "configuration_signature": "a8ab33610874c805",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 3,
@@ -906,12 +920,13 @@
     {
       "experiment_bucket": "muse-21maps-polar-easy",
       "world_version": "polar-escape-easy-zh",
-      "configuration_signature": "2280f589f4f3fe45",
+      "configuration_signature": "0f0874a1fe89b417",
       "attempts": 10,
       "outcomes": {
         "success": 5,
         "provider_error": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 5,
@@ -1000,12 +1015,13 @@
     {
       "experiment_bucket": "muse-21maps-polar-hard",
       "world_version": "polar-escape-hard-zh",
-      "configuration_signature": "bd4885f6dcd512fe",
+      "configuration_signature": "86032ecb9e7898f0",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -1094,12 +1110,13 @@
     {
       "experiment_bucket": "muse-21maps-polar-med",
       "world_version": "polar-escape-v1-zh",
-      "configuration_signature": "06561dd87440018a",
+      "configuration_signature": "f3c3e38c00a95310",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -1188,11 +1205,12 @@
     {
       "experiment_bucket": "muse-21maps-probe",
       "world_version": "polar-escape-easy-zh",
-      "configuration_signature": "2280f589f4f3fe45",
+      "configuration_signature": "0f0874a1fe89b417",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 1,
@@ -1281,11 +1299,12 @@
     {
       "experiment_bucket": "muse-21maps-probe",
       "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "e2b738d008254234",
+      "configuration_signature": "8be322c34ea5f1b2",
       "attempts": 1,
       "outcomes": {
         "step_limit": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -1374,12 +1393,13 @@
     {
       "experiment_bucket": "muse-21maps-pyramid-easy",
       "world_version": "pyramid-escape-easy-zh",
-      "configuration_signature": "84c08cad07f5984c",
+      "configuration_signature": "f91e4174f56678b2",
       "attempts": 11,
       "outcomes": {
         "provider_error": 6,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 5,
@@ -1468,12 +1488,13 @@
     {
       "experiment_bucket": "muse-21maps-pyramid-hard",
       "world_version": "pyramid-escape-hard-zh",
-      "configuration_signature": "554a28b9f0c0059d",
+      "configuration_signature": "8b14145252211d1d",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -1562,12 +1583,13 @@
     {
       "experiment_bucket": "muse-21maps-pyramid-med",
       "world_version": "pyramid-escape-v1-zh",
-      "configuration_signature": "915585a96122c48e",
+      "configuration_signature": "c2ce5e4911991456",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 4,
@@ -1656,11 +1678,12 @@
     {
       "experiment_bucket": "muse-21maps-smoke",
       "world_version": "polar-escape-easy-zh",
-      "configuration_signature": "2280f589f4f3fe45",
+      "configuration_signature": "0f0874a1fe89b417",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 1,
@@ -1749,12 +1772,13 @@
     {
       "experiment_bucket": "muse-21maps-subway-easy",
       "world_version": "subway-escape-easy-zh",
-      "configuration_signature": "5ddd9cc68b40ed4d",
+      "configuration_signature": "a284a4969a6fc62d",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 5,
@@ -1843,12 +1867,13 @@
     {
       "experiment_bucket": "muse-21maps-subway-hard",
       "world_version": "subway-escape-hard-zh",
-      "configuration_signature": "382e0cf0442a92c9",
+      "configuration_signature": "368693a19132efea",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -1937,12 +1962,13 @@
     {
       "experiment_bucket": "muse-21maps-subway-med",
       "world_version": "subway-escape-v1-zh",
-      "configuration_signature": "c44f9f843becad8c",
+      "configuration_signature": "f93c193fb80e1c85",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 1,
@@ -2031,12 +2057,13 @@
     {
       "experiment_bucket": "muse-21maps-volcano-easy",
       "world_version": "volcano-escape-easy-zh",
-      "configuration_signature": "174583217076e638",
+      "configuration_signature": "434667503ece7780",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 5,
@@ -2125,12 +2152,13 @@
     {
       "experiment_bucket": "muse-21maps-volcano-hard",
       "world_version": "volcano-escape-hard-zh",
-      "configuration_signature": "0631be19cb3b035c",
+      "configuration_signature": "ebfaf40f5446c77c",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 1,
@@ -2219,12 +2247,13 @@
     {
       "experiment_bucket": "muse-21maps-volcano-med",
       "world_version": "volcano-escape-v1-zh",
-      "configuration_signature": "fbfbc7f7fad1b7f5",
+      "configuration_signature": "3f2b93f8188fbb20",
       "attempts": 10,
       "outcomes": {
         "provider_error": 5,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -2313,11 +2342,12 @@
     {
       "experiment_bucket": "muse-3maps-abyss",
       "world_version": "abyss-escape-v1-zh",
-      "configuration_signature": "69b880d80904c886",
+      "configuration_signature": "e9f8ca1807bdae72",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -2406,11 +2436,12 @@
     {
       "experiment_bucket": "muse-3maps-lightv2",
       "world_version": "lighthouse-escape-v2-zh",
-      "configuration_signature": "9a405876310b9ad7",
+      "configuration_signature": "5f19be506dd778b6",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -2499,12 +2530,13 @@
     {
       "experiment_bucket": "muse-3maps-shipv3",
       "world_version": "spaceship-escape-v3-zh",
-      "configuration_signature": "0d55ae91f6e8642b",
+      "configuration_signature": "1209e82535112bd7",
       "attempts": 4,
       "outcomes": {
         "provider_error": 2,
         "success": 2
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -2593,11 +2625,12 @@
     {
       "experiment_bucket": "muse-9maps-abyss-easy",
       "world_version": "abyss-escape-easy-zh",
-      "configuration_signature": "d51e87581b9ccb5e",
+      "configuration_signature": "9c2625239236036b",
       "attempts": 6,
       "outcomes": {
         "success": 6
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 4,
@@ -2686,11 +2719,12 @@
     {
       "experiment_bucket": "muse-9maps-abyss-hard",
       "world_version": "abyss-escape-hard-zh",
-      "configuration_signature": "d27bafab00d07e31",
+      "configuration_signature": "25f4271d41023571",
       "attempts": 5,
       "outcomes": {
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -2779,11 +2813,12 @@
     {
       "experiment_bucket": "muse-9maps-abyss-med",
       "world_version": "abyss-escape-v1-zh",
-      "configuration_signature": "69b880d80904c886",
+      "configuration_signature": "e9f8ca1807bdae72",
       "attempts": 5,
       "outcomes": {
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -2872,12 +2907,13 @@
     {
       "experiment_bucket": "muse-9maps-light-easy",
       "world_version": "lighthouse-escape-v1-zh",
-      "configuration_signature": "c7d6becfe1a6256f",
+      "configuration_signature": "fabb6467f9c01426",
       "attempts": 6,
       "outcomes": {
         "provider_error": 1,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 4,
@@ -2966,12 +3002,13 @@
     {
       "experiment_bucket": "muse-9maps-light-hard",
       "world_version": "lighthouse-escape-v3-zh",
-      "configuration_signature": "ba62d5d04bd742dd",
+      "configuration_signature": "3f09102c1275245a",
       "attempts": 6,
       "outcomes": {
         "success": 5,
         "provider_error": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -3060,12 +3097,13 @@
     {
       "experiment_bucket": "muse-9maps-light-med",
       "world_version": "lighthouse-escape-v2-zh",
-      "configuration_signature": "9a405876310b9ad7",
+      "configuration_signature": "5f19be506dd778b6",
       "attempts": 6,
       "outcomes": {
         "success": 5,
         "provider_error": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -3154,11 +3192,12 @@
     {
       "experiment_bucket": "muse-9maps-ship-easy",
       "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "c16bba21ef7fe012",
+      "configuration_signature": "72a52881fab36791",
       "attempts": 5,
       "outcomes": {
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -3247,12 +3286,13 @@
     {
       "experiment_bucket": "muse-9maps-ship-hard",
       "world_version": "spaceship-escape-v4-zh",
-      "configuration_signature": "9eb440e1be68a812",
+      "configuration_signature": "853fde2804fb18c8",
       "attempts": 6,
       "outcomes": {
         "success": 5,
         "provider_error": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -3341,12 +3381,13 @@
     {
       "experiment_bucket": "muse-9maps-ship-med",
       "world_version": "spaceship-escape-v3-zh",
-      "configuration_signature": "0d55ae91f6e8642b",
+      "configuration_signature": "1209e82535112bd7",
       "attempts": 6,
       "outcomes": {
         "success": 5,
         "provider_error": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -3435,11 +3476,12 @@
     {
       "experiment_bucket": "muse-flex-castle-v2",
       "world_version": "castle-escape-v2-zh",
-      "configuration_signature": "03f1edea41eb378c",
+      "configuration_signature": "1e523b9a5ecff921",
       "attempts": 4,
       "outcomes": {
         "success": 4
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -3528,11 +3570,12 @@
     {
       "experiment_bucket": "muse-flex-castle-v2",
       "world_version": "castle-escape-v2-zh",
-      "configuration_signature": "13a5fcb3b5cb24d3",
+      "configuration_signature": "4eea784c61d4973f",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -3621,11 +3664,12 @@
     {
       "experiment_bucket": "muse-flex-castle-v2s",
       "world_version": "castle-escape-v2-seeded-zh",
-      "configuration_signature": "285598d63074b999",
+      "configuration_signature": "77c4d193df6637e4",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -3702,9 +3746,9 @@
       },
       "successful_action_counts": {
         "n": 1,
-        "p50": 54,
-        "p90": 54,
-        "max": 54
+        "p50": 48,
+        "p90": 48,
+        "max": 48
       },
       "wrong_terminal_target_reads": 0,
       "repeated_code_reads": 0,
@@ -3714,11 +3758,12 @@
     {
       "experiment_bucket": "muse-flex-castle-v2s",
       "world_version": "castle-escape-v2-seeded-zh",
-      "configuration_signature": "876844021dd7b034",
+      "configuration_signature": "83a451c1f2899bae",
       "attempts": 2,
       "outcomes": {
         "success": 2
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -3807,11 +3852,12 @@
     {
       "experiment_bucket": "muse-flex-castle-v2s",
       "world_version": "castle-escape-v2-seeded-zh",
-      "configuration_signature": "e403f4abf3db16c5",
+      "configuration_signature": "a4a75bdd1ca2b2d3",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -3900,11 +3946,12 @@
     {
       "experiment_bucket": "muse-flex-castle-v2s",
       "world_version": "castle-escape-v2-seeded-zh",
-      "configuration_signature": "f525400c7b3692ab",
+      "configuration_signature": "e7ebe4e891ffe2e1",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -3981,9 +4028,9 @@
       },
       "successful_action_counts": {
         "n": 1,
-        "p50": 48,
-        "p90": 48,
-        "max": 48
+        "p50": 54,
+        "p90": 54,
+        "max": 54
       },
       "wrong_terminal_target_reads": 0,
       "repeated_code_reads": 0,
@@ -3993,11 +4040,200 @@
     {
       "experiment_bucket": "muse-flex-lunar-v2",
       "world_version": "lunar-escape-v2-zh",
-      "configuration_signature": "090f46cbae02e6a6",
+      "configuration_signature": "5434d72146d40d5d",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "successful_action_counts": {
+        "n": 1,
+        "p50": 32,
+        "p90": 32,
+        "max": 32
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 0,
+      "repeated_failed_action_attempts": 0,
+      "navigation_two_cycle_count": 0
+    },
+    {
+      "experiment_bucket": "muse-flex-lunar-v2",
+      "world_version": "lunar-escape-v2-zh",
+      "configuration_signature": "90cf7a98c7f5b81e",
+      "attempts": 1,
+      "outcomes": {
+        "success": 1
+      },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "successful_action_counts": {
+        "n": 1,
+        "p50": 36,
+        "p90": 36,
+        "max": 36
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 0,
+      "repeated_failed_action_attempts": 0,
+      "navigation_two_cycle_count": 0
+    },
+    {
+      "experiment_bucket": "muse-flex-lunar-v2",
+      "world_version": "lunar-escape-v2-zh",
+      "configuration_signature": "c708811f2ec7279e",
+      "attempts": 1,
+      "outcomes": {
+        "success": 1
+      },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -4086,11 +4322,12 @@
     {
       "experiment_bucket": "muse-flex-lunar-v2",
       "world_version": "lunar-escape-v2-zh",
-      "configuration_signature": "47f0a528f14b209e",
+      "configuration_signature": "c7aa58d86d666c17",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -4179,104 +4416,12 @@
     {
       "experiment_bucket": "muse-flex-lunar-v2",
       "world_version": "lunar-escape-v2-zh",
-      "configuration_signature": "50f725c4c76c7e46",
+      "configuration_signature": "e57a7e562c7a19bd",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "successful_action_counts": {
-        "n": 1,
-        "p50": 32,
-        "p90": 32,
-        "max": 32
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 0,
-      "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 0
-    },
-    {
-      "experiment_bucket": "muse-flex-lunar-v2",
-      "world_version": "lunar-escape-v2-zh",
-      "configuration_signature": "6ac5b039ad03a7e5",
-      "attempts": 1,
-      "outcomes": {
-        "success": 1
-      },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -4363,385 +4508,14 @@
       "navigation_two_cycle_count": 0
     },
     {
-      "experiment_bucket": "muse-flex-lunar-v2",
-      "world_version": "lunar-escape-v2-zh",
-      "configuration_signature": "ba9a399b866ba4c2",
-      "attempts": 1,
-      "outcomes": {
-        "success": 1
-      },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "successful_action_counts": {
-        "n": 1,
-        "p50": 36,
-        "p90": 36,
-        "max": 36
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 0,
-      "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 0
-    },
-    {
       "experiment_bucket": "muse-flex-lunar-v2s",
       "world_version": "lunar-escape-v2-seeded-zh",
-      "configuration_signature": "3a01cd03177b04e7",
+      "configuration_signature": "347887945852c9ff",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "successful_action_counts": {
-        "n": 1,
-        "p50": 232,
-        "p90": 232,
-        "max": 232
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 0,
-      "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 42
-    },
-    {
-      "experiment_bucket": "muse-flex-lunar-v2s",
-      "world_version": "lunar-escape-v2-seeded-zh",
-      "configuration_signature": "5da77843138e5040",
-      "attempts": 1,
-      "outcomes": {
-        "success": 1
-      },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "successful_action_counts": {
-        "n": 1,
-        "p50": 63,
-        "p90": 63,
-        "max": 63
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 0,
-      "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 5
-    },
-    {
-      "experiment_bucket": "muse-flex-lunar-v2s",
-      "world_version": "lunar-escape-v2-seeded-zh",
-      "configuration_signature": "94e0d3490e8ff14d",
-      "attempts": 1,
-      "outcomes": {
-        "success": 1
-      },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "successful_action_counts": {
-        "n": 1,
-        "p50": 40,
-        "p90": 40,
-        "max": 40
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 0,
-      "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 2
-    },
-    {
-      "experiment_bucket": "muse-flex-lunar-v2s",
-      "world_version": "lunar-escape-v2-seeded-zh",
-      "configuration_signature": "e098d77a1c67fd80",
-      "attempts": 1,
-      "outcomes": {
-        "success": 1
-      },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -4830,11 +4604,12 @@
     {
       "experiment_bucket": "muse-flex-lunar-v2s",
       "world_version": "lunar-escape-v2-seeded-zh",
-      "configuration_signature": "f8f87da7bb1695cd",
+      "configuration_signature": "3fb012489134e80a",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -4921,45 +4696,140 @@
       "navigation_two_cycle_count": 6
     },
     {
-      "experiment_bucket": "muse-flex-pyramid-v2",
-      "world_version": "pyramid-escape-v2-zh",
-      "configuration_signature": "0b2e1c768c486f86",
-      "attempts": 2,
+      "experiment_bucket": "muse-flex-lunar-v2s",
+      "world_version": "lunar-escape-v2-seeded-zh",
+      "configuration_signature": "5bcddc26bc4d2343",
+      "attempts": 1,
       "outcomes": {
-        "success": 2
+        "success": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
-          "eligible": 2,
+          "eligible": 1,
           "rate": 0.0,
           "provider_error_censored": 0,
           "step_limit_censored_before_budget": 0
         },
         "60": {
-          "successes": 2,
-          "eligible": 2,
-          "rate": 1.0,
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
           "provider_error_censored": 0,
           "step_limit_censored_before_budget": 0
         },
         "100": {
-          "successes": 2,
-          "eligible": 2,
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "successful_action_counts": {
+        "n": 1,
+        "p50": 232,
+        "p90": 232,
+        "max": 232
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 0,
+      "repeated_failed_action_attempts": 0,
+      "navigation_two_cycle_count": 42
+    },
+    {
+      "experiment_bucket": "muse-flex-lunar-v2s",
+      "world_version": "lunar-escape-v2-seeded-zh",
+      "configuration_signature": "933d412c27dfc496",
+      "attempts": 1,
+      "outcomes": {
+        "success": 1
+      },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 1,
+          "eligible": 1,
           "rate": 1.0,
           "provider_error_censored": 0,
           "step_limit_censored_before_budget": 0
         },
         "150": {
-          "successes": 2,
-          "eligible": 2,
+          "successes": 1,
+          "eligible": 1,
           "rate": 1.0,
           "provider_error_censored": 0,
           "step_limit_censored_before_budget": 0
         },
         "200": {
-          "successes": 2,
-          "eligible": 2,
+          "successes": 1,
+          "eligible": 1,
           "rate": 1.0,
           "provider_error_censored": 0,
           "step_limit_censored_before_budget": 0
@@ -4968,59 +4838,154 @@
       "offline_success_at_k_earliest_recorded_per_seed": {
         "30": {
           "successes": 0,
-          "eligible": 2,
+          "eligible": 1,
           "rate": 0.0,
           "provider_error_censored": 0,
           "step_limit_censored_before_budget": 0
         },
         "60": {
-          "successes": 2,
-          "eligible": 2,
-          "rate": 1.0,
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
           "provider_error_censored": 0,
           "step_limit_censored_before_budget": 0
         },
         "100": {
-          "successes": 2,
-          "eligible": 2,
+          "successes": 1,
+          "eligible": 1,
           "rate": 1.0,
           "provider_error_censored": 0,
           "step_limit_censored_before_budget": 0
         },
         "150": {
-          "successes": 2,
-          "eligible": 2,
+          "successes": 1,
+          "eligible": 1,
           "rate": 1.0,
           "provider_error_censored": 0,
           "step_limit_censored_before_budget": 0
         },
         "200": {
-          "successes": 2,
-          "eligible": 2,
+          "successes": 1,
+          "eligible": 1,
           "rate": 1.0,
           "provider_error_censored": 0,
           "step_limit_censored_before_budget": 0
         }
       },
       "successful_action_counts": {
-        "n": 2,
-        "p50": 34.5,
-        "p90": 36,
-        "max": 36
+        "n": 1,
+        "p50": 63,
+        "p90": 63,
+        "max": 63
       },
       "wrong_terminal_target_reads": 0,
       "repeated_code_reads": 0,
       "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 0
+      "navigation_two_cycle_count": 5
+    },
+    {
+      "experiment_bucket": "muse-flex-lunar-v2s",
+      "world_version": "lunar-escape-v2-seeded-zh",
+      "configuration_signature": "bff9826db9e82881",
+      "attempts": 1,
+      "outcomes": {
+        "success": 1
+      },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "successful_action_counts": {
+        "n": 1,
+        "p50": 40,
+        "p90": 40,
+        "max": 40
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 0,
+      "repeated_failed_action_attempts": 0,
+      "navigation_two_cycle_count": 2
     },
     {
       "experiment_bucket": "muse-flex-pyramid-v2",
       "world_version": "pyramid-escape-v2-zh",
-      "configuration_signature": "0cce62dd95e09c25",
+      "configuration_signature": "aa849ba1acba8636",
       "attempts": 3,
       "outcomes": {
         "success": 3
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -5107,13 +5072,14 @@
       "navigation_two_cycle_count": 0
     },
     {
-      "experiment_bucket": "muse-flex-pyramid-v2s",
-      "world_version": "pyramid-escape-v2-seeded-zh",
-      "configuration_signature": "0f8bb414fda269dc",
+      "experiment_bucket": "muse-flex-pyramid-v2",
+      "world_version": "pyramid-escape-v2-zh",
+      "configuration_signature": "b40c6f268dfd99cc",
       "attempts": 2,
       "outcomes": {
         "success": 2
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -5190,23 +5156,24 @@
       },
       "successful_action_counts": {
         "n": 2,
-        "p50": 38.5,
-        "p90": 39,
-        "max": 39
+        "p50": 34.5,
+        "p90": 36,
+        "max": 36
       },
       "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 1,
+      "repeated_code_reads": 0,
       "repeated_failed_action_attempts": 0,
       "navigation_two_cycle_count": 0
     },
     {
       "experiment_bucket": "muse-flex-pyramid-v2s",
       "world_version": "pyramid-escape-v2-seeded-zh",
-      "configuration_signature": "31d5263464b489e6",
+      "configuration_signature": "237255eb84787905",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -5295,11 +5262,12 @@
     {
       "experiment_bucket": "muse-flex-pyramid-v2s",
       "world_version": "pyramid-escape-v2-seeded-zh",
-      "configuration_signature": "d86bea83bee7f389",
+      "configuration_signature": "80d19848674355d2",
       "attempts": 2,
       "outcomes": {
         "success": 2
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -5386,13 +5354,108 @@
       "navigation_two_cycle_count": 18
     },
     {
+      "experiment_bucket": "muse-flex-pyramid-v2s",
+      "world_version": "pyramid-escape-v2-seeded-zh",
+      "configuration_signature": "fb8d040a8ff95632",
+      "attempts": 2,
+      "outcomes": {
+        "success": 2
+      },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 2,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 2,
+          "eligible": 2,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 2,
+          "eligible": 2,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 2,
+          "eligible": 2,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 2,
+          "eligible": 2,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 2,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 2,
+          "eligible": 2,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 2,
+          "eligible": 2,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 2,
+          "eligible": 2,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 2,
+          "eligible": 2,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "successful_action_counts": {
+        "n": 2,
+        "p50": 38.5,
+        "p90": 39,
+        "max": 39
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 1,
+      "repeated_failed_action_attempts": 0,
+      "navigation_two_cycle_count": 0
+    },
+    {
       "experiment_bucket": "muse-flex-ship-seeded",
       "world_version": "spaceship-escape-v5-zh-seeded",
-      "configuration_signature": "125d15e1c1ef5e0f",
+      "configuration_signature": "08fcf5ed61981358",
       "attempts": 3,
       "outcomes": {
         "success": 3
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -5481,104 +5544,12 @@
     {
       "experiment_bucket": "muse-flex-ship-seeded",
       "world_version": "spaceship-escape-v5-zh-seeded",
-      "configuration_signature": "2e67666ac6286d99",
+      "configuration_signature": "836a36adea909a09",
       "attempts": 1,
       "outcomes": {
         "success": 1
       },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "successful_action_counts": {
-        "n": 1,
-        "p50": 49,
-        "p90": 49,
-        "max": 49
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 1,
-      "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 0
-    },
-    {
-      "experiment_bucket": "muse-flex-ship-seeded",
-      "world_version": "spaceship-escape-v5-zh-seeded",
-      "configuration_signature": "f01015dbf966fb5b",
-      "attempts": 1,
-      "outcomes": {
-        "success": 1
-      },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -5665,13 +5636,108 @@
       "navigation_two_cycle_count": 0
     },
     {
+      "experiment_bucket": "muse-flex-ship-seeded",
+      "world_version": "spaceship-escape-v5-zh-seeded",
+      "configuration_signature": "d5508d9e122fa1bb",
+      "attempts": 1,
+      "outcomes": {
+        "success": 1
+      },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "successful_action_counts": {
+        "n": 1,
+        "p50": 49,
+        "p90": 49,
+        "max": 49
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 1,
+      "repeated_failed_action_attempts": 0,
+      "navigation_two_cycle_count": 0
+    },
+    {
       "experiment_bucket": "muse-redesign-abyss-easy",
       "world_version": "abyss-escape-v2-zh",
-      "configuration_signature": "fda710791f550546",
+      "configuration_signature": "762f5e182a36b6ae",
       "attempts": 5,
       "outcomes": {
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 5,
@@ -5760,11 +5826,12 @@
     {
       "experiment_bucket": "muse-redesign-abyss-hard",
       "world_version": "abyss-escape-v4-zh",
-      "configuration_signature": "e55b20aa96f79b70",
+      "configuration_signature": "1d75e740539ba524",
       "attempts": 5,
       "outcomes": {
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 1,
@@ -5853,12 +5920,13 @@
     {
       "experiment_bucket": "muse-redesign-abyss-med",
       "world_version": "abyss-escape-v3-zh",
-      "configuration_signature": "0d95c24b9b8eb817",
+      "configuration_signature": "fde3bc9d3ff04f24",
       "attempts": 6,
       "outcomes": {
         "success": 5,
         "provider_error": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -5947,11 +6015,12 @@
     {
       "experiment_bucket": "muse-redesign-light-easy",
       "world_version": "lighthouse-escape-v4-zh",
-      "configuration_signature": "b8209907605defe1",
+      "configuration_signature": "06ca9d3c028b50ab",
       "attempts": 5,
       "outcomes": {
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 5,
@@ -6040,11 +6109,12 @@
     {
       "experiment_bucket": "muse-redesign-light-hard",
       "world_version": "lighthouse-escape-v6-zh",
-      "configuration_signature": "6b5f61fb5ea14b49",
+      "configuration_signature": "a4072334fa0c22c3",
       "attempts": 5,
       "outcomes": {
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -6133,12 +6203,13 @@
     {
       "experiment_bucket": "muse-redesign-light-med",
       "world_version": "lighthouse-escape-v5-zh",
-      "configuration_signature": "00333b0477b26b1c",
+      "configuration_signature": "0f7ec529cedf027b",
       "attempts": 7,
       "outcomes": {
         "provider_error": 2,
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -6227,11 +6298,12 @@
     {
       "experiment_bucket": "muse-redesign-ship-easy",
       "world_version": "spaceship-escape-easy-zh",
-      "configuration_signature": "20a616f0917f461b",
+      "configuration_signature": "1446ebe106e09aa0",
       "attempts": 5,
       "outcomes": {
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 2,
@@ -6320,11 +6392,12 @@
     {
       "experiment_bucket": "muse-redesign-ship-hard",
       "world_version": "spaceship-escape-hard-zh",
-      "configuration_signature": "148a847ec73aa1c5",
+      "configuration_signature": "afd3f0be74fcb7c2",
       "attempts": 5,
       "outcomes": {
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -6413,11 +6486,12 @@
     {
       "experiment_bucket": "muse-redesign-ship-med",
       "world_version": "spaceship-escape-v1-zh",
-      "configuration_signature": "52a905e667187573",
+      "configuration_signature": "4c61472222f89805",
       "attempts": 5,
       "outcomes": {
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -6506,11 +6580,12 @@
     {
       "experiment_bucket": "muse-s30-retry",
       "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "a22f7ae0af2e7aaa",
+      "configuration_signature": "f7076f12ad060b1a",
       "attempts": 1,
       "outcomes": {
         "step_limit": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -6599,11 +6674,12 @@
     {
       "experiment_bucket": "muse-schema-smoke",
       "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "cd8d9e75716c4bf2",
+      "configuration_signature": "9c1d07fe12ea6858",
       "attempts": 1,
       "outcomes": {
         "provider_error": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -6692,11 +6768,12 @@
     {
       "experiment_bucket": "muse-smoke",
       "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "cd8d9e75716c4bf2",
+      "configuration_signature": "9c1d07fe12ea6858",
       "attempts": 1,
       "outcomes": {
         "invalid_action_limit": 1
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -6785,11 +6862,12 @@
     {
       "experiment_bucket": "runs-root",
       "world_version": "lighthouse-escape-v1-zh",
-      "configuration_signature": "147afc039ff40ec2",
+      "configuration_signature": "7c295f3799b8fe8f",
       "attempts": 5,
       "outcomes": {
         "step_limit": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -6878,12 +6956,13 @@
     {
       "experiment_bucket": "runs-root",
       "world_version": "lighthouse-escape-v1-zh",
-      "configuration_signature": "d77145309607a65b",
+      "configuration_signature": "fa1b68fc4907b35a",
       "attempts": 9,
       "outcomes": {
         "success": 5,
         "provider_error": 4
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 3,
@@ -6972,573 +7051,12 @@
     {
       "experiment_bucket": "runs-root",
       "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "1eebeaae7278d438",
-      "attempts": 10,
-      "outcomes": {
-        "success": 5,
-        "step_limit": 5
-      },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 0,
-          "eligible": 10,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 5,
-          "eligible": 10,
-          "rate": 0.5,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 5,
-          "eligible": 5,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        },
-        "150": {
-          "successes": 5,
-          "eligible": 5,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        },
-        "200": {
-          "successes": 5,
-          "eligible": 5,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 10,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 5,
-          "eligible": 10,
-          "rate": 0.5,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 5,
-          "eligible": 5,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        },
-        "150": {
-          "successes": 5,
-          "eligible": 5,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        },
-        "200": {
-          "successes": 5,
-          "eligible": 5,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        }
-      },
-      "successful_action_counts": {
-        "n": 5,
-        "p50": 45,
-        "p90": 57,
-        "max": 57
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 26,
-      "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 25
-    },
-    {
-      "experiment_bucket": "runs-root",
-      "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "27a896a5673a0e67",
+      "configuration_signature": "036dffb0a144e0df",
       "attempts": 5,
       "outcomes": {
         "step_limit": 5
       },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 0,
-          "eligible": 5,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 5,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 5,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 5,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        }
-      },
-      "successful_action_counts": {
-        "n": 0,
-        "p50": null,
-        "p90": null,
-        "max": null
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 4,
-      "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 34
-    },
-    {
-      "experiment_bucket": "runs-root",
-      "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "2ac855314de3b954",
-      "attempts": 5,
-      "outcomes": {
-        "step_limit": 5
-      },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 0,
-          "eligible": 5,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 5,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 5,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 5,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
-        }
-      },
-      "successful_action_counts": {
-        "n": 0,
-        "p50": null,
-        "p90": null,
-        "max": null
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 13,
-      "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 8
-    },
-    {
-      "experiment_bucket": "runs-root",
-      "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "364d5eff6fbd73a5",
-      "attempts": 6,
-      "outcomes": {
-        "step_limit": 5,
-        "provider_error": 1
-      },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 0,
-          "eligible": 5,
-          "rate": 0.0,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 5,
-          "rate": 0.0,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 5
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 5
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 5
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 4,
-          "rate": 0.0,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 4,
-          "rate": 0.0,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        }
-      },
-      "successful_action_counts": {
-        "n": 0,
-        "p50": null,
-        "p90": null,
-        "max": null
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 35,
-      "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 67
-    },
-    {
-      "experiment_bucket": "runs-root",
-      "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "47358c11da80e8cb",
-      "attempts": 15,
-      "outcomes": {
-        "provider_error": 7,
-        "step_limit": 8
-      },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 0,
-          "eligible": 8,
-          "rate": 0.0,
-          "provider_error_censored": 7,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 7,
-          "step_limit_censored_before_budget": 8
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 7,
-          "step_limit_censored_before_budget": 8
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 7,
-          "step_limit_censored_before_budget": 8
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 7,
-          "step_limit_censored_before_budget": 8
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 5,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 5,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 5,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 5,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 5,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "successful_action_counts": {
-        "n": 0,
-        "p50": null,
-        "p90": null,
-        "max": null
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 0,
-      "repeated_failed_action_attempts": 49,
-      "navigation_two_cycle_count": 85
-    },
-    {
-      "experiment_bucket": "runs-root",
-      "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "619adf258c304db7",
-      "attempts": 5,
-      "outcomes": {
-        "step_limit": 4,
-        "provider_error": 1
-      },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 0,
-          "eligible": 4,
-          "rate": 0.0,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 4,
-          "rate": 0.0,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 4,
-          "rate": 0.0,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 4,
-          "rate": 0.0,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        }
-      },
-      "successful_action_counts": {
-        "n": 0,
-        "p50": null,
-        "p90": null,
-        "max": null
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 9,
-      "repeated_failed_action_attempts": 17,
-      "navigation_two_cycle_count": 18
-    },
-    {
-      "experiment_bucket": "runs-root",
-      "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "7d5e3d924011b51c",
-      "attempts": 5,
-      "outcomes": {
-        "step_limit": 5
-      },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -7627,12 +7145,12 @@
     {
       "experiment_bucket": "runs-root",
       "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "98352bc0332ba7cc",
+      "configuration_signature": "075f02fc61c74253",
       "attempts": 5,
       "outcomes": {
-        "step_limit": 4,
-        "success": 1
+        "step_limit": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -7642,32 +7160,32 @@
           "step_limit_censored_before_budget": 0
         },
         "60": {
-          "successes": 1,
+          "successes": 0,
           "eligible": 5,
-          "rate": 0.2,
+          "rate": 0.0,
           "provider_error_censored": 0,
           "step_limit_censored_before_budget": 0
         },
         "100": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
           "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 4
+          "step_limit_censored_before_budget": 5
         },
         "150": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
           "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 4
+          "step_limit_censored_before_budget": 5
         },
         "200": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
           "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 4
+          "step_limit_censored_before_budget": 5
         }
       },
       "offline_success_at_k_earliest_recorded_per_seed": {
@@ -7679,219 +7197,32 @@
           "step_limit_censored_before_budget": 0
         },
         "60": {
-          "successes": 1,
-          "eligible": 5,
-          "rate": 0.2,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 4
-        },
-        "150": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 4
-        },
-        "200": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 4
-        }
-      },
-      "successful_action_counts": {
-        "n": 1,
-        "p50": 42,
-        "p90": 42,
-        "max": 42
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 14,
-      "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 14
-    },
-    {
-      "experiment_bucket": "runs-root",
-      "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "9cf89c37b65ea7a3",
-      "attempts": 6,
-      "outcomes": {
-        "success": 6
-      },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 3,
-          "eligible": 6,
-          "rate": 0.5,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 6,
-          "eligible": 6,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 6,
-          "eligible": 6,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 6,
-          "eligible": 6,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 6,
-          "eligible": 6,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 3,
-          "eligible": 5,
-          "rate": 0.6,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 5,
-          "eligible": 5,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 5,
-          "eligible": 5,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 5,
-          "eligible": 5,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 5,
-          "eligible": 5,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "successful_action_counts": {
-        "n": 6,
-        "p50": 30.5,
-        "p90": 44,
-        "max": 44
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 2,
-      "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 0
-    },
-    {
-      "experiment_bucket": "runs-root",
-      "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "a22f7ae0af2e7aaa",
-      "attempts": 5,
-      "outcomes": {
-        "provider_error": 1,
-        "step_limit": 4
-      },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
           "successes": 0,
-          "eligible": 4,
+          "eligible": 5,
           "rate": 0.0,
-          "provider_error_censored": 1,
+          "provider_error_censored": 0,
           "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
         },
         "100": {
           "successes": 0,
           "eligible": 0,
           "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
         },
         "150": {
           "successes": 0,
           "eligible": 0,
           "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
         },
         "200": {
           "successes": 0,
           "eligible": 0,
           "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 4,
-          "rate": 0.0,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
         }
       },
       "successful_action_counts": {
@@ -7901,18 +7232,19 @@
         "max": null
       },
       "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 1,
+      "repeated_code_reads": 11,
       "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 0
+      "navigation_two_cycle_count": 72
     },
     {
       "experiment_bucket": "runs-root",
       "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "a3af4a87122ffb7d",
+      "configuration_signature": "08370c3114f13adb",
       "attempts": 5,
       "outcomes": {
         "step_limit": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -8001,105 +7333,12 @@
     {
       "experiment_bucket": "runs-root",
       "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "aaafcb07cf5dff4f",
-      "attempts": 6,
-      "outcomes": {
-        "step_limit": 4,
-        "provider_error": 2
-      },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 0,
-          "eligible": 4,
-          "rate": 0.0,
-          "provider_error_censored": 2,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 4,
-          "rate": 0.0,
-          "provider_error_censored": 2,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 2,
-          "step_limit_censored_before_budget": 4
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 2,
-          "step_limit_censored_before_budget": 4
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 2,
-          "step_limit_censored_before_budget": 4
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 4,
-          "rate": 0.0,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 0,
-          "eligible": 4,
-          "rate": 0.0,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        },
-        "150": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        },
-        "200": {
-          "successes": 0,
-          "eligible": 0,
-          "rate": null,
-          "provider_error_censored": 1,
-          "step_limit_censored_before_budget": 4
-        }
-      },
-      "successful_action_counts": {
-        "n": 0,
-        "p50": null,
-        "p90": null,
-        "max": null
-      },
-      "wrong_terminal_target_reads": 5,
-      "repeated_code_reads": 0,
-      "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 27
-    },
-    {
-      "experiment_bucket": "runs-root",
-      "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "cd8d9e75716c4bf2",
+      "configuration_signature": "0f88a5407d65d34c",
       "attempts": 5,
       "outcomes": {
         "step_limit": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -8110,10 +7349,10 @@
         },
         "60": {
           "successes": 0,
-          "eligible": 0,
-          "rate": null,
+          "eligible": 5,
+          "rate": 0.0,
           "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
+          "step_limit_censored_before_budget": 0
         },
         "100": {
           "successes": 0,
@@ -8147,10 +7386,10 @@
         },
         "60": {
           "successes": 0,
-          "eligible": 0,
-          "rate": null,
+          "eligible": 5,
+          "rate": 0.0,
           "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 5
+          "step_limit_censored_before_budget": 0
         },
         "100": {
           "successes": 0,
@@ -8181,18 +7420,19 @@
         "max": null
       },
       "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 0,
-      "repeated_failed_action_attempts": 65,
-      "navigation_two_cycle_count": 40
+      "repeated_code_reads": 13,
+      "repeated_failed_action_attempts": 0,
+      "navigation_two_cycle_count": 8
     },
     {
       "experiment_bucket": "runs-root",
       "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "d0c5f499f3ecbcde",
+      "configuration_signature": "1e858996a554005f",
       "attempts": 5,
       "outcomes": {
         "step_limit": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -8281,11 +7521,581 @@
     {
       "experiment_bucket": "runs-root",
       "world_version": "spaceship-escape-v2-zh",
-      "configuration_signature": "e46e73c170ba7ecd",
+      "configuration_signature": "295cf5be03d214b6",
+      "attempts": 5,
+      "outcomes": {
+        "step_limit": 4,
+        "provider_error": 1
+      },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 4,
+          "rate": 0.0,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 0,
+          "eligible": 4,
+          "rate": 0.0,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        },
+        "150": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        },
+        "200": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 4,
+          "rate": 0.0,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 0,
+          "eligible": 4,
+          "rate": 0.0,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        },
+        "150": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        },
+        "200": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        }
+      },
+      "successful_action_counts": {
+        "n": 0,
+        "p50": null,
+        "p90": null,
+        "max": null
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 9,
+      "repeated_failed_action_attempts": 17,
+      "navigation_two_cycle_count": 18
+    },
+    {
+      "experiment_bucket": "runs-root",
+      "world_version": "spaceship-escape-v2-zh",
+      "configuration_signature": "3026f067def6bf65",
+      "attempts": 15,
+      "outcomes": {
+        "provider_error": 7,
+        "step_limit": 8
+      },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 8,
+          "rate": 0.0,
+          "provider_error_censored": 7,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 7,
+          "step_limit_censored_before_budget": 8
+        },
+        "100": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 7,
+          "step_limit_censored_before_budget": 8
+        },
+        "150": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 7,
+          "step_limit_censored_before_budget": 8
+        },
+        "200": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 7,
+          "step_limit_censored_before_budget": 8
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 5,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 5,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 5,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 5,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 5,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "successful_action_counts": {
+        "n": 0,
+        "p50": null,
+        "p90": null,
+        "max": null
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 0,
+      "repeated_failed_action_attempts": 49,
+      "navigation_two_cycle_count": 85
+    },
+    {
+      "experiment_bucket": "runs-root",
+      "world_version": "spaceship-escape-v2-zh",
+      "configuration_signature": "677ccd7023b74598",
+      "attempts": 10,
+      "outcomes": {
+        "success": 5,
+        "step_limit": 5
+      },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 10,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 5,
+          "eligible": 10,
+          "rate": 0.5,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 5,
+          "eligible": 5,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
+        },
+        "150": {
+          "successes": 5,
+          "eligible": 5,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
+        },
+        "200": {
+          "successes": 5,
+          "eligible": 5,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 10,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 5,
+          "eligible": 10,
+          "rate": 0.5,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 5,
+          "eligible": 5,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
+        },
+        "150": {
+          "successes": 5,
+          "eligible": 5,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
+        },
+        "200": {
+          "successes": 5,
+          "eligible": 5,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
+        }
+      },
+      "successful_action_counts": {
+        "n": 5,
+        "p50": 45,
+        "p90": 57,
+        "max": 57
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 26,
+      "repeated_failed_action_attempts": 0,
+      "navigation_two_cycle_count": 25
+    },
+    {
+      "experiment_bucket": "runs-root",
+      "world_version": "spaceship-escape-v2-zh",
+      "configuration_signature": "818001b561b3a651",
+      "attempts": 6,
+      "outcomes": {
+        "step_limit": 4,
+        "provider_error": 2
+      },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 4,
+          "rate": 0.0,
+          "provider_error_censored": 2,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 0,
+          "eligible": 4,
+          "rate": 0.0,
+          "provider_error_censored": 2,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 2,
+          "step_limit_censored_before_budget": 4
+        },
+        "150": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 2,
+          "step_limit_censored_before_budget": 4
+        },
+        "200": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 2,
+          "step_limit_censored_before_budget": 4
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 4,
+          "rate": 0.0,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 0,
+          "eligible": 4,
+          "rate": 0.0,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        },
+        "150": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        },
+        "200": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        }
+      },
+      "successful_action_counts": {
+        "n": 0,
+        "p50": null,
+        "p90": null,
+        "max": null
+      },
+      "wrong_terminal_target_reads": 5,
+      "repeated_code_reads": 0,
+      "repeated_failed_action_attempts": 0,
+      "navigation_two_cycle_count": 27
+    },
+    {
+      "experiment_bucket": "runs-root",
+      "world_version": "spaceship-escape-v2-zh",
+      "configuration_signature": "9c1d07fe12ea6858",
       "attempts": 5,
       "outcomes": {
         "step_limit": 5
       },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 5,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
+        },
+        "100": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
+        },
+        "150": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
+        },
+        "200": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 5,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
+        },
+        "100": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
+        },
+        "150": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
+        },
+        "200": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 5
+        }
+      },
+      "successful_action_counts": {
+        "n": 0,
+        "p50": null,
+        "p90": null,
+        "max": null
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 0,
+      "repeated_failed_action_attempts": 65,
+      "navigation_two_cycle_count": 40
+    },
+    {
+      "experiment_bucket": "runs-root",
+      "world_version": "spaceship-escape-v2-zh",
+      "configuration_signature": "a4e642f25640e6f0",
+      "attempts": 5,
+      "outcomes": {
+        "step_limit": 4,
+        "success": 1
+      },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 5,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 1,
+          "eligible": 5,
+          "rate": 0.2,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 4
+        },
+        "150": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 4
+        },
+        "200": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 4
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 5,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 1,
+          "eligible": 5,
+          "rate": 0.2,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 4
+        },
+        "150": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 4
+        },
+        "200": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 4
+        }
+      },
+      "successful_action_counts": {
+        "n": 1,
+        "p50": 42,
+        "p90": 42,
+        "max": 42
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 14,
+      "repeated_failed_action_attempts": 0,
+      "navigation_two_cycle_count": 14
+    },
+    {
+      "experiment_bucket": "runs-root",
+      "world_version": "spaceship-escape-v2-zh",
+      "configuration_signature": "d5fd3223abff48a8",
+      "attempts": 5,
+      "outcomes": {
+        "step_limit": 5
+      },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -8367,18 +8177,303 @@
         "max": null
       },
       "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 11,
+      "repeated_code_reads": 4,
       "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 72
+      "navigation_two_cycle_count": 34
+    },
+    {
+      "experiment_bucket": "runs-root",
+      "world_version": "spaceship-escape-v2-zh",
+      "configuration_signature": "de9b5c69910e63c0",
+      "attempts": 6,
+      "outcomes": {
+        "success": 6
+      },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 3,
+          "eligible": 6,
+          "rate": 0.5,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 6,
+          "eligible": 6,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 6,
+          "eligible": 6,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 6,
+          "eligible": 6,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 6,
+          "eligible": 6,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 3,
+          "eligible": 5,
+          "rate": 0.6,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 5,
+          "eligible": 5,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 5,
+          "eligible": 5,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 5,
+          "eligible": 5,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 5,
+          "eligible": 5,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "successful_action_counts": {
+        "n": 6,
+        "p50": 30.5,
+        "p90": 44,
+        "max": 44
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 2,
+      "repeated_failed_action_attempts": 0,
+      "navigation_two_cycle_count": 0
+    },
+    {
+      "experiment_bucket": "runs-root",
+      "world_version": "spaceship-escape-v2-zh",
+      "configuration_signature": "f7076f12ad060b1a",
+      "attempts": 5,
+      "outcomes": {
+        "provider_error": 1,
+        "step_limit": 4
+      },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 4,
+          "rate": 0.0,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        },
+        "100": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        },
+        "150": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        },
+        "200": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 4,
+          "rate": 0.0,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        },
+        "100": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        },
+        "150": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        },
+        "200": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        }
+      },
+      "successful_action_counts": {
+        "n": 0,
+        "p50": null,
+        "p90": null,
+        "max": null
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 1,
+      "repeated_failed_action_attempts": 0,
+      "navigation_two_cycle_count": 0
+    },
+    {
+      "experiment_bucket": "runs-root",
+      "world_version": "spaceship-escape-v2-zh",
+      "configuration_signature": "fd6a1876da602cd6",
+      "attempts": 6,
+      "outcomes": {
+        "step_limit": 5,
+        "provider_error": 1
+      },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 5,
+          "rate": 0.0,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 0,
+          "eligible": 5,
+          "rate": 0.0,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 5
+        },
+        "150": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 5
+        },
+        "200": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 5
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 4,
+          "rate": 0.0,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 0,
+          "eligible": 4,
+          "rate": 0.0,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        },
+        "150": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        },
+        "200": {
+          "successes": 0,
+          "eligible": 0,
+          "rate": null,
+          "provider_error_censored": 1,
+          "step_limit_censored_before_budget": 4
+        }
+      },
+      "successful_action_counts": {
+        "n": 0,
+        "p50": null,
+        "p90": null,
+        "max": null
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 35,
+      "repeated_failed_action_attempts": 0,
+      "navigation_two_cycle_count": 67
     },
     {
       "experiment_bucket": "runs-root",
       "world_version": "spaceship-escape-v3-zh",
-      "configuration_signature": "0d55ae91f6e8642b",
+      "configuration_signature": "1209e82535112bd7",
       "attempts": 5,
       "outcomes": {
         "success": 5
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -8467,104 +8562,12 @@
     {
       "experiment_bucket": "runs-root",
       "world_version": "spaceship-escape-v5-zh-seeded",
-      "configuration_signature": "afe535a7fef7c583",
-      "attempts": 1,
-      "outcomes": {
-        "success": 1
-      },
-      "offline_success_at_k_all_recorded_attempts": {
-        "30": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "offline_success_at_k_earliest_recorded_per_seed": {
-        "30": {
-          "successes": 0,
-          "eligible": 1,
-          "rate": 0.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "60": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "100": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "150": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        },
-        "200": {
-          "successes": 1,
-          "eligible": 1,
-          "rate": 1.0,
-          "provider_error_censored": 0,
-          "step_limit_censored_before_budget": 0
-        }
-      },
-      "successful_action_counts": {
-        "n": 1,
-        "p50": 32,
-        "p90": 32,
-        "max": 32
-      },
-      "wrong_terminal_target_reads": 0,
-      "repeated_code_reads": 0,
-      "repeated_failed_action_attempts": 0,
-      "navigation_two_cycle_count": 0
-    },
-    {
-      "experiment_bucket": "runs-root",
-      "world_version": "spaceship-escape-v5-zh-seeded",
-      "configuration_signature": "e8cf69e68428e0f6",
+      "configuration_signature": "308868c9d3b48daf",
       "attempts": 2,
       "outcomes": {
         "success": 2
       },
+      "memory_statistics_episodes": 0,
       "offline_success_at_k_all_recorded_attempts": {
         "30": {
           "successes": 0,
@@ -8647,6 +8650,100 @@
       },
       "wrong_terminal_target_reads": 0,
       "repeated_code_reads": 3,
+      "repeated_failed_action_attempts": 0,
+      "navigation_two_cycle_count": 0
+    },
+    {
+      "experiment_bucket": "runs-root",
+      "world_version": "spaceship-escape-v5-zh-seeded",
+      "configuration_signature": "7f6f2eba42002985",
+      "attempts": 1,
+      "outcomes": {
+        "success": 1
+      },
+      "memory_statistics_episodes": 0,
+      "offline_success_at_k_all_recorded_attempts": {
+        "30": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "offline_success_at_k_earliest_recorded_per_seed": {
+        "30": {
+          "successes": 0,
+          "eligible": 1,
+          "rate": 0.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "60": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "100": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "150": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        },
+        "200": {
+          "successes": 1,
+          "eligible": 1,
+          "rate": 1.0,
+          "provider_error_censored": 0,
+          "step_limit_censored_before_budget": 0
+        }
+      },
+      "successful_action_counts": {
+        "n": 1,
+        "p50": 32,
+        "p90": 32,
+        "max": 32
+      },
+      "wrong_terminal_target_reads": 0,
+      "repeated_code_reads": 0,
       "repeated_failed_action_attempts": 0,
       "navigation_two_cycle_count": 0
     }

@@ -8,6 +8,7 @@ _audit = run_path(str(Path(__file__).resolve().parents[1] / "scripts" / "audit_v
 audit_trace = _audit["audit_trace"]
 load_attempts = _audit["load_attempts"]
 summarize = _audit["summarize"]
+configuration_signature = _audit["_configuration_signature"]
 
 
 def _trace(episode_id: str, created_at: str, outcome: str) -> dict[str, object]:
@@ -93,6 +94,40 @@ def test_audit_trace_counts_public_step_patterns() -> None:
     assert row["rejected_actions"] == 2
     assert row["rejection_reason_counts"] == {"wrong_target": 2}
     assert row["rejection_reason_by_tool_counts"] == {"read_terminal:wrong_target": 2}
+
+
+def test_audit_trace_exports_memory_version_and_statistics_without_memory_text() -> None:
+    trace = _trace("episode-memory", "2026-10-13T00:00:00Z", "success")
+    trace["provenance"]["memory_schema_version"] = "v3"
+    trace["provenance"]["memory_renderer_version"] = "v3_spatial_event"
+    trace["steps"] = [
+        {
+            "action": {"tool": "look"},
+            "result": {"status": "success", "reason": "looked"},
+            "memory_statistics": {
+                "insertions": 9,
+                "updates": 2,
+                "invalidations": 0,
+                "compactions": 1,
+                "rendered_chars": 800,
+                "estimated_tokens": 200,
+            },
+        }
+    ]
+    row = audit_trace(trace)
+
+    assert row["memory_schema_version"] == "v3"
+    assert row["memory_renderer_version"] == "v3_spatial_event"
+    assert row["memory_statistics_present"] is True
+    assert row["memory_insertions"] == 9
+    assert row["memory_compactions"] == 1
+    assert row["memory_rendered_chars"] == 800
+    assert row["memory_estimated_tokens"] == 200
+
+    v2_trace = _trace("episode-memory-v2", "2026-10-13T00:00:00Z", "success")
+    v2_trace["provenance"]["memory_schema_version"] = "memory_v1"
+    v2_trace["provenance"]["memory_renderer_version"] = "memory_v1"
+    assert configuration_signature(row) != configuration_signature(audit_trace(v2_trace))
 
 
 def test_load_attempts_deduplicates_episode_copies_and_orders_attempts(tmp_path: Path) -> None:

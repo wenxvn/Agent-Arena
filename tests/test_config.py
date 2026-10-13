@@ -59,6 +59,17 @@ def test_fake_provider_does_not_require_bailian_credentials(isolated_defaults: P
     settings = RuntimeSettings.load(env_file=None)
 
     assert settings.provider == "fake"
+    assert settings.memory_version == "v2"
+
+
+def test_memory_v3_is_an_explicit_memory_agent_policy(isolated_defaults: Path) -> None:
+    settings = RuntimeSettings.load(
+        {"agent": "memory", "memory_version": "v3_spatial_event"}, env_file=None
+    )
+
+    assert settings.memory_version == "v3_spatial_event"
+    with pytest.raises(ValueError, match="only valid with agent=memory"):
+        RuntimeSettings.load({"memory_version": "v3_spatial_event"}, env_file=None)
 
 
 def test_ollama_uses_its_own_default_endpoint_and_model(isolated_defaults: Path) -> None:
