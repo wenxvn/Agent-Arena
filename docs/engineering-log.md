@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V2 S5.2 seeded 布局覆盖缺口
+
+事件：将 S5.2 从“长尾分析完成”更正为部分完成，并量化现有 lunar/pyramid seeded 生成器的可用实例多样性。
+
+原因：原提纲要求不同 seed 具备足够多的不同实例、逐实例可解且难度与 oracle 可计算。单看已有 10 条 Trace 不能证明生成器满足这些条件。
+
+改动：扩展 `scripts/audit_v2_seeded_overhead.py` 输出 seed 0–999 的布局覆盖 CSV；保留旧 v2 定义，并在 V2-02、Scope 明确记录两图均只有两种工具布局、没有预设 difficulty 标签，以及后续需新 `world_version` 和先冻结 dev/test instance hash。
+
+验证：本机离线盘点每图 1000 个 seed 各得到两种布局，频数 497/503；四种布局均由当前规则 BFS 求解，lunar/pyramid 最短动作分别为 22/16。原有 10 条长尾 Trace 分解仍可复算；Ruff、脚本 mypy、`git diff --check` 均通过。未运行 pytest、provider API 或 GPU。
+
+下一步：在动生成器前为扩展容器/实例划分写出版本化决策，并保留旧 v2 作为历史对照；S2 Gate 仍未通过，不推进 S3。
+
+关联实现提交：`c24b098c15fdbce7a9dc1d545fcc2876955bd350`。
+
 ## 2026-10-13 V2 S5.2 seeded 长尾离线分解
 
 事件：完成 lunar 与 pyramid seeded 长尾的逐局最短动作和额外行为开销核算。
