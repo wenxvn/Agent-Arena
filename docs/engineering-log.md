@@ -10,9 +10,23 @@
 
 验证：当前 FlexEnvironment BFS 对 120/120 个候选定义找到成功路径；清单核对 120 个唯一 hash、seed 0–89 / 0–29 各覆盖全集一次、跨版本 hash 碰撞 0。split 为 lunar 60 dev / 30 test、pyramid 20 dev / 10 test，四个地图内难度桶均同时含 dev/test。Ruff、`MYPYPATH=src` 下脚本 mypy、`git diff --cached --check` 通过。未运行 pytest、provider API 或 GPU。规则源 SHA-256=`11393734c890312a3ae5e19057ae809a8a5c976c4bd43a91e6c4152304a51752`；BFS oracle SHA-256=`908fa6ff181557a885041be747dd245ac1f86ce6b9fd2346d446a26d0a5e556`。
 
-下一步：实现两个新 selector 与稳定 seed 映射，逐 seed 核对冻结 hash；test 实例不得用于 prompt 或机制调整。在线矩阵仍等待 S2 matched-pilot Gate。
+下一步：该冻结提交后的计划是实现两个新 selector 并逐 seed 核对 hash；已在紧接的运行时事件中完成。test 实例仍不得用于 prompt 或机制调整，在线矩阵等待 S2 matched-pilot Gate。
 
 关联提交：`f01b38d35029ea16a90c338fcd6911b753bd5b39`。
+
+## 2026-10-13 V2 S5.2 seeded v3 运行时 identity 对照
+
+事件：实现两个 seeded v3 world selector 和冻结布局 seed 映射，并对照 120 个预注册实例。
+
+原因：离线全集与 dev/test 边界已先冻结；运行时必须复现相同 definition hash 和 placement，才能进入后续行为评估。
+
+改动：新增 lunar/pyramid 六容器 v3 JSON、`LunarV3SeededEnvironment`、`PyramidV3SeededEnvironment`、确定性 affine seed permutation、稳定 hash 排序及 selector 注册。非激活容器从该实例公开房间对象中移除；v2 文件、v2 seed builder 和 FlexEnvironment 动作规则未修改。Scope、README、spec 0016 与 V2-02 更新到运行时实现状态；冻结脚本增加 `--verify-runtime`。
+
+验证：对 frozen CSV 的 90 个 lunar 与 30 个 pyramid seed 逐项核对运行时 stable hash、工具放置、激活容器、非激活容器隐藏和 seed+全集大小周期，120/120 匹配；默认进程及 `PYTHONHASHSEED=1/42` 进程均一致。Ruff 与 `MYPYPATH=src` 下 mypy 50 个源文件通过，`git diff --cached --check` 通过。未运行 pytest、provider API 或 GPU；身份匹配不是模型表现证据。
+
+下一步：保留 test 作为未触碰的程序性 holdout；待 S2 matched-pilot Gate 通过后再按预登记预算运行 dev/test 行为评估。当前不得调整 prompt 或机制来适配 test。
+
+关联提交：`fac58fe0df226d14903573c6d778e91e67553949`。
 
 ## 2026-10-13 V2 S5.2 seeded 布局覆盖缺口
 
