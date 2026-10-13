@@ -11,6 +11,7 @@ from agent_arena.agents.memory import (
     MemoryV3Limits,
     MemoryV3Reducer,
     MemoryV3State,
+    PublicRoomFact,
 )
 from agent_arena.arena import Observation, ToolReason, ToolResult, ToolStatus
 from agent_arena.arena.models import LookAction, MoveAction, UseAction
@@ -562,6 +563,41 @@ def test_memory_v3_renderer_compacts_with_visible_omission_counts() -> None:
     assert agent.memory_statistics["compactions"] == 1
     assert agent.memory_statistics["rendered_chars"] == len(rendered)
     assert agent.memory_statistics["estimated_tokens"] == (len(rendered) + 3) // 4
+
+
+def test_memory_v3_renderer_preserves_current_room_fact_when_compacting() -> None:
+    agent = MemoryAgent(FakeDecisionProvider([{}]), memory_version="v3_spatial_event")
+    agent.reset(make_observation("current_room"))
+    assert isinstance(agent._memory, MemoryV3State)
+    old_facts = tuple(
+        PublicRoomFact(
+            room=f"room_{index}",
+            description=f"historical-{index}-" + "x" * 270,
+        )
+        for index in range(48)
+    )
+    current_fact = PublicRoomFact(
+        room="current_room",
+        description="CURRENT_ROOM_DESCRIPTION_MUST_REMAIN",
+    )
+    agent._memory = agent._memory.model_copy(
+        update={
+            "visited_rooms": (*(fact.room for fact in old_facts), "current_room"),
+            "room_facts": (*old_facts, current_fact),
+        }
+    )
+
+    agent._refresh_v3_render_statistics()
+    rendered = agent._render_memory_data()
+    payload = json.loads(rendered.split("\n", 2)[2])
+
+    assert len(rendered) <= MemoryV3Limits().max_rendered_chars
+    assert payload["memory_omissions"]["room_facts"] > 0
+    assert any(
+        fact["room"] == "current_room"
+        and fact["description"] == "CURRENT_ROOM_DESCRIPTION_MUST_REMAIN"
+        for fact in payload["room_facts"]
+    )
 
 
 def test_memory_v3_fails_loudly_when_required_frontier_exceeds_payload_limit() -> None:
