@@ -39,7 +39,7 @@ Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实�
 
 2026-10-13 随后对 trace statistics 做容量边界复核，发现 v2 访问短列表达到 12 项后，新增的 v3 `visited_rooms` 没有计入 `insertions`。统计改为按 v3 episode 房间集合的新增项计数，并在原 frontier 容量 fixture 增加第 13 个房间的 insertion 精确断言。本地全量 pytest 349 passed、Ruff 和 mypy 49 个源文件通过；提交 `8e4217241f848887bb7040e40865db6b0a075070` 的 [GitHub Actions run #72](https://github.com/wenxvn/Agent-Arena/actions/runs/38379141983) 成功。未发起 provider 请求，S2 在线 Gate 仍未通过。
 
-2026-10-13 继续按全部持久记忆字段审计计数口径，发现初始化未计 `revealed_items`，后续也漏计新增 open question 与题目解决、里程碑状态/current room 变化。计数口径已在 spec 0014 明确；新增回归 fixture 覆盖初始化、背包/已揭示物品、失败动作/问题创建、修复后问题解决与重复事件更新。修正后本地全量 pytest 350 passed、Ruff 全仓和 mypy 49 个源文件通过；当前提交的远端 Actions 待验证。无 provider 请求。
+2026-10-13 继续按全部持久记忆字段审计计数口径，发现初始化未计 `revealed_items`，后续也漏计新增 open question 与题目解决、里程碑状态/current room 变化。计数口径已在 spec 0014 明确；新增回归 fixture 覆盖初始化、背包/已揭示物品、失败动作/问题创建、修复后问题解决与重复事件更新。修正后本地全量 pytest 350 passed、Ruff 全仓和 mypy 49 个源文件通过；提交 `a336bd68768f32a35e5c6a906b60045571b63669` 的 [GitHub Actions run #74](https://github.com/wenxvn/Agent-Arena/actions/runs/38379921434) 成功。无 provider 请求。
 
 ## Pilot 决策
 
