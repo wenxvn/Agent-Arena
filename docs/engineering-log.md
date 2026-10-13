@@ -8,11 +8,11 @@
 
 改动：新增 `tests/test_flex_v3_seeded.py`，逐行比对 120 个冻结实例的 hash、placement、difficulty、split、激活容器和 seed 周期，并断言非激活候选不进入公开房间对象、负 seed 拒绝。扩展 `tests/test_flex_world_identity.py`，在不同 `PYTHONHASHSEED` 子进程核对两个版本的 hash 和周期。
 
-验证：定向 pytest 5 passed；全量 pytest 361 passed；Ruff 全仓通过；mypy 49 个源文件无问题；manifest runtime audit 在 `PYTHONHASHSEED=42` 下仍为 120/120 一致。未运行 provider API 或 GPU。CI 尚未查看。
+验证：定向 pytest 5 passed；全量 pytest 361 passed；Ruff 全仓通过；mypy 49 个源文件无问题；manifest runtime audit 在 `PYTHONHASHSEED=42` 下仍为 120/120 一致。未运行 provider API 或 GPU。GitHub Actions CI #93 对提交 `b3010512023323609196412f2a4915fa738ded4a` 全绿（[run #93](https://github.com/wenxvn/Agent-Arena/actions/runs/38399647555)）。
 
 下一步：按原提纲检查尚可离线推进的 S5/S6 项；S5.3 需等 S2–S4 正向机制证据，在线行为评估仍受 S2 Gate 阻塞。
 
-关联提交：`0ac83f2c2bd93acb0113efb7b51bea0c90c04006`。
+关联提交：测试 `0ac83f2c2bd93acb0113efb7b51bea0c90c04006`；本地记录及 CI 确认 `b3010512023323609196412f2a4915fa738ded4a`。
 
 ## 2026-10-13 V2 S5.2 seeded v3 实例全集与 holdout 冻结
 
