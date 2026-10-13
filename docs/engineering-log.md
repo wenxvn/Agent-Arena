@@ -6,11 +6,11 @@
 
 改动：`budget.py` 的 Windows-only `msvcrt` 分支与已存在的 Linux `fcntl` 分支一致，在动态平台 API 边界增加 `cast(Any, ...)`；运行实现不变。
 
-验证：锁定依赖的干净临时环境中，Windows 默认与 `--platform linux` 的 `mypy --no-incremental src` 均通过（各 49 个源文件）；Ruff 通过、全量 pytest 348 passed、`uv lock --check` 和 `git diff --check` 通过。修复 SHA 的 GitHub Actions 尚待验证，不提前报绿。
+验证：锁定依赖的干净临时环境中，Windows 默认与 `--platform linux` 的 `mypy --no-incremental src` 均通过（各 49 个源文件）；Ruff 通过、全量 pytest 348 passed、`uv lock --check` 和 `git diff --check` 通过。实现提交 `4ec5bb1442037543f2f01656bc956f78df546e85` 的 [GitHub Actions run #67](https://github.com/wenxvn/Agent-Arena/actions/runs/38376965970) 中 sync、Ruff、mypy、pytest 全部通过。
 
-下一步：提交并推送此跨平台类型修复，检查对应 quality run；保持 S2 的 API 停止状态。
+下一步：S0 跨平台质量门禁已恢复；继续 V2 离线维护，保持 S2 的 API 停止状态。
 
-关联实现提交：待提交。
+关联实现提交：`4ec5bb1442037543f2f01656bc956f78df546e85`。
 
 ## 2026-10-13 BUDGET-03 通用 provider error，停止在线尝试
 
