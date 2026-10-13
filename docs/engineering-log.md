@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V2 S5.2 seeded 长尾离线分解
+
+事件：完成 lunar 与 pyramid seeded 长尾的逐局最短动作和额外行为开销核算。
+
+原因：S5.2 要区分最短可行路线与 agent 行为开销；旧 Trace 的 seeded `world_definition_hash` 曾受 `frozenset` 序列化顺序影响，不能直接用当前稳定 hash 作匹配键。
+
+改动：新增 `scripts/audit_v2_seeded_overhead.py` 和逐局 CSV，覆盖两个地图各 5 个 seed；以公开容器 Observation 和 pickup 房间核对全部 10 个实例布局，再对当前 `FlexEnvironment` 做有限状态 BFS。V2-02 与 Scope 记录最短步数、移动动作差值、工具房回访、重复 look、阶段拒绝和重复失败重试，并保留 Trace 未记录环境规则 SHA 的限制。
+
+验证：仓库临时环境 Ruff 与针对脚本的 mypy 均通过；脚本读取 10 条成功 Trace，所有布局逐局匹配。lunar/pyramid 长尾分别为 232/22 与 159/16 动作，`git diff --check` 通过。未运行 pytest、provider API 或 GPU。
+
+下一步：S2 pilot Gate 仍未通过且登记矩阵已停止请求；不推进 S3，继续处理可离线完成的 V2 提纲任务。
+
+关联实现提交：`08dd59a2e26cca291fa530be501b09c309c66138`。
+
 ## 2026-10-13 V2 S1.3 固定地图参考路径比值补充
 
 事件：重新核对 S1.3 的 optimality gap 要求与项目接受的地图 spec，发现 42 个固定地图 selector 在 spec 0011–0013 中已有最短公开路径步数。
