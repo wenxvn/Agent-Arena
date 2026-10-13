@@ -51,7 +51,7 @@ uv run agent-arena run --provider ollama --agent planner_assisted --seed 0 --out
 
 2026-10-11 起真实实验切到 OpenCode Zen 网关的 `muse-spark-1.3-contributor`：Memory + history5 + recovery + world-declared phase + E1（prompt hash `44229085`）+ 不限步的自主组合，在 9 配置（飞船/灯塔/深海站 × 简单/中等/困难）× 5 seeds 中每个配置至少有一次成功；原始 51 个 trace 含 46 次成功和 5 次 `provider_error`，按所有实际尝试计为 46/51（90.2%），去重后的 45 个配置才是 45/45。0 非法输出；均值步数飞船 70.4/140.8/165.4、灯塔 39.8/49.4/105.8、深海 26.8/42.2/83.6，三图全部随难度单调递增。旧 qwen 基线保留独立统计。
 
-后续十世界三十图矩阵 150/150 均有成功 trace，使用 E1-ON 基线；其中固定图存在网关失败后的重跑补齐，不能解读为首次尝试 150/150 稳定成功。flex pilot 与 seeded 变体分别记录为 30/30、15/15；seeded 变体存在长尾步数，尚需更广覆盖。具体实例、尝试分母与条件见 [开发进度](docs/scope/scope.md)。
+后续十世界三十图矩阵 150/150 均有成功 trace，使用 E1-ON 基线；其中固定图存在网关失败后的重跑补齐，不能解读为首次尝试 150/150 稳定成功。flex pilot 与 seeded v2 变体分别记录为 30/30、15/15，且 seeded 长尾分析发现 v2 每图仅两种布局。新的 seeded v3 已离线冻结 lunar 90 / pyramid 30 个实例及 dev/test hash split，运行时与冻结清单 120/120 匹配；尚无 v3 模型行为评估，且 S2 matched-pilot Gate 未通过。具体实例、尝试分母与条件见 [开发进度](docs/scope/scope.md) 和 [V2-02 seeded 审计](docs/research/v2/02-bottleneck-audit.md)。
 
 ## 使用 Ollama 本地模型
 

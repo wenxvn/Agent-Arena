@@ -9,15 +9,17 @@ from collections import Counter, defaultdict
 from itertools import combinations
 from math import gcd
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
+from audit_v2_seeded_overhead import _minimum_route
+
+from agent_arena.worlds import create_environment
 from agent_arena.worlds.flex import (
     FlexEnvironment,
     load_lunar_v2_seeded_definition,
     load_pyramid_v2_seeded_definition,
 )
 from agent_arena.worlds.spaceship_escape import ItemDefinition, ObjectDefinition
-from scripts.audit_v2_seeded_overhead import _minimum_route
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT / "docs/research/v2/assets/seeded-v3-layout-freeze.csv"
@@ -217,10 +219,88 @@ def _freeze_split(rows: list[dict[str, Any]]) -> None:
             row["split"] = "test" if index < test_size else "dev"
 
 
+def _verify_runtime(manifest_path: Path) -> int:
+    with manifest_path.open(encoding="utf-8-sig", newline="") as stream:
+        rows = list(csv.DictReader(stream))
+    grouped: dict[str, list[dict[str, str]]] = defaultdict(list)
+    for row in rows:
+        grouped[row["world_version"]].append(row)
+
+    for world_version, version_rows in grouped.items():
+        world = world_version.removesuffix("-v3-seeded-zh")
+        population_size = len(version_rows)
+        seen_hashes: set[str] = set()
+        for row in version_rows:
+            seed = int(row["seed"])
+            environment = cast(
+                FlexEnvironment,
+                create_environment(world, world_version, seed=seed),
+            )
+            expected_hash = row["instance_hash"]
+            if environment.identity[3] != expected_hash:
+                raise ValueError(
+                    f"{world_version} seed {seed}: runtime hash differs from frozen manifest."
+                )
+            if expected_hash in seen_hashes:
+                raise ValueError(f"{world_version} repeats an instance hash.")
+            seen_hashes.add(expected_hash)
+
+            expected_items = json.loads(row["tool_placements_json"])
+            actual_items = {
+                item.id: item.container_id
+                for item in environment.definition.items
+            }
+            if actual_items != expected_items:
+                raise ValueError(
+                    f"{world_version} seed {seed}: runtime tool placement differs."
+                )
+            expected_active = tuple(json.loads(row["active_containers_json"]))
+            actual_active = tuple(sorted(set(actual_items.values())))
+            if actual_active != expected_active:
+                raise ValueError(
+                    f"{world_version} seed {seed}: runtime active containers differ."
+                )
+            visible_candidates = {
+                object_id
+                for room in environment.definition.rooms
+                for object_id in room.object_ids
+                if object_id in environment.definition.seed_containers
+            }
+            if visible_candidates != set(expected_active):
+                raise ValueError(
+                    f"{world_version} seed {seed}: inactive containers enter room observations."
+                )
+
+            wrapped = cast(
+                FlexEnvironment,
+                create_environment(
+                    world, world_version, seed=seed + population_size
+                ),
+            )
+            if wrapped.identity[3] != expected_hash:
+                raise ValueError(
+                    f"{world_version} seed cycle differs after {population_size}."
+                )
+
+        if len(seen_hashes) != population_size:
+            raise ValueError(f"{world_version} did not cover its frozen population.")
+        print(f"{world_version}: runtime 与冻结清单 {population_size}/{population_size} 一致")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument(
+        "--verify-runtime",
+        action="store_true",
+        help="将已生成的 manifest 与运行时 selector、identity、placements 对照。",
+    )
     args = parser.parse_args()
+
+    output = args.output if args.output.is_absolute() else ROOT / args.output
+    if args.verify_runtime:
+        return _verify_runtime(output)
 
     rows: list[dict[str, Any]] = []
     for family in WORLD_CONFIG:
@@ -230,7 +310,6 @@ def main() -> int:
     _freeze_split(rows)
     rows.sort(key=lambda row: (row["world_version"], row["seed"]))
 
-    output = args.output if args.output.is_absolute() else ROOT / args.output
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("w", encoding="utf-8-sig", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=FIELDS, extrasaction="ignore")

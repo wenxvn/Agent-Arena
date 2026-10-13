@@ -198,7 +198,7 @@ BFS 对有限环境状态按 `(动作数, 移动动作数)` 字典序搜索；�
 
 同一分析脚本另盘点两个 seeded 生成器的 seed 0–999：对每个 seed 重复构造均得到相同工具放置，但每张图只有 2 种不同布局/hash（lunar 分布 497/503，pyramid 497/503）。两种布局都能由当前环境 BFS 求解，且同图最少动作数相同（lunar 22，pyramid 16）；定义中没有预设 difficulty 标签。[布局覆盖 CSV](assets/seeded-layout-coverage.csv) 保存代表 seed、放置、频数和最短路径。当前 v2 因只有两个实例布局且没有难度标记，未满足“足够多样实例 + 预定义难度”的泛化前置条件；不能据此宣称实例泛化。若继续扩展，应创建新 `world_version`，先冻结多样布局及 dev/test `instance_hash` 划分，再让任何提示词或模块接触开发集。
 
-因此，长尾分解部分已完成，但 S5.2 整项仍为 partial：不改写或重用既有 v2 seed 布局，不剔除困难实例；新分布设计与冻结拆分是后续工作。
+因此，旧 v2 的长尾分解已完成，v2 不改写、不重用布局且不剔除困难实例。后续的新版本设计与冻结拆分见下节。
 
 ### V3 seeded 离线实例全集与 holdout 冻结
 
@@ -206,7 +206,9 @@ BFS 对有限环境状态按 `(动作数, 移动动作数)` 字典序搜索；�
 
 冻结脚本 `scripts/audit_v3_seeded_layout_freeze.py` 将 stable definition hash 按确定性 affine seed 顺序映射到 seed 0–89 / 0–29，并在每个 `world_version × difficulty` 桶中以固定 SHA-256 次序分配约 1/3 test。生成的 [V3 布局冻结清单](assets/seeded-v3-layout-freeze.csv) 含 120 个 hash、seed、难度、最少动作/移动数、激活容器、工具位置及 split；核对结果为 lunar 60 dev / 30 test，pyramid 20 dev / 10 test，跨版本 hash 碰撞为 0。最短路使用的 `flex.py` SHA-256 为 `11393734c890312a3ae5e19057ae809a8a5c976c4bd43a91e6c4152304a51752`，BFS oracle 来源 `audit_v2_seeded_overhead.py` SHA-256 为 `908fa6ff181557a885041be747dd245ac1f86ce6b9fd2346d446a26d0a5e556`。旧 v2 定义未改。
 
-该清单在新版本运行时实现前冻结，test 布局与 placement 也可从仓库文件读取，因此这是需遵守的程序性 holdout，不是隐藏或盲测集。不得用 test 结果调 prompt、机制、阈值或生成器。V3 运行时尚未实现，清单不证明 selector、seed 映射或跨进程 runtime identity 已与计划一致；S5.2 仍为 partial。没有 provider 请求或 GPU 运行。
+V3 JSON、两个运行时 selector 与 affine seed builder 随后实现。`--verify-runtime` 将冻结清单逐行和实际 `create_environment` 对照，检查全部 120 个实例的 hash、placement、active containers、未激活容器隐藏及 seed+全集大小的周期映射；默认及 `PYTHONHASHSEED=1/42` 独立进程结果均为 120/120 一致。该核对只证明实现符合冻结定义与 split，不是模型评估。`FlexEnvironment` 动作规则和 V2 数据文件没有变化。
+
+该清单在新版本运行时实现前冻结，test 布局与 placement 也可从仓库文件读取，因此这是需遵守的程序性 holdout，不是隐藏或盲测集。不得用 test 结果调 prompt、机制、阈值或生成器。S5.2 仍为 partial，待 S2 Gate 允许后按预登记方案进行行为评估；没有 provider 请求或 GPU 运行。
 
 ## 后续阶段建议与结论
 

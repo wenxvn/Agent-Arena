@@ -2,7 +2,7 @@
 
 **日期**：2026-10-13
 
-**状态**：Accepted（离线设计；运行时实现与 S5.2 验收待完成）
+**状态**：Accepted（运行时 hash 与冻结清单一致；模型评估待 S2 Gate）
 
 ## 背景
 
@@ -55,10 +55,13 @@ Agent 模块调整前冻结实例 hash、oracle 难度标签和 dev/test 划分�
 ## 离线原型证据与边界
 
 按上述 6 个候选点，将激活容器显式加入所在房间的公开对象集合，并对每个布局
-运行现有 BFS oracle；原型枚举到 lunar 90/90、pyramid 30/30 唯一布局且均找到
-成功路径。动作数分布见上文。结果只证明候选设计在当前检出规则下可解；它不是
-新版本运行时代码验收，也不是模型能力、泛化或收益证据。正式冻结清单由
-`scripts/audit_v3_seeded_layout_freeze.py` 生成，后续实现须逐 hash 与其一致。
+运行现有 BFS oracle；lunar 90/90、pyramid 30/30 唯一布局均找到成功路径。动作数
+分布见上文。`LunarV3SeededEnvironment`、`PyramidV3SeededEnvironment` 和两个
+selector 已实现；`scripts/audit_v3_seeded_layout_freeze.py --verify-runtime` 对全部
+120 个 seed 核对 stable hash、工具放置、active containers 和 seed 周期，结果全匹配。
+在独立进程以 `PYTHONHASHSEED=1`、`42` 重复核对也均为 120/120。新运行时只改变
+布局生成和版本注册，`FlexEnvironment` 动作转移规则未改。冻结清单由同脚本生成。
+这些结果证明运行时身份映射符合冻结预注册，不是模型能力、泛化或收益证据。
 
 ## S2 与在线运行边界
 
@@ -79,6 +82,6 @@ GPU，不推进 S3。S2 Gate 通过前，不能运行新 v3 seeded 模型矩阵�
 
 ## 后续
 
-先生成并审计冻结清单；随后才实现新版本选择器和 seed 映射，按清单核对 identity。
-S5.2 在运行时实现与离线验收完成前继续标为 partial。任何受控模型评估须等待 S2
-matched-pilot Gate，并另行使用预登记预算。
+冻结清单及运行时 identity 核对已完成。S5.2 仍为 partial，直到在不查看 test 结果
+调参的前提下完成预登记的 dev/test 行为评估；该评估须等待 S2 matched-pilot Gate，
+并另行使用预登记预算。

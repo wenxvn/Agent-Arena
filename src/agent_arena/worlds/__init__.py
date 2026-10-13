@@ -28,14 +28,18 @@ from agent_arena.worlds.flex import (
     CastleV2SeededEnvironment,
     LunarV2Environment,
     LunarV2SeededEnvironment,
+    LunarV3SeededEnvironment,
     PyramidV2Environment,
     PyramidV2SeededEnvironment,
+    PyramidV3SeededEnvironment,
     load_castle_v2_definition,
     load_castle_v2_seeded_definition,
     load_lunar_v2_definition,
     load_lunar_v2_seeded_definition,
+    load_lunar_v3_seeded_definition,
     load_pyramid_v2_definition,
     load_pyramid_v2_seeded_definition,
+    load_pyramid_v3_seeded_definition,
 )
 from agent_arena.worlds.jungle import (
     JungleEasyEnvironment,
@@ -152,6 +156,7 @@ __all__ = [
     "LunarHardEnvironment",
     "LunarV2Environment",
     "LunarV2SeededEnvironment",
+    "LunarV3SeededEnvironment",
     "PolarEasyEnvironment",
     "PolarEnvironment",
     "PolarHardEnvironment",
@@ -160,6 +165,7 @@ __all__ = [
     "PyramidHardEnvironment",
     "PyramidV2Environment",
     "PyramidV2SeededEnvironment",
+    "PyramidV3SeededEnvironment",
     "SeededShipEnvironment",
     "SpaceshipEscapeEnvironment",
     "SpaceshipV2Definition",
@@ -205,6 +211,7 @@ __all__ = [
     "load_lunar_hard_definition",
     "load_lunar_v2_definition",
     "load_lunar_v2_seeded_definition",
+    "load_lunar_v3_seeded_definition",
     "load_polar_definition",
     "load_polar_easy_definition",
     "load_polar_hard_definition",
@@ -213,6 +220,7 @@ __all__ = [
     "load_pyramid_hard_definition",
     "load_pyramid_v2_definition",
     "load_pyramid_v2_seeded_definition",
+    "load_pyramid_v3_seeded_definition",
     "load_seeded_base_definition",
     "load_spaceship_escape_definition",
     "load_spaceship_v2_definition",
@@ -297,6 +305,8 @@ def create_environment(
         environment = LunarV2Environment(seed=seed)
     elif (world, world_version) == ("lunar-escape", "lunar-escape-v2-seeded-zh"):
         environment = LunarV2SeededEnvironment(seed=seed)
+    elif (world, world_version) == ("lunar-escape", "lunar-escape-v3-seeded-zh"):
+        environment = LunarV3SeededEnvironment(seed=seed)
     elif (world, world_version) == ("castle-escape", "castle-escape-v2-zh"):
         environment = CastleV2Environment(seed=seed)
     elif (world, world_version) == ("castle-escape", "castle-escape-v2-seeded-zh"):
@@ -305,6 +315,8 @@ def create_environment(
         environment = PyramidV2Environment(seed=seed)
     elif (world, world_version) == ("pyramid-escape", "pyramid-escape-v2-seeded-zh"):
         environment = PyramidV2SeededEnvironment(seed=seed)
+    elif (world, world_version) == ("pyramid-escape", "pyramid-escape-v3-seeded-zh"):
+        environment = PyramidV3SeededEnvironment(seed=seed)
     elif (world, world_version) == ("spaceship-escape", "spaceship-escape-v5-zh-seeded"):
         environment = SeededShipEnvironment(seed=seed)
     elif (world, world_version) == ("spaceship-escape", "spaceship-escape-easy-zh"):
@@ -371,8 +383,10 @@ def create_environment(
             "、castle-escape / castle-escape-v2-seeded-zh"
             "、lunar-escape / lunar-escape-v2-zh"
             "、lunar-escape / lunar-escape-v2-seeded-zh"
+            "、lunar-escape / lunar-escape-v3-seeded-zh"
             "、pyramid-escape / pyramid-escape-v2-zh"
             "、pyramid-escape / pyramid-escape-v2-seeded-zh"
+            "、pyramid-escape / pyramid-escape-v3-seeded-zh"
             " 与 abyss-escape / abyss-escape-hard-zh。"
         )
     if environment.identity[:2] != (world, world_version):

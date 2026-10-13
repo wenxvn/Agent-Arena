@@ -1,0 +1,315 @@
+{
+  "world_id": "pyramid_escape_v3_seeded",
+  "slug": "pyramid-escape",
+  "version": "v3-seeded-zh",
+  "goal": "先读铭文码、再修复机关恢复供电，并乘沙橇离开金字塔。",
+  "start_room": "entrance_hall",
+  "authorization_code": "SAND-260",
+  "rooms": [
+    {
+      "id": "entrance_hall",
+      "description": "入口大厅一片昏暗，只有应急灯还亮着，墙边立着一块无字碑，沙道通往深处。",
+      "exits": [
+        "sand_tunnel"
+      ],
+      "object_ids": [
+        "blank_stele"
+      ]
+    },
+    {
+      "id": "sand_tunnel",
+      "description": "沙道连接着入口大厅、勘测角和器物库。",
+      "exits": [
+        "entrance_hall",
+        "survey_nook",
+        "relic_store"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "relic_store",
+      "description": "器物库里只有一个器物箱，箱盖半掩着。",
+      "exits": [
+        "sand_tunnel"
+      ],
+      "object_ids": []
+    },
+    {
+      "id": "survey_nook",
+      "description": "勘测角里有一台勘测终端和铭文终端，即使无电也能读码。再往前是机关墓室，一侧还有壁画厅。",
+      "exits": [
+        "sand_tunnel",
+        "engine_crypt",
+        "mural_hall"
+      ],
+      "object_ids": [
+        "survey_terminal",
+        "glyph_console"
+      ]
+    },
+    {
+      "id": "mural_hall",
+      "description": "壁画厅里只有褪色壁画，角落放着一只沙箱，小门通往祭司小间。",
+      "exits": [
+        "survey_nook",
+        "priest_cell"
+      ],
+      "object_ids": [
+        "faded_mural"
+      ]
+    },
+    {
+      "id": "priest_cell",
+      "description": "祭司小间里有一张石床和一只封口瓮，门后连着壁画厅。",
+      "exits": [
+        "mural_hall"
+      ],
+      "object_ids": [
+        "stone_bed",
+        "sealed_urn"
+      ]
+    },
+    {
+      "id": "engine_crypt",
+      "description": "机关墓室里有一台老式机关，石板盖紧闭。再往前是沙橇台。",
+      "exits": [
+        "survey_nook",
+        "skiff_dock"
+      ],
+      "object_ids": [
+        "stone_slab",
+        "drained_cell"
+      ]
+    },
+    {
+      "id": "skiff_dock",
+      "description": "沙橇台上停着一架沙橇，等待有效授权后出发。",
+      "exits": [
+        "engine_crypt"
+      ],
+      "object_ids": [
+        "sand_skiff"
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "blank_stele",
+      "room_id": "entrance_hall",
+      "kind": "terminal",
+      "inspect_result": "无字碑需要供电才能显示信息。"
+    },
+    {
+      "id": "survey_terminal",
+      "room_id": "survey_nook",
+      "kind": "terminal",
+      "inspect_result": "即使没有供电，仍可收听广播。"
+    },
+    {
+      "id": "glyph_console",
+      "room_id": "survey_nook",
+      "kind": "terminal",
+      "inspect_result": "铭文终端即使无电也能读出铭文码。"
+    },
+    {
+      "id": "relic_chest",
+      "room_id": "relic_store",
+      "kind": "container",
+      "inspect_result": "器物箱里有一把凿子和一枚太阳能芯。"
+    },
+    {
+      "id": "stone_slab",
+      "room_id": "engine_crypt",
+      "kind": "fixture",
+      "inspect_result": "石板盖由螺栓固定。"
+    },
+    {
+      "id": "drained_cell",
+      "room_id": "engine_crypt",
+      "kind": "fixture",
+      "inspect_result": "干涸电芯需要更换。"
+    },
+    {
+      "id": "faded_mural",
+      "room_id": "mural_hall",
+      "kind": "fixture",
+      "inspect_result": "壁画上没有维修工具的信息。"
+    },
+    {
+      "id": "stone_bed",
+      "room_id": "priest_cell",
+      "kind": "fixture",
+      "inspect_result": "石床上什么都没有。"
+    },
+    {
+      "id": "sealed_urn",
+      "room_id": "priest_cell",
+      "kind": "fixture",
+      "inspect_result": "封口瓮封死了，没有看得见的开口。"
+    },
+    {
+      "id": "sand_skiff",
+      "room_id": "skiff_dock",
+      "kind": "fixture",
+      "inspect_result": "沙橇需要铭文码才能启动。"
+    },
+    {
+      "id": "sand_crate",
+      "room_id": "mural_hall",
+      "kind": "container",
+      "inspect_result": "沙箱里可能有器物，也可能没有。"
+    },
+    {
+      "id": "tunnel_cache",
+      "room_id": "sand_tunnel",
+      "kind": "container",
+      "inspect_result": "里面装着收纳的维修工具。"
+    },
+    {
+      "id": "survey_case",
+      "room_id": "survey_nook",
+      "kind": "container",
+      "inspect_result": "里面装着收纳的维修工具。"
+    },
+    {
+      "id": "crypt_crate",
+      "room_id": "engine_crypt",
+      "kind": "container",
+      "inspect_result": "里面装着收纳的维修工具。"
+    },
+    {
+      "id": "priest_coffer",
+      "room_id": "priest_cell",
+      "kind": "container",
+      "inspect_result": "里面装着收纳的维修工具。"
+    }
+  ],
+  "items": [
+    {
+      "id": "chisel",
+      "container_id": "relic_chest"
+    },
+    {
+      "id": "sun_cell",
+      "container_id": "relic_chest"
+    }
+  ],
+  "containers": [
+    "relic_chest",
+    "sand_crate",
+    "tunnel_cache",
+    "survey_case",
+    "crypt_crate",
+    "priest_coffer"
+  ],
+  "repair_sites": [
+    {
+      "panel": "stone_slab",
+      "panel_tool": "chisel",
+      "cells": [
+        {
+          "cell": "drained_cell",
+          "tool": "sun_cell"
+        }
+      ]
+    }
+  ],
+  "repair_rooms": [
+    "engine_crypt"
+  ],
+  "code_terminal": "glyph_console",
+  "code_requires_power": false,
+  "code_label": "铭文码",
+  "decoy_terminals": [
+    "blank_stele"
+  ],
+  "diagnostic_terminal": "survey_terminal",
+  "diagnostic_ok": "勘测广播：供电稳定，各系统正常。",
+  "diagnostic_down": "勘测广播：电力中断，请手动修复机关墓室的老机关。",
+  "escape_room": "skiff_dock",
+  "escape_vehicle": "sand_skiff",
+  "cell_staged_summary": "部件已装好，但供电尚未恢复。",
+  "panel_opened_summary": "石板盖已打开。",
+  "power_restored_summary": "供电已恢复。",
+  "escape_summary": "沙橇已成功出发。",
+  "no_power_summary": "无字碑没有电力。",
+  "milestones": [
+    {
+      "stage": "收集修理工具",
+      "done_text": "无",
+      "undone": "获得 {missing}",
+      "key_items": [
+        "chisel",
+        "sun_cell"
+      ],
+      "trigger_reasons": []
+    },
+    {
+      "stage": "恢复供电",
+      "done_text": "修理工具",
+      "undone": "打开石板盖",
+      "key_items": [],
+      "trigger_reasons": [
+        "panel_opened"
+      ]
+    },
+    {
+      "stage": "恢复供电",
+      "done_text": "修理工具和石板盖",
+      "undone": "恢复供电",
+      "key_items": [],
+      "trigger_reasons": [
+        "power_restored"
+      ]
+    },
+    {
+      "stage": "读取铭文码",
+      "done_text": "修理工具和供电",
+      "undone": "读取铭文码",
+      "key_items": [],
+      "trigger_reasons": [
+        "code_read"
+      ]
+    },
+    {
+      "stage": "乘沙橇离开",
+      "done_text": "修理工具、供电和铭文码",
+      "undone": "乘沙橇离开",
+      "key_items": [],
+      "trigger_reasons": []
+    }
+  ],
+  "summaries": {
+    "looked": "你查看了当前墓室。",
+    "moved": "你移动到了指定墓室。",
+    "inspected": "你检查了指定对象。",
+    "picked_up": "你将物品放入了背包。",
+    "panel_opened": "石板盖已打开。",
+    "power_restored": "供电已恢复。",
+    "cell_staged": "部件已装好，但供电尚未恢复。",
+    "diagnostic_read": "你收听了广播。",
+    "code_read": "你读取了铭文终端中的铭文码。",
+    "escaped": "沙橇已成功出发。",
+    "already_completed": "离开程序已经完成。",
+    "not_adjacent": "当前墓室无法直接到达该处。",
+    "not_visible": "当前墓室看不到该目标。",
+    "not_revealed": "该物品尚未被发现。",
+    "not_present": "当前墓室没有该物品。",
+    "already_collected": "该物品已经在背包中。",
+    "missing_item": "你没有所需物品。",
+    "wrong_target": "当前不能将该物品用于这个目标。",
+    "read_terminal_required": "终端请使用 read_terminal 工具读取。",
+    "panel_closed": "请先打开石板盖，再更换电芯。",
+    "code_unread": "请先读取铭文码，再启动沙橇。",
+    "incorrect_code": "该铭文码不正确。",
+    "no_power": "无字碑没有电力。"
+  },
+  "seed_containers": [
+    "relic_chest",
+    "sand_crate",
+    "tunnel_cache",
+    "survey_case",
+    "crypt_crate",
+    "priest_coffer"
+  ]
+}
