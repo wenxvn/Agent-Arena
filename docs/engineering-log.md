@@ -6,7 +6,7 @@
 
 原因：此前 S1 报告将缺少 oracle 与地图身份匹配概括为全部不可计算；Trace 实际保留 world version、definition ID 和 definition hash，允许对参考路径和当前地图 identity 做严格三元组匹配。
 
-改动：新增 `scripts/audit_v2_oracle_ratios.py`，按 42 个 spec 路径参考与精确 map identity 生成逐 Trace 和分条件 CSV；V2-02 与 Scope 补入可匹配范围、未匹配样本和术语边界。只计算成功 outcome；不将 seeded/hash 不匹配记录填零，也不将混合分布用于方法比较。
+改动：新增 `scripts/audit_v2_oracle_ratios.py`，按 42 个 spec 路径参考与精确 map identity 生成逐 Trace 和分条件 CSV；V2-02 与 Scope 补入可匹配范围、未匹配样本和术语边界，并将深海/灯塔/飞船三条既有长尾案例与其参考步数并列。只计算成功 outcome；不将 seeded/hash 不匹配记录填零，也不将混合分布用于方法比较。
 
 验证：474 条源记录中 439 条精确匹配登记地图 identity；227/262 条成功 trace 匹配到路径参考，分布于 50 个条件。独立复算明细和汇总无差异；无成功动作数低于 spec 声明参考步数的情况。Ruff 检查和 `git diff --check` 通过；未运行 pytest/provider/GPU。Trace 缺少环境规则代码 SHA，因此参考比值不等同于对历史规则实现的独立证明。
 
