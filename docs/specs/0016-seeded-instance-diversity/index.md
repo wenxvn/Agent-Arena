@@ -51,6 +51,11 @@ Agent 模块调整前冻结实例 hash、oracle 难度标签和 dev/test 划分�
 - 清单会包含 world version、seed、stable instance hash、difficulty、当前规则下
   的最少动作数、active containers、tool placement 与 split，确保可以审计复现。
   这是预注册的开发/留出边界，不声称对外部地图或新规则的泛化。
+- 冻结 CSV 的 SHA-256（将 CRLF 规范化为 LF 后）为
+  `85967e180a535cc186e8c20e66de223eb74ca2a88ac7a697067c4fda8bb5be98`；回归测试和
+  `--verify-runtime` 都必须拒绝被改写的冻结清单，避免只验证运行时布局而漏掉 oracle
+  路线长度、难度标签或 dev/test 分配漂移。生成候选清单时必须显式指定新 `--output`
+  路径，审计脚本拒绝默认写入或覆盖冻结 CSV。
 
 ## 离线原型证据与边界
 
@@ -61,9 +66,10 @@ selector 已实现；`scripts/audit_v3_seeded_layout_freeze.py --verify-runtime`
 120 个 seed 核对 stable hash、工具放置、active containers 和 seed 周期，结果全匹配。
 在独立进程以 `PYTHONHASHSEED=1`、`42` 重复核对也均为 120/120。新运行时只改变
 布局生成和版本注册，`FlexEnvironment` 动作转移规则未改。冻结清单由同脚本生成。
-`tests/test_flex_v3_seeded.py` 锁定 120 个 hash、placement、难度、split、隐藏容器和
-seed 周期；`test_flex_world_identity.py` 覆盖跨进程 hash seed。全量 pytest 361 passed，
-Ruff 全仓与 mypy 49 个源文件通过。这些结果证明运行时身份映射符合冻结预注册，不是
+`tests/test_flex_v3_seeded.py` 锁定规范化清单 SHA、120 个 hash、placement、难度、最少动作
+分布、每个难度桶的 split 数量、隐藏容器和 seed 周期；并检查生成脚本拒绝覆盖冻结清单。
+`test_flex_world_identity.py` 覆盖跨进程 hash seed。全量 pytest 364 passed，Ruff 全仓与
+mypy 49 个源文件通过。这些结果证明冻结清单未漂移且运行时身份映射符合预注册，不是
 模型能力、泛化或收益证据。
 
 ## S2 与在线运行边界

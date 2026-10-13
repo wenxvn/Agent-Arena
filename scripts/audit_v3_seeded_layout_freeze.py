@@ -24,6 +24,7 @@ from agent_arena.worlds.spaceship_escape import ItemDefinition, ObjectDefinition
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT / "docs/research/v2/assets/seeded-v3-layout-freeze.csv"
 SPLIT_RATIO_DENOMINATOR = 3
+FROZEN_MANIFEST_SHA256 = "85967e180a535cc186e8c20e66de223eb74ca2a88ac7a697067c4fda8bb5be98"
 
 SLOT_POOLS: dict[str, tuple[tuple[str, str], ...]] = {
     "lunar": (
@@ -220,6 +221,15 @@ def _freeze_split(rows: list[dict[str, Any]]) -> None:
 
 
 def _verify_runtime(manifest_path: Path) -> int:
+    manifest_sha256 = hashlib.sha256(
+        manifest_path.read_bytes().replace(b"\r\n", b"\n")
+    ).hexdigest()
+    if manifest_sha256 != FROZEN_MANIFEST_SHA256:
+        raise ValueError(
+            "冻结清单 SHA-256 differs from the pre-registered manifest. "
+            f"Expected {FROZEN_MANIFEST_SHA256}, got {manifest_sha256}."
+        )
+
     with manifest_path.open(encoding="utf-8-sig", newline="") as stream:
         rows = list(csv.DictReader(stream))
     grouped: dict[str, list[dict[str, str]]] = defaultdict(list)
@@ -290,7 +300,11 @@ def _verify_runtime(manifest_path: Path) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help="新候选清单的输出路径；生成模式必须显式指定且不能覆盖冻结清单。",
+    )
     parser.add_argument(
         "--verify-runtime",
         action="store_true",
@@ -298,9 +312,16 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    output = args.output if args.output.is_absolute() else ROOT / args.output
     if args.verify_runtime:
+        output = args.output or DEFAULT_OUTPUT
+        output = output if output.is_absolute() else ROOT / output
         return _verify_runtime(output)
+
+    if args.output is None:
+        parser.error("生成候选清单时必须显式指定 --output；冻结清单不能覆盖。")
+    output = args.output if args.output.is_absolute() else ROOT / args.output
+    if output.resolve() == DEFAULT_OUTPUT.resolve():
+        parser.error("拒绝覆盖冻结清单；请写入新的候选路径。")
 
     rows: list[dict[str, Any]] = []
     for family in WORLD_CONFIG:
