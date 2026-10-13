@@ -12,7 +12,7 @@
 
 下一步：先评估是否需要添加仅含 allowlisted exception class / HTTP status 的安全分类，再单独登记任何恢复运行；不重置当前 ledger。S2 Gate 保持未完成，不能据此计算模型成效。
 
-关联实现提交：`0d3bb0ba0b81ca682ea714941de7b5bd17fd03f9`；运行登记与本事件记录提交待完成。
+关联实现提交：`0d3bb0ba0b81ca682ea714941de7b5bd17fd03f9`；运行状态登记提交：`23b1bf2e9ad909370f9a2a2b34599b73750f71ca`。
 
 ## 2026-10-13 V2 seeded world identity hash 稳定性修复
 
