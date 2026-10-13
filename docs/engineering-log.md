@@ -10,7 +10,7 @@
 
 验证：仅读取 ledger 安全计数/状态、partial JSON 顶层摘要和 timeout 配置；未启动 v3 或其他 API 调用。待对 BUDGET-03 登记 commit/push 后，执行最后一次受限恢复；如果发生 provider error 则停止所有后续 API 尝试。
 
-关联登记提交：待提交。
+关联登记提交：`894f860`。
 
 ## 2026-10-13 provider error 安全分类与预算内恢复登记
 
