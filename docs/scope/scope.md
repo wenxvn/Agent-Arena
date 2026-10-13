@@ -342,6 +342,20 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 
 ## V2 探索进度（2026-10-13）
 
+### S0–S6 阶段门禁总览
+
+| 阶段 | 当前状态 | 证据与后续放行条件 |
+|---|---|---|
+| S0 质量门禁 | 完成 | 本机和 GitHub Actions 质量门禁通过；最近提交 `59ab367` 的 Actions #94 成功。 |
+| S1 Trace 瓶颈审计 | 完成 | 518 个文件、474 个唯一 episode 的离线审计及逐家族案例复核已记录于 V2-02。 |
+| S2 Memory v3 | 离线验收完成；研究 Gate 未通过 | spec 0014 离线验收已通过；BUDGET-01/02/03 分别以 unknown-spend、timeout、provider_error fail-closed，v2 为 0/2 完成、v3 未启动。登记表要求不创建 BUDGET-04、不再调用此矩阵；没有模型收益结论。 |
+| S3 Action Grounding | 未启动，按序暂缓 | 当前没有完成的 S2 matched-pilot 结果；不得把离线 fixture 当作在线效果证据或据此启动 S3。 |
+| S4 自主 Phase | 未启动，按序暂缓 | S3 尚未进入受控比较；保留 P0/P1/P2 的既有定义，不新增 Phase 实验。 |
+| S5 跨任务/实例/模型验证 | 准备部分完成，行为验证暂缓 | S5.2 seeded v3 运行时和程序性 dev/test 拆分已冻结并通过身份回归；只对 S2/S3/S4 正向 Gate 候选开放行为评估或新任务。仓库可见的 test placements 不是盲测集。 |
+| S6 研究收官 | 未启动 | 待 S2–S5 可报告的受控证据、失败/反例及跨条件审计齐备后再综合，不用离线实现完成替代研究收官。 |
+
+阶段状态遵循 V2 探索提纲的 S0→S6 依赖顺序，并以 [S2 运行登记表](../research/v2/00-run-registry.md)、[Memory v3 报告](../research/v2/03-memory-v3.md) 和 spec 0014 为当前可追溯依据；停止边界优先于后续阶段排期。
+
 - [x] S0 本地质量门禁：Python 3.13.16 / uv 0.13.0 临时环境下 `ruff check`、`mypy src`（48 个源文件）、`pytest -q`（303 passed）、`uv lock --check`（36 个 packages）和 `git diff --check` 通过；测试不再依赖本机 runs/ 与 results/。详见 [V2-01 CI 与基线](../research/v2/01-ci-and-baseline.md)。
 - [x] S0 GitHub Actions Gate：d40f3e6 的 [run #56](https://github.com/wenxvn/Agent-Arena/actions/runs/38358490666) 与后续跨平台 `mypy` 修复提交 `4ec5bb1` 的 [run #67](https://github.com/wenxvn/Agent-Arena/actions/runs/38376965970) quality job 全部通过；Linux-only `msvcrt` typing 错误已修复。
 - [x] S1 既有 Trace 离线瓶颈审计：扫描 518 个文件，去重后 474 个 episode_id；44 个副本、0 个 ID 冲突、0 个非法 Trace。脚本、Top 5 假设及分层结果见 [V2-02 离线瓶颈审计](../research/v2/02-bottleneck-audit.md) 与 [CSV](../research/v2/assets/trace-audit.csv)、[JSON](../research/v2/assets/trace-audit.json)。审计代码提交 a372dce 的 [run #57](https://github.com/wenxvn/Agent-Arena/actions/runs/38360270607) 全绿；无新增模型调用或 GPU 运行。
