@@ -207,7 +207,7 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 
 - [x] 简单=已有 6 房图零复用改动；困难=4 张新 10 房图（飞船 v4 `GAMMA-904`/21 步、灯塔 v3 `TIDE-5280`/20 步、深海简单 `ABYSS-102`/13 步、深海困难 `ABYSS-909`/21 步），规则零改动（spec 0010）。
 - [x] 全套 159 passed（含 16 项新测试）。
-- [x] Muse 自主组合 9 配置 × 5 seeds = 45/45 成功（不限步，6 次网关 `provider_error` 重跑均恢复），trace 在 `runs/muse-9maps-*`。均值步数：
+- [x] Muse 自主组合（E1-ON，base prompt hash `44229085`）9 配置 × 5 seeds：每个配置均至少有一次成功，trace 在 `runs/muse-9maps-*`。原始 51 个 trace 包含 46 success + 5 `provider_error`，所有实际尝试成功率为 46/51（90.2%）；去重后 45 个配置为 45/45。均值步数：
   飞船 70.4/140.8/165.4、灯塔 39.8/49.4/105.8、深海 26.8/42.2/83.6——三图均值全部单调递增；
   中位数飞船 42/147/100（困难反低于中等，方差所致）。单局步数只反映迷路发作程度，不反映难度。
 
@@ -224,16 +224,17 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
   终端规则/诱饵/维修顺序）；全套 249 passed。
 - [x] `create_environment` 新增 21 对 selector；真实模型新图 benchmark 另行安排。
 - [x] 真实模型 benchmark（2026-10-11，Muse 自主组合 memory + history5 + recovery
-  + phase，不限步）：21 配置 × 5 seeds = **105/105 成功**，trace 在
+  + world-declared phase + E1-ON（hash `44229085`），不限步）：21 配置 × 5 seeds = **105/105 配置均有成功 trace**，trace 在
   `runs/muse-21maps-*`（本地生成物）。均值步数：极地 20.4/38.2/41.8、
   金字塔 20.6/27.4/38.4、地铁 21.6/33.8/43.6、火山 21.2/35.4/31.4、
   丛林 24.8/35.6/49.8、月球 22.2/30.2/45.6、古堡 24.8/38.6/63.4——
-  七图均值全部随难度单调递增；非法输出总共 1 次。
+  除火山困难图均值（31.4）低于中等图（35.4）外，其余六图均值随难度单调递增；保留实测数值，不为满足单调性改写数据。非法输出总共 1 次。
   首波 105 并发触发网关系统性限流（104 局开局中断），降到 21 并发池重跑后
   101/105，再补 4 局偶发中断后全通；全部尝试 trace 均保留。
-- [x] 30 图 × 5 seeds 合并验证（2026-10-11，离线零新调用）：旧 9 图 45/45 与
-  新 21 图 105/105 均为同条件（memory + history5 + recovery + phase + 不限步
-  + `muse-spark`）同 seed 集合（0–4），逐局 trace 核对后 150/150 齐套。
+- [x] 30 图 × 5 seeds 合并验证（2026-10-11，离线零新调用）：旧 9 图与新 21 图
+  的 E1-ON（hash `44229085`）配置使用相同 memory + history5 + recovery +
+  world-declared phase + 不限步 + `muse-spark` 和 seeds（0–4）；逐局 trace 核对后
+  150 个配置均有成功 trace。该完成口径包含网关失败后的补跑，不代表首次尝试 150/150 成功。
   旧 9 图均值：飞船 70.4/140.8/165.4、灯塔 39.8/49.4/105.8、
   深海 26.8/42.2/83.6（见 §I）。
 
@@ -247,9 +248,9 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 - [x] 3 张 seeded 版（工具双容器按 seed 分配，确定性/差异性/可解性测试通过）。
 - [x] 共享加法：`ToolReason.CELL_STAGED`（旧 trace 可读，旧逻辑不受影响）；
   另修复 `_escape` 不查电源的旧假设 bug。
-- [x] 22 项新测试，全套 271 passed；真实模型对照另行安排（spec 0012）。
+- [x] 22 项新测试，全套 271 passed；真实模型 pilot/seeded 结果沿用 E1-ON prompt hash `44229085`，按配置报告并保留重跑与长尾记录（spec 0012、V1-08）。
 
-### L. 旧三世界重制图（2026-10-11，done；矩阵测试进行中）
+### L. 旧三世界重制图（2026-10-11，done；10×3 矩阵 150/150 配置完成）
 
 - [x] 边集审计证实旧 9 图同拓扑家族换皮；旧图冻结保留，新 9 张版本进矩阵。
 - [x] 飞船：纯长链（20 步）/双容器分置（22 步）/纵深双容器（24 步）；
@@ -257,7 +258,7 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
   深海：起点捷径（12 步）/起点旁逃生（16 步）/环路深码（17 步）。
 - [x] 规则零改动（复用三引擎与同名物件 id）；22 项新测试，全套 293 passed。
 - [x] 新 10×3 矩阵 = 9 重制 × 5 seeds 新跑 + 21 图 105/105 沿用（spec 0013）。
-- [x] 重制 9 图真实模型 45/45（2026-10-11，Muse 自主组合，不限步）：
+- [x] 重制 9 图真实模型配置均有成功 trace（2026-10-11，Muse + E1-ON prompt hash `44229085`，不限步）：
   飞船 31.6/38.4/44.4、灯塔 24.2/41.2/51.2、深海 24.2/33.4/34.4，
   三图均值全部随难度单调递增，非法输出 0；trace 在 `runs/muse-redesign-*`。
   第一波 42/45，light-med s0/s2 与 abyss-med s2 网关中断，第二波补齐。
@@ -333,7 +334,14 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
   E2/E3 隔离 deferred。
 - T5 done：Planning 同上下文 0/4（seed4 censored），更差且 2 倍 token，不提议 v2。
 - T6 partial：seeded-v5 生成器 + oracle + 真实 3/3 后，完成 flex 跨任务 pilot 30/30、seeded 变体 15/15；扩展实例覆盖与长尾分析仍待做，见 `08-cross-task-and-e1.md`。
+
 - T7 partial：Reflection deferred；只读 UI 已扩为 4 视图并通过真实数据冒烟，完整交互式实验界面仍待 Release 3。
 - 中断总账：C011-seed1 provider_error→重跑失败；React-seed4 2×provider_error→censored；
   Pctx-seed4 2×基础设施中断 + 首步 provider_error→censored。全部单列，未并入分母。
 - 另：并行会话新增 7 世界 21 图（spec 0011），兼容共存（249 passed）；本轮结论范围仍为原三世界。
+
+## V2 探索进度（2026-10-13）
+
+- [x] S0 本地质量门禁：以 Python 3.13.16 / uv 0.13.0 修复最新 HEAD 暴露的 Ruff 问题，并修复随之暴露的 mypy 类型问题；`ruff check`、`mypy src`、`pytest -q`（304 passed）、`uv lock --check`、`git diff --check` 均通过。详见 [V2-01 CI 与基线](../research/v2/01-ci-and-baseline.md)。
+- [ ] S0 GitHub Actions Gate：待推送已验证代码并确认对应 `quality` run 成功；最新已知远端 run `38353317972` 在 Ruff 失败，mypy/pytest 被跳过。
+- [ ] S1 既有 Trace 离线瓶颈审计：未开始；等待 S0 远端 Gate。

@@ -64,17 +64,35 @@ def _solve(environment: SeededShipEnvironment) -> None:
         assert _step(environment, {"tool": "inspect", "target": container}) is ToolReason.INSPECTED
         for item_id in ("screwdriver", "replacement_fuse"):
             if tool_room[item_id] == room:
-                assert _step(environment, {"tool": "pickup", "item": item_id}) is ToolReason.PICKED_UP
+                assert (
+                    _step(environment, {"tool": "pickup", "item": item_id})
+                    is ToolReason.PICKED_UP
+                )
     goto("reactor_room")
-    assert _step(environment, {"tool": "use", "item": "screwdriver", "target": "reactor_panel"}) is ToolReason.PANEL_OPENED
-    assert _step(environment, {"tool": "use", "item": "replacement_fuse", "target": "damaged_fuse"}) is ToolReason.POWER_RESTORED
+    assert (
+        _step(
+            environment,
+            {"tool": "use", "item": "screwdriver", "target": "reactor_panel"},
+        )
+        is ToolReason.PANEL_OPENED
+    )
+    assert (
+        _step(
+            environment,
+            {"tool": "use", "item": "replacement_fuse", "target": "damaged_fuse"},
+        )
+        is ToolReason.POWER_RESTORED
+    )
     goto("control_room")
     result, _ = environment.step(
         action_adapter.validate_python({"tool": "read_terminal", "target": "control_terminal"})
     )
     assert result.reason is ToolReason.CODE_READ
     goto("escape_pod")
-    assert _step(environment, {"tool": "use", "item": "ALPHA-731", "target": "escape_pod"}) is ToolReason.ESCAPED
+    assert (
+        _step(environment, {"tool": "use", "item": "ALPHA-731", "target": "escape_pod"})
+        is ToolReason.ESCAPED
+    )
     assert environment.is_success()
 
 

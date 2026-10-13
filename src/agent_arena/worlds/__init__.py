@@ -1,5 +1,6 @@
 """Versioned world definitions: Spaceship Escape, Misty Lighthouse and Abyssal Station."""
 
+from agent_arena.arena.environment import Environment
 from agent_arena.worlds.abyss import (
     AbyssEasyEnvironment,
     AbyssEnvironment,
@@ -136,6 +137,7 @@ __all__ = [
     "CastleHardEnvironment",
     "CastleV2Environment",
     "CastleV2SeededEnvironment",
+    "Environment",
     "JungleEasyEnvironment",
     "JungleEnvironment",
     "JungleHardEnvironment",
@@ -226,17 +228,13 @@ __all__ = [
     "load_volcano_hard_definition",
 ]
 
-Environment = (
-    SpaceshipEscapeEnvironment | LighthouseEnvironment | AbyssEnvironment
-)
-
-
 def create_environment(
     world: str, world_version: str, *, seed: int = 0
 ) -> Environment:
     """Resolve the supported selector; never silently fall back to a different world."""
+    environment: Environment
     if (world, world_version) == ("spaceship-escape", "spaceship-escape-v2-zh"):
-        environment: Environment = SpaceshipEscapeEnvironment(seed=seed)
+        environment = SpaceshipEscapeEnvironment(seed=seed)
     elif (world, world_version) == ("lighthouse-escape", "lighthouse-escape-v1-zh"):
         environment = LighthouseEnvironment(seed=seed)
     elif (world, world_version) == ("spaceship-escape", "spaceship-escape-v3-zh"):

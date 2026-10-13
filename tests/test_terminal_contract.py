@@ -9,8 +9,16 @@ from agent_arena.evaluation.public_facts import extract_public_facts
 from agent_arena.evaluation.trace import read_episode_trace
 
 RUNS = Path(__file__).resolve().parent.parent / "runs"
-LIGHTHOUSE_SEED0 = RUNS / "muse-3maps-lightv2" / "episode_20261011T060651Z_memory_seed-0_cd0d1ccd.json"
-SHIP_SEED1 = RUNS / "muse-3maps-shipv3" / "episode_20261011T063025Z_memory_seed-1_9a351a08.json"
+LIGHTHOUSE_SEED0 = (
+    RUNS
+    / "muse-3maps-lightv2"
+    / "episode_20261011T060651Z_memory_seed-0_cd0d1ccd.json"
+)
+SHIP_SEED1 = (
+    RUNS
+    / "muse-3maps-shipv3"
+    / "episode_20261011T063025Z_memory_seed-1_9a351a08.json"
+)
 
 TERMINAL_TARGETS = {"harbor_skiff", "escape_pod", "escape_capsule"}
 

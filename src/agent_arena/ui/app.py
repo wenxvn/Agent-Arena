@@ -39,7 +39,7 @@ def _load_streamlit() -> Any:
     try:
         from importlib import import_module
     except ImportError:  # pragma: no cover
-        raise RuntimeError("需要先安装 streamlit 才能启动 UI。")
+        raise RuntimeError("需要先安装 streamlit 才能启动 UI。") from None
     try:
         module: Any = import_module("streamlit")
     except ImportError as exc:  # pragma: no cover
@@ -181,12 +181,13 @@ def _matrix_view(st: Any) -> None:
     if skipped:
         st.caption(f"文件过多，仅汇总前 {MAX_SCAN_FILES} 份，跳过 {skipped} 份。")
     st.table(aggregate_traces(traces))
-    steps = [
-        trace.get("executed_action_count")
-        for trace in traces
-        if trace.get("outcome") == "success"
-        and isinstance(trace.get("executed_action_count"), (int, float))
-    ]
+    steps: list[int | float] = []
+    for trace in traces:
+        if trace.get("outcome") != "success":
+            continue
+        value = trace.get("executed_action_count")
+        if isinstance(value, (int, float)):
+            steps.append(value)
     st.write({"success_at_k": success_at_k([int(value) for value in steps], K_BUDGETS)})
 
 

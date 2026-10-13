@@ -28,6 +28,7 @@ from agent_arena.arena.models import (
 from agent_arena.worlds.spaceship_escape import (
     ObjectDefinition,
     RoomDefinition,
+    WorldDefinitionLike,
 )
 
 
@@ -145,6 +146,8 @@ POLAR_MILESTONES: tuple[PublicMilestone, ...] = (
 
 class PolarEnvironment(Environment):
     """An eight room polar world with decoys and a single public escape route."""
+
+    definition: WorldDefinitionLike
 
     def __init__(self, definition: PolarDefinition | None = None, seed: int = 0) -> None:
         self.definition = definition or load_polar_definition()

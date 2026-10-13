@@ -137,7 +137,14 @@ def test_redesign_lighthouse_medium_tower_code_passage_escapes_in_twenty_one_ste
     assert result.status is ToolStatus.SUCCESS
     assert result.reason is ToolReason.CODE_READ
     assert "TIDE-420" in (result.summary or "")
-    move_to(environment, "storage_cellar", "tide_pool", "workshop_path", "engine_cave", "skiff_cove")
+    move_to(
+        environment,
+        "storage_cellar",
+        "tide_pool",
+        "workshop_path",
+        "engine_cave",
+        "skiff_cove",
+    )
     assert (
         step(environment, {"tool": "use", "item": "TIDE-420", "target": "harbor_skiff"})
         is ToolReason.ESCAPED

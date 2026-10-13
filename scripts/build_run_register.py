@@ -59,11 +59,16 @@ def _trace_row(path: Path, experiment_id: str) -> dict:
         error_type = str(outcome)
     in_tok = sum(int(s.get("input_tokens") or 0) for s in steps if isinstance(s, dict))
     out_tok = sum(int(s.get("output_tokens") or 0) for s in steps if isinstance(s, dict))
-    get = lambda *keys: next(
-        (prov.get(k, header.get(k, "unavailable")) for k in keys
-         if prov.get(k, header.get(k, None)) is not None),
-        "unavailable",
-    )
+    def get(*keys: str) -> object:
+        return next(
+            (
+                prov.get(k, header.get(k, "unavailable"))
+                for k in keys
+                if prov.get(k, header.get(k, None)) is not None
+            ),
+            "unavailable",
+        )
+
     return {
         "experiment_id": experiment_id,
         "episode_id": header.get("episode_id", path.stem),

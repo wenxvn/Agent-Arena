@@ -7,7 +7,7 @@ import types
 
 
 class _StubSidebar:
-    def __init__(self, owner: "_StubStreamlit") -> None:
+    def __init__(self, owner: _StubStreamlit) -> None:
         self._owner = owner
 
     def radio(self, label: str, options: list[str]) -> str:
@@ -66,7 +66,19 @@ def _run_with_stub(radio: str, inputs: dict[str, str]) -> list[tuple[str, object
     stub.calls = []
     module = types.ModuleType("streamlit")
     module.__dict__.update(
-        {name: getattr(stub, name) for name in ("title", "caption", "subheader", "write", "table", "info", "error", "sidebar")}
+        {
+            name: getattr(stub, name)
+            for name in (
+                "title",
+                "caption",
+                "subheader",
+                "write",
+                "table",
+                "info",
+                "error",
+                "sidebar",
+            )
+        }
     )
     sys.modules["streamlit"] = module
     try:
@@ -111,9 +123,16 @@ def test_app_replays_empty_trace_without_single_page_slider(monkeypatch, tmp_pat
 
 def test_app_compares_two_benchmark_csvs() -> None:
     csv_a = "results/exp-E1/benchmark_20261011T115200Z_memory_5-seeds_5-episodes_1ebf5977.csv"
-    csv_b = "results/muse-memory-s60-h5rp/benchmark_20261010T182036Z_memory_5-seeds_5-episodes_a055086d.csv"
-    calls = _run_with_stub("条件对照", {"对照 A benchmark CSV": csv_a, "对照 B benchmark CSV": csv_b})
-    summaries = [payload for kind, payload in calls if kind == "write" and isinstance(payload, dict)]
+    csv_b = (
+        "results/muse-memory-s60-h5rp/benchmark_20261010T182036Z_memory_5-seeds_"
+        "5-episodes_a055086d.csv"
+    )
+    calls = _run_with_stub(
+        "条件对照", {"对照 A benchmark CSV": csv_a, "对照 B benchmark CSV": csv_b}
+    )
+    summaries = [
+        payload for kind, payload in calls if kind == "write" and isinstance(payload, dict)
+    ]
     assert len(summaries) == 2
     assert summaries[0]["success_rate"] == 1.0
     assert summaries[1]["success_rate"] == 0.6
@@ -141,7 +160,9 @@ def test_app_compare_rejects_csv_outside_runs_and_results(monkeypatch, tmp_path)
     calls = _run_with_stub("条件对照", inputs)
 
     infos = [str(payload) for kind, payload in calls if kind == "info"]
-    summaries = [payload for kind, payload in calls if kind == "write" and isinstance(payload, dict)]
+    summaries = [
+        payload for kind, payload in calls if kind == "write" and isinstance(payload, dict)
+    ]
     assert len(infos) == 2
     assert all("runs/ 或 results/" in info for info in infos)
     assert summaries == []

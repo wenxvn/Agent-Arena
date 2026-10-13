@@ -28,6 +28,7 @@ from agent_arena.arena.models import (
 from agent_arena.worlds.spaceship_escape import (
     ObjectDefinition,
     RoomDefinition,
+    WorldDefinitionLike,
 )
 
 
@@ -141,6 +142,8 @@ ABYSS_MILESTONES: tuple[PublicMilestone, ...] = (
 
 class AbyssEnvironment(Environment):
     """An eight room ship-shaped world with decoys and a single public escape route."""
+
+    definition: WorldDefinitionLike
 
     def __init__(self, definition: AbyssDefinition | None = None, seed: int = 0) -> None:
         self.definition = definition or load_abyss_definition()

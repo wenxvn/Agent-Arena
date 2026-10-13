@@ -33,15 +33,11 @@ for key in ["polar", "pyramid", "subway", "volcano", "jungle", "lunar", "castle"
 
 def main() -> None:
     print("=== structural signatures ===")
-    for key, slug, file, _ver, diff in MAPS:
+    for _key, _slug, file, _ver, _diff in MAPS:
         with open(os.path.join(DATA, f"{file}.json"), encoding="utf-8") as fh:
             doc = json.load(fh)
         rooms = {r["id"]: r for r in doc["rooms"]}
-        objs = {o["id"]: o for o in doc["objects"]}
         edges = sorted(f"{a}->{b}" for a, r in rooms.items() for b in r["exits"] if a < b)
-        by_room: dict[str, list[str]] = {}
-        for o in doc["objects"]:
-            by_room.setdefault(o["room_id"], []).append(f"{o['id']}:{o['kind']}")
         terms = [(o["id"], o["room_id"]) for o in doc["objects"] if o["kind"] == "terminal"]
         cont = [(o["id"], o["room_id"]) for o in doc["objects"] if o["kind"] == "container"]
         items = sorted((i["id"], i["container_id"]) for i in doc["items"])
@@ -51,7 +47,7 @@ def main() -> None:
         print(f"  terminals={terms} containers={cont} items={len(items)}")
 
     print("=== real-model coverage (winning combo) ===")
-    for key, slug, _file, ver, _diff in MAPS:
+    for _key, slug, _file, ver, _diff in MAPS:
         ok: set[int] = set()
         combos: set[str] = set()
         n = 0

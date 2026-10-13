@@ -57,7 +57,7 @@ def build_seeded_definition(seed: int) -> SeededShipDefinition:
     rng = random.Random(seed)
     order = list(CANDIDATE_CONTAINERS)
     rng.shuffle(order)
-    placement = dict(zip(TOOL_ITEMS, order[: len(TOOL_ITEMS)]))
+    placement = dict(zip(TOOL_ITEMS, order[: len(TOOL_ITEMS)], strict=True))
     items = tuple(
         ItemDefinition(id=item_id, container_id=placement[item_id]) for item_id in TOOL_ITEMS
     )

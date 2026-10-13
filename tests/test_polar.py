@@ -200,7 +200,14 @@ def test_polar_medium_decoys_do_not_block_passage() -> None:
     assert step(environment, {"tool": "inspect", "target": "telescope"}) is ToolReason.INSPECTED
     move_to(environment, "sleep_pod")
     assert step(environment, {"tool": "inspect", "target": "cot"}) is ToolReason.INSPECTED
-    move_to(environment, "aurora_deck", "ice_tunnel", "weather_nook", "generator_cave", "gear_store")
+    move_to(
+        environment,
+        "aurora_deck",
+        "ice_tunnel",
+        "weather_nook",
+        "generator_cave",
+        "gear_store",
+    )
     step(environment, {"tool": "inspect", "target": "gear_crate"})
     assert step(environment, {"tool": "pickup", "item": "rope_coil"}) is ToolReason.PICKED_UP
     assert (

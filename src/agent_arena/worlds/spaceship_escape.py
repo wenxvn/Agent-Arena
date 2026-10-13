@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Sequence
 from hashlib import sha256
 from importlib.resources import files
-from typing import Literal
+from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict
 
@@ -55,6 +56,41 @@ class ItemDefinition(BaseModel):
 
     id: str
     container_id: str
+
+
+class ItemDefinitionLike(Protocol):
+    @property
+    def id(self) -> str: ...
+
+    @property
+    def container_id(self) -> str: ...
+
+
+class WorldDefinitionLike(Protocol):
+    """Shared read-only fields consumed by deterministic world environments."""
+
+    @property
+    def world_id(self) -> str: ...
+
+    @property
+    def version(self) -> str: ...
+
+    @property
+    def start_room(self) -> str: ...
+
+    @property
+    def authorization_code(self) -> str: ...
+
+    @property
+    def rooms(self) -> Sequence[RoomDefinition]: ...
+
+    @property
+    def objects(self) -> Sequence[ObjectDefinition]: ...
+
+    @property
+    def items(self) -> Sequence[ItemDefinitionLike]: ...
+
+    def model_dump(self, *, mode: Literal["json"]) -> dict[str, Any]: ...
 
 
 class WorldDefinition(BaseModel):
@@ -158,6 +194,9 @@ SPACESHIP_MILESTONES: tuple[PublicMilestone, ...] = (
 
 class SpaceshipEscapeEnvironment(Environment):
     """A six room, deterministic environment with a single escape route."""
+
+    definition: WorldDefinitionLike
+
     def __init__(self, definition: WorldDefinition | None = None, seed: int = 0) -> None:
         self.definition = definition or load_spaceship_escape_definition()
         self._rooms = {room.id: room for room in self.definition.rooms}

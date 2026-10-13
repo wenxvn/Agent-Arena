@@ -47,9 +47,9 @@ uv run agent-arena run --provider ollama --agent planner_assisted --seed 0 --out
 
  PlanningAgent v1 已完成工程验证，并以相同模型、world、seed 和 30 步预算运行真实 5 seeds：首轮 0/5 成功，平均 28 次 Planner 调用、子目标完成率 0%；Evaluation v2 独立重跑仍为 0/5，平均 25.6 次 Planner 调用、调用比例 85.3%、State Progress 0。这说明当前主要问题仍是高层子目标到有效动作的桥接，不能把 Fake 或辅助模式结果当作自主规划能力。
 
-2026-10-11 起真实实验切到 OpenCode Zen 网关的 `muse-spark-1.3-contributor`：Memory + history5 + recovery + phase + 不限步的自主组合在 9 配置（飞船/灯塔/深海站 × 简单/中等/困难）× 5 seeds 获 45/45 成功，0 非法输出；均值步数飞船 70.4/140.8/165.4、灯塔 39.8/49.4/105.8、深海 26.8/42.2/83.6，三图全部随难度单调递增。旧 qwen 基线保留独立统计。
+2026-10-11 起真实实验切到 OpenCode Zen 网关的 `muse-spark-1.3-contributor`：Memory + history5 + recovery + world-declared phase + E1（prompt hash `44229085`）+ 不限步的自主组合，在 9 配置（飞船/灯塔/深海站 × 简单/中等/困难）× 5 seeds 中每个配置至少有一次成功；原始 51 个 trace 含 46 次成功和 5 次 `provider_error`，按所有实际尝试计为 46/51（90.2%），去重后的 45 个配置才是 45/45。0 非法输出；均值步数飞船 70.4/140.8/165.4、灯塔 39.8/49.4/105.8、深海 26.8/42.2/83.6，三图全部随难度单调递增。旧 qwen 基线保留独立统计。
 
-后续十世界三十图矩阵 150/150 成功；flex pilot 与 seeded 变体分别 30/30、15/15 成功。seeded 变体存在长尾步数，尚需更广覆盖；详见 [开发进度](docs/scope/scope.md)。
+后续十世界三十图矩阵 150/150 均有成功 trace，使用 E1-ON 基线；其中固定图存在网关失败后的重跑补齐，不能解读为首次尝试 150/150 稳定成功。flex pilot 与 seeded 变体分别记录为 30/30、15/15；seeded 变体存在长尾步数，尚需更广覆盖。具体实例、尝试分母与条件见 [开发进度](docs/scope/scope.md)。
 
 ## 使用 Ollama 本地模型
 

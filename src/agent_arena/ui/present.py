@@ -54,9 +54,9 @@ def compare_conditions(rows: list[dict[str, Any]]) -> dict[str, Any]:
     """按行计算单个条件的聚合（成功率、步数、token），缺值记 N/A。"""
     outcomes = [row.get("outcome") for row in rows]
     successes = sum(1 for outcome in outcomes if outcome == "success")
-    steps = [row.get("steps") for row in rows if isinstance(row.get("steps"), (int, float))]
-    input_tokens = [row.get("input_tokens") for row in rows if isinstance(row.get("input_tokens"), (int, float))]
-    output_tokens = [row.get("output_tokens") for row in rows if isinstance(row.get("output_tokens"), (int, float))]
+    steps = _numeric_values(rows, "steps")
+    input_tokens = _numeric_values(rows, "input_tokens")
+    output_tokens = _numeric_values(rows, "output_tokens")
     return {
         "attempts": len(rows),
         "successes": successes,
@@ -130,6 +130,15 @@ def error_hotspots(trace: dict[str, Any]) -> dict[str, int]:
     }
 
 
+def _numeric_values(rows: list[dict[str, Any]], key: str) -> list[int | float]:
+    values: list[int | float] = []
+    for row in rows:
+        value = row.get(key)
+        if isinstance(value, (int, float)):
+            values.append(value)
+    return values
+
+
 def aggregate_traces(traces: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """多局 trace 按 world_version 聚合成矩阵行（成功 seed、均值、中位数）。"""
     groups: dict[str, list[dict[str, Any]]] = {}
@@ -140,15 +149,11 @@ def aggregate_traces(traces: list[dict[str, Any]]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for version in sorted(groups):
         group = groups[version]
+        successful_traces = [trace for trace in group if trace.get("outcome") == "success"]
         successes = sorted(
-            trace.get("seed") for trace in group if trace.get("outcome") == "success"
+            seed for trace in successful_traces if isinstance(seed := trace.get("seed"), int)
         )
-        steps = sorted(
-            trace.get("executed_action_count")
-            for trace in group
-            if trace.get("outcome") == "success"
-            and isinstance(trace.get("executed_action_count"), (int, float))
-        )
+        steps = sorted(_numeric_values(successful_traces, "executed_action_count"))
         rows.append(
             {
                 "world_version": version,

@@ -28,6 +28,7 @@ from agent_arena.arena.models import (
 from agent_arena.worlds.spaceship_escape import (
     ObjectDefinition,
     RoomDefinition,
+    WorldDefinitionLike,
 )
 
 
@@ -121,6 +122,8 @@ LIGHTHOUSE_MILESTONES: tuple[PublicMilestone, ...] = (
 
 class LighthouseEnvironment(Environment):
     """A six room chain world with a single public escape route."""
+
+    definition: WorldDefinitionLike
 
     def __init__(self, definition: LighthouseDefinition | None = None, seed: int = 0) -> None:
         self.definition = definition or load_lighthouse_definition()

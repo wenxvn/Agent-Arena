@@ -73,7 +73,9 @@ def test_real_trace_replays() -> None:
     trace = json.loads(candidates[0].read_text(encoding="utf-8"))
     rows = summarize_trace(trace)
     assert len(rows) == trace["executed_action_count"]
-    assert autonomy_level(trace["provenance"]) == "world-declared phase guidance｜世界预定义任务辅助"
+    assert autonomy_level(trace["provenance"]) == (
+        "world-declared phase guidance｜世界预定义任务辅助"
+    )
 
 
 def test_ui_touches_no_secrets() -> None:
@@ -106,7 +108,10 @@ def test_trace_overview_uses_allowlist_fields() -> None:
         "invalid_output_count": 0,
         "rejected_action_count": 3,
         "latency_ms": 100,
-        "provenance": {"model_name": "muse-spark-1.3-contributor", "base_prompt_hash": "44229085xx"},
+        "provenance": {
+            "model_name": "muse-spark-1.3-contributor",
+            "base_prompt_hash": "44229085xx",
+        },
         "steps": [{"input_tokens": 10, "output_tokens": 2}],
     }
     overview = trace_overview(trace)

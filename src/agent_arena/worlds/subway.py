@@ -28,6 +28,7 @@ from agent_arena.arena.models import (
 from agent_arena.worlds.spaceship_escape import (
     ObjectDefinition,
     RoomDefinition,
+    WorldDefinitionLike,
 )
 
 
@@ -145,6 +146,8 @@ SUBWAY_MILESTONES: tuple[PublicMilestone, ...] = (
 
 class SubwayEnvironment(Environment):
     """An eight room subway world with decoys and a single public escape route."""
+
+    definition: WorldDefinitionLike
 
     def __init__(self, definition: SubwayDefinition | None = None, seed: int = 0) -> None:
         self.definition = definition or load_subway_definition()
