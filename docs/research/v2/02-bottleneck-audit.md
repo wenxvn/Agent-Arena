@@ -200,6 +200,14 @@ BFS 对有限环境状态按 `(动作数, 移动动作数)` 字典序搜索；�
 
 因此，长尾分解部分已完成，但 S5.2 整项仍为 partial：不改写或重用既有 v2 seed 布局，不剔除困难实例；新分布设计与冻结拆分是后续工作。
 
+### V3 seeded 离线实例全集与 holdout 冻结
+
+按新增 [spec 0016](../../specs/0016-seeded-instance-diversity/index.md)，对每图 6 个候选容器穷举任意两点激活与工具分配：lunar 有 90 种，pyramid 有 30 种。现有 FlexEnvironment BFS 在全部 120 个候选定义上均找到成功路线。最少动作分布为 lunar `{17:24, 18:12, 19:6, 20:36, 22:12}`、pyramid `{12:6, 14:12, 16:10, 18:2}`。因此预注册地图内两档：lunar `simple ≤18`、`complex ≥19`；pyramid `simple ≤14`、`complex ≥16`。标签只表示同一地图中的 oracle 路线长度分层，不表示跨地图难度等价。
+
+冻结脚本 `scripts/audit_v3_seeded_layout_freeze.py` 将 stable definition hash 按确定性 affine seed 顺序映射到 seed 0–89 / 0–29，并在每个 `world_version × difficulty` 桶中以固定 SHA-256 次序分配约 1/3 test。生成的 [V3 布局冻结清单](assets/seeded-v3-layout-freeze.csv) 含 120 个 hash、seed、难度、最少动作/移动数、激活容器、工具位置及 split；核对结果为 lunar 60 dev / 30 test，pyramid 20 dev / 10 test，跨版本 hash 碰撞为 0。最短路使用的 `flex.py` SHA-256 为 `11393734c890312a3ae5e19057ae809a8a5c976c4bd43a91e6c4152304a51752`，BFS oracle 来源 `audit_v2_seeded_overhead.py` SHA-256 为 `908fa6ff181557a885041be747dd245ac1f86ce6b9fd2346d446a26d0a5e556`。旧 v2 定义未改。
+
+该清单在新版本运行时实现前冻结，test 布局与 placement 也可从仓库文件读取，因此这是需遵守的程序性 holdout，不是隐藏或盲测集。不得用 test 结果调 prompt、机制、阈值或生成器。V3 运行时尚未实现，清单不证明 selector、seed 映射或跨进程 runtime identity 已与计划一致；S5.2 仍为 partial。没有 provider 请求或 GPU 运行。
+
 ## 后续阶段建议与结论
 
 - S2 优先实现并单独验证 M1；先覆盖 visited room/edge/frontier 和公开里程碑，不把隐藏地图信息写入 Memory。
