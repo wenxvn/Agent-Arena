@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V3 seeded 回归覆盖与本地质量门禁
+
+事件：为冻结的 120 个 V3 seeded 布局补充自动回归覆盖，并完成全仓本地门禁。
+
+原因：前一轮只用离线 manifest audit 对照运行时；需把 hash、seed 周期、布局和 holdout 契约锁入 pytest，避免后续改动静默改变预注册实例。
+
+改动：新增 `tests/test_flex_v3_seeded.py`，逐行比对 120 个冻结实例的 hash、placement、difficulty、split、激活容器和 seed 周期，并断言非激活候选不进入公开房间对象、负 seed 拒绝。扩展 `tests/test_flex_world_identity.py`，在不同 `PYTHONHASHSEED` 子进程核对两个版本的 hash 和周期。
+
+验证：定向 pytest 5 passed；全量 pytest 361 passed；Ruff 全仓通过；mypy 49 个源文件无问题；manifest runtime audit 在 `PYTHONHASHSEED=42` 下仍为 120/120 一致。未运行 provider API 或 GPU。CI 尚未查看。
+
+下一步：按原提纲检查尚可离线推进的 S5/S6 项；S5.3 需等 S2–S4 正向机制证据，在线行为评估仍受 S2 Gate 阻塞。
+
+关联提交：`0ac83f2c2bd93acb0113efb7b51bea0c90c04006`。
+
 ## 2026-10-13 V2 S5.2 seeded v3 实例全集与 holdout 冻结
 
 事件：确定并冻结 seeded v3 的候选实例全集、路线难度标签与程序性 dev/test 边界。
