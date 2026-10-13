@@ -232,6 +232,149 @@ def test_provider_error_charges_reservation_and_closes_budget(tmp_path) -> None:
     assert state.requests_used == 1
     assert state.tokens_used > 0
     assert state.closed_reason == "provider_error_unknown_spend"
+    event = json.loads((tmp_path / "budget.json").read_text(encoding="utf-8"))["requests"][0]
+    assert event["error_category"] == "provider_error"
+
+
+def test_provider_error_records_only_safe_http_status(tmp_path) -> None:
+    class FakeHTTPError(RuntimeError):
+        status_code = 503
+
+    class ProviderWithWrappedFailure:
+        def decide(self, request):
+            try:
+                raise FakeHTTPError("private response body and credential")
+            except FakeHTTPError as exc:
+                raise RuntimeError("authorization: private credential") from exc
+
+    ledger = tmp_path / "budget.json"
+    controller = make_controller(ledger)
+    bounded = BudgetedDecisionProvider(
+        ProviderWithWrappedFailure(),
+        controller,
+        context="failed-provider-call",
+        provider_name="openai",
+        model_name="test-model",
+    )
+
+    with pytest.raises(ProviderBudgetExceeded) as raised:
+        bounded.decide(make_request())
+
+    assert "error_category=http_status" in str(raised.value)
+    assert "http_status=503" in str(raised.value)
+    assert "private" not in str(raised.value)
+    contents = ledger.read_text(encoding="utf-8")
+    assert "private" not in contents
+    event = json.loads(contents)["requests"][0]
+    assert event["error_category"] == "http_status"
+    assert event["http_status"] == 503
+
+
+@pytest.mark.parametrize(
+    ("cause_kind", "expected_category"),
+    [
+        ("connection", "connection"),
+        ("timeout", "timeout"),
+        ("invalid_response", "invalid_response"),
+    ],
+)
+def test_provider_error_classifies_wrapped_failure_chain(
+    tmp_path, cause_kind: str, expected_category: str
+) -> None:
+    class ProviderWithWrappedFailure:
+        def decide(self, request):
+            if cause_kind == "connection":
+                cause: Exception = ConnectionError("private connection detail")
+            elif cause_kind == "timeout":
+                cause = TimeoutError("private timeout detail")
+            else:
+                cause = json.JSONDecodeError("private parse detail", "body", 0)
+            try:
+                raise cause
+            except Exception as exc:
+                raise RuntimeError("private wrapper detail") from exc
+
+    ledger = tmp_path / "budget.json"
+    controller = make_controller(ledger)
+    bounded = BudgetedDecisionProvider(
+        ProviderWithWrappedFailure(),
+        controller,
+        context="failed-provider-call",
+        provider_name="openai",
+        model_name="test-model",
+    )
+
+    with pytest.raises(ProviderBudgetExceeded) as raised:
+        bounded.decide(make_request())
+
+    assert f"error_category={expected_category}" in str(raised.value)
+    contents = ledger.read_text(encoding="utf-8")
+    assert "private" not in contents
+    event = json.loads(contents)["requests"][0]
+    assert event["error_category"] == expected_category
+    assert "http_status" not in event
+
+
+def test_schema_one_failed_ledger_migrates_without_error_metadata(tmp_path) -> None:
+    ledger = tmp_path / "budget.json"
+    controller = make_controller(ledger)
+    bounded = BudgetedDecisionProvider(
+        FakeDecisionProvider([RuntimeError("transport unavailable")]),
+        controller,
+        context="failed-provider-call",
+        provider_name="openai",
+        model_name="test-model",
+    )
+    with pytest.raises(ProviderBudgetExceeded):
+        bounded.decide(make_request())
+
+    legacy_state = json.loads(ledger.read_text(encoding="utf-8"))
+    legacy_state["schema_version"] = 1
+    legacy_state["requests"][0].pop("error_category")
+    ledger.write_text(json.dumps(legacy_state), encoding="utf-8")
+
+    migrated = make_controller(ledger)
+
+    assert migrated.snapshot().closed_reason == "provider_error_unknown_spend"
+    persisted = json.loads(ledger.read_text(encoding="utf-8"))
+    assert persisted["schema_version"] == 2
+    assert persisted["requests"][0]["status"] == "unknown_spend_after_provider_error"
+
+
+@pytest.mark.parametrize(
+    ("error_category", "http_status"),
+    [
+        ("unrecognized", None),
+        ("http_status", 200),
+        ("provider_error", 503),
+        ("http_status", None),
+    ],
+)
+def test_tampered_provider_error_metadata_fails_closed(
+    tmp_path, error_category: str, http_status: int | None
+) -> None:
+    ledger = tmp_path / "budget.json"
+    controller = make_controller(ledger)
+    bounded = BudgetedDecisionProvider(
+        FakeDecisionProvider([RuntimeError("transport unavailable")]),
+        controller,
+        context="failed-provider-call",
+        provider_name="openai",
+        model_name="test-model",
+    )
+    with pytest.raises(ProviderBudgetExceeded):
+        bounded.decide(make_request())
+
+    persisted = json.loads(ledger.read_text(encoding="utf-8"))
+    event = persisted["requests"][0]
+    event["error_category"] = error_category
+    event.pop("http_status", None)
+    if http_status is not None:
+        event["http_status"] = http_status
+    ledger.write_text(json.dumps(persisted), encoding="utf-8")
+
+    with pytest.raises(ProviderBudgetExceeded, match="ledger"):
+        make_controller(ledger)
 
 
 def test_terminal_failure_event_requires_matching_closed_reason(tmp_path) -> None:

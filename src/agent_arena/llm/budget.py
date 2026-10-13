@@ -37,6 +37,64 @@ class _FileLockUnavailable(RuntimeError):
 
 _REQUEST_LEASE_GUARD = threading.Lock()
 _ACTIVE_REQUEST_LEASES: set[str] = set()
+_SAFE_PROVIDER_ERROR_CATEGORIES = frozenset(
+    {"connection", "http_status", "invalid_response", "provider_error", "timeout"}
+)
+_TIMEOUT_EXCEPTION_NAMES = frozenset(
+    {
+        "APITimeoutError",
+        "ConnectTimeout",
+        "PoolTimeout",
+        "ReadTimeout",
+        "TimeoutError",
+        "WriteTimeout",
+    }
+)
+_CONNECTION_EXCEPTION_NAMES = frozenset(
+    {
+        "APIConnectionError",
+        "ConnectError",
+        "ConnectionError",
+        "NetworkError",
+        "ReadError",
+        "RemoteProtocolError",
+        "WriteError",
+    }
+)
+
+
+def _exception_chain(error: BaseException) -> Iterator[BaseException]:
+    seen: set[int] = set()
+    current: BaseException | None = error
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        yield current
+        current = current.__cause__ or current.__context__
+
+
+def _safe_provider_error_details(error: BaseException) -> tuple[str, int | None]:
+    chain = tuple(_exception_chain(error))
+    names = {type(item).__name__ for item in chain}
+    if any(isinstance(item, TimeoutError) for item in chain) or names & _TIMEOUT_EXCEPTION_NAMES:
+        return "timeout", None
+
+    for item in chain:
+        try:
+            status = getattr(item, "status_code", None)
+            if type(status) is not int:
+                response = getattr(item, "response", None)
+                status = getattr(response, "status_code", None)
+        except Exception:
+            continue
+        if type(status) is int and 400 <= status <= 599:
+            return "http_status", status
+
+    has_connection_error = any(isinstance(item, ConnectionError) for item in chain)
+    if has_connection_error or names & _CONNECTION_EXCEPTION_NAMES:
+        return "connection", None
+    if any(isinstance(item, json.JSONDecodeError) for item in chain):
+        return "invalid_response", None
+    return "provider_error", None
 
 
 @dataclass(frozen=True)
@@ -97,7 +155,8 @@ class ProviderBudgetSnapshot:
 class ProviderBudgetController:
     """Persist and enforce one serial budget across multiple CLI invocations."""
 
-    _SCHEMA_VERSION = 1
+    _SCHEMA_VERSION = 2
+    _SUPPORTED_SCHEMA_VERSIONS = frozenset({1, _SCHEMA_VERSION})
 
     def __init__(self, limits: ProviderBudgetLimits, ledger_path: Path) -> None:
         self.limits = limits
@@ -254,7 +313,23 @@ class ProviderBudgetController:
         if failure is not None:
             raise ProviderBudgetExceeded(failure)
 
-    def fail(self, reservation: ProviderBudgetReservation) -> None:
+    def fail(
+        self,
+        reservation: ProviderBudgetReservation,
+        *,
+        error_category: str,
+        http_status: int | None = None,
+    ) -> None:
+        if (
+            not isinstance(error_category, str)
+            or error_category not in _SAFE_PROVIDER_ERROR_CATEGORIES
+        ):
+            raise ValueError("error_category is not an allowed provider error category.")
+        if error_category == "http_status":
+            if type(http_status) is not int or not 400 <= http_status <= 599:
+                raise ValueError("http_status category requires a 4xx or 5xx status.")
+        elif http_status is not None:
+            raise ValueError("http_status is only valid for the http_status category.")
         with self._transaction() as state:
             event = self._in_flight_event(state, reservation.request_id)
             if event is not None:
@@ -263,9 +338,12 @@ class ProviderBudgetController:
                     {
                         "status": "unknown_spend_after_provider_error",
                         "charged_reservation_tokens": reservation.reserved_tokens,
+                        "error_category": error_category,
                         "completed_at": _utc_now(),
                     }
                 )
+                if http_status is not None:
+                    event["http_status"] = http_status
                 state["closed_reason"] = "provider_error_unknown_spend"
                 state["in_flight_request_id"] = None
 
@@ -327,7 +405,8 @@ class ProviderBudgetController:
             raise ProviderBudgetExceeded(
                 "The provider budget ledger is invalid; refusing requests."
             )
-        if parsed.get("schema_version") != self._SCHEMA_VERSION:
+        schema_version = parsed.get("schema_version")
+        if type(schema_version) is not int or schema_version not in self._SUPPORTED_SCHEMA_VERSIONS:
             raise ProviderBudgetExceeded("The provider budget ledger version is unsupported.")
         if parsed.get("experiment_id") != self.limits.experiment_id:
             raise ProviderBudgetExceeded("The ledger belongs to a different experiment.")
@@ -339,6 +418,7 @@ class ProviderBudgetController:
             raise ProviderBudgetExceeded("The provider budget ledger request list is invalid.")
         state = cast(dict[str, Any], parsed)
         self._validate_state(state)
+        state["schema_version"] = self._SCHEMA_VERSION
         return state
 
     def _validate_state(self, state: dict[str, Any]) -> None:
@@ -411,6 +491,32 @@ class ProviderBudgetController:
             if required_reason is not None and closed_reason != required_reason:
                 raise ProviderBudgetExceeded(
                     "The provider budget ledger close reason does not match its failed request."
+                )
+            error_category = event.get("error_category")
+            http_status = event.get("http_status")
+            if status == "unknown_spend_after_provider_error":
+                if error_category is not None and (
+                    not isinstance(error_category, str)
+                    or error_category not in _SAFE_PROVIDER_ERROR_CATEGORIES
+                ):
+                    raise ProviderBudgetExceeded(
+                        "The provider budget ledger error category is invalid."
+                    )
+                if http_status is not None and (
+                    type(http_status) is not int
+                    or not 400 <= http_status <= 599
+                    or error_category != "http_status"
+                ):
+                    raise ProviderBudgetExceeded(
+                        "The provider budget ledger HTTP status is invalid."
+                    )
+                if error_category == "http_status" and http_status is None:
+                    raise ProviderBudgetExceeded(
+                        "The provider budget ledger HTTP error status is missing."
+                    )
+            elif error_category is not None or http_status is not None:
+                raise ProviderBudgetExceeded(
+                    "Provider error metadata is attached to a non-provider-error request."
                 )
             request_ids.add(request_id)
             if status == "reserved":
@@ -556,15 +662,25 @@ class BudgetedDecisionProvider:
             try:
                 response = self._provider.decide(bounded_request)
             except Exception as exc:
-                self._controller.fail(reservation)
+                error_category, http_status = _safe_provider_error_details(exc)
+                self._controller.fail(
+                    reservation,
+                    error_category=error_category,
+                    http_status=http_status,
+                )
+                status_detail = (
+                    f", http_status={http_status}" if http_status is not None else ""
+                )
                 raise ProviderBudgetExceeded(
-                    "Provider request failed; the reserved amount was charged and the budget "
-                    "is closed."
+                    "Provider request failed "
+                    f"(error_category={error_category}{status_detail}); the reserved amount "
+                    "was charged and the budget is closed."
                 ) from exc
             if not isinstance(response, ProviderResponse):
-                self._controller.fail(reservation)
+                self._controller.fail(reservation, error_category="invalid_response")
                 raise ProviderBudgetExceeded(
-                    "Provider returned an invalid response; budget closed."
+                    "Provider returned an invalid response "
+                    "(error_category=invalid_response); budget closed."
                 )
             self._controller.complete(reservation, response)
             return response

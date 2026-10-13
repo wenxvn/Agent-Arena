@@ -4,6 +4,8 @@
 
 Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实现和验证；seeded world identity 的跨进程不稳定问题已修复。v2 pilot 已启动，但在 2 次 API 请求后因未知 spend provider error 封账；没有完成 episode，v3 未启动，S2 Gate 尚未完成。本次没有 GPU 运行。预算门禁、hash 差异和执行记录见 [V2 在线运行登记表](00-run-registry.md)。
 
+针对这次无法从旧 ledger 追溯 provider error 原因的问题，已增加仅记录固定错误类别和可选 4xx/5xx 状态码的安全诊断字段；类别是基于异常链的 best-effort 分类，schema-1 ledger 可迁移至 schema 2，不记录 exception message 或 response。最新离线验证为 348 passed、Ruff/mypy/`uv lock --check` 通过。旧 pilot 的实际根因仍未知，不能把新诊断字段倒推为旧请求原因。
+
 ## 实现范围
 
 - 新增 `memory_version=v3_spatial_event`，仅用于 `agent=memory`；默认仍为 v2。v2 的 reducer、renderer 与既有 trace provenance 保持兼容。
@@ -25,10 +27,12 @@ Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实�
 
 2026-10-13 随后加入跨 invocation 的 fail-closed provider budget guard，首次检查为 329 passed。独立复审后增加 expected provider、OS request/invocation leases、跨进程锁测试、截止时间后记账、terminal ledger status 一致性、CLI 中断状态修复，以及后续 cell 身份不匹配时保留已完成汇总；Python 3.13 临时隔离环境最终检查为 Ruff 通过、mypy 通过（49 个源文件）、全量 pytest 338 passed、`uv lock --check` 与 `git diff --check` 通过。依赖文件未改动，实现提交 SHA `0a09a4f479cd8b6ba49dd0eeefed80a47d623c06` 已冻结登记；真实模型调用尚未开始。完整设计见 [spec 0015](../../specs/0015-v2-provider-budget-guard/index.md)。
 
+2026-10-13 为复盘实际 pilot 的错误路径，将 provider budget ledger 扩为 schema 2，加入固定类别与可选 HTTP 状态码，并保留 schema-1 读取/迁移。全量 pytest 348 passed、Ruff 全仓通过、mypy 49 个源文件通过、`uv lock --check` 通过。修改后的代码只用于新登记的 recovery run；原始 BUDGET-01 运行仍以 SHA `0d3bb0ba0b81ca682ea714941de7b5bd17fd03f9` 为准。
+
 定向 fixture 覆盖公开 frontier 与成功边、v3 访问集合在 v2 12 项短列表达到容量后的正确性、必需房间/出口/边/事件容量边界、事件顺序不预设、episode reset、公开前置条件修复、超限压缩与显式失败、v3 provenance/step statistics、config 兼容及旧 trace 审计读取。测试和静态检查不证明模型收益。
 
 ## Pilot 决策
 
-候选比较预登记为 `lunar_escape_v2_seeded` 的 seed 1、2，Memory v2 与 v3 配对，每局 100 decisions，E1 ON / H5 / R1 / P2(world-declared) 条件固定，串行运行。共享上限、输出 cap、全局超时、ledger 和两条执行命令已写入 run registry；每次决策调用都在发出前预留并落盘，请求/重试/usage 不确定时 fail closed。计划报告 first-recorded attempt、Success@60/100、动作数、重复边/动作、输入/输出 Token、token/success、provider_error 和延迟。world identity hash 的无序 milestone 字段已规范化，稳定值为 `bd1f77eabdcd032e80dbbaaad29163e85cbea34caf7486c22babcb3b85cb8373`；修复代码 SHA `0d3bb0ba0b81ca682ea714941de7b5bd17fd03f9` 已冻结。v2 seed 1 episode 在第 2 次请求后中断，budget ledger 记账 2 次请求 / 24,086 tokens 并以 `provider_error_unknown_spend` 关闭；v2 汇总 0/2，v2 seed 2 与 v3 未启动。不得重置账本或以同一 budget experiment ID 重试。S2 仍未完成。
+候选比较预登记为 `lunar_escape_v2_seeded` 的 seed 1、2，Memory v2 与 v3 配对，每局 100 decisions，E1 ON / H5 / R1 / P2(world-declared) 条件固定，串行运行。共享上限、输出 cap、全局超时、ledger 和两条执行命令已写入 run registry；每次决策调用都在发出前预留并落盘，请求/重试/usage 不确定时 fail closed。计划报告 first-recorded attempt、Success@60/100、动作数、重复边/动作、输入/输出 Token、token/success、provider_error 和延迟。world identity hash 的无序 milestone 字段已规范化，稳定值为 `bd1f77eabdcd032e80dbbaaad29163e85cbea34caf7486c22babcb3b85cb8373`；原 pilot 源代码 SHA 为 `0d3bb0ba0b81ca682ea714941de7b5bd17fd03f9`。v2 seed 1 episode 在第 2 次请求后中断，原 budget ledger 记账 2 次请求 / 24,086 tokens 并以 `provider_error_unknown_spend` 关闭；v2 汇总 0/2，v2 seed 2 与 v3 未启动。不得重置账本或复用原 budget experiment ID。安全诊断实现与剩余 cap 的 recovery run 需使用独立 source SHA、budget ID、ledger 与输出目录；run registry 冻结后再执行。S2 仍未完成。
 
-离线指标、源 Trace 与既有 232-action 月球长尾事实仍只支持“值得检验”的 M1 假设；没有同条件 v2/v3 结果，不能声称成功率、步数、重复边或 token-efficiency 改善。当前稳定 world definition hash 与旧长尾 trace 记录不同，原因仍未确认；因此旧 trace 只作假设来源，不作本轮 hash-matched 对照。只读源码核查发现错误被 adapter/wrapper 转成通用异常，ledger 不保存异常元数据；当前 provider error 根因不可追溯。后续需先决定是否加入不包含响应正文的安全错误分类，并单独登记任何恢复运行；完成前不推进 S3。
+离线指标、源 Trace 与既有 232-action 月球长尾事实仍只支持“值得检验”的 M1 假设；没有同条件 v2/v3 结果，不能声称成功率、步数、重复边或 token-efficiency 改善。当前稳定 world definition hash 与旧长尾 trace 记录不同，原因仍未确认；因此旧 trace 只作假设来源，不作本轮 hash-matched 对照。旧 pilot 的 provider error 根因不可追溯；schema-2 诊断仅对后续请求生效。恢复运行将扣除已记账的 2 次请求与 24,086 tokens，并保留原始失败记录；完成前不推进 S3。

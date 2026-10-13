@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 provider error 安全分类与预算内恢复登记
+
+事件：原 S2 M1 pilot 的第二次 provider 请求 unknown spend 封账；现有记录不足以区分 HTTP、连接或超时故障。
+
+改动：budget ledger 新增 schema 2，采用固定错误类别与可选 4xx/5xx status；CLI 只显示这两个 allowlisted 字段，不记录或输出异常文本、response body、headers、prompt 或 credential。旧 schema 1 ledger 可验证后迁移；类别为基于异常链的 best-effort 诊断。独立复审没有硬性问题，补齐未知类别、无效/缺失状态码及类别不匹配的 fail-closed 负例。
+
+验证：新增未知错误、HTTP status/敏感文本隔离、connection/timeout/invalid-response 分类、schema-1 迁移及篡改账本拒绝覆盖。定向测试 23 passed；全量 pytest 348 passed，Ruff 全仓、mypy 49 个源文件、`uv lock --check` 与 `git diff --check` 通过；没有 provider API 请求。
+
+恢复安排：单独预登记 BUDGET-02，只使用原 request/token cap 的剩余 498 次和 3,975,914 tokens；绝对截止不晚于 BUDGET-01 的 deadline，使用新 ledger 与结果目录。登记 SHA、提交推送并完成门禁核对后再启动；发生新 provider error 时停止，不创建第三账本。
+
+下一步：完成实施复审、冻结 SHA 和提交/推送 recovery 登记，再按原矩阵串行执行。S2 Gate 保持未完成。
+
+关联实现提交：待提交。
+
 ## 2026-10-13 V2 S2 M1 pilot 因 provider error fail closed
 
 事件：按冻结登记启动 Memory v2 的 seed 1；第 2 次 provider 请求报错后，budget guard 关闭账本并以 exit code 2 停止串行矩阵。
