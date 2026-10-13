@@ -90,6 +90,28 @@ hash 同时混合地图、配置、prompt 周边设置与运行批次。表中�
 | 地铁 | 50 | subway-escape-hard-zh | subway_escape_hard / replicate_id | runs/muse-21maps-subway-hard/episode_20261011T130725Z_memory_seed-2_33208099.json |
 | 火山 | 37 | volcano-escape-v1-zh | volcano_escape_v1 / replicate_id | runs/muse-21maps-volcano-med/episode_20261011T130905Z_memory_seed-3_3b175310.json |
 
+## S1.3 可计算指标补充：分层分布与公开里程碑
+
+从逐 episode 审计 CSV 生成[条件分布 CSV](assets/condition-distributions.csv)：
+
+```powershell
+python scripts/summarize_v2_distributions.py
+```
+
+该脚本只读 `trace-audit.csv`，以 `experiment_bucket`、`world_version`、`configuration_signature` 分组；不读取原始 Trace 或 `decision_reason`。成功动作数、成功 Trace executor token 数与延迟分别输出 n、P50、P75、P90、max；P50 使用中位数，P75/P90 使用 `int(p * (n - 1) + 0.5)` 最近索引规则，以保持与既有 P90 算法一致。CSV 共 92 个条件、474 条记录、262 条成功；每组数据仍可能很小或来自不同运行批次，不应用于未经匹配的条件优劣比较。
+
+把全部成功样本合并仅作总体描述时，动作数 P50/P75/P90/max 为 37/48/69/440。该混合分布不能代表单一配置、地图或模型。所有 262 条成功记录都有 executor input/output token 对和 latency；成功记录的 planner token 覆盖为 0/262，因而无法由这些记录估算成功局 Planner 成本。`known_executor_tokens_per_recorded_success` 只将有 token 记录的尝试加总后除以已记录成功数；provider-error 等删失记录可能缺少 usage，因此该值只能视为观测下界，不是 provider 确认账单或有效的配置成本比较。各条件内的 token 与 latency 分布见 CSV。
+
+公开任务里程碑均出现在 262 条成功 Trace 中：252 条顺序为 panel→power→code→escape，10 条为 code→panel→power→escape。按公开事件 step 差计算的跨条件区间如下；它们是相邻已记录事件的动作步数差，不是模型内部的阶段耗时。
+
+| 公开事件间隔 | n | P50 | P75 | P90 | max | 反序记录 |
+|---|---:|---:|---:|---:|---:|---:|
+| panel→power | 262 | 2 | 3 | 4 | 204 | 0 |
+| power→code | 252 | 5 | 7 | 13 | 49 | 10（code 先于 power，未纳入正向间隔分位数）|
+| code→escape | 262 | 6.5 | 10 | 33 | 408 | 0 |
+
+同样，这些跨条件总体数仅作旧记录描述，不证明某阶段机制导致长尾。无 oracle 与地图版本匹配证据，故 `optimality gap` 不可计算；token 缺失和 provider-error 删失也不补零、不推算为真实成本。
+
 ## S1.4 逐世界家族案例复核
 
 按未跟踪原始提纲的 S1.4，对 10 个世界家族各选一条最短已记录成功和一条已登记的长尾成功；异常样本优先选 `invalid_action_limit` / `step_limit`，若该家族没有这两类，则选动作数最多的 `provider_error` 并明确标为基础设施删失。短/长样本的地图难度、`world_version`、实例或条件可能不同，只用于逐步案例审阅，不构成效率或机制对照。精确 episode ID、相对路径、配置/地图身份和可观察指标见[案例索引 CSV](assets/trace-case-review.csv)。

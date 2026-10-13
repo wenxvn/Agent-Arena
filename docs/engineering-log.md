@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V2 S1.3 分层分布与里程碑间隔补充
+
+事件：从已完成的逐 episode 审计 CSV 补齐长尾 P50/P75/P90/max、executor token/延迟分布和公开里程碑间隔。
+
+原因：原始 V2 提纲 S1.3 要求长尾分位数及阶段相邻里程碑耗时；原汇总缺少 P75 与可按实验条件复算的区间分布，无法完整呈现旧 Trace 的可观察范围。
+
+改动：新增 `scripts/summarize_v2_distributions.py` 与 `condition-distributions.csv`，按实验批次、world version、配置签名分组；在 V2-02 解释分位数口径、总体混合样本限制、成本删失和非认知阶段间隔，并更新 scope。无代码行为或实验配置变更。
+
+验证：92 个条件与既有审计 JSON 的 attempts/success/P50/P90/max 全部一致；独立从 474 条 CSV 复算得到 262 条成功、252/10 两类里程碑顺序，独立复算 57 个条件输出指标无差异。Ruff 脚本检查和 `git diff --check` 通过；没有 provider API 调用、GPU 运行或 pytest。
+
+结论与下一步：S1.3 可由旧 Trace 支持的分层描述已补齐；没有 oracle/地图版本匹配证据，optimality gap 不可计算。BUDGET-01/02/03 保持关闭，S2 matched-pilot Gate 未通过，不推进 S3。
+
+关联基线：`807d46ce03cba0b1d86213e5c8feeb400cc4eccd`。
+
 ## 2026-10-13 V2 S1 逐家族 Trace 案例复核
 
 事件：按 V2 原始提纲 S1.4 对深海站、古堡、丛林、灯塔、月球、极地、金字塔、飞船、地铁、火山逐家族复核代表性 Trace。
