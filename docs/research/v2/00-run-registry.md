@@ -4,7 +4,7 @@
 
 ## S2 M1 pilot 预登记
 
-| experiment_id | 条件 | 地图 / seed | 局部预算 | 计划 provider / model | API 尝试 | 状态 |
+| experiment_id | 条件 | 地图 / seed | 局部预算 | 计划 provider / model | BUDGET-01 API 尝试 | 状态 |
 |---|---|---|---:|---|---:|---|
 | EXP-V2-S2-M1-V2-S1 | Memory v2 baseline；E1 ON / H5 / R1 / P2(world-declared) 固定 | `lunar_escape_v2_seeded` / 1 | 100 decisions | OpenAI-compatible / `muse-spark-1.3-contributor`（启动前校验） | 2 | 已启动；第 2 次请求 provider error 后封账；无完成 episode |
 | EXP-V2-S2-M1-V2-S2 | 同条件，配对 v2 复本 | `lunar_escape_v2_seeded` / 2 | 100 decisions | 同上 | 0 | 未启动；v2 命令在 seed 1 中止 |
@@ -42,6 +42,46 @@
 | `087ee418-82cf-4a67-8cad-7e2f6bd21c33` | unknown_spend_after_provider_error | 22,577（完整预留额） | 未知；原始 provider error 未落入 ledger |
 
 ledger 最终为 2/500 requests、24,086/4,000,000 tokens，`closed_reason=provider_error_unknown_spend`，无 in-flight request。24,086 是本地预算记账值，其中第二次请求按预留额记账，不代表 provider 确认消耗。结果和账本保留在本地 `results/`；同一 budget experiment ID 不重试、不重置。只读源码核查确认 OpenAI adapter 与 budget wrapper 都把异常转换为通用错误，ledger 按 spec 不保存响应或异常元数据；因此当前证据无法确定 provider error 根因。
+
+## Recovery run 预登记
+
+原 BUDGET-01 已封账，绝不重置或复用。为在不超过原共享上限的前提下继续同一四 cell 配对矩阵，独立登记 BUDGET-02；seed 1 的部分失败仍保留为单独运行证据，Recovery 从新 episode 开始，不把旧 partial episode 当结果。
+
+| 字段 | BUDGET-02 预登记值 |
+|---|---|
+| Budget experiment ID | `EXP-V2-S2-M1-BUDGET-02` |
+| 实现 SHA | `e884688e48c357eafc27251b994e3f6c805acb64`（安全 error 分类与 fail-closed 负例测试） |
+| Provider/model、world/prompt hash | 完全复用上方冻结值 |
+| Recovery request cap | 498（BUDGET-01 已记账 2；两账本合计不超过 500） |
+| Recovery token cap | 3,975,914（BUDGET-01 已记账 24,086；两账本合计不超过 4,000,000） |
+| 每请求输出 cap / 并发 | 1,024 tokens / 1 |
+| 全局截止 | 不晚于 BUDGET-01 原始绝对截止 `2026-10-13 20:55:33 +08:00`；启动命令前计算 `floor(deadline_epoch - current_epoch - 60)` 秒作为 BUDGET-02 timeout，低于 1 秒时不启动 |
+| Episode 条件 | 原四 cell、每 cell 100 decisions、seed 1/2、E1 ON / H5 / R1 / P2(world-declared)，串行；v2 完成且 exit 0 后才运行 v3 |
+| Ledger | `results/v2-s2-m1-budget-02.json`，与 BUDGET-01 分开 |
+| 输出目录 | `results/v2-s2-m1-recovery-v2`、`results/v2-s2-m1-recovery-v3`，保留原 partial 输出 |
+
+两 ledger 的 cap 总和保持为原登记值；BUDGET-02 发生任一 provider error 或 unknown spend 后立即停止，不再自动创建第三账本。执行前须确认 BUDGET-02 ledger 与两个 recovery 输出目录不存在，并核对代码 SHA、剩余 timeout 与 provider/model gate。以下命令是预登记模板，只有 SHA 写入本表并提交推送后才可执行：
+
+```powershell
+$original = Get-Content results/v2-s2-m1-budget-01.json -Raw | ConvertFrom-Json
+$recoveryTimeout = [Math]::Floor($original.deadline_epoch - [DateTimeOffset]::UtcNow.ToUnixTimeSeconds() - 60)
+if ($recoveryTimeout -lt 1) { throw 'Original global deadline expired; do not launch recovery.' }
+$recoveryBudgetArgs = @(
+  '--provider','openai','--world','lunar-escape','--world-version','lunar-escape-v2-seeded-zh',
+  '--step-limit','100','--provider-request-budget','498','--provider-token-budget','3975914',
+  '--provider-output-token-cap','1024','--provider-budget-timeout-seconds',"$recoveryTimeout",
+  '--provider-budget-experiment-id','EXP-V2-S2-M1-BUDGET-02',
+  '--provider-budget-expected-provider','openai','--provider-budget-expected-model','muse-spark-1.3-contributor',
+  '--provider-budget-expected-world-hash','bd1f77eabdcd032e80dbbaaad29163e85cbea34caf7486c22babcb3b85cb8373',
+  '--provider-budget-expected-prompt-hash','44229085979f4a1bfcf7a4266985e8860e2ff0b7ea6a01cb4ca152ff5c8a869c',
+  '--provider-budget-ledger','results/v2-s2-m1-budget-02.json',
+  '--autonomous','--stuck-recovery','--recent-history','5','--phase-context'
+)
+uv run agent-arena benchmark --episodes 2 --agent memory --memory-version v2 --seed 1 @recoveryBudgetArgs --output-dir results/v2-s2-m1-recovery-v2
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+uv run agent-arena benchmark --episodes 2 --agent memory --memory-version v3_spatial_event --seed 1 @recoveryBudgetArgs --output-dir results/v2-s2-m1-recovery-v3
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+```
 
 ## 执行命令
 
