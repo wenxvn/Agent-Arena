@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V2 S1.3 固定地图参考路径比值补充
+
+事件：重新核对 S1.3 的 optimality gap 要求与项目接受的地图 spec，发现 42 个固定地图 selector 在 spec 0011–0013 中已有最短公开路径步数。
+
+原因：此前 S1 报告将缺少 oracle 与地图身份匹配概括为全部不可计算；Trace 实际保留 world version、definition ID 和 definition hash，允许对参考路径和当前地图 identity 做严格三元组匹配。
+
+改动：新增 `scripts/audit_v2_oracle_ratios.py`，按 42 个 spec 路径参考与精确 map identity 生成逐 Trace 和分条件 CSV；V2-02 与 Scope 补入可匹配范围、未匹配样本和术语边界。只计算成功 outcome；不将 seeded/hash 不匹配记录填零，也不将混合分布用于方法比较。
+
+验证：474 条源记录中 439 条精确匹配登记地图 identity；227/262 条成功 trace 匹配到路径参考，分布于 50 个条件。独立复算明细和汇总无差异；无成功动作数低于 spec 声明参考步数的情况。Ruff 检查和 `git diff --check` 通过；未运行 pytest/provider/GPU。Trace 缺少环境规则代码 SHA，因此参考比值不等同于对历史规则实现的独立证明。
+
+下一步：用有精确 map+reference 身份的分层结果定位固定地图长尾；S2 Gate 仍未通过，不推进 S3。
+
+关联提交：`eb2f0f1bc838ebbf067284c4158b34a45cfd7b42`。关联证据：spec 0011、0012、0013；Trace identity 见 V2-02。
+
 ## 2026-10-13 V2 研究基线文档一致性复核
 
 事件：按 V2 提纲 §1.2 复核 README 与 Scope 中历史成功口径、E1 条件和火山难度均值。
