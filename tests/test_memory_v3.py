@@ -558,7 +558,12 @@ def test_memory_v3_renderer_compacts_with_visible_omission_counts() -> None:
     payload = json.loads(rendered.split("\n", 2)[2])
 
     assert len(rendered) <= MemoryV3Limits().max_rendered_chars
-    assert payload["memory_omissions"]
+    assert payload["memory_omissions"] == {"facts": 8}
+    assert len(payload["facts"]) == 16
+    assert len(payload["failed_actions"]) == 20
+    assert payload["room_facts"] == [
+        {"room": "room_a", "description": "当前地点：room_a"}
+    ]
     assert agent.memory_statistics is not None
     assert agent.memory_statistics["compactions"] == 1
     assert agent.memory_statistics["rendered_chars"] == len(rendered)

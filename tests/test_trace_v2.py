@@ -40,9 +40,11 @@ def test_legacy_trace_without_progress_fields_remains_readable() -> None:
     payload["provenance"]["trace_contract_version"] = "legacy"
     for step in payload["steps"]:
         step.pop("progress", None)
+        step.pop("memory_statistics", None)
 
     legacy = EpisodeTrace.model_validate(payload)
     row = row_from_trace(legacy, "legacy", 0)
 
     assert legacy.trace_schema_version == 2
     assert row.no_progress_action_count == 1
+    assert legacy.steps[0].memory_statistics is None
