@@ -6,11 +6,11 @@
 
 改动：`MemoryV3State` 新增基于规范化 JSON 的 SHA-256 `memory_digest`，排除派生统计计数器；测试将 10 步公开 Trace 落盘并重新读取，独立重放两次，比较 digest、frontier 和因果事件顺序。更新 V2 S2 研究记录与 scope。没有发起 provider 请求。
 
-验证：Python 3.13.3 本地环境执行全量 pytest（349 passed）、`ruff check .`、`mypy src`（49 个源文件）均通过；`uv` 命令当前不可用，未运行 `uv lock --check`，且依赖文件未修改。S2 在线 Gate 仍未通过，三份失败 ledger 和 partial 输出保持原样，不推进 S3。
+验证：Python 3.13.3 本地环境执行全量 pytest（349 passed）、`ruff check .`、`mypy src`（49 个源文件）均通过；提交 `e907237ca4c1dd4f06a48690a44a59c8568865c2` 的 [GitHub Actions run #70](https://github.com/wenxvn/Agent-Arena/actions/runs/38378309801) 通过。`uv` 命令当前不可用，未运行 `uv lock --check`，且依赖文件未修改。S2 在线 Gate 仍未通过，三份失败 ledger 和 partial 输出保持原样，不推进 S3。
 
 下一步：遵守当前矩阵停止规则，继续做不触及预算 ledger 的离线工作；没有匹配 v2/v3 完整 episode 前不报告机制收益。
 
-关联提交：本记录所在提交。
+关联实现提交：`e907237ca4c1dd4f06a48690a44a59c8568865c2`。
 
 ## 2026-10-13 修复 Linux CI 的 mypy 平台类型误报
 
