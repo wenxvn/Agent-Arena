@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V3 seeded 冻结清单完整性回归补强
+
+事件：补齐冻结清单中 oracle 路线长度、难度桶 split 数量及生成脚本覆盖保护的回归约束。
+
+原因：检查 S5.2 自动化时发现，测试此前从 CSV 读取 `minimum_actions` 再计算难度，且只检查每桶都出现 dev/test；因此 oracle 标签或精确分层数量漂移仍可能通过。
+
+改动：pytest 与 `--verify-runtime` 现在校验规范化 manifest SHA-256、lunar/pyramid 路线长度直方图及每个难度桶的精确 dev/test 数；增加篡改 manifest 必须失败的用例。候选清单生成要求显式新 `--output`，拒绝写入或覆盖冻结 CSV。更正冻结记录中的 BFS oracle 源 blob SHA-256 笔误。
+
+验证：全量 pytest 364 passed；Ruff 全仓通过；mypy 49 个源文件无问题；`--verify-runtime` 在 lunar 90/90、pyramid 30/30 上匹配冻结定义；`git diff --check` 通过。GitHub Actions CI #98 对实现提交全绿（[run #98](https://github.com/wenxvn/Agent-Arena/actions/runs/38402688442)）。未运行 provider API 或 GPU；本轮未重跑完整 BFS oracle。
+
+下一步：S2 matched-pilot 仍为 v2 0/2、v3 未启动，BUDGET-01/02/03 均关闭；遵守停止规则，不新增矩阵请求或推进 S3。继续做提纲允许的离线审计，行为评估等待 S2 Gate。
+
+关联提交：`f1d45ba87332172ac5737c8e1dfcddbae8a0d035`。
+
 ## 2026-10-13 V3 seeded holdout 冻结顺序审计
 
 事件：核对 S5.4 要求的实例全集与 dev/test split 是否先于新运行时实现冻结。
@@ -36,7 +50,7 @@
 
 改动：新增 spec 0016、全量布局 oracle/manifest 脚本与 120 行冻结 CSV；每图 6 个候选容器、每实例激活 2 个，覆盖 lunar 90 种和 pyramid 30 种唯一布局。Scope 与 V2-02 记录两档地图内 oracle 难度、分层 split 以及 test placement 在仓库可见、因此不属于盲测的限制。未修改 v2 或运行时世界代码。
 
-验证：当前 FlexEnvironment BFS 对 120/120 个候选定义找到成功路径；清单核对 120 个唯一 hash、seed 0–89 / 0–29 各覆盖全集一次、跨版本 hash 碰撞 0。split 为 lunar 60 dev / 30 test、pyramid 20 dev / 10 test，四个地图内难度桶均同时含 dev/test。Ruff、`MYPYPATH=src` 下脚本 mypy、`git diff --cached --check` 通过。未运行 pytest、provider API 或 GPU。规则源 SHA-256=`11393734c890312a3ae5e19057ae809a8a5c976c4bd43a91e6c4152304a51752`；BFS oracle SHA-256=`908fa6ff181557a885041be747dd245ac1f86ce6b9fd2346d446a26d0a5e556`。
+验证：当前 FlexEnvironment BFS 对 120/120 个候选定义找到成功路径；清单核对 120 个唯一 hash、seed 0–89 / 0–29 各覆盖全集一次、跨版本 hash 碰撞 0。split 为 lunar 60 dev / 30 test、pyramid 20 dev / 10 test，四个地图内难度桶均同时含 dev/test。Ruff、`MYPYPATH=src` 下脚本 mypy、`git diff --cached --check` 通过。未运行 pytest、provider API 或 GPU。规则源 SHA-256=`11393734c890312a3ae5e19057ae809a8a5c976c4bd43a91e6c4152304a51752`；BFS oracle 源 blob SHA-256=`908faf6ff181557a885041be747dd245ac1f86ce6b9fd2346d446a26d0a5e556`。
 
 下一步：该冻结提交后的计划是实现两个新 selector 并逐 seed 核对 hash；已在紧接的运行时事件中完成。test 实例仍不得用于 prompt 或机制调整，在线矩阵等待 S2 matched-pilot Gate。
 
