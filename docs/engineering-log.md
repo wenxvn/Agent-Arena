@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V2 预算用量口径同步
+
+事件：将 Scope 中 S2 pilot 的本地记账总额拆分为 provider 返回的 usage 与未知实际扣费的 reservation。
+
+原因：运行登记表的只读 ledger 复核已确认三份账本各项 counter；Scope 旧摘要的总 token 数可能被误读为 provider 确认用量。
+
+改动：逐项同步 BUDGET-01/02/03 的 usage、reservation 和本地记账小计，并明确 26,926 tokens 为已返回 usage、73,211 tokens 为 reservation、100,137 tokens 为本地记账总额；三个 reservation 的 provider 实际扣费未知。
+
+验证：逐项与 `docs/research/v2/00-run-registry.md` 的停止后 ledger 复核一致；`git diff --check` 通过。未调用 provider API、未运行 GPU，用户未跟踪的 `研究提纲/` 未修改。
+
+下一步：S2 Gate 仍未通过；不得重试或重置 BUDGET-01/02/03、不得创建 BUDGET-04。当前授权边界内无后续阶段可执行项，待新的允许条件或用户停止指令。
+
+关联提交：待提交。
+
 ## 2026-10-13 V3 seeded 冻结清单完整性回归补强
 
 事件：补齐冻结清单中 oracle 路线长度、难度桶 split 数量及生成脚本覆盖保护的回归约束。
