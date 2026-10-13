@@ -342,6 +342,7 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 
 ## V2 探索进度（2026-10-13）
 
-- [x] S0 本地质量门禁：以 Python 3.13.16 / uv 0.13.0 修复最新 HEAD 暴露的 Ruff 问题，并修复随之暴露的 mypy 类型问题；`ruff check`、`mypy src`、`pytest -q`（304 passed）、`uv lock --check`、`git diff --check` 均通过。详见 [V2-01 CI 与基线](../research/v2/01-ci-and-baseline.md)。
-- [ ] S0 GitHub Actions Gate：待推送已验证代码并确认对应 `quality` run 成功；最新已知远端 run `38353317972` 在 Ruff 失败，mypy/pytest 被跳过。
-- [ ] S1 既有 Trace 离线瓶颈审计：未开始；等待 S0 远端 Gate。
+- [x] S0 本地质量门禁：Python 3.13.16 / uv 0.13.0 临时环境下 `ruff check`、`mypy src`（48 个源文件）、`pytest -q`（303 passed）、`uv lock --check`（36 个 packages）和 `git diff --check` 通过；测试不再依赖本机 runs/ 与 results/。详见 [V2-01 CI 与基线](../research/v2/01-ci-and-baseline.md)。
+- [x] S0 GitHub Actions Gate：修复提交 d40f3e6 的 [run #56](https://github.com/wenxvn/Agent-Arena/actions/runs/38358490666) quality job 全部通过。
+- [x] S1 既有 Trace 离线瓶颈审计：扫描 518 个文件，去重后 474 个 episode_id；44 个副本、0 个 ID 冲突、0 个非法 Trace。脚本、Top 5 假设及分层结果见 [V2-02 离线瓶颈审计](../research/v2/02-bottleneck-audit.md) 与 [CSV](../research/v2/assets/trace-audit.csv)、[JSON](../research/v2/assets/trace-audit.json)。审计代码提交 a372dce 的 [run #57](https://github.com/wenxvn/Agent-Arena/actions/runs/38360270607) 全绿；无新增模型调用或 GPU 运行。
+- [ ] S2 Memory v3：下一步验证 M1 的空间边、探索 frontier 与公开里程碑记忆；先固定实例和评估预算，再进入对照。

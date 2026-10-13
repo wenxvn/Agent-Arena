@@ -1,5 +1,33 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V2 S1 既有 Trace 离线审计完成
+
+事件：完成 V2 S1 离线瓶颈盘点，产出可复现脚本、CSV/JSON 审计产物和 Top 5 假设报告。
+
+原因：需要将本机既有 trace 按 attempt、配置、地图家族、seed 角色分层，避免将网关中断、重跑和行为结果合并成单一成功率。
+
+改动：新增 scripts/audit_v2_traces.py 与对应测试；扫描 runs/ 和 results/ 下 518 个文件，去重为 474 个 episode_id，44 个副本无冲突；生成 docs/research/v2/assets/trace-audit.csv、trace-audit.json 和 02-bottleneck-audit.md。产物排除 decision_reason；报告区分 provider_error、step_limit 与成功 trace，记录 seeded 长尾、终端读取、use 工具配对、重复失败动作及 progress 代理指标。
+
+验证：Ruff 通过；mypy 48 个源文件通过；pytest 305 passed；GitHub Actions #57 quality job 全部通过。审计为离线读取，0 次 LLM 调用、0 次 GPU 运行。
+
+下一步：S2 先验证 M1 空间/边/frontier 与公开里程碑的 Memory v3 假设；配置固定前不启动对照。
+
+关联实现提交：a372dce。报告和聚合产物随本记录提交。
+
+## 2026-10-13 V2 S0 CI 门禁修复并通过
+
+事件：清理基线 HEAD 的 Ruff 与 mypy 问题，并使 CI 测试不依赖本机生成数据。
+
+原因：初始 Actions #54 的 Ruff 失败阻止 mypy/pytest；修复后的 #55 暴露 9 项测试依赖被 Git 忽略的 runs/ 与 results/。
+
+改动：完成类型与 Ruff 修复；将 UI 测试输入改为临时目录和合成 trace/CSV，保留本机生成数据和用户目录。
+
+验证：本地 Python 3.13.16 / uv 0.13.0 临时环境的 Ruff、mypy（48 个源文件）、pytest（303 passed）、uv lock --check 和 git diff --check 均通过。GitHub Actions #56 quality job 全部通过。
+
+下一步：进行既有 Trace 的 S1 离线审计，按来源和条件拆分首条记录代理、删失与行为结果。
+
+关联提交：d9d13e4、d40f3e6；[run #56](https://github.com/wenxvn/Agent-Arena/actions/runs/38358490666)。
+
 ## 2026-10-13 只读研究 UI 维护与边界收紧
 
 事件：修复空步骤 Trace 的分页边界，并收紧只读 UI 对 Trace 与 benchmark CSV 的文件路径边界。
