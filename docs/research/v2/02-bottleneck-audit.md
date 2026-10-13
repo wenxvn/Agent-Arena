@@ -181,6 +181,21 @@ Trace 能回答的是公开输入/已执行动作/工具结果序列，不能回
 - 影响：progress=false 不是无用动作的充分标签；移动到已知房间可能为取资源或完成因果顺序服务。只用一个布尔值触发 recovery 会过度打断有效探索。
 - 可证伪假设：把新增公开事实/阶段事件与近期边重复结合为连续停滞诊断；在固定的 seeded held-out 实例上，诊断应能定位长尾 trace 的重复片段，同时不将通往新物品、供电或出口的移动标为停滞。若误报率高于基线，或无助于降低二边往返，停止使用该信号。
 
+## S5.2 seeded 长尾行为开销分解
+
+为拆分 lunar/pyramid seeded 的 232/159 步长尾，新增 `scripts/audit_v2_seeded_overhead.py`，结果写入 [seeded overhead CSV](assets/seeded-overhead.csv)。分析覆盖两张图各 seed 0–4 的 10 条成功 Trace。每条都按 Trace 的 world version、definition ID 和 seed 重建当前 seeded 环境，并从成功 inspect 后的公开 `next_observation.visible_objects` 复核道具容器，再用成功 pickup 时的公开房间复核放置；10/10 实例布局一致。
+
+Trace 记录的旧 `world_definition_hash` 有 6/10 与当前稳定 hash 不同。已知根因是 flex identity 曾按不稳定的 `frozenset` 顺序序列化；提交 `0d3bb0b` 只规范化 hash 输入，两个 seeded JSON 未变。旧 Trace 没有环境规则代码 SHA，因此下表的 BFS 最短值严格对应当前检出的 `FlexEnvironment` 规则与已复核的 seeded 布局，不是对历史运行二进制的独立证明。hash 是否相等不作为实例筛选条件。
+
+BFS 对有限环境状态按 `(动作数, 移动动作数)` 字典序搜索；所有有效移动、可见 inspect、道具 pickup、repair/escape use 和目标 terminal read 均按一步计数，`look` 与不改变环境状态的动作不可能缩短路线。`action_overhead` 是 Trace 动作数减当前规则下的最少动作数；`move_action_delta` 是 Trace 移动动作数减一条全局最短动作路线中的移动数。`tool_room_returns_after_first_visit` 计入首次到达后再次进入任一含工具容器的房间，不等同于二边循环次数。阶段拒绝仅计 `panel_closed`、`code_unread`，以及针对正式密码终端/逃生载具的 `no_power`；重试只计相同失败 action payload 与 reason 的重复次数。没有新增 provider 请求或 GPU 运行。
+
+| seeded 地图 | 5-seed Trace 动作数中位数 / 当前最少动作数 / overhead 中位数；最大 Trace / 最少动作数 / overhead | 长尾 seed | 长尾 Trace / 最少动作 | 移动动作 / 最短动作路线移动数（差值） | 工具房回访 | 重复 look | 阶段拒绝 | 重复失败重试 |
+|---|---:|---|---:|---:|---:|---:|---:|---:|
+| lunar | 63 / 22 / 41；232 / 22 / 210 | 1 | 232 / 22 | 136 / 14（+122） | 40 | 41 | 1 | 0 |
+| pyramid | 39 / 16 / 23；159 / 16 / 143 | 2 | 159 / 16 | 104 / 8（+96） | 28 | 32 | 0 | 0 |
+
+这 10 条都来自各自单一配置的 5-seed 小样本。结果把长尾分成大量移动动作、重复进入工具房、重复 look 和少量阶段拒绝；不能据此把每个额外动作归因于单一机制，也不证明改动会改善成功率。逐 Trace 数值、旧/稳定 hash、房间进入计数与 BFS 扩展状态数见 CSV。
+
 ## 后续阶段建议与结论
 
 - S2 优先实现并单独验证 M1；先覆盖 visited room/edge/frontier 和公开里程碑，不把隐藏地图信息写入 Memory。
