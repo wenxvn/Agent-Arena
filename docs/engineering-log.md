@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V2 S5.2 seeded v3 实例全集与 holdout 冻结
+
+事件：确定并冻结 seeded v3 的候选实例全集、路线难度标签与程序性 dev/test 边界。
+
+原因：现有 v2 每图只有两种布局且没有 difficulty；必须保留旧世界，并在模型或 Agent 模块开发前冻结新实例身份和留出拆分。
+
+改动：新增 spec 0016、全量布局 oracle/manifest 脚本与 120 行冻结 CSV；每图 6 个候选容器、每实例激活 2 个，覆盖 lunar 90 种和 pyramid 30 种唯一布局。Scope 与 V2-02 记录两档地图内 oracle 难度、分层 split 以及 test placement 在仓库可见、因此不属于盲测的限制。未修改 v2 或运行时世界代码。
+
+验证：当前 FlexEnvironment BFS 对 120/120 个候选定义找到成功路径；清单核对 120 个唯一 hash、seed 0–89 / 0–29 各覆盖全集一次、跨版本 hash 碰撞 0。split 为 lunar 60 dev / 30 test、pyramid 20 dev / 10 test，四个地图内难度桶均同时含 dev/test。Ruff、`MYPYPATH=src` 下脚本 mypy、`git diff --cached --check` 通过。未运行 pytest、provider API 或 GPU。规则源 SHA-256=`11393734c890312a3ae5e19057ae809a8a5c976c4bd43a91e6c4152304a51752`；BFS oracle SHA-256=`908fa6ff181557a885041be747dd245ac1f86ce6b9fd2346d446a26d0a5e556`。
+
+下一步：实现两个新 selector 与稳定 seed 映射，逐 seed 核对冻结 hash；test 实例不得用于 prompt 或机制调整。在线矩阵仍等待 S2 matched-pilot Gate。
+
+关联提交：`f01b38d35029ea16a90c338fcd6911b753bd5b39`。
+
 ## 2026-10-13 V2 S5.2 seeded 布局覆盖缺口
 
 事件：将 S5.2 从“长尾分析完成”更正为部分完成，并量化现有 lunar/pyramid seeded 生成器的可用实例多样性。
