@@ -48,4 +48,4 @@ S1 审计脚本增加两项离线单元测试后，当前本地质量检查复�
 
 ## 当前状态
 
-S0 本地与远端验证均通过：包含 348 项全量 pytest、Windows/Linux-targeted mypy，以及当前实现 SHA `4ec5bb1442037543f2f01656bc956f78df546e85` 的 GitHub Actions run #67。S1 离线 Trace 审计和 Top 5 假设已写入 V2-02 报告及 CSV/JSON 产物。S2 Memory v3 与 fail-closed provider budget guard 的离线实现已完成；三次隔离在线尝试均在首个 v2 episode 失败，合计 19/500 requests、100,137/4,000,000 locally charged tokens，没有完整 episode，v2 0/2、v3 未启动。当前登记矩阵停止 API 尝试，S2 Gate 未满足。细节见 [V2-03](03-memory-v3.md) 与 [在线运行登记表](00-run-registry.md)。
+截至 2026-10-13，S0 本地与远端质量门禁通过。早期基线提交 `4ec5bb1442037543f2f01656bc956f78df546e85` / Actions #67 为 348 项 pytest；当前验收夹具提交 `29d6917c8f2825b175735f92443d1692b14e843d` 本机 pytest 357 passed、Ruff 全仓和 mypy 49 个源文件通过，Actions #81 成功；文档同步提交 `a441e4c74f893425c5792524a0dbfa1e66fb55f6` 的 Actions #82 成功。S1 离线 Trace 审计为 518 个文件、474 个唯一 episode、44 个副本、0 个 ID 冲突或非法 Trace，Top 5 假设及 CSV/JSON 见 V2-02。S2 spec 0014 离线验收条件 1–6 均通过；但三次隔离在线尝试均在首个 v2 episode 失败，合计 19/500 requests、100,137/4,000,000 locally charged tokens（其中失败 reservation 不代表 provider 确认 usage），v2 0/2、v3 未启动。BUDGET-01/02/03 均关闭，当前登记矩阵停止 API 尝试；S2 matched-pilot Gate 未通过，按阶段依赖不推进 S3。细节见 [V2-03](03-memory-v3.md) 与 [在线运行登记表](00-run-registry.md)。
