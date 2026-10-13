@@ -46,7 +46,7 @@ seed_role 的操作性规则是：world_version 含 seeded 时标为 seeded_inst
 
 离线 Success@K 按 30、60、100、150、200 个 recorded actions 分别计算，产物按实验目录、world_version 和配置签名分组。success 且动作数不大于 K 才计成功；provider_error 从分母删失；已知 step_limit 小于 K 的记录也从该 K 的分母删失。其他 outcome 留在分母作为未成功记录。该口径只描述现有 trace 在不同预算截点的结果，不代表重新运行。
 
-实例标识也有限：Trace 没有独立 instance_hash。seeded 条目暂用 world_version、definition_hash 和 seed 派生 effective_instance_signature；非 seeded 条目不把 replicate seed 当成环境实例身份。该签名不是地图内容哈希，因此本审计不报告 oracle 最优步数或 optimality gap。
+实例标识也有限：Trace 没有独立 instance_hash。seeded 条目暂用 world_version、definition_hash 和 seed 派生 effective_instance_signature；非 seeded 条目不把 replicate seed 当成环境实例身份。该签名不是地图内容哈希。后续 S1.3 补充仅对静态地图使用 `(world_version, world_definition_id, world_definition_hash)` 精确匹配 spec 路径参考；seeded 与 hash 不匹配的成功记录不补算，且旧 Trace 未记录环境规则代码 SHA，不能由 map hash 证明历史规则实现完全相同。
 
 ## 可观察行为概况
 
@@ -110,7 +110,21 @@ python scripts/summarize_v2_distributions.py
 | power→code | 252 | 5 | 7 | 13 | 49 | 10（code 先于 power，未纳入正向间隔分位数）|
 | code→escape | 262 | 6.5 | 10 | 33 | 408 | 0 |
 
-同样，这些跨条件总体数仅作旧记录描述，不证明某阶段机制导致长尾。无 oracle 与地图版本匹配证据，故 `optimality gap` 不可计算；token 缺失和 provider-error 删失也不补零、不推算为真实成本。
+同样，这些跨条件总体数仅作旧记录描述，不证明某阶段机制导致长尾。下方的 spec 路径比值有独立的精确 identity join 和条件分层；token 缺失和 provider-error 删失不补零、不推算为真实成本。
+
+### Spec 最短公开路径参考比值
+
+原始提纲 S1.3 要求在 oracle 与地图版本匹配时计算 `actual actions / reference shortest actions`。接受的 [spec 0011](../specs/0011-seven-worlds/index.md)、[spec 0012](../specs/0012-flex-pilots/index.md)、[spec 0013](../specs/0013-redesign-old-worlds/index.md) 为 42 个固定地图 selector 记录了最短公开路径步数。新增脚本以当前 `create_environment(...).identity` 生成地图 identity，再按 Trace 的 `world_version`、`world_definition_id`、`world_definition_hash` 三元组做精确匹配；只有成功 outcome 才计算比值和多用动作数：
+
+```powershell
+python scripts/audit_v2_oracle_ratios.py
+```
+
+可复算逐 episode 结果见[参考路径比值明细](assets/oracle-optimality-traces.csv)，按 `experiment_bucket`、地图 identity 和 `configuration_signature` 分组的 P50/P75/P90/max 见[条件汇总](assets/oracle-optimality-conditions.csv)。474 条审计记录中 439 条匹配到登记的静态地图 identity；227/262 条成功 trace 获得精确参考路径匹配，分布在 50 个条件。另 35 条成功 trace 不计算：seeded 飞船 8 条、lunar v2 5 条、lunar seeded 5 条、castle v2 5 条、castle seeded 5 条、pyramid v2 2 条、pyramid seeded 5 条；它们没有与登记参考同时满足精确 hash 匹配。
+
+在 227 条已匹配成功 trace 的跨地图混合描述中，`actions / spec_reference_min` 的 P50/P75/P90/max 为 2.05/2.43/3.80/20.95；超出参考步数的动作数为 17/29/48/419。所有匹配样本均不低于 spec 声明步数。按来源 spec 计，0011 有 107 条、0012 有 75 条、0013 有 45 条。上述混合分布不能解释为单一地图或配置的效率，也不能作为方法间因果比较。
+
+术语边界：报告称其为“spec 声明最短路径参考比值”，因为 spec 将这些动作序列标为最优且验收了精确步数，但本次没有独立求解器重新证明全局最短；Trace 也未保存环境规则代码 SHA。因此这些数值补足了可匹配样本的 S1.3 描述，但不是对历史运行环境规则实现的独立证明。未匹配样本继续标为 unavailable，不将其差值填零。
 
 ## S1.4 逐世界家族案例复核
 
