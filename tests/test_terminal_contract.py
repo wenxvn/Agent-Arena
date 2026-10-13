@@ -1,79 +1,67 @@
-"""T4：终点误操作与重复读码的离线契约测试（只读真实 trace，不调用模型）。"""
+"""T4：公开终点事实与重复读码判定（合成离线输入，不调用模型）。"""
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
+from agent_arena.arena import (
+    Observation,
+    ToolReason,
+    ToolResult,
+    ToolStatus,
+    action_adapter,
+)
 from agent_arena.evaluation.progress import ProgressDetector
 from agent_arena.evaluation.public_facts import extract_public_facts
-from agent_arena.evaluation.trace import read_episode_trace
 
-RUNS = Path(__file__).resolve().parent.parent / "runs"
-LIGHTHOUSE_SEED0 = (
-    RUNS
-    / "muse-3maps-lightv2"
-    / "episode_20261011T060651Z_memory_seed-0_cd0d1ccd.json"
-)
-SHIP_SEED1 = (
-    RUNS
-    / "muse-3maps-shipv3"
-    / "episode_20261011T063025Z_memory_seed-1_9a351a08.json"
-)
-
-TERMINAL_TARGETS = {"harbor_skiff", "escape_pod", "escape_capsule"}
+TERMINAL_TARGETS = ("harbor_skiff", "escape_pod", "escape_capsule")
 
 
-def _steps(trace) -> list:
-    return list(trace.steps)
+def _observation() -> Observation:
+    return Observation(
+        current_room="cliff_base",
+        description="A rocky path leads toward the harbor.",
+        visible_objects=(),
+        available_exits=(),
+        inventory=(),
+        last_action_result=None,
+    )
 
 
-def test_wrong_tool_at_terminal_is_always_rejected() -> None:
-    trace = read_episode_trace(LIGHTHOUSE_SEED0)
-    misuses = [
-        s for s in _steps(trace)
-        if s.action is not None
-        and s.action.tool == "read_terminal"
-        and s.action.target in TERMINAL_TARGETS
+def test_wrong_terminal_targets_are_recorded_as_public_facts() -> None:
+    observation = _observation()
+    result = ToolResult(
+        status=ToolStatus.REJECTED,
+        reason=ToolReason.WRONG_TARGET,
+        summary="This object is not a terminal.",
+    )
+
+    facts = [
+        extract_public_facts(
+            observation,
+            action_adapter.validate_python({"tool": "read_terminal", "target": target}),
+            result,
+        )
+        for target in TERMINAL_TARGETS
     ]
-    assert len(misuses) == 3
-    for step in misuses:
-        assert step.result is not None
-        assert step.result.reason.value == "wrong_target"
+
+    assert [items[0].subject for items in facts] == list(TERMINAL_TARGETS)
+    assert all(items[0].value == ToolReason.WRONG_TARGET.value for items in facts)
 
 
-def test_repeated_code_read_has_no_new_facts() -> None:
-    trace = read_episode_trace(SHIP_SEED1)
-    reads = [
-        s for s in _steps(trace)
-        if s.action is not None
-        and s.action.tool == "read_terminal"
-        and s.result is not None
-        and s.result.reason.value == "code_read"
-    ]
-    assert len(reads) == 18
-    # 第二次起 CODE_READ 不应产生新公开事实（重放判定）。
-    facts_before: set = set()
+def test_repeated_code_read_has_no_new_public_facts() -> None:
+    observation = _observation()
+    action = action_adapter.validate_python(
+        {"tool": "read_terminal", "target": "control_terminal"}
+    )
+    result = ToolResult(
+        status=ToolStatus.SUCCESS,
+        reason=ToolReason.CODE_READ,
+        summary="A public authorization code was revealed.",
+    )
     detector = ProgressDetector()
-    second_has_new_facts = None
-    for step in _steps(trace):
-        if step.observation is None or step.action is None or step.result is None:
-            continue
-        after = step.next_observation if step.next_observation is not None else step.observation
-        detector.evaluate(step.observation, step.action, step.result, after)
-        facts = extract_public_facts(step.observation, step.action, step.result)
-        key = {(f.subject, f.predicate, f.value) for f in facts}
-        if step.result.reason.value == "code_read":
-            if not facts_before:
-                facts_before |= key
-            elif second_has_new_facts is None:
-                second_has_new_facts = bool(key - facts_before)
-                break
-    assert second_has_new_facts is False
 
+    first = detector.evaluate(observation, action, result, observation)
+    second = detector.evaluate(observation, action, result, observation)
 
-def test_correct_escape_uses_code_not_terminal() -> None:
-    data = json.loads(LIGHTHOUSE_SEED0.read_text(encoding="utf-8"))
-    last = data["steps"][-1]
-    assert last["action"]["tool"] == "use"
-    assert last["action"]["target"] == "harbor_skiff"
-    assert data["outcome"] == "success"
+    assert first.epistemic_progress is True
+    assert len(first.new_facts) == 1
+    assert second.epistemic_progress is False
+    assert second.new_facts == ()

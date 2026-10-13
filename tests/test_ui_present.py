@@ -1,7 +1,6 @@
 """T7-B：UI 展示逻辑与密钥门禁（不导入 streamlit，不调用模型）。"""
 from __future__ import annotations
 
-import json
 import re
 from pathlib import Path
 
@@ -68,9 +67,18 @@ def test_compare_conditions_marks_missing_as_na() -> None:
     assert summary["mean_steps"] == 45.0
 
 
-def test_real_trace_replays() -> None:
-    candidates = sorted((Path("runs") / "muse-9maps-ship-med").glob("*.json"))
-    trace = json.loads(candidates[0].read_text(encoding="utf-8"))
+def test_synthetic_trace_replays() -> None:
+    trace = {
+        "executed_action_count": 2,
+        "provenance": {
+            "agent": "memory",
+            "public_phase_context_enabled": True,
+        },
+        "steps": [
+            {"action": {"tool": "move"}},
+            {"action": {"tool": "use", "target": "escape_pod"}},
+        ],
+    }
     rows = summarize_trace(trace)
     assert len(rows) == trace["executed_action_count"]
     assert autonomy_level(trace["provenance"]) == (

@@ -1,7 +1,7 @@
 """T7-B：UI app 端到端冒烟（stub streamlit，真实数据文件，离线）。"""
 from __future__ import annotations
 
-import glob
+import json
 import sys
 import types
 
@@ -88,18 +88,37 @@ def _run_with_stub(radio: str, inputs: dict[str, str]) -> list[tuple[str, object
     return stub.calls
 
 
-def test_app_replays_real_trace() -> None:
-    import json
+def test_app_replays_synthetic_trace(monkeypatch, tmp_path) -> None:
+    from agent_arena.ui import app as ui_app
 
-    trace_path = sorted(glob.glob("runs/muse-9maps-ship-med/*.json"))[0]
-    expected = json.load(open(trace_path, encoding="utf-8"))["executed_action_count"]
+    runs_dir = tmp_path / "runs"
+    run_dir = runs_dir / "synthetic"
+    run_dir.mkdir(parents=True)
+    trace = {
+        "episode_id": "synthetic-episode",
+        "agent": "memory",
+        "world_version": "synthetic-world-v1",
+        "seed": 0,
+        "outcome": "success",
+        "executed_action_count": 2,
+        "provenance": {"agent": "memory", "public_phase_context_enabled": True},
+        "steps": [
+            {"action": {"tool": "move", "destination": "hall"}},
+            {"action": {"tool": "use", "target": "escape_pod"}},
+        ],
+    }
+    (run_dir / "episode_synthetic.json").write_text(
+        json.dumps(trace), encoding="utf-8"
+    )
+    monkeypatch.setattr(ui_app, "RUNS_DIR", runs_dir)
+
     calls = _run_with_stub(
         "单局回放",
-        {"实验目录": "muse-9maps-ship-med", "trace 文件": trace_path.split("\\")[-1]},
+        {"实验目录": "synthetic", "trace 文件": "episode_synthetic.json"},
     )
     tables = [payload for kind, payload in calls if kind == "table"]
     assert len(tables) == 1
-    assert len(tables[0]) == min(expected, 30)
+    assert len(tables[0]) == 2
     labels = [str(payload) for kind, payload in calls if kind == "write"]
     assert any("world-declared" in label for label in labels)
 
@@ -121,14 +140,32 @@ def test_app_replays_empty_trace_without_single_page_slider(monkeypatch, tmp_pat
     assert tables == [[]]
 
 
-def test_app_compares_two_benchmark_csvs() -> None:
-    csv_a = "results/exp-E1/benchmark_20261011T115200Z_memory_5-seeds_5-episodes_1ebf5977.csv"
-    csv_b = (
-        "results/muse-memory-s60-h5rp/benchmark_20261010T182036Z_memory_5-seeds_"
-        "5-episodes_a055086d.csv"
+def test_app_compares_two_benchmark_csvs(monkeypatch, tmp_path) -> None:
+    from agent_arena.ui import app as ui_app
+
+    results_dir = tmp_path / "results"
+    results_dir.mkdir()
+    csv_a = results_dir / "condition-a.csv"
+    csv_b = results_dir / "condition-b.csv"
+    csv_a.write_text(
+        "outcome,steps,input_tokens,output_tokens\n"
+        "success,10,100,20\n"
+        "success,20,110,25\n",
+        encoding="utf-8",
     )
+    csv_b.write_text(
+        "outcome,steps,input_tokens,output_tokens\n"
+        "success,10,100,20\n"
+        "success,20,110,25\n"
+        "success,30,120,30\n"
+        "step_limit,50,130,35\n"
+        "step_limit,60,140,40\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(ui_app, "RESULTS_DIR", results_dir)
     calls = _run_with_stub(
-        "条件对照", {"对照 A benchmark CSV": csv_a, "对照 B benchmark CSV": csv_b}
+        "条件对照",
+        {"对照 A benchmark CSV": str(csv_a), "对照 B benchmark CSV": str(csv_b)},
     )
     summaries = [
         payload for kind, payload in calls if kind == "write" and isinstance(payload, dict)
@@ -198,8 +235,37 @@ def test_app_rejects_trace_symlink_escape(monkeypatch, tmp_path) -> None:
     assert all("must not display" not in item for item in displayed)
 
 
-def test_app_matrix_view_aggregates_real_directory() -> None:
-    calls = _run_with_stub("矩阵总览", {"矩阵目录": "muse-9maps-ship-med"})
+def test_app_matrix_view_aggregates_synthetic_directory(monkeypatch, tmp_path) -> None:
+    from agent_arena.ui import app as ui_app
+
+    runs_dir = tmp_path / "runs"
+    run_dir = runs_dir / "synthetic"
+    run_dir.mkdir(parents=True)
+    counts = [50, 70, 110, 160, 210]
+    for seed, count in enumerate(counts):
+        trace = {
+            "world_version": "synthetic-world-v1",
+            "seed": seed,
+            "outcome": "success",
+            "executed_action_count": count,
+            "steps": [],
+        }
+        (run_dir / f"episode_success_{seed}.json").write_text(
+            json.dumps(trace), encoding="utf-8"
+        )
+    failed_trace = {
+        "world_version": "synthetic-world-v1",
+        "seed": 5,
+        "outcome": "step_limit",
+        "executed_action_count": 200,
+        "steps": [],
+    }
+    (run_dir / "episode_failed.json").write_text(
+        json.dumps(failed_trace), encoding="utf-8"
+    )
+    monkeypatch.setattr(ui_app, "RUNS_DIR", runs_dir)
+
+    calls = _run_with_stub("矩阵总览", {"矩阵目录": "synthetic"})
     tables = [payload for kind, payload in calls if kind == "table"]
     assert len(tables) == 1
     assert tables[0][0]["success"] == "5/6"
@@ -211,19 +277,50 @@ def test_app_matrix_view_aggregates_real_directory() -> None:
     assert curves[0]["success_at_k"][200] == 0.8
 
 
-def test_app_hotspot_view_counts_real_directory() -> None:
-    calls = _run_with_stub("错误热点", {"实验目录": "muse-9maps-ship-med"})
+def test_app_hotspot_view_counts_synthetic_directory(monkeypatch, tmp_path) -> None:
+    from agent_arena.ui import app as ui_app
+
+    runs_dir = tmp_path / "runs"
+    run_dir = runs_dir / "synthetic"
+    run_dir.mkdir(parents=True)
+    for index in range(6):
+        steps = (
+            [
+                {
+                    "action": {"tool": "read_terminal", "target": "escape_pod"},
+                    "result": {"reason": "wrong_target"},
+                },
+                {
+                    "action": {"tool": "read_terminal", "target": "control_terminal"},
+                    "result": {"reason": "code_read"},
+                },
+                {
+                    "action": {"tool": "move", "destination": "airlock"},
+                    "result": {"reason": "moved"},
+                },
+            ]
+            if index == 0
+            else []
+        )
+        trace = {"seed": index, "outcome": "success", "steps": steps}
+        (run_dir / f"episode_{index}.json").write_text(
+            json.dumps(trace), encoding="utf-8"
+        )
+    monkeypatch.setattr(ui_app, "RUNS_DIR", runs_dir)
+
+    calls = _run_with_stub("错误热点", {"实验目录": "synthetic"})
     tables = [payload for kind, payload in calls if kind == "table"]
     assert len(tables) == 1
     assert len(tables[0]) == 6
     assert all("wrong_tool" in row for row in tables[0])
 
 
-def test_app_rejects_path_escape() -> None:
-    from pathlib import Path
-
+def test_app_rejects_path_escape(tmp_path) -> None:
     from agent_arena.ui import app as ui_app
 
-    assert ui_app._safe_dir(Path("runs"), "../src") is None
-    assert ui_app._safe_dir(Path("runs"), "muse-9maps-ship-med") is not None
-    assert ui_app._safe_dir(Path("runs"), "no-such-dir") is None
+    runs_dir = tmp_path / "runs"
+    (runs_dir / "synthetic").mkdir(parents=True)
+
+    assert ui_app._safe_dir(runs_dir, "../src") is None
+    assert ui_app._safe_dir(runs_dir, "synthetic") is not None
+    assert ui_app._safe_dir(runs_dir, "no-such-dir") is None
