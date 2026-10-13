@@ -29,6 +29,6 @@ Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实�
 
 ## Pilot 决策
 
-候选比较预登记为 `lunar_escape_v2_seeded` 的 seed 1、2，Memory v2 与 v3 配对，每局 100 decisions，E1 ON / H5 / R1 / P2(world-declared) 条件固定，串行运行。共享上限、输出 cap、全局超时、ledger 和两条执行命令已写入 run registry；每次决策调用都在发出前预留并落盘，请求/重试/usage 不确定时 fail closed。计划报告 first-recorded attempt、Success@60/100、动作数、重复边/动作、输入/输出 Token、token/success、provider_error 和延迟。当前还没有冻结代码 SHA，故门禁未开启、模型 pilot 未启动；S2 仍未完成。
+候选比较预登记为 `lunar_escape_v2_seeded` 的 seed 1、2，Memory v2 与 v3 配对，每局 100 decisions，E1 ON / H5 / R1 / P2(world-declared) 条件固定，串行运行。共享上限、输出 cap、全局超时、ledger 和两条执行命令已写入 run registry；每次决策调用都在发出前预留并落盘，请求/重试/usage 不确定时 fail closed。计划报告 first-recorded attempt、Success@60/100、动作数、重复边/动作、输入/输出 Token、token/success、provider_error 和延迟。实现 SHA `0a09a4f479cd8b6ba49dd0eeefed80a47d623c06` 已冻结；首次 hash 前置检查拒绝后，seed 1/2 的真实运行时 hash 已核对并修正登记，API 尝试仍为 0。S2 仍未完成。
 
 离线指标、源 Trace 与既有 232-action 月球长尾事实仍只支持“值得检验”的 M1 假设；没有同条件 v2/v3 结果，不能声称成功率、步数、重复边或 token-efficiency 改善。当前运行时生成的 world definition hash 与旧长尾 trace 记录不同，原因未确认；因此旧 trace 只作假设来源，不作本轮 hash-matched 对照。下一步先提交并记录代码 SHA，再按冻结的预算执行 pilot；完成前不推进 S3。

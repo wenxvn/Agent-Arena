@@ -14,6 +14,8 @@
 
 关联实现提交：`0a09a4f479cd8b6ba49dd0eeefed80a47d623c06`。
 
+前置核验补记：首次 CLI 启动在 world identity 门禁处被拒绝，未到达 provider adapter；尝试数为 0，账本与结果目录未创建。只读计算冻结版本 seed 1、2 的运行时 hash 均为 `418ccc79d48ad99b880361b3996eae4fb496cf8f6512c54de9177669e252a702`，与原预登记值 `118e8e8f7b930aa3841d6081b5b3de7ab94d1151e5fdee2e81f26f02561a7550` 不符，故已先修正登记再重试；provider/model 与 prompt 身份检查匹配。
+
 ## 2026-10-13 V2 S2 Memory v3 离线实现与 pilot 门禁
 
 事件：按 S1 seeded 长尾证据实现可选 Memory v3 Spatial/Event，并完成离线验证。

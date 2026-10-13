@@ -19,7 +19,7 @@
 | Git SHA | `0a09a4f479cd8b6ba49dd0eeefed80a47d623c06`（预算门禁实现；pilot 仅使用该冻结实现） |
 | Provider / model | `openai` / `muse-spark-1.3-contributor`；本机配置只在启动进程内校验，不打印凭据；不匹配时在首个请求前 fail closed |
 | world selector | `lunar-escape` / `lunar-escape-v2-seeded-zh` |
-| world definition ID / 当前锁定依赖运行时 hash | `lunar_escape_v2_seeded` / `118e8e8f7b930aa3841d6081b5b3de7ab94d1151e5fdee2e81f26f02561a7550`（seed 1 与 2 当前均解析为此值） |
+| world definition ID / 当前锁定依赖运行时 hash | `lunar_escape_v2_seeded` / `418ccc79d48ad99b880361b3996eae4fb496cf8f6512c54de9177669e252a702`（当前 seed 1 与 2 均解析为此值） |
 | base prompt hash | `44229085979f4a1bfcf7a4266985e8860e2ff0b7ea6a01cb4ca152ff5c8a869c`（v2 与 v3 当前相同） |
 | 总 provider request cap | 500（四个 cell 共用；重试关闭，格式修正仍计请求） |
 | 总 provider token cap | 4,000,000（四个 cell 共用） |
@@ -29,6 +29,8 @@
 | 预算账本 | `results/v2-s2-m1-budget-01.json`（本地生成物，不提交） |
 
 历史 232-action 月球 trace 的记录 hash 是 `48348629b3a2ac4119e23df4a308c2910d2b5243c76193f64b53dfcdcbbbf0d0`，与当前锁定依赖下运行时生成的 hash 不同。当前地图 JSON 和 flex 源文件未修改；差异原因尚未确认，因此旧长尾 trace 只用于提出假设，不视作本轮 hash-matched 对照。v2/v3 配对条件必须使用本表冻结的当前运行时 hash。
+
+首次 CLI 启动前置检查于 2026-10-13 因 world hash 不匹配被拒绝：实际请求数为 0，预算账本和结果目录均未创建。使用冻结代码与登记地图对 seed 1、2 重新求值，两者均为 `418ccc79d48ad99b880361b3996eae4fb496cf8f6512c54de9177669e252a702`；已在任何 provider 请求前修正本登记及执行参数。原值 `118e8e8f7b930aa3841d6081b5b3de7ab94d1151e5fdee2e81f26f02561a7550` 保留在提交历史中，不用于后续运行。
 
 ## 执行命令
 
@@ -47,7 +49,7 @@ $budgetArgs = @(
   "--provider-budget-experiment-id", "EXP-V2-S2-M1-BUDGET-01",
   "--provider-budget-expected-provider", "openai",
   "--provider-budget-expected-model", "muse-spark-1.3-contributor",
-  "--provider-budget-expected-world-hash", "118e8e8f7b930aa3841d6081b5b3de7ab94d1151e5fdee2e81f26f02561a7550",
+  "--provider-budget-expected-world-hash", "418ccc79d48ad99b880361b3996eae4fb496cf8f6512c54de9177669e252a702",
   "--provider-budget-expected-prompt-hash", "44229085979f4a1bfcf7a4266985e8860e2ff0b7ea6a01cb4ca152ff5c8a869c",
   "--provider-budget-ledger", "results/v2-s2-m1-budget-01.json",
   "--autonomous", "--stuck-recovery", "--recent-history", "5", "--phase-context"
