@@ -1,0 +1,5 @@
+world_version,seed_range,seed_population,distinct_layouts,representative_seed,seeds_with_layout,stable_world_definition_hash,tool_layout,minimum_actions,minimum_action_route_moves,states_expanded,difficulty_label_declared
+lunar-escape-v2-seeded-zh,0-999,1000,2,0,497,4c8c2d3bb5c845f5ce247ffc8931c504c18f432436a6b800c51a80c37c3b819f,"{""core_cell_a"": ""depot_crate"", ""core_cell_b"": ""spare_crate"", ""hex_driver"": ""depot_crate"", ""torque_driver"": ""spare_crate""}",22,14,507,false
+lunar-escape-v2-seeded-zh,0-999,1000,2,1,503,bd1f77eabdcd032e80dbbaaad29163e85cbea34caf7486c22babcb3b85cb8373,"{""core_cell_a"": ""spare_crate"", ""core_cell_b"": ""depot_crate"", ""hex_driver"": ""spare_crate"", ""torque_driver"": ""depot_crate""}",22,14,507,false
+pyramid-escape-v2-seeded-zh,0-999,1000,2,0,497,fccab597c69bf4f40026b849893b5ca170190066b4214944159f45e48876886e,"{""chisel"": ""relic_chest"", ""sun_cell"": ""sand_crate""}",16,8,185,false
+pyramid-escape-v2-seeded-zh,0-999,1000,2,1,503,2075559b9a896c5a1fb7dfb8df937f6833293958898d6a651f7375fbd2d30278,"{""chisel"": ""sand_crate"", ""sun_cell"": ""relic_chest""}",16,8,185,false

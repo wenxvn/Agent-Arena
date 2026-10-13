@@ -1,4 +1,4 @@
-"""Score seeded V2 success traces against exact current FlexEnvironment rules."""
+"""Analyze seeded V2 long-tail traces and generator instance coverage."""
 from __future__ import annotations
 
 import argparse
@@ -14,7 +14,13 @@ from typing import Any
 
 from agent_arena.arena.models import ToolStatus, action_adapter
 from agent_arena.worlds import create_environment
-from agent_arena.worlds.flex import FlexEnvironment
+from agent_arena.worlds.flex import (
+    FlexEnvironment,
+    FlexSeededDefinition,
+    build_seeded_items,
+    load_lunar_v2_seeded_definition,
+    load_pyramid_v2_seeded_definition,
+)
 
 WORLD_SELECTORS = {
     "lunar-escape-v2-seeded-zh": "lunar-escape",
@@ -46,6 +52,24 @@ TRACE_FIELDS = (
     "repeated_failed_action_retries",
     "states_expanded",
 )
+COVERAGE_FIELDS = (
+    "world_version",
+    "seed_range",
+    "seed_population",
+    "distinct_layouts",
+    "representative_seed",
+    "seeds_with_layout",
+    "stable_world_definition_hash",
+    "tool_layout",
+    "minimum_actions",
+    "minimum_action_route_moves",
+    "states_expanded",
+    "difficulty_label_declared",
+)
+SEEDED_DEFINITIONS = {
+    "lunar-escape-v2-seeded-zh": load_lunar_v2_seeded_definition,
+    "pyramid-escape-v2-seeded-zh": load_pyramid_v2_seeded_definition,
+}
 
 
 def _state_key(environment: FlexEnvironment) -> tuple[Any, ...]:
@@ -279,9 +303,63 @@ def _trace_metrics(
     }
 
 
+def _layout_coverage(seed_population: int) -> list[dict[str, Any]]:
+    coverage: list[dict[str, Any]] = []
+    for version, loader in SEEDED_DEFINITIONS.items():
+        definition: FlexSeededDefinition = loader()
+        seeds_by_layout: dict[tuple[tuple[str, str], ...], list[int]] = {}
+        for seed in range(seed_population):
+            items = build_seeded_items(definition, seed)
+            layout = tuple((item.id, item.container_id) for item in items)
+            repeated_layout = tuple(
+                (item.id, item.container_id)
+                for item in build_seeded_items(definition, seed)
+            )
+            if layout != repeated_layout:
+                raise ValueError(f"same-seed layout changed for {version} seed {seed}")
+            seeds_by_layout.setdefault(layout, []).append(seed)
+
+        hashes_seen: set[str] = set()
+        distinct_layouts = len(seeds_by_layout)
+        for layout, seeds in sorted(seeds_by_layout.items()):
+            representative_seed = seeds[0]
+            placed = definition.model_copy(
+                update={"items": build_seeded_items(definition, representative_seed)}
+            )
+            environment = FlexEnvironment(placed, representative_seed)
+            if environment.identity[1] != version:
+                raise ValueError(f"version mismatch while scoring {version}")
+            instance_hash = environment.identity[3]
+            if instance_hash in hashes_seen:
+                raise ValueError(f"different layouts share a hash for {version}")
+            hashes_seen.add(instance_hash)
+            minimum_actions, minimum_moves, states_expanded = _minimum_route(environment)
+            coverage.append(
+                {
+                    "world_version": version,
+                    "seed_range": f"0-{seed_population - 1}",
+                    "seed_population": seed_population,
+                    "distinct_layouts": distinct_layouts,
+                    "representative_seed": representative_seed,
+                    "seeds_with_layout": len(seeds),
+                    "stable_world_definition_hash": instance_hash,
+                    "tool_layout": json.dumps(
+                        dict(layout), ensure_ascii=False, sort_keys=True
+                    ),
+                    "minimum_actions": minimum_actions,
+                    "minimum_action_route_moves": minimum_moves,
+                    "states_expanded": states_expanded,
+                    "difficulty_label_declared": "false",
+                }
+            )
+        if len(hashes_seen) != distinct_layouts:
+            raise ValueError(f"layout/hash coverage mismatch for {version}")
+    return coverage
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="对 lunar/pyramid seeded V2 成功 Trace 计算最短可行动作数与行为开销"
+        description="分解 seeded Trace 行为开销并盘点 lunar/pyramid 布局覆盖"
     )
     parser.add_argument(
         "--input", type=Path, default=Path("docs/research/v2/assets/trace-audit.csv")
@@ -290,7 +368,15 @@ def main() -> None:
     parser.add_argument(
         "--output", type=Path, default=Path("docs/research/v2/assets/seeded-overhead.csv")
     )
+    parser.add_argument("--coverage-seeds", type=int, default=1000)
+    parser.add_argument(
+        "--coverage-output",
+        type=Path,
+        default=Path("docs/research/v2/assets/seeded-layout-coverage.csv"),
+    )
     args = parser.parse_args()
+    if args.coverage_seeds < 1:
+        parser.error("--coverage-seeds must be positive")
 
     with args.input.open(encoding="utf-8-sig", newline="") as handle:
         source_rows = list(csv.DictReader(handle))
@@ -337,7 +423,15 @@ def main() -> None:
         writer.writeheader()
         writer.writerows(output_rows)
 
+    coverage_rows = _layout_coverage(args.coverage_seeds)
+    args.coverage_output.parent.mkdir(parents=True, exist_ok=True)
+    with args.coverage_output.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=COVERAGE_FIELDS)
+        writer.writeheader()
+        writer.writerows(coverage_rows)
+
     print(f"写入 {args.output}: {len(output_rows)} 条成功 Trace")
+    print(f"写入 {args.coverage_output}: {len(coverage_rows)} 种可达工具布局")
     for version in WORLD_SELECTORS:
         group = [row for row in output_rows if row["world_version"] == version]
         if not group:
