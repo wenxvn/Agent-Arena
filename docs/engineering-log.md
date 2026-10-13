@@ -8,7 +8,7 @@
 
 验证：加入 room-fact 压缩回归，确认渲染超限时可省略旧房间描述并保留当前房间描述。定向 `tests/test_memory_v3.py` 为 17 passed；全量 pytest 356 passed、`ruff check .` 通过、`mypy src` 49 个源文件通过、`git diff --check` 通过。实现提交 `b29fe93f92761808cccff918071b742f908cde45` 的 [GitHub Actions run #76](https://github.com/wenxvn/Agent-Arena/actions/runs/38381561646) 和 fixture 补充提交 `077a8a346222242be51acb087e9d29b3b0846e56` 的 [GitHub Actions run #78](https://github.com/wenxvn/Agent-Arena/actions/runs/38382016747) 均通过。依赖未改动；未调用 provider API。
 
-下一步：提交并推送限定文件，检查该 SHA 的 GitHub Actions；保持 S2 online Gate 未通过，不推进 S3。
+下一步：继续核对 S2 离线验收与研究报告的一致性；在线 Gate 未通过，按 BUDGET-03 停止规则不再发起矩阵请求，不推进 S3。
 
 关联实现提交：`b29fe93f92761808cccff918071b742f908cde45`；fixture 补充提交：`077a8a346222242be51acb087e9d29b3b0846e56`。
 
