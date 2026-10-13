@@ -346,7 +346,7 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 
 | 阶段 | 当前状态 | 证据与后续放行条件 |
 |---|---|---|
-| S0 质量门禁 | 完成 | 本机和 GitHub Actions 质量门禁通过；最近提交 `59ab367` 的 Actions #94 成功。 |
+| S0 质量门禁 | 完成 | 本机和 GitHub Actions 质量门禁通过；实现提交 `b301051` 的 Actions #93、文档同步提交 `59ab367` 的 #94、阶段总览提交 `fc490eb` 的 #95 均成功。 |
 | S1 Trace 瓶颈审计 | 完成 | 518 个文件、474 个唯一 episode 的离线审计及逐家族案例复核已记录于 V2-02。 |
 | S2 Memory v3 | 离线验收完成；研究 Gate 未通过 | spec 0014 离线验收已通过；BUDGET-01/02/03 分别以 unknown-spend、timeout、provider_error fail-closed，v2 为 0/2 完成、v3 未启动。登记表要求不创建 BUDGET-04、不再调用此矩阵；没有模型收益结论。 |
 | S3 Action Grounding | 未启动，按序暂缓 | 当前没有完成的 S2 matched-pilot 结果；不得把离线 fixture 当作在线效果证据或据此启动 S3。 |
