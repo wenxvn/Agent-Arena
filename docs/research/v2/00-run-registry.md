@@ -80,4 +80,4 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 - 任一 usage 缺失、usage 超过预留、provider error、账本不匹配或预算触顶均停止后续请求。本次未知 spend 已关闭账本；不得重置账本或复用同一 experiment ID。中断 cell 与已完成 cell 分别报告；不把未完成运行写成最终 Episode Trace。
 - 本 pilot 仍只有四个 cell，单模型、单地图家族、两个 seeds。即使全部结束，也只作小样本方向性结果；token/成功和行为指标必须基于完成运行的真实 trace/ledger 计算，不能根据预算 cap 推测。
 
-本表是预登记，不代表实验已运行、模型收益已成立或本机 provider 配置已经核验。
+本表保留预登记和实际执行记录；运行完成不代表模型收益已成立，也不代表本机 provider 配置长期有效。
