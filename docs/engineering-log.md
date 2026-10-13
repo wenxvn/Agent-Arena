@@ -6,11 +6,11 @@
 
 改动：v3 insertion 统计改为比较独立的 episode 房间集合；容量边界 fixture 在 12 项列表已满时再进入一个房间，断言这一步准确记录房间、事实、出口和成功边共 4 项新增。
 
-验证：回归测试先在旧逻辑下失败（实际记 3，预期 4），修复后全量 pytest 349 passed、`ruff check .` 和 `mypy src`（49 个源文件）通过，`git diff --check` 通过。`uv` 命令不可用，未运行 `uv lock --check`，依赖文件未改动；本次远端 Actions 尚待触发后的结果。没有 provider 请求。
+验证：回归测试先在旧逻辑下失败（实际记 3，预期 4），修复后全量 pytest 349 passed、`ruff check .` 和 `mypy src`（49 个源文件）通过，`git diff --check` 通过。`uv` 命令不可用，未运行 `uv lock --check`，依赖文件未改动。提交 `8e4217241f848887bb7040e40865db6b0a075070` 的 [GitHub Actions run #72](https://github.com/wenxvn/Agent-Arena/actions/runs/38379141983) 成功。没有 provider 请求。
 
 下一步：核验本次提交的远端 Actions；继续 S2 离线审计，保持模型收益结论与 S3 推进关闭。
 
-关联提交：本记录所在提交。
+关联实现提交：`8e4217241f848887bb7040e40865db6b0a075070`。
 
 ## 2026-10-13 V2 S2 完整 Trace 的确定性记忆摘要
 

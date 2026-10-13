@@ -37,7 +37,7 @@ Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实�
 
 2026-10-13 离线验收补充：发现并补齐“完整公开 Trace 重放得到稳定 v3 memory digest”的实现缺口。`MemoryV3State.memory_digest` 对逻辑状态做排序键、紧凑 JSON 的 SHA-256，不含派生运行计数器；新增测试将 10 步公开 Trace 写入并重新读取，再独立重放两次，断言 digest、frontier、事件顺序一致。全量本地检查为 pytest 349 passed、Ruff 全仓通过、mypy 49 个源文件通过；提交 `e907237ca4c1dd4f06a48690a44a59c8568865c2` 的 [GitHub Actions run #70](https://github.com/wenxvn/Agent-Arena/actions/runs/38378309801) 通过。当前 shell 没有 `uv` 命令，未执行 `uv lock --check`；依赖文件未改动。此项只补齐离线确定性验收，不改变模型结果：三份 pilot ledger 无完整 episode，S2 Gate 仍未通过，不推进 S3。
 
-2026-10-13 随后对 trace statistics 做容量边界复核，发现 v2 访问短列表达到 12 项后，新增的 v3 `visited_rooms` 没有计入 `insertions`。统计改为按 v3 episode 房间集合的新增项计数，并在原 frontier 容量 fixture 增加第 13 个房间的 insertion 精确断言。本地全量 pytest 349 passed、Ruff 和 mypy 49 个源文件通过；本次修正仍待对应的远端 Actions 验证。未发起 provider 请求，S2 在线 Gate 仍未通过。
+2026-10-13 随后对 trace statistics 做容量边界复核，发现 v2 访问短列表达到 12 项后，新增的 v3 `visited_rooms` 没有计入 `insertions`。统计改为按 v3 episode 房间集合的新增项计数，并在原 frontier 容量 fixture 增加第 13 个房间的 insertion 精确断言。本地全量 pytest 349 passed、Ruff 和 mypy 49 个源文件通过；提交 `8e4217241f848887bb7040e40865db6b0a075070` 的 [GitHub Actions run #72](https://github.com/wenxvn/Agent-Arena/actions/runs/38379141983) 成功。未发起 provider 请求，S2 在线 Gate 仍未通过。
 
 ## Pilot 决策
 
