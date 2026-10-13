@@ -272,6 +272,8 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 
 Done when: 可以选择 Agent 和世界，运行 episode，并查看每一步的决策与结果。
 
+已提供研究 V1 只读 MVP：单局回放、矩阵总览、错误热点、条件对照。运行方式为 `uv run --with streamlit streamlit run src/agent_arena/ui/app.py`；该版本不配置模型或启动实验，Release 3 的完整交互验收仍未完成。
+
 - [ ] `/architect Streamlit 实验界面`
 
 ## Research Core
@@ -313,17 +315,15 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 
 ## 当前下一步
 
-十世界三十图已建成（旧九图零改动，新 21 图规则测试全过，全套 249 passed）。
-下一步：真实模型在新图上的 benchmark（预算登记后执行）、终点 `read_terminal`
-误用与读码后迷路的 prompt/文本消融、PlanningAgent 配相同公开上下文；
-之后再决定 ReflectionAgent 和 Streamlit 的顺序。
+十世界三十图矩阵及 9 张重制图已完成；flex pilot 与 seeded 共 45 局成功，详见 §K、§L 和 `docs/research/v1/08-cross-task-and-e1.md`。只读 Streamlit 研究回放 MVP 已提供，完整交互式实验界面仍属 Release 3。
+当前研究缺口：扩大 seeded 实例覆盖并分析长尾步数；新在线实验仍需先登记预算与固定对照条件，避免重跑已有矩阵。
 
 ## V1 研究提纲执行状态（2026-10-11，S0–S1 完成，S2–S6 部分）
 
 - S0/T1 partial：CI 红灯根因（`test_phase_tracker.py` 未使用导入）已修，本地 159→173 passed；51→45 去重台账与 provenance 审计见 `docs/research/v1/00-audit-and-run-register.md`、`01-ci-and-provenance.md`。CI 全绿待 push 后确认（本机无 uv/ruff/mypy）。
 - S1/T2 done（离线）：9 配置统计复核通过，`Success@K` 离线裁剪（K=60:60%、K=100:80%）与 TOP3 瓶颈见 `docs/research/v1/02-offline-metrics.md` + `assets/success_at_k.csv`。0 次新 LLM 调用。
-- S2–S6 partial：T3 八格矩阵（缺 C010/C011、缺 React-C111）与 Phase 先验定级见 `03-factor-ablation.md`；T4 三类错误 + E1/E2/E3 见 `04-efficiency-ablation.md`；T5 公平对照设计见 `05-planning-controlled.md`；T6 seed=replicate 审计 + 随机化设计见 `06-generalization.md`；T7 Reflection deferred + UI 只读 MVP 见 `07-reflection-and-ui.md`；总表见 `SUMMARY.md`。
-- 在线补测（C011、React-C111、E1 在线、P-v1-context、新实例评测）全部 blocked，待预算登记后执行；未重跑已有完整实验。
+- S2–S6 在在线收官前的阶段快照：T3–T5 的设计与结果见 `03`–`05`；T6 的泛化与 seed 审计见 `06-generalization.md` 和后续补记 `08-cross-task-and-e1.md`；T7 Reflection deferred、UI 只读 MVP 见 `07-reflection-and-ui.md`；历史任务总表见 `SUMMARY.md`。
+- 在线收官前曾有补测 blocked；后续完成状态以紧接的“V1 在线收官状态”和“08 跨任务与 E1 新世界验证”为准。
 
 ## V1 在线收官状态（2026-10-11 晚，用户批准在线后全部完成）
 
@@ -332,8 +332,8 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 - T4 done：E1 单变量 5/5（均值 30.6，零误用）vs C111 3/5（均值 47.2），配对全优，保留；
   E2/E3 隔离 deferred。
 - T5 done：Planning 同上下文 0/4（seed4 censored），更差且 2 倍 token，不提议 v2。
-- T6 partial：seeded-v5 生成器 + oracle + 真实 3/3（2 新布局）；跨任务族未实施。
-- T7 partial：Reflection deferred；UI 只读 MVP 实现 + 真实数据冒烟通过。
+- T6 partial：seeded-v5 生成器 + oracle + 真实 3/3 后，完成 flex 跨任务 pilot 30/30、seeded 变体 15/15；扩展实例覆盖与长尾分析仍待做，见 `08-cross-task-and-e1.md`。
+- T7 partial：Reflection deferred；只读 UI 已扩为 4 视图并通过真实数据冒烟，完整交互式实验界面仍待 Release 3。
 - 中断总账：C011-seed1 provider_error→重跑失败；React-seed4 2×provider_error→censored；
   Pctx-seed4 2×基础设施中断 + 首步 provider_error→censored。全部单列，未并入分母。
 - 另：并行会话新增 7 世界 21 图（spec 0011），兼容共存（249 passed）；本轮结论范围仍为原三世界。

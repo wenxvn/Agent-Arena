@@ -4,8 +4,10 @@
 
 - `0001-project-architecture` 架构 spec 已确认生效，状态为 `Accepted`。
 - Release 2 的确定性 Spaceship Escape、ReactAgent、MemoryAgent、Agent Loop、Episode Trace、终止控制和 benchmark 对照已完成；PlanningAgent v1 的工程闭环及真实对照已完成（qwen 与 Muse 基线均为 0/5，见 spec 0006 与失败分析）。
-- 十世界三十图（飞船/灯塔/深海站/极地/金字塔/地铁/火山/丛林/月球/古堡 × 简单 6 房/中等 8 房/困难 10 房，spec 0007–0011）已建成，规则零改动，全套 pytest 249 通过。
+- 十世界三十图（飞船/灯塔/深海站/极地/金字塔/地铁/火山/丛林/月球/古堡 × 简单 6 房/中等 8 房/困难 10 房，spec 0007–0011）已建成，规则零改动；最新完整测试记录见 `docs/engineering-log.md`。
 - Muse 自主组合（memory + history5 + recovery + phase，不限步）在 9 配置 × 5 seeds = 45/45 成功通关，均值步数三图全部随难度单调递增；终点 `read_terminal` 误用与读码后迷路是已确认的下一步消融靶子。
+- 后续十世界三十图矩阵 150/150 成功；flex pilot 与 seeded 变体另有 30/30 和 15/15 成功，长尾分析与更广 seeded 覆盖仍待推进，详见 `docs/scope/scope.md`。
+- Research V1 已提供只读 Streamlit MVP（单局回放、矩阵总览、错误热点、条件对照）；完整的实验配置与启动界面仍是 Release 3 计划项，运行命令见 README。
 - `研究总纲.md` 是新对话和日常 workflow 的研究摘要；完整产品与研究参考保留在 `总纲.md`，需要追溯细节时再阅读。
 - 当前模块结构见 `docs/architecture.md`，交付顺序和进度见 `docs/scope/scope.md`。
 - 重要阶段、决策、验证和阻塞记录在 `docs/engineering-log.md`，它不替代 scope、spec 或 Git 历史。
@@ -15,7 +17,7 @@
 - **语言与运行时**：Python 3.13，使用 uv、`pyproject.toml` 和 `uv.lock` 管理项目。
 - **核心依赖**：Pydantic v2、pydantic-settings、Typer、OpenAI Python SDK、pytest、Ruff 和 mypy。
 - **LLM 平台**：默认使用本地 Ollama 原生 API；阿里云百炼保留为可选的远程 provider。
-- **默认模型**：Ollama `qwen2.5:7b`；本机 Hiyo OpenAI-compatible relay 使用 `gpt-5.6-terra`。
+- **默认模型**：Ollama `qwen2.5:7b`；本机 OpenAI-compatible 研究网关当前使用 OpenCode Zen `muse-spark-1.3-contributor`，实际配置以本机 `.env` 为准。
 - **本地配置**：`.env` 只保留在本机。新机器从 `.env.example` 创建它。密钥不得提交、打印、写入源码、日志、trace、文档、测试或 prompt。
 - **环境变量**：Ollama 使用 `OLLAMA_BASE_URL` 和 `OLLAMA_MODEL`，默认地址为 `http://127.0.0.1:11434`。OpenAI-compatible relay 使用 `OPENAI_BASE_URL`、`OPENAI_API_KEY` 和 `OPENAI_MODEL`，并通过 `AGENT_ARENA_PROVIDER=openai` 选择。
 - **验证命令**：本机远程模型运行 `bash scripts/verify_model.sh`；Ollama 运行 `uv run agent-arena verify-model --provider ollama`。

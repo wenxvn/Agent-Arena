@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 只读研究 UI 维护与边界收紧
+
+事件：修复空步骤 Trace 的分页边界，并收紧只读 UI 对 Trace 与 benchmark CSV 的文件路径边界。
+
+原因：真实启动时单页滑块因 `min_value == max_value` 抛错；代码审查发现 CSV 可指向任意路径、Trace 符号链接可能越出实验目录，且 CSV 深度需遵守一级子目录约定。
+
+改动：单页直接使用第 1 页；Trace 校验最终路径并限制为实验目录直接子文件；CSV 仅允许 `runs/`、`results/` 根目录或一级子目录；README、架构、scope 与 Agent 上下文同步只读 UI 能力、启动方式和最新状态。
+
+验证：`PYTHONPATH=src py -3.11 -m pytest -q` 为 304 passed；浏览器页面可见，Streamlit health 返回 HTTP 200；`git diff --check` 通过；两项独立审查复查无新增问题。当前主机未安装 `uv`、Ruff、mypy，标准 Python 3.13 检查未运行。
+
+下一步：扩大 seeded 实例覆盖并分析长尾步数；新在线实验需先登记预算和固定对照条件。
+
+关联提交：`1bae22c`。
+
 ## 2026-10-11 V1 缺口续作：T6 跨任务证据、E1 新世界验证、UI 四视图
 
 事件：V1 收官后并行会话续作三项——flex pilot 真实 30/30 + seeded 15/15

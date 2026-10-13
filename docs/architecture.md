@@ -25,7 +25,7 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 | `src/agent_arena/llm/` | DecisionProvider、OpenAI-compatible/Ollama/Fake 适配器 | 环境状态和业务规则 |
 | `src/agent_arena/evaluation/` | Episode Runner、Trace 持久化、公开进展/事实、失败分析、指标和 benchmark | 修改 Agent 决策或世界规则 |
 | `prompts/` | 版本化的 Agent 指令模板 | 密钥和运行时配置 |
-| `src/agent_arena/ui/` | Release 3 展示世界、Trace 和指标 | 直接修改 Environment 内部状态 |
+| `src/agent_arena/ui/` | 只读回放 Trace、矩阵指标、错误热点和条件对照 | 启动 Episode/Benchmark、直接修改 Environment 内部状态 |
 
 ## 当前 MVP 闭环
 
@@ -48,7 +48,7 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 - Planning Trace 记录 `plan_id`、当前子目标、Planner 调用、重规划原因、监控信号、子目标完成和 Planner/Executor 成本。`planner_assisted` 仍是独立的规则路线辅助模式，不与 `planning` 结果合并。
 - Evaluation v2 在 `evaluation/progress.py` 中将公开状态变化与 episode-local 公共事实分开计数；`evaluation/failures.py` 只用规则生成自动失败信号，并保留人工标注入口。`planning/criteria.py` 负责结构化 `SuccessCriterion`，同时兼容 Planning v1 字符串条件。
 - Trace schema v2 为已执行步骤记录 `ProgressEvent`，旧 trace 缺失字段时仍可读取，但对应指标必须标记为不可用；失败分析 CLI 输出独立的 JSON/CSV 报告。
-- 第一版只提供本地 CLI 与 JSON/CSV 文件输出；Streamlit 延后到 Release 3。
+- 核心实验仍通过本地 CLI 运行并输出 JSON/CSV。研究阶段另有只读 Streamlit MVP，读取本地 `runs/`、`results/`，不访问 `.env` 或调用 Provider；可配置并启动实验的完整界面仍属于 Release 3。
 
 ## 更新规则
 

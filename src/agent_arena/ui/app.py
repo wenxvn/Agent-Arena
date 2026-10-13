@@ -59,6 +59,18 @@ def _safe_dir(base: Path, name: str) -> Path | None:
     return candidate
 
 
+def _safe_trace_path(directory: Path, path: Path) -> Path | None:
+    """只允许读取实验目录中的直接子文件，拒绝符号链接逃逸。"""
+    try:
+        candidate = path.resolve()
+        relative = candidate.relative_to(directory.resolve())
+    except (OSError, RuntimeError, ValueError):
+        return None
+    if len(relative.parts) != 1 or not candidate.is_file():
+        return None
+    return candidate
+
+
 def _read_trace(path: Path) -> dict[str, Any] | None:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -75,7 +87,10 @@ def _scan_traces(directory: Path) -> tuple[list[dict[str, Any]], int]:
         if len(traces) >= MAX_SCAN_FILES:
             skipped += 1
             continue
-        trace = _read_trace(path)
+        safe_path = _safe_trace_path(directory, path)
+        if safe_path is None:
+            continue
+        trace = _read_trace(safe_path)
         if trace is not None:
             traces.append(trace)
     return traces, skipped
@@ -84,6 +99,25 @@ def _scan_traces(directory: Path) -> tuple[list[dict[str, Any]], int]:
 def _read_csv_rows(path: Path) -> list[dict[str, Any]]:
     with path.open(encoding="utf-8") as handle:
         return list(csv.DictReader(handle))
+
+
+def _safe_csv_path(path: str) -> Path | None:
+    """只允许读取 runs/、results/ 根目录或一级子目录中的 CSV。"""
+    try:
+        candidate = Path(path.strip()).resolve()
+    except (OSError, RuntimeError, ValueError):
+        return None
+    if candidate.suffix.lower() != ".csv" or not candidate.is_file():
+        return None
+    for base in (RUNS_DIR, RESULTS_DIR):
+        try:
+            relative = candidate.relative_to(base.resolve())
+        except ValueError:
+            continue
+        if len(relative.parts) > 2:
+            continue
+        return candidate
+    return None
 
 
 def _run_dirs() -> list[str]:
@@ -103,12 +137,20 @@ def _replay_view(st: Any) -> None:
     if directory is None:
         st.error("目录不合法。")
         return
-    files = sorted(path.name for path in directory.glob("episode_*.json"))
+    files = sorted(
+        path.name
+        for path in directory.glob("episode_*.json")
+        if _safe_trace_path(directory, path) is not None
+    )
     if not files:
         st.info("该目录下没有 episode trace。")
         return
     filename = st.sidebar.selectbox("trace 文件", files)
-    trace = _read_trace(directory / str(filename))
+    trace_path = _safe_trace_path(directory, directory / str(filename))
+    if trace_path is None:
+        st.error("trace 文件路径不合法。")
+        return
+    trace = _read_trace(trace_path)
     if trace is None:
         st.error("trace 文件损坏。")
         return
@@ -117,7 +159,7 @@ def _replay_view(st: Any) -> None:
     st.write({"error_hotspots": error_hotspots(trace)})
     rows = summarize_trace(trace)
     total_pages = max(1, (len(rows) + PAGE_SIZE - 1) // PAGE_SIZE)
-    page = st.sidebar.slider("页", 1, total_pages, 1)
+    page = st.sidebar.slider("页", 1, total_pages, 1) if total_pages > 1 else 1
     st.table(page_rows(rows, int(page), PAGE_SIZE))
 
 
@@ -188,12 +230,17 @@ def _compare_view(st: Any) -> None:
     st.write("自主性图例：纯 observation 自主 / observation-derived / "
              "world-declared phase guidance / planner_assisted（辅助上界，非自主）")
     for label, path in (("A", path_a), ("B", path_b)):
-        if path.endswith(".csv"):
-            rows = _read_csv_rows(Path(path))
-            st.write(label)
-            st.write(compare_conditions(rows))
-        else:
-            st.info(f"请输入对照 {label} 的 benchmark .csv 路径。")
+        csv_path = _safe_csv_path(path)
+        if csv_path is None:
+            st.info(f"请输入 runs/ 或 results/ 下对照 {label} 的有效 benchmark .csv。")
+            continue
+        try:
+            rows = _read_csv_rows(csv_path)
+        except (OSError, UnicodeError, csv.Error):
+            st.error(f"对照 {label} 的 CSV 无法读取。")
+            continue
+        st.write(label)
+        st.write(compare_conditions(rows))
 
 
 def main() -> None:

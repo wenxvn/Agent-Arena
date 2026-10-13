@@ -49,6 +49,8 @@ uv run agent-arena run --provider ollama --agent planner_assisted --seed 0 --out
 
 2026-10-11 起真实实验切到 OpenCode Zen 网关的 `muse-spark-1.3-contributor`：Memory + history5 + recovery + phase + 不限步的自主组合在 9 配置（飞船/灯塔/深海站 × 简单/中等/困难）× 5 seeds 获 45/45 成功，0 非法输出；均值步数飞船 70.4/140.8/165.4、灯塔 39.8/49.4/105.8、深海 26.8/42.2/83.6，三图全部随难度单调递增。旧 qwen 基线保留独立统计。
 
+后续十世界三十图矩阵 150/150 成功；flex pilot 与 seeded 变体分别 30/30、15/15 成功。seeded 变体存在长尾步数，尚需更广覆盖；详见 [开发进度](docs/scope/scope.md)。
+
 ## 使用 Ollama 本地模型
 
 项目的本地实验工作流使用 Ollama 的 `qwen2.5:7b`，不需要 API Key。先确保 Ollama 服务已启动且模型已下载：
@@ -125,6 +127,16 @@ benchmark_20260817T090501Z_react-memory_10-seeds_20-episodes_a1b2c3d4.json
 benchmark_20260817T090501Z_react-memory_10-seeds_20-episodes_a1b2c3d4.csv
 ```
 
+## 只读研究回放界面
+
+项目提供只读 Streamlit 页面，用于浏览已有 trace 和 benchmark：单局回放、矩阵总览、错误热点和条件对照。启动命令：
+
+```bash
+uv run --with streamlit streamlit run src/agent_arena/ui/app.py
+```
+
+`streamlit` 通过 `--with` 临时提供，不写入 `pyproject.toml` 或 `uv.lock`。页面只读取本地 `runs/`、`results/` 文件，不调用模型，也不能启动新实验。支持配置并运行 episode/benchmark 的完整交互式实验界面仍在开发计划中，见 [开发进度](docs/scope/scope.md)。
+
 ## 验收与检查
 
 ```bash
@@ -156,4 +168,4 @@ git diff --check
 
 首个版本不引入 LangChain、RAG、向量数据库、多 Agent 编排、数据库或复杂前端。环境规则、Agent 策略、模型调用和运行记录保持独立，确保实验结果可以追溯和比较。
 
-当前尚未完成：PlanningAgent 的自主规划稳定通关、真实 `guarded` 行为对照、规划建议偏离后的真实模型验证、终点 `read_terminal` 误用与读码后迷路的提示消融、Streamlit 实验界面、ReflectionAgent，以及多模型对照。纯模型自主通关已由 Muse + Memory + 公开上下文组合在 9 配置 × 5 seeds 证明（45/45），qwen 与 Planning 基线仍未通过。详细清单见 [开发进度](docs/scope/scope.md)。
+当前尚未完成：PlanningAgent 的自主规划稳定通关、真实 `guarded` 行为对照、规划建议偏离后的真实模型验证、终点 `read_terminal` 误用与读码后迷路的提示消融、可配置并启动实验的完整交互式 Streamlit 界面、ReflectionAgent，以及多模型对照。只读研究回放界面已提供。纯模型自主通关已由 Muse + Memory + 公开上下文组合在 9 配置 × 5 seeds 证明（45/45），qwen 与 Planning 基线仍未通过。详细清单见 [开发进度](docs/scope/scope.md)。
