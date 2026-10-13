@@ -111,3 +111,70 @@ def test_openai_provider_uses_only_the_openai_api_key(
 def test_retry_delays_must_match_the_retry_count(isolated_defaults: Path) -> None:
     with pytest.raises(ValueError, match="one delay"):
         RuntimeSettings.load({"retry_count": 1}, env_file=None)
+
+
+def test_provider_budget_requires_complete_caps_and_disables_retries(
+    isolated_defaults: Path,
+) -> None:
+    with pytest.raises(ValueError, match="require all caps"):
+        RuntimeSettings.load(
+            {"max_provider_requests": 10},
+            env_file=None,
+        )
+
+    with pytest.raises(ValueError, match="retry_count=0"):
+        RuntimeSettings.load(
+            {
+                "max_provider_requests": 10,
+                "max_provider_tokens": 10_000,
+                "max_provider_output_tokens": 64,
+                "provider_budget_timeout_seconds": 300,
+                "provider_budget_experiment_id": "config-test",
+                "provider_budget_expected_provider": "fake",
+                "provider_budget_expected_model": "test-model",
+                "provider_budget_expected_world_definition_hash": "world-hash",
+                "provider_budget_expected_base_prompt_hash": "prompt-hash",
+                "provider_budget_ledger": Path("results/budget-test.json"),
+            },
+            env_file=None,
+        )
+
+    settings = RuntimeSettings.load(
+        {
+            "retry_count": 0,
+            "max_provider_requests": 10,
+            "max_provider_tokens": 10_000,
+            "max_provider_output_tokens": 64,
+            "provider_budget_timeout_seconds": 300,
+            "provider_budget_experiment_id": "config-test",
+            "provider_budget_expected_provider": "fake",
+            "provider_budget_expected_model": "test-model",
+            "provider_budget_expected_world_definition_hash": "world-hash",
+            "provider_budget_expected_base_prompt_hash": "prompt-hash",
+            "provider_budget_ledger": Path("results/budget-test.json"),
+        },
+        env_file=None,
+    )
+    assert settings.retry_count == 0
+    assert settings.retry_backoff_seconds == []
+
+
+def test_provider_budget_rejects_selected_provider_mismatch(isolated_defaults: Path) -> None:
+    with pytest.raises(ValueError, match="does not match the frozen provider"):
+        RuntimeSettings.load(
+            {
+                "provider": "openai",
+                "retry_count": 0,
+                "max_provider_requests": 10,
+                "max_provider_tokens": 10_000,
+                "max_provider_output_tokens": 64,
+                "provider_budget_timeout_seconds": 300,
+                "provider_budget_experiment_id": "config-test",
+                "provider_budget_expected_provider": "fake",
+                "provider_budget_expected_model": "test-model",
+                "provider_budget_expected_world_definition_hash": "world-hash",
+                "provider_budget_expected_base_prompt_hash": "prompt-hash",
+                "provider_budget_ledger": Path("results/budget-test.json"),
+            },
+            env_file=None,
+        )

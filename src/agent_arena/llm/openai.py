@@ -127,6 +127,8 @@ class OpenAIDecisionProvider:
             "text": {"format": _response_format(self._settings.response_format, request)},
             "store": False,
         }
+        if request.max_output_tokens is not None:
+            request_kwargs["max_output_tokens"] = request.max_output_tokens
         if self._settings.reasoning_effort != "none":
             request_kwargs["reasoning"] = {"effort": self._settings.reasoning_effort}
         response = self._client.responses.create(**cast(Any, request_kwargs))

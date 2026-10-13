@@ -102,6 +102,16 @@ class RuntimeSettings(BaseSettings):
         gt=0,
         validation_alias=AliasChoices("OLLAMA_MAX_OUTPUT_TOKENS", "ollama_max_output_tokens"),
     )
+    max_provider_requests: int | None = Field(default=None, gt=0)
+    max_provider_tokens: int | None = Field(default=None, gt=0)
+    max_provider_output_tokens: int | None = Field(default=None, gt=0)
+    provider_budget_timeout_seconds: int | None = Field(default=None, gt=0)
+    provider_budget_experiment_id: str | None = None
+    provider_budget_expected_provider: Literal["fake", "bailian", "openai", "ollama"] | None = None
+    provider_budget_expected_model: str | None = None
+    provider_budget_expected_world_definition_hash: str | None = None
+    provider_budget_expected_base_prompt_hash: str | None = None
+    provider_budget_ledger: Path | None = None
 
     @classmethod
     def settings_customise_sources(
@@ -124,10 +134,39 @@ class RuntimeSettings(BaseSettings):
     def validate_retry_policy(self) -> RuntimeSettings:
         if self.agent != "memory" and self.memory_version != "v2":
             raise ValueError("memory_version=v3_spatial_event is only valid with agent=memory.")
+        if self.retry_count == 0:
+            self.retry_backoff_seconds = []
         if len(self.retry_backoff_seconds) != self.retry_count:
             raise ValueError("retry_backoff_seconds must contain one delay for each retry.")
         if any(delay < 0 for delay in self.retry_backoff_seconds):
             raise ValueError("retry_backoff_seconds cannot contain negative delays.")
+        budget_values = (
+            self.max_provider_requests,
+            self.max_provider_tokens,
+            self.max_provider_output_tokens,
+            self.provider_budget_timeout_seconds,
+            self.provider_budget_experiment_id,
+            self.provider_budget_expected_provider,
+            self.provider_budget_expected_model,
+            self.provider_budget_expected_world_definition_hash,
+            self.provider_budget_expected_base_prompt_hash,
+            self.provider_budget_ledger,
+        )
+        if any(value is not None for value in budget_values):
+            if any(value is None for value in budget_values):
+                raise ValueError(
+                    "Provider budgets require all caps, experiment ID, and ledger path."
+                )
+            if self.retry_count != 0:
+                raise ValueError(
+                    "Provider budgets require retry_count=0 so every API attempt is counted."
+                )
+            if self.step_limit == 0:
+                raise ValueError("Provider budgets require a finite positive step_limit.")
+            if self.provider_budget_expected_provider != self.provider:
+                raise ValueError(
+                    "The selected provider does not match the frozen provider budget identity."
+                )
         return self
 
     @classmethod

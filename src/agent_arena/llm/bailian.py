@@ -130,13 +130,16 @@ class BailianDecisionProvider:
             request_content += f"最近公开轨迹（仅供参考）：{request.recent_history}\n"
         request_content += correction_instruction
         messages.append({"role": "user", "content": request_content})
-        response = self._client.chat.completions.create(
-            model=self._settings.model_name,
-            messages=cast(Any, messages),
-            temperature=0,
-            response_format={"type": "json_object"},
-            extra_body={"enable_thinking": self._settings.enable_thinking},
-        )
+        request_kwargs: dict[str, Any] = {
+            "model": self._settings.model_name,
+            "messages": cast(Any, messages),
+            "temperature": 0,
+            "response_format": {"type": "json_object"},
+            "extra_body": {"enable_thinking": self._settings.enable_thinking},
+        }
+        if request.max_output_tokens is not None:
+            request_kwargs["max_tokens"] = request.max_output_tokens
+        response = self._client.chat.completions.create(**request_kwargs)
         response_content = response.choices[0].message.content if response.choices else None
         if not response_content:
             raise DecisionProviderError("Bailian returned no decision.")

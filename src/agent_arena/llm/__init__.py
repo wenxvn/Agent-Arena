@@ -1,6 +1,13 @@
 """Decision provider interfaces and implementations."""
 
 from agent_arena.llm.bailian import BailianDecisionProvider, DecisionProviderError
+from agent_arena.llm.budget import (
+    BudgetedDecisionProvider,
+    ProviderBudgetController,
+    ProviderBudgetExceeded,
+    ProviderBudgetLimits,
+    ProviderBudgetSnapshot,
+)
 from agent_arena.llm.fake import FakeDecisionProvider, FakeProviderExhausted
 from agent_arena.llm.ollama import OllamaDecisionProvider, OllamaModelVerifier
 from agent_arena.llm.openai import OpenAIDecisionProvider, OpenAIModelVerifier
@@ -8,6 +15,7 @@ from agent_arena.llm.protocol import DecisionProvider, DecisionRequest, Provider
 
 __all__ = [
     "BailianDecisionProvider",
+    "BudgetedDecisionProvider",
     "DecisionProvider",
     "DecisionRequest",
     "DecisionProviderError",
@@ -18,4 +26,8 @@ __all__ = [
     "OpenAIDecisionProvider",
     "OpenAIModelVerifier",
     "ProviderResponse",
+    "ProviderBudgetController",
+    "ProviderBudgetExceeded",
+    "ProviderBudgetLimits",
+    "ProviderBudgetSnapshot",
 ]

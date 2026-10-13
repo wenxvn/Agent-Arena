@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from agent_arena.agents import CandidateSelectionAgent, ReactAgent
 from agent_arena.arena import action_adapter
 from agent_arena.config import RuntimeSettings
@@ -14,7 +16,7 @@ from agent_arena.evaluation import (
     write_episode_trace,
 )
 from agent_arena.evaluation.runner import PublicCandidateTracker
-from agent_arena.llm import FakeDecisionProvider
+from agent_arena.llm import FakeDecisionProvider, ProviderBudgetExceeded
 from agent_arena.worlds import SpaceshipEscapeEnvironment
 
 
@@ -122,6 +124,18 @@ def test_runner_requests_one_correction_without_executing_the_invalid_candidate(
         TraceEvent.ACTION_VALIDATED,
         TraceEvent.PROVIDER_ERROR,
     ]
+
+
+def test_runner_propagates_budget_failures_without_completing_an_episode() -> None:
+    error = ProviderBudgetExceeded("budget exhausted")
+    runner = EpisodeRunner(
+        SpaceshipEscapeEnvironment(),
+        ReactAgent(FakeDecisionProvider([error])),
+        settings(),
+    )
+
+    with pytest.raises(ProviderBudgetExceeded, match="budget exhausted"):
+        runner.run()
 
 
 def test_runner_stops_after_three_consecutive_invalid_candidates() -> None:

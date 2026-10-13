@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V2 S2 Provider Budget Guard 与 pilot 前置门禁
+
+事件：完成 fail-closed provider request/token 预算门禁，并修复 provider 身份校验、活跃请求恢复和未完成 episode Trace 边界。
+
+原因：S2 受限真实 pilot 需要跨 episode、跨 CLI invocation 的共享额度；并发启动不能误关正在运行的账本，预算或 provider 失败也不能伪装成完成局。
+
+改动：新增持久化预算账本、请求输出上限、expected provider/model/world/prompt 身份冻结、OS invocation/request leases、terminal status 与关闭原因校验、截止时间后 usage 记账、预算异常传播、不落未完成 Trace，以及预算中断或后续 cell 身份不匹配时保留已完成 benchmark 汇总并非零退出；登记表记录共享 cap 与执行命令，并要求 pilot 后逐条核对账本事件。
+
+验证：Ruff 通过；mypy 49 个源文件无问题；全量 pytest 338 passed；`uv lock --check` 通过；`git diff --check` 通过。未发起真实 provider API 请求，未读取或输出 `.env` 内容。
+
+下一步：提交并冻结代码 SHA 后，按登记表启动共享预算内的 Memory v2/v3 配对 pilot；pilot 结果仍须以真实 trace 和账本逐条核验。
+
+关联实现提交：待提交。
+
 ## 2026-10-13 V2 S2 Memory v3 离线实现与 pilot 门禁
 
 事件：按 S1 seeded 长尾证据实现可选 Memory v3 Spatial/Event，并完成离线验证。

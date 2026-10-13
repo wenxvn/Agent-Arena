@@ -5,9 +5,15 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from agent_arena.cli import app
+from agent_arena.cli import _default_fake_responses, app
 from agent_arena.config import RuntimeSettings
-from agent_arena.llm import FakeDecisionProvider
+from agent_arena.llm import (
+    FakeDecisionProvider,
+    ProviderBudgetController,
+    ProviderBudgetExceeded,
+    ProviderBudgetLimits,
+    ProviderResponse,
+)
 from agent_arena.llm.bailian import ModelVerificationError
 
 runner = CliRunner()
@@ -76,6 +82,163 @@ def test_run_can_select_ollama_without_bailian_credentials(monkeypatch, tmp_path
     assert result.exit_code == 0
     assert "真实模型实验开始" in result.output
     assert "模型服务请求失败" in result.output
+
+
+def test_benchmark_budget_interrupt_preserves_partial_status_and_returns_failure(
+    monkeypatch, tmp_path: Path
+) -> None:
+    settings = RuntimeSettings.model_validate(
+        {
+            "provider": "fake",
+            "world": "spaceship-escape",
+            "world_version": "spaceship-escape-v2-zh",
+            "agent": "react",
+            "seed": 0,
+            "runs_dir": tmp_path / "runs",
+            "results_dir": tmp_path / "results",
+            "step_limit": 5,
+            "request_timeout_seconds": 30,
+            "retry_count": 0,
+            "retry_backoff_seconds": [],
+            "enable_thinking": False,
+            "model_name": "test-model",
+            "max_provider_requests": 5,
+            "max_provider_tokens": 4_000,
+            "max_provider_output_tokens": 64,
+            "provider_budget_timeout_seconds": 300,
+            "provider_budget_experiment_id": "cli-budget-test",
+            "provider_budget_expected_provider": "fake",
+            "provider_budget_expected_model": "test-model",
+            "provider_budget_expected_world_definition_hash": "world-hash",
+            "provider_budget_expected_base_prompt_hash": "prompt-hash",
+            "provider_budget_ledger": tmp_path / "budget.json",
+        }
+    )
+    budget_controller = ProviderBudgetController(
+        ProviderBudgetLimits(
+            experiment_id="cli-budget-test",
+            expected_provider="fake",
+            expected_model="test-model",
+            expected_world_definition_hash="world-hash",
+            expected_base_prompt_hash="prompt-hash",
+            max_requests=5,
+            max_tokens=4_000,
+            max_output_tokens_per_request=64,
+            timeout_seconds=300,
+        ),
+        tmp_path / "budget.json",
+    )
+    written_rows = []
+    monkeypatch.setattr("agent_arena.cli._load_settings", lambda **kwargs: settings)
+    monkeypatch.setattr(
+        "agent_arena.cli._create_provider_budget_controller",
+        lambda current_settings: budget_controller,
+    )
+    monkeypatch.setattr(
+        "agent_arena.cli._create_decision_provider",
+        lambda current_settings, **kwargs: FakeDecisionProvider(
+            [ProviderBudgetExceeded("active request overlap")]
+        ),
+    )
+    monkeypatch.setattr("agent_arena.cli._validate_budget_world_identity", lambda *_: None)
+    monkeypatch.setattr("agent_arena.cli._validate_budget_prompt_identity", lambda *_: None)
+    monkeypatch.setattr(
+        "agent_arena.cli.write_benchmark",
+        lambda rows, output_dir: (
+            written_rows.extend(rows) or tmp_path / "benchmark.json",
+            tmp_path / "benchmark.csv",
+        ),
+    )
+
+    result = runner.invoke(app, ["benchmark", "--episodes", "2", "--agent", "react"])
+
+    assert result.exit_code == 2
+    assert "基准测试提前停止" in result.output
+    assert "（0/2 局完成）" in result.output
+    assert written_rows == []
+    assert not list((tmp_path / "runs").glob("*.json"))
+
+
+def test_benchmark_identity_mismatch_preserves_prior_episode_summary(
+    monkeypatch, tmp_path: Path
+) -> None:
+    settings = RuntimeSettings.model_validate(
+        {
+            "provider": "fake",
+            "world": "spaceship-escape",
+            "world_version": "spaceship-escape-v2-zh",
+            "agent": "react",
+            "seed": 0,
+            "runs_dir": tmp_path / "runs",
+            "results_dir": tmp_path / "results",
+            "step_limit": 5,
+            "request_timeout_seconds": 30,
+            "retry_count": 0,
+            "retry_backoff_seconds": [],
+            "enable_thinking": False,
+            "model_name": "test-model",
+            "max_provider_requests": 100,
+            "max_provider_tokens": 1_000_000,
+            "max_provider_output_tokens": 64,
+            "provider_budget_timeout_seconds": 300,
+            "provider_budget_experiment_id": "cli-identity-budget-test",
+            "provider_budget_expected_provider": "fake",
+            "provider_budget_expected_model": "test-model",
+            "provider_budget_expected_world_definition_hash": "world-hash",
+            "provider_budget_expected_base_prompt_hash": "prompt-hash",
+            "provider_budget_ledger": tmp_path / "identity-budget.json",
+        }
+    )
+    budget_controller = ProviderBudgetController(
+        ProviderBudgetLimits(
+            experiment_id="cli-identity-budget-test",
+            expected_provider="fake",
+            expected_model="test-model",
+            expected_world_definition_hash="world-hash",
+            expected_base_prompt_hash="prompt-hash",
+            max_requests=100,
+            max_tokens=1_000_000,
+            max_output_tokens_per_request=64,
+            timeout_seconds=300,
+        ),
+        tmp_path / "identity-budget.json",
+    )
+    prompt_checks = 0
+
+    def validate_prompt_identity(*_args) -> None:
+        nonlocal prompt_checks
+        prompt_checks += 1
+        if prompt_checks == 2:
+            raise ProviderBudgetExceeded("prompt identity mismatch")
+
+    def create_provider(*_args, **_kwargs) -> FakeDecisionProvider:
+        responses = [
+            ProviderResponse(candidate=response, input_tokens=1, output_tokens=1)
+            for response in _default_fake_responses("react")
+        ]
+        return FakeDecisionProvider(responses)
+
+    monkeypatch.setattr("agent_arena.cli._load_settings", lambda **kwargs: settings)
+    monkeypatch.setattr(
+        "agent_arena.cli._create_provider_budget_controller",
+        lambda current_settings: budget_controller,
+    )
+    monkeypatch.setattr("agent_arena.cli._create_decision_provider", create_provider)
+    monkeypatch.setattr("agent_arena.cli._validate_budget_world_identity", lambda *_: None)
+    monkeypatch.setattr(
+        "agent_arena.cli._validate_budget_prompt_identity", validate_prompt_identity
+    )
+
+    result = runner.invoke(app, ["benchmark", "--episodes", "2", "--agent", "react"])
+
+    benchmark_files = list((tmp_path / "results").glob("benchmark_*.json"))
+    assert result.exit_code == 2
+    assert "基准测试提前停止" in result.output
+    assert "（1/2 局完成）" in result.output
+    assert len(benchmark_files) == 1
+    benchmark = json.loads(benchmark_files[0].read_text(encoding="utf-8"))
+    assert len(benchmark["rows"]) == 1
+    assert len(list((tmp_path / "runs").glob("*.json"))) == 1
 
 
 def test_verify_model_does_not_echo_provider_exception_content(monkeypatch) -> None:

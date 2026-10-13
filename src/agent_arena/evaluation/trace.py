@@ -105,6 +105,11 @@ class ExperimentProvenance(BaseModel):
     world_definition_id: str | None = None
     world_definition_hash: str | None = None
     max_output_tokens: int | None = None
+    max_provider_requests: int | None = Field(default=None, ge=1)
+    max_provider_tokens: int | None = Field(default=None, ge=1)
+    max_provider_output_tokens: int | None = Field(default=None, ge=1)
+    provider_budget_timeout_seconds: int | None = Field(default=None, ge=1)
+    provider_budget_experiment_id: str | None = None
     model_name: str
     temperature: float = 0
     enable_thinking: bool

@@ -34,6 +34,7 @@ from agent_arena.evaluation.trace import (
     StepTrace,
     TraceEvent,
 )
+from agent_arena.llm.budget import ProviderBudgetExceeded
 from agent_arena.llm.protocol import ProviderResponse
 from agent_arena.safety import sanitize_text
 
@@ -104,10 +105,19 @@ class EpisodeRunner:
                 world_definition_id=definition_id,
                 world_definition_hash=definition_hash,
                 max_output_tokens=(
-                    self._settings.ollama_max_output_tokens
-                    if self._settings.provider == "ollama"
-                    else None
+                    self._settings.max_provider_output_tokens
+                    if self._settings.max_provider_output_tokens is not None
+                    else (
+                        self._settings.ollama_max_output_tokens
+                        if self._settings.provider == "ollama"
+                        else None
+                    )
                 ),
+                max_provider_requests=self._settings.max_provider_requests,
+                max_provider_tokens=self._settings.max_provider_tokens,
+                max_provider_output_tokens=self._settings.max_provider_output_tokens,
+                provider_budget_timeout_seconds=self._settings.provider_budget_timeout_seconds,
+                provider_budget_experiment_id=self._settings.provider_budget_experiment_id,
                 model_name=(
                     "fake-scripted"
                     if self._settings.provider == "fake"
@@ -179,9 +189,7 @@ class EpisodeRunner:
                 runtime_feedback, _concrete_action_candidates(observation)
             )
         if phase_milestones:
-            runtime_feedback = _join_feedback(
-                runtime_feedback, phase_tracker.render(observation)
-            )
+            runtime_feedback = _join_feedback(runtime_feedback, phase_tracker.render(observation))
         recent_history: list[tuple[Observation, Action, ToolResult]] = []
 
         while self._settings.step_limit == 0 or decision_attempts < self._settings.step_limit:
@@ -446,6 +454,8 @@ class EpisodeRunner:
                 invalid_output_reason=invalid_output_reason,
                 recent_history=recent_history,
             )
+        except ProviderBudgetExceeded:
+            raise
         except Exception:
             return None, _elapsed_ms(started_at), True, None, None, None
         if not isinstance(response, ProviderResponse):

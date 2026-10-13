@@ -184,3 +184,41 @@ def test_openai_decision_can_enable_reasoning_effort(monkeypatch) -> None:
     )
 
     assert client.responses.calls[0]["reasoning"] == {"effort": "high"}
+
+
+def test_openai_decision_passes_budgeted_output_cap(monkeypatch) -> None:
+    client = _FakeClient()
+
+    def create_client(**kwargs: Any) -> _FakeClient:
+        client.kwargs = kwargs
+        return client
+
+    monkeypatch.setattr("agent_arena.llm.openai.OpenAI", create_client)
+    settings = RuntimeSettings.load(
+        {
+            "provider": "openai",
+            "base_url": "https://relay.example/v1",
+            "openai_api_key": "test-key",
+            "model_name": "test-model",
+        },
+        env_file=None,
+    )
+    observation = Observation(
+        current_room="bridge",
+        description="控制台前方有一条通道。",
+        visible_objects=("console",),
+        available_exits=("corridor",),
+        inventory=(),
+        last_action_result=None,
+    )
+
+    OpenAIDecisionProvider(settings).decide(
+        DecisionRequest(
+            observation=observation,
+            system_prompt="按格式返回动作。",
+            correction=False,
+            max_output_tokens=64,
+        )
+    )
+
+    assert client.responses.calls[0]["max_output_tokens"] == 64

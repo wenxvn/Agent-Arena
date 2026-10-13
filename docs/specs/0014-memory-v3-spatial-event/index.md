@@ -1,7 +1,7 @@
 # 0014. Memory v3 Spatial/Event
 
 **日期**：2026-10-13
-**状态**：Accepted（先完成离线实现与验证；真实模型 pilot 仍待预算门禁）
+**状态**：Accepted（离线实现已完成；预算门禁已实现并验证；真实模型 pilot 待提交 SHA 冻结）
 
 ## 摘要
 

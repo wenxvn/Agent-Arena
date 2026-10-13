@@ -29,6 +29,7 @@ class _OllamaClient:
         messages: list[dict[str, str]],
         *,
         response_schema: dict[str, Any],
+        max_output_tokens: int | None = None,
     ) -> dict[str, Any]:
         payload = {
             "model": self._settings.ollama_model,
@@ -38,7 +39,7 @@ class _OllamaClient:
             "format": response_schema,
             "options": {
                 "temperature": 0,
-                "num_predict": self._settings.ollama_max_output_tokens,
+                "num_predict": max_output_tokens or self._settings.ollama_max_output_tokens,
             },
         }
         for attempt in range(self._settings.retry_count + 1):
@@ -90,7 +91,7 @@ class OllamaModelVerifier:
                 [
                     {
                         "role": "system",
-                        "content": "只返回 JSON 对象，格式为 {\"text\":\"...\"}。",
+                        "content": '只返回 JSON 对象，格式为 {"text":"..."}。',
                     },
                     {
                         "role": "user",
@@ -155,7 +156,11 @@ class OllamaDecisionProvider:
                 else ACTION_RESPONSE_SCHEMA
             )
         )
-        response = self._client.chat(messages, response_schema=schema)
+        response = self._client.chat(
+            messages,
+            response_schema=schema,
+            max_output_tokens=request.max_output_tokens,
+        )
         response_content = _json_content(response)
         return ProviderResponse(
             candidate=response_content,

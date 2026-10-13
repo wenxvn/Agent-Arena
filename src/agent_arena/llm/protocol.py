@@ -21,6 +21,7 @@ class DecisionRequest:
     recent_history: str | None = None
     output_contract: Literal["action", "candidate_selection", "planner"] = "action"
     plan_data: str | None = None
+    max_output_tokens: int | None = None
 
 
 @dataclass(frozen=True)

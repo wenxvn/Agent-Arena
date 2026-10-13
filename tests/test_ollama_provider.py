@@ -117,6 +117,47 @@ def test_ollama_decision_includes_public_runtime_feedback(monkeypatch) -> None:
         )
     )
 
-    assert "运行时提醒（仅来自公开轨迹）：不要重复刚才失败的动作。" in captured["payload"][
-        "messages"
-    ][-1]["content"]
+    assert (
+        "运行时提醒（仅来自公开轨迹）：不要重复刚才失败的动作。"
+        in captured["payload"]["messages"][-1]["content"]
+    )
+
+
+def test_ollama_decision_uses_per_request_output_cap(monkeypatch) -> None:
+    captured: dict[str, Any] = {}
+
+    def fake_urlopen(request: Any, *, timeout: int) -> _FakeResponse:
+        captured["payload"] = json.loads(request.data.decode("utf-8"))
+        return _FakeResponse(
+            {
+                "message": {
+                    "content": json.dumps({"decision_reason": "查看。", "action": {"tool": "look"}})
+                },
+                "prompt_eval_count": 12,
+                "eval_count": 8,
+            }
+        )
+
+    monkeypatch.setattr("agent_arena.llm.ollama._opener_for_ollama", lambda _: fake_urlopen)
+    settings = RuntimeSettings.load(
+        {"provider": "ollama", "ollama_max_output_tokens": 512}, env_file=None
+    )
+    observation = Observation(
+        current_room="bridge",
+        description="控制台前方有一条通道。",
+        visible_objects=("console",),
+        available_exits=("corridor",),
+        inventory=(),
+        last_action_result=None,
+    )
+
+    OllamaDecisionProvider(settings).decide(
+        DecisionRequest(
+            observation=observation,
+            system_prompt="按格式返回动作。",
+            correction=False,
+            max_output_tokens=37,
+        )
+    )
+
+    assert captured["payload"]["options"]["num_predict"] == 37
