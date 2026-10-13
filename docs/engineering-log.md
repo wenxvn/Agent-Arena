@@ -1,5 +1,29 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 修复 Linux CI 的 mypy 平台类型误报
+
+事件：GitHub Actions run #65/#66 的 Ruff 通过，但 `mypy src` 失败并跳过 pytest。job annotations 未包含 stderr，日志下载需仓库高权限；本地 clean checkout 复现定位未依赖该日志。
+
+改动：`budget.py` 的 Windows-only `msvcrt` 分支与已存在的 Linux `fcntl` 分支一致，在动态平台 API 边界增加 `cast(Any, ...)`；运行实现不变。
+
+验证：锁定依赖的干净临时环境中，Windows 默认与 `--platform linux` 的 `mypy --no-incremental src` 均通过（各 49 个源文件）；Ruff 通过、全量 pytest 348 passed、`uv lock --check` 和 `git diff --check` 通过。修复 SHA 的 GitHub Actions 尚待验证，不提前报绿。
+
+下一步：提交并推送此跨平台类型修复，检查对应 quality run；保持 S2 的 API 停止状态。
+
+关联实现提交：待提交。
+
+## 2026-10-13 BUDGET-03 通用 provider error，停止在线尝试
+
+事件：最后一次登记的恢复运行 BUDGET-03 使用进程级 120 秒 request timeout；首个 v2 episode 的第 7 次请求以 `error_category=provider_error` fail closed。此前 6 次 usage 合计 10,043 tokens；失败请求按 25,156-token reservation 记账。账本为 7/488 requests、35,199 locally charged tokens，v2 汇总 0/2，v3 未启动。
+
+改动与边界：BUDGET-01/02/03 的账本和 partial JSON/CSV 都保留。三账本合计 19/500 requests、100,137/4,000,000 locally charged tokens；三次失败 reservation 都不是 provider 实际 usage 证明。无 HTTP status；`provider_error` 无法从保存的 allowlisted 元数据进一步还原根因。按预登记不创建 BUDGET-04，不再发起该矩阵的 provider API 调用；S2 Gate 未完成，不推进 S3。
+
+验证：读取 BUDGET-03 账本中的计数、状态、错误类别、预留额，以及 partial JSON 的零结果行；确认无 in-flight request、v3 目录不存在。没有追加 provider 请求。
+
+下一步：保持三次失败尝试与预算记账在 registry 中可追溯；继续离线审计 V2 提纲和可完成的非 S3 工作。S2 在线证据仍不充分。
+
+关联登记提交：`894f860`；BUDGET-03 执行使用推送 HEAD `d55ce2e`。
+
 ## 2026-10-13 BUDGET-02 timeout 与最后一次受限恢复登记
 
 事件：使用安全错误分类实施 SHA `e884688e48c357eafc27251b994e3f6c805acb64` 启动 BUDGET-02；第一个 v2 episode 第 10 次请求被分类为 timeout，预算门禁封账并以 exit 2 停止。前 9 次 usage 合计 15,374 tokens，第 10 次按 25,478-token reservation 记账；BUDGET-02 合计 10 次 / 40,852 本地记账 tokens，v2 0/2，v3 未启动。和 BUDGET-01 合并为 12/500 requests、64,938/4,000,000 本地记账 tokens。

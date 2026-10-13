@@ -750,14 +750,15 @@ def _process_file_lock(lock_path: Path, *, blocking: bool = True) -> Iterator[No
         if os.name == "nt":
             import msvcrt
 
+            msvcrt_any = cast(Any, msvcrt)
             handle.seek(0, os.SEEK_END)
             if handle.tell() == 0:
                 handle.write(b"\0")
                 handle.flush()
             handle.seek(0)
-            mode = msvcrt.LK_LOCK if blocking else msvcrt.LK_NBLCK
+            mode = msvcrt_any.LK_LOCK if blocking else msvcrt_any.LK_NBLCK
             try:
-                msvcrt.locking(handle.fileno(), mode, 1)
+                msvcrt_any.locking(handle.fileno(), mode, 1)
             except OSError as exc:
                 if not blocking:
                     raise _FileLockUnavailable from exc
@@ -766,7 +767,7 @@ def _process_file_lock(lock_path: Path, *, blocking: bool = True) -> Iterator[No
                 yield
             finally:
                 handle.seek(0)
-                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+                msvcrt_any.locking(handle.fileno(), msvcrt_any.LK_UNLCK, 1)
         else:
             import fcntl
 

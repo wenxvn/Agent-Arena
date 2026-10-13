@@ -2,6 +2,8 @@
 
 ## 2026-10-13 CI 状态
 
+- 最新重验：恢复登记提交 `1499888952ca79cd42dbd1c545d4e261b21cf558` 的 [run #65](https://github.com/wenxvn/Agent-Arena/actions/runs/38375201784) 与日志登记提交 `d55ce2e5da3cbd3f32c3fbc622191ef1f0c22a38` 的 [run #66](https://github.com/wenxvn/Agent-Arena/actions/runs/38375824041) 均在 `mypy src` 失败；Ruff 通过，pytest 被跳过。公开 annotations 仅报告步骤 exit 1，job log 当前要求登录/更高权限，无法读取 mypy 原始 stderr。
+- 以锁定依赖创建干净临时环境后，默认 Windows 平台 `mypy --no-incremental src` 通过；`mypy --no-incremental --platform linux src` 复现 5 个错误，均为 `budget.py` 的 Linux 类型检查器无法识别 Windows-only `msvcrt` 属性。已在 Windows API 边界增加 `cast(Any, msvcrt)`，不改变运行行为；修复后 Windows 与 Linux-targeted mypy 均通过，Ruff、pytest（348 passed）、`uv lock --check` 和 `git diff --check` 均通过。新修复提交的 GitHub Actions 尚未出结果前，不把远端 Gate 记为通过。
 - 维护前 HEAD 为 587dccd43e1a3c39bb78c75e199bfc66ab1331e2；Actions run #54（38353317972）在 Ruff 阶段失败，共报告 25 项，mypy 与 pytest 被跳过。
 - 修复提交 d9d13e4 更新 Ruff 与 mypy 暴露的问题。对应 run #55（38358108378）通过 Ruff、mypy；pytest 在 GitHub clean checkout 中有 9 项失败，根因是测试依赖本机忽略的 runs/ 与 results/ 数据。
 - 补齐独立合成 fixture 后，提交 d40f3e6 对应 run #56（[GitHub Actions](https://github.com/wenxvn/Agent-Arena/actions/runs/38358490666)）的 quality job 全部通过。S0 远端 Gate 完成。
@@ -22,7 +24,7 @@ S0 修复在隔离的 Python 3.13.16 / uv 0.13.0 临时环境验证，未重建�
 
 S1 审计脚本增加两项离线单元测试后，当前本地质量检查复跑为 Ruff 通过、mypy 48 个源文件通过、pytest 305 passed；GitHub Actions #57 全绿。依赖未变化，uv.lock 无需更新。
 
-2026-10-13 S2 Memory v3 离线实现增加后，Ruff 与 mypy 仍通过，pytest 为 316 passed。审计产物已重生成，仍为 518 个文件、474 个唯一 episode；没有真实模型调用。S2 的 pilot 因全局 API/token 硬预算未实现而 blocked，详情见 [V2-03](03-memory-v3.md) 与 [在线运行登记表](00-run-registry.md)。
+2026-10-13 S2 Memory v3 离线实现增加后，Ruff 与 mypy 仍通过，pytest 为 316 passed。审计产物已重生成，仍为 518 个文件、474 个唯一 episode；当时没有真实模型调用。
 
 2026-10-13 首次加入 S2 provider budget guard 后为 329 passed；复审修复 expected provider、活跃请求 lease、超时后记账、账本状态一致性、invocation 串行化、benchmark 非零退出及后续 cell 身份不匹配时保留已完成汇总后，Python 3.13 临时隔离环境最终验证为 Ruff 通过、mypy 49 个源文件通过、pytest 338 passed、`uv lock --check` 与 `git diff --check` 通过。实现提交 SHA `0a09a4f479cd8b6ba49dd0eeefed80a47d623c06` 已冻结登记；真实 provider 调用尚未开始。
 
@@ -46,4 +48,4 @@ S1 审计脚本增加两项离线单元测试后，当前本地质量检查复�
 
 ## 当前状态
 
-S0 本地与远端门禁已完成；S1 离线 Trace 审计和 Top 5 假设已写入 V2-02 报告及 CSV/JSON 产物。S2 Memory v3 与 fail-closed provider budget guard 已完成离线实现和验证；pilot 尚未启动，代码 SHA 尚未冻结，新增 API 调用仍为 0。细节见 [V2-03](03-memory-v3.md) 与 [在线运行登记表](00-run-registry.md)。
+S0 本地验证已通过，包含 348 项全量 pytest 与 Windows/Linux-targeted mypy；最新已推送 SHA 的远端 Actions 仍在 mypy 失败，跨平台类型修复已提交但待新 run 证实。S1 离线 Trace 审计和 Top 5 假设已写入 V2-02 报告及 CSV/JSON 产物。S2 Memory v3 与 fail-closed provider budget guard 的离线实现已完成；三次隔离在线尝试均在首个 v2 episode 失败，合计 19/500 requests、100,137/4,000,000 locally charged tokens，没有完整 episode，v2 0/2、v3 未启动。当前登记矩阵停止 API 尝试，S2 Gate 未满足。细节见 [V2-03](03-memory-v3.md) 与 [在线运行登记表](00-run-registry.md)。

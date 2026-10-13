@@ -131,6 +131,10 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 ```
 
+BUDGET-03 执行结果（2026-10-13 17:23:29 +08:00）：第一个 v2 episode 的第 7 次 provider request 以 `error_category=provider_error` fail closed；没有 HTTP status，不能从 allowlisted 元数据确定根因。前 6 次均有 usage，合计 10,043 tokens；失败请求按 reservation 25,156 tokens 记账。账本为 7/488 requests、35,199/3,935,062 locally charged tokens，closed reason 为 `provider_error_unknown_spend`，无 in-flight request。v2 汇总 0/2，v3 未启动，partial JSON/CSV 保留。
+
+BUDGET-01/02/03 合计 19/500 requests、100,137/4,000,000 locally charged tokens；三笔失败 reservation 都不代表 provider 确认 usage。按 BUDGET-03 最终停止规则，不创建 BUDGET-04，不再从此登记发起 provider API 调用。S2 经验 Gate 保持未完成；没有完整 episode 时不报告模型收益，也不推进 S3。
+
 ## 执行命令
 
 两次 benchmark 顺序执行并共享账本。预算或 provider 门禁失败后脚本停止；不得手动重置账本继续同一 experiment ID。

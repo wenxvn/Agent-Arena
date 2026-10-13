@@ -2,7 +2,7 @@
 
 ## 状态
 
-Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实现和验证；seeded world identity 的跨进程不稳定问题已修复。两次 v2 recovery 均在首个 episode 中因 provider error fail closed：BUDGET-01 2 次请求后 unknown spend，BUDGET-02 10 次请求后分类为 timeout；没有完整 episode，v3 未启动，S2 Gate 尚未完成。所有账本和部分输出均保留。本次没有 GPU 运行。预算门禁、hash 差异和执行记录见 [V2 在线运行登记表](00-run-registry.md)。
+Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实现和验证；seeded world identity 的跨进程不稳定问题已修复。三份隔离 ledger 的 v2 recovery 均在首个 episode 中因 provider error fail closed：BUDGET-01 2 次请求后 unknown spend，BUDGET-02 10 次后分类为 timeout，BUDGET-03 7 次后为通用 provider_error。没有完整 episode，v3 未启动，S2 Gate 尚未完成；三份 ledger 和部分输出均保留。当前登记矩阵已停止在线尝试。本次没有 GPU 运行。预算门禁、hash 差异和执行记录见 [V2 在线运行登记表](00-run-registry.md)。
 
 针对这次无法从旧 ledger 追溯 provider error 原因的问题，已增加仅记录固定错误类别和可选 4xx/5xx 状态码的安全诊断字段；类别是基于异常链的 best-effort 分类，schema-1 ledger 可迁移至 schema 2，不记录 exception message 或 response。最新离线验证为 348 passed、Ruff/mypy/`uv lock --check` 通过。旧 pilot 的实际根因仍未知，不能把新诊断字段倒推为旧请求原因。
 
@@ -31,10 +31,12 @@ Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实�
 
 2026-10-13 BUDGET-02 recovery 在 v2 seed 1 的第 10 次请求遇到 `timeout`，安全 ledger 记账 10 次 / 40,852 tokens（9 次成功 usage 合计 15,374；失败请求 reservation 25,478），v2 汇总 0/2，v3 未启动。与 BUDGET-01 合计 12 次 / 64,938 本地记账 tokens；不确定的 provider spend 不等同于实际 usage。只读配置检查得到 per-request timeout 30 秒；因此独立预登记 BUDGET-03，将此 operational timeout 调至 120 秒，其余研究条件一致，使用剩余总 cap 和原 deadline。超时发生后 S2 仍未完成，禁止推进 S3。
 
+2026-10-13 BUDGET-03 将 per-request timeout 提至 120 秒后，第 7 次请求仍以通用 `provider_error` fail closed；前 6 次 usage 合计 10,043 tokens、失败 reservation 25,156 tokens，账本累计 7 次 / 35,199 tokens，v2 0/2、v3 未启动。三账本累计 19 次 / 100,137 本地记账 tokens，三次失败 reservation 的 provider 实际 usage 均未知。通用类别无 HTTP status，无法确定 provider 端根因。按最终预登记停止后续 provider 调用；S2 未过 Gate，不推进 S3。
+
 定向 fixture 覆盖公开 frontier 与成功边、v3 访问集合在 v2 12 项短列表达到容量后的正确性、必需房间/出口/边/事件容量边界、事件顺序不预设、episode reset、公开前置条件修复、超限压缩与显式失败、v3 provenance/step statistics、config 兼容及旧 trace 审计读取。测试和静态检查不证明模型收益。
 
 ## Pilot 决策
 
-候选比较为 `lunar_escape_v2_seeded` 的 seed 1、2，Memory v2 与 v3 配对，每局 100 decisions，E1 ON / H5 / R1 / P2(world-declared) 条件固定，串行运行。共享预算、输出 cap、deadline、ledger 和执行命令见 registry；每次请求发出前均预留，本地预算超限或 provider error 时 fail closed。计划指标为 first-recorded attempt、Success@60/100、动作数、重复边/动作、输入/输出 Token、token/success、provider_error 和延迟。world identity hash 为 `bd1f77eabdcd032e80dbbaaad29163e85cbea34caf7486c22babcb3b85cb8373`；原 pilot 源代码 SHA 为 `0d3bb0ba0b81ca682ea714941de7b5bd17fd03f9`。BUDGET-01 在第 2 次请求后 unknown spend（2/500、24,086 tokens），BUDGET-02 在第 10 次请求 timeout（10/498、40,852 tokens）；两次都没有完整 episode，seed 2 和 v3 未启动。失败账本和 partial 输出不得重置、复用或覆盖。BUDGET-03 是仍在原共享 cap/deadline 内的最后一份恢复预算，使用独立 ledger/输出目录，单请求 timeout 120 秒，其余研究条件保持一致；其失败将停止所有后续 provider 尝试。S2 仍未完成。
+候选比较为 `lunar_escape_v2_seeded` 的 seed 1、2，Memory v2 与 v3 配对，每局 100 decisions，E1 ON / H5 / R1 / P2(world-declared) 条件固定，串行运行。共享预算、输出 cap、deadline、ledger 和执行命令见 registry；每次请求发出前均预留，本地预算超限或 provider error 时 fail closed。计划指标为 first-recorded attempt、Success@60/100、动作数、重复边/动作、输入/输出 Token、token/success、provider_error 和延迟。world identity hash 为 `bd1f77eabdcd032e80dbbaaad29163e85cbea34caf7486c22babcb3b85cb8373`；原 pilot 源代码 SHA 为 `0d3bb0ba0b81ca682ea714941de7b5bd17fd03f9`。BUDGET-01 在第 2 次请求后 unknown spend（2/500、24,086 tokens），BUDGET-02 在第 10 次请求 timeout（10/498、40,852 tokens），BUDGET-03 在第 7 次请求通用 provider_error（7/488、35,199 tokens）；三次都没有完整 episode，seed 2 和 v3 未启动。失败账本和 partial 输出不得重置、复用或覆盖。当前登记矩阵在线尝试停止，S2 仍未完成。
 
-离线指标、源 Trace 与既有 232-action 月球长尾事实仍只支持“值得检验”的 M1 假设；没有同条件 v2/v3 完整结果，不能声称成功率、步数、重复边或 token-efficiency 改善。当前稳定 world definition hash 与旧长尾 trace 记录不同，原因仍未确认；因此旧 trace 只作假设来源，不作本轮 hash-matched 对照。BUDGET-01 根因仍未知；BUDGET-02 被安全分类为 timeout，但 provider 端实际处理/计费未知。BUDGET-03 使用剩余总 cap 与原 deadline，是最后一次已登记恢复；完成前不推进 S3。
+离线指标、源 Trace 与既有 232-action 月球长尾事实仍只支持“值得检验”的 M1 假设；没有同条件 v2/v3 完整结果，不能声称成功率、步数、重复边或 token-efficiency 改善。当前稳定 world definition hash 与旧长尾 trace 记录不同，原因仍未确认；因此旧 trace 只作假设来源，不作本轮 hash-matched 对照。BUDGET-01 根因未知；BUDGET-02 虽分类为 timeout、BUDGET-03 分类为 provider_error，provider 端实际处理/计费均未知。当前研究矩阵不再发送 provider 请求；完成 S2 Gate 前不推进 S3。
