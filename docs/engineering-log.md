@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V3 seeded holdout 冻结顺序审计
+
+事件：核对 S5.4 要求的实例全集与 dev/test split 是否先于新运行时实现冻结。
+
+原因：Scope 将 S5.2 标为已冻结；需要用 Git 对象和提交顺序支持“先冻结、后开发”的 provenance 结论，并明确 test 暴露限制仍在。
+
+改动：V2-02 记录冻结提交 `f01b38d35029ea16a90c338fcd6911b753bd5b39`（20:28 +08:00）已含 spec、清单和生成脚本但不含 V3 seeded JSON；实现提交 `fac58fe0df226d14903573c6d778e91e67553949`（20:37 +08:00）随后加入两个 JSON。报告同时保留“test placements 仓库可见、仅属程序性 holdout”的限制。
+
+验证：`git log` 核对提交顺序，`git ls-tree` 核对两个提交的文件清单；`git diff --check` 通过。仅审阅 Git 元数据和 tracked 文档，无代码、provider 请求或 GPU 变更。
+
+下一步：遵守冻结 split；S5.2 行为评估继续等待 S2 Gate，不用 test 调 prompt、机制、阈值或生成器。
+
+关联提交：冻结 `f01b38d35029ea16a90c338fcd6911b753bd5b39`；运行时 `fac58fe0df226d14903573c6d778e91e67553949`。
+
 ## 2026-10-13 V3 seeded 回归覆盖与本地质量门禁
 
 事件：为冻结的 120 个 V3 seeded 布局补充自动回归覆盖，并完成全仓本地门禁。

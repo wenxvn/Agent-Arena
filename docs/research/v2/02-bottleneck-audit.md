@@ -210,7 +210,7 @@ V3 JSON、两个运行时 selector 与 affine seed builder 随后实现。`--ver
 
 回归覆盖位于 `tests/test_flex_v3_seeded.py` 与 `tests/test_flex_world_identity.py`：断言 120 个冻结 hash/placement/difficulty/split、非激活容器不进入公开房间对象、seed 周期、负 seed 拒绝及跨进程 identity 稳定。全量 pytest 361 passed，Ruff 全仓与 mypy 49 个源文件通过。这些检查验证实现和预注册契约，不构成 v3 模型泛化证据。
 
-该清单在新版本运行时实现前冻结，test 布局与 placement 也可从仓库文件读取，因此这是需遵守的程序性 holdout，不是隐藏或盲测集。不得用 test 结果调 prompt、机制、阈值或生成器。S5.2 仍为 partial，待 S2 Gate 允许后按预登记方案进行行为评估；没有 provider 请求或 GPU 运行。
+Git 历史核对确认冻结早于运行时实现：提交 `f01b38d35029ea16a90c338fcd6911b753bd5b39`（2026-10-13 20:28 +08:00）已包含 spec、冻结清单和生成脚本，但不含 V3 seeded JSON；提交 `fac58fe0df226d14903573c6d778e91e67553949`（20:37 +08:00）随后加入两个 V3 JSON。该顺序证明实例全集及 split 在对应运行时实现前冻结。test 布局与 placement 仍可从仓库文件读取，因此这是需遵守的程序性 holdout，不是隐藏或盲测集。不得用 test 结果调 prompt、机制、阈值或生成器。S5.2 仍为 partial，待 S2 Gate 允许后按预登记方案进行行为评估；没有 provider 请求或 GPU 运行。
 
 ## 后续阶段建议与结论
 
