@@ -81,12 +81,17 @@ def test_memory_v3_frontier_uses_visited_rooms_beyond_the_v2_location_limit() ->
     state = reducer.initialize(make_observation(route[0], exits=(route[1],)))
 
     for _source, destination in zip(route, route[1:], strict=False):
+        prior_room_count = len(state.visited_rooms)
+        prior_insertions = state.statistics.insertions
         state = reducer.apply(
             state,
             MoveAction(tool="move", destination=destination),
             ToolResult(status=ToolStatus.SUCCESS, reason=ToolReason.MOVED, summary="已移动。"),
             make_observation(destination),
         )
+        if prior_room_count == 12:
+            assert len(state.visited_locations) == 12
+            assert state.statistics.insertions - prior_insertions == 4
 
     state = reducer.apply(
         state,

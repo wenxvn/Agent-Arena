@@ -1,5 +1,17 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 修正 Memory v3 容量边界的 insertion 统计
+
+事件：离线复核发现 v2 的 12 项访问地点列表填满后，v3 仍能新增 `visited_rooms`，但累计 `insertions` 少记新房间。
+
+改动：v3 insertion 统计改为比较独立的 episode 房间集合；容量边界 fixture 在 12 项列表已满时再进入一个房间，断言这一步准确记录房间、事实、出口和成功边共 4 项新增。
+
+验证：回归测试先在旧逻辑下失败（实际记 3，预期 4），修复后全量 pytest 349 passed、`ruff check .` 和 `mypy src`（49 个源文件）通过，`git diff --check` 通过。`uv` 命令不可用，未运行 `uv lock --check`，依赖文件未改动；本次远端 Actions 尚待触发后的结果。没有 provider 请求。
+
+下一步：核验本次提交的远端 Actions；继续 S2 离线审计，保持模型收益结论与 S3 推进关闭。
+
+关联提交：本记录所在提交。
+
 ## 2026-10-13 V2 S2 完整 Trace 的确定性记忆摘要
 
 事件：离线审计发现 spec 0014 要求完整公开 Trace 重放应得到稳定 memory digest，但实现仅有手工状态渲染对照，没有 digest 接口或落盘 Trace 回放验收。

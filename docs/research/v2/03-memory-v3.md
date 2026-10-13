@@ -37,6 +37,8 @@ Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实�
 
 2026-10-13 离线验收补充：发现并补齐“完整公开 Trace 重放得到稳定 v3 memory digest”的实现缺口。`MemoryV3State.memory_digest` 对逻辑状态做排序键、紧凑 JSON 的 SHA-256，不含派生运行计数器；新增测试将 10 步公开 Trace 写入并重新读取，再独立重放两次，断言 digest、frontier、事件顺序一致。全量本地检查为 pytest 349 passed、Ruff 全仓通过、mypy 49 个源文件通过；提交 `e907237ca4c1dd4f06a48690a44a59c8568865c2` 的 [GitHub Actions run #70](https://github.com/wenxvn/Agent-Arena/actions/runs/38378309801) 通过。当前 shell 没有 `uv` 命令，未执行 `uv lock --check`；依赖文件未改动。此项只补齐离线确定性验收，不改变模型结果：三份 pilot ledger 无完整 episode，S2 Gate 仍未通过，不推进 S3。
 
+2026-10-13 随后对 trace statistics 做容量边界复核，发现 v2 访问短列表达到 12 项后，新增的 v3 `visited_rooms` 没有计入 `insertions`。统计改为按 v3 episode 房间集合的新增项计数，并在原 frontier 容量 fixture 增加第 13 个房间的 insertion 精确断言。本地全量 pytest 349 passed、Ruff 和 mypy 49 个源文件通过；本次修正仍待对应的远端 Actions 验证。未发起 provider 请求，S2 在线 Gate 仍未通过。
+
 ## Pilot 决策
 
 候选比较为 `lunar_escape_v2_seeded` 的 seed 1、2，Memory v2 与 v3 配对，每局 100 decisions，E1 ON / H5 / R1 / P2(world-declared) 条件固定，串行运行。共享预算、输出 cap、deadline、ledger 和执行命令见 registry；每次请求发出前均预留，本地预算超限或 provider error 时 fail closed。计划指标为 first-recorded attempt、Success@60/100、动作数、重复边/动作、输入/输出 Token、token/success、provider_error 和延迟。world identity hash 为 `bd1f77eabdcd032e80dbbaaad29163e85cbea34caf7486c22babcb3b85cb8373`；原 pilot 源代码 SHA 为 `0d3bb0ba0b81ca682ea714941de7b5bd17fd03f9`。BUDGET-01 在第 2 次请求后 unknown spend（2/500、24,086 tokens），BUDGET-02 在第 10 次请求 timeout（10/498、40,852 tokens），BUDGET-03 在第 7 次请求通用 provider_error（7/488、35,199 tokens）；三次都没有完整 episode，seed 2 和 v3 未启动。失败账本和 partial 输出不得重置、复用或覆盖。当前登记矩阵在线尝试停止，S2 仍未完成。

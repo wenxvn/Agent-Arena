@@ -214,7 +214,7 @@ class MemoryV3Reducer:
         public_events, event_inserted, event_updated = self._record_event(
             state.public_events, result, step_index
         )
-        added_rooms = set(base.visited_locations) - set(state.visited_locations)
+        added_visited_rooms = int(observation.current_room not in state.visited_rooms)
         added_facts = set(base.facts) - set(state.facts)
         added_failures = max(0, len(base.failed_actions) - len(state.failed_actions))
         added_exits = len(known_exits) - len(state.known_exits)
@@ -224,7 +224,7 @@ class MemoryV3Reducer:
             update={
                 "insertions": (
                     state.statistics.insertions
-                    + len(added_rooms)
+                    + added_visited_rooms
                     + len(added_facts)
                     + added_failures
                     + max(0, added_exits)
