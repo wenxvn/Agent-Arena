@@ -4,6 +4,7 @@
 
 - 审计日期：2026-10-13（Asia/Shanghai）；审计代码提交：a372dce9f9e904db31907dc283629bd0b37e6d03。
 - 离线命令：python scripts/audit_v2_traces.py --runs-dir runs --results-dir results。脚本仅使用 Python 标准库。
+- 可复现性复核：2026-10-13 在独立临时目录重跑同一审计；518 个文件、474 个唯一 episode、44 个副本、0 个冲突/不可读/非法 Trace，outcome 计数不变；生成的 CSV 与 JSON 均与下方已提交产物字节级一致。
 - 输入仅为本机 runs/ 与 results/ 下的 episode JSON。审计未调用模型、未启动 GPU；分析代码没有检查或输出完整 decision_reason。
 - 产物：[逐 episode 审计 CSV](assets/trace-audit.csv) 与[条件汇总 JSON](assets/trace-audit.json)。CSV 使用字段 allowlist；不含 decision_reason、模型思维链、密钥或完整 provider 响应。原始 trace 继续留在本地生成目录。
 

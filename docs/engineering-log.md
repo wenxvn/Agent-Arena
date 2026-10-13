@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 S1 Trace 审计可复现性复核
+
+事件：重新运行 V2 S1 离线 Trace 审计，并将输出写入独立临时目录，与版本库中的 CSV/JSON 逐字节比较。
+
+原因：在 S2 matched-pilot Gate 未通过期间，确认既有离线瓶颈分析仍对应当前本地 runs/ 与 results/ 输入，避免将过期审计产物作为阶段依据。
+
+改动：V2-02 记录本次复核方法与结果；未覆盖已提交审计产物，也未触碰用户未跟踪目录。
+
+验证：审计得到 518 个文件、474 个唯一 episode、44 个副本、0 个 ID 冲突、0 个不可读或非法 Trace；outcome 为 success 262、step_limit 76、provider_error 135、invalid_action_limit 1。生成的 CSV 和 JSON 均与已提交产物字节级一致。未调用 provider API、未运行 GPU。
+
+下一步：S1 结论保持有效；S2 在线 Gate 仍未通过，依照关闭的 BUDGET-01/02/03 停止规则，不发送新请求、不推进 S3。
+
+关联复核基线：`5ff001e396a3e0fb7899dd8d218cf0a5a9e49ff3`。
+
 ## 2026-10-13 S2.4 公开事实更正与负例补充
 
 事件：离线审计 S2.4 fixture 时发现 v3 同一房间的不同 Observation 描述会累积为普通事实，重复里程碑事件摘要也可能在事件记录之外残留。
