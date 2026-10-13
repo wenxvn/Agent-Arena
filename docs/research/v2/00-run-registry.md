@@ -83,6 +83,54 @@ uv run agent-arena benchmark --episodes 2 --agent memory --memory-version v3_spa
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 ```
 
+## BUDGET-02 执行结果与 BUDGET-03 最终恢复预登记
+
+BUDGET-02 使用实现 SHA `e884688e48c357eafc27251b994e3f6c805acb64`，于 2026-10-13 17:18:56 +08:00 启动。第一个 v2 episode 的第 10 次 provider request 出现 `error_category=timeout` 并 fail closed：前 9 次均有 usage，合计 15,374 tokens；第 10 次按完整 reservation 25,478 tokens 本地记账，provider 实际是否处理该请求未知。账本为 10/498 requests、40,852/3,975,914 locally charged tokens，`provider_error_unknown_spend`，无 in-flight request；v2 汇总 0/2，v3 未启动。partial JSON/CSV 与 ledger 均保留在本地 `results/`。BUDGET-01 与 BUDGET-02 合计 12/500 requests、64,938/4,000,000 locally charged tokens。
+
+只读配置检查确认 OpenAI SDK per-request timeout 为 30 秒；budgeted CLI 将 provider retries 固定为 0，确保每次尝试单独记账。BUDGET-02 的 timeout 类别来自异常链，是当前可得的安全诊断；底层 provider 是否接受了该请求仍未知。为完成原始配对矩阵，在仍满足原共享 cap 和截止时间的前提下，只再允许一份独立 BUDGET-03。它保持 provider、model、world、prompt、seed、agent 条件、output cap 和串行设置不变，仅把进程级 `AGENT_ARENA_REQUEST_TIMEOUT_SECONDS` 设为 120 秒；这是 timeout/reliability 设置，不改实验处理条件。BUDGET-03 若出现任一 provider error，立即停止且不创建 BUDGET-04。
+
+| 字段 | BUDGET-03 预登记值 |
+|---|---|
+| Budget experiment ID | `EXP-V2-S2-M1-BUDGET-03` |
+| 实现 SHA | `e884688e48c357eafc27251b994e3f6c805acb64` |
+| Provider/model、world/prompt hash | 完全复用上方冻结值 |
+| Recovery request cap | 488（BUDGET-01/02 已记账 12；三账本合计不超过 500） |
+| Recovery token cap | 3,935,062（BUDGET-01/02 已本地记账 64,938；合计不超过 4,000,000） |
+| 每请求输出 cap / 并发 | 1,024 tokens / 1 |
+| 单请求 timeout | 120 秒，仅在启动进程中设置；不改 `.env` 文件 |
+| 全局截止 | 不晚于 BUDGET-01 原始绝对截止 `2026-10-13 20:55:33 +08:00`；启动前重算 `floor(deadline_epoch - current_epoch - 60)` 秒，低于 1 秒时不启动 |
+| Episode 条件 | 原四 cell、每 cell 100 decisions、seed 1/2、E1 ON / H5 / R1 / P2(world-declared)，串行；v2 完成且 exit 0 后才运行 v3 |
+| Ledger | `results/v2-s2-m1-budget-03.json` |
+| 输出目录 | `results/v2-s2-m1-recovery03-v2`、`results/v2-s2-m1-recovery03-v3` |
+
+执行前确认 BUDGET-02 最终状态与上表一致、三个 BUDGET-03 路径不存在、实现 SHA 与 provider/model gate 一致。命令仅在本登记提交推送后执行：
+
+```powershell
+$uvExe = 'C:\Users\10556\AppData\Local\Temp\agent-arena-v2-verify-d22936b417ec4047a6fc519f6bd2ec55\Scripts\uv.exe'
+$original = Get-Content results/v2-s2-m1-budget-01.json -Raw | ConvertFrom-Json
+$recoveryTimeout = [Math]::Floor($original.deadline_epoch - [DateTimeOffset]::UtcNow.ToUnixTimeSeconds() - 60)
+if ($recoveryTimeout -lt 1) { throw 'Original global deadline expired; do not launch recovery.' }
+if ((Test-Path -LiteralPath 'results/v2-s2-m1-budget-03.json') -or (Test-Path -LiteralPath 'results/v2-s2-m1-recovery03-v2') -or (Test-Path -LiteralPath 'results/v2-s2-m1-recovery03-v3')) { throw 'BUDGET-03 path already exists.' }
+$budget02 = Get-Content results/v2-s2-m1-budget-02.json -Raw | ConvertFrom-Json
+if ($budget02.requests_used -ne 10 -or $budget02.tokens_used -ne 40852 -or $budget02.closed_reason -ne 'provider_error_unknown_spend' -or $budget02.in_flight_request_id) { throw 'BUDGET-02 differs from its frozen final state.' }
+$env:AGENT_ARENA_REQUEST_TIMEOUT_SECONDS = '120'
+$recoveryBudgetArgs = @(
+  '--provider','openai','--world','lunar-escape','--world-version','lunar-escape-v2-seeded-zh',
+  '--step-limit','100','--provider-request-budget','488','--provider-token-budget','3935062',
+  '--provider-output-token-cap','1024','--provider-budget-timeout-seconds',"$recoveryTimeout",
+  '--provider-budget-experiment-id','EXP-V2-S2-M1-BUDGET-03',
+  '--provider-budget-expected-provider','openai','--provider-budget-expected-model','muse-spark-1.3-contributor',
+  '--provider-budget-expected-world-hash','bd1f77eabdcd032e80dbbaaad29163e85cbea34caf7486c22babcb3b85cb8373',
+  '--provider-budget-expected-prompt-hash','44229085979f4a1bfcf7a4266985e8860e2ff0b7ea6a01cb4ca152ff5c8a869c',
+  '--provider-budget-ledger','results/v2-s2-m1-budget-03.json',
+  '--autonomous','--stuck-recovery','--recent-history','5','--phase-context'
+)
+& $uvExe run agent-arena benchmark --episodes 2 --agent memory --memory-version v2 --seed 1 @recoveryBudgetArgs --output-dir results/v2-s2-m1-recovery03-v2
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& $uvExe run agent-arena benchmark --episodes 2 --agent memory --memory-version v3_spatial_event --seed 1 @recoveryBudgetArgs --output-dir results/v2-s2-m1-recovery03-v3
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+```
+
 ## 执行命令
 
 两次 benchmark 顺序执行并共享账本。预算或 provider 门禁失败后脚本停止；不得手动重置账本继续同一 experiment ID。

@@ -1,5 +1,17 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 BUDGET-02 timeout 与最后一次受限恢复登记
+
+事件：使用安全错误分类实施 SHA `e884688e48c357eafc27251b994e3f6c805acb64` 启动 BUDGET-02；第一个 v2 episode 第 10 次请求被分类为 timeout，预算门禁封账并以 exit 2 停止。前 9 次 usage 合计 15,374 tokens，第 10 次按 25,478-token reservation 记账；BUDGET-02 合计 10 次 / 40,852 本地记账 tokens，v2 0/2，v3 未启动。和 BUDGET-01 合并为 12/500 requests、64,938/4,000,000 本地记账 tokens。
+
+诊断：当前 OpenAI SDK request timeout 配置为 30 秒；budgeted CLI 强制 retries=0。timeout 类别来自保存的异常链分类，实际 provider usage 对第 10 次请求未知。原 BUDGET-02 登记规定错误后不再创建账本；基于本次已知 timeout 证据、仍未超出原总 cap/截止时间及用户要求继续维护，明确将该总体停止点修订为只再允许一个隔离的 BUDGET-03，不允许 BUDGET-04。
+
+改动：BUDGET-02 ledger 和部分 JSON/CSV 原样保留；新预登记 BUDGET-03 使用剩余 488 requests / 3,935,062 tokens，唯一运行参数调整为进程级单请求 timeout 120 秒，其余条件和截止时间不变。新账本、输出目录、实现 SHA 与串行命令已写入 run registry。S2 Gate 仍未完成。
+
+验证：仅读取 ledger 安全计数/状态、partial JSON 顶层摘要和 timeout 配置；未启动 v3 或其他 API 调用。待对 BUDGET-03 登记 commit/push 后，执行最后一次受限恢复；如果发生 provider error 则停止所有后续 API 尝试。
+
+关联登记提交：待提交。
+
 ## 2026-10-13 provider error 安全分类与预算内恢复登记
 
 事件：原 S2 M1 pilot 的第二次 provider 请求 unknown spend 封账；现有记录不足以区分 HTTP、连接或超时故障。
