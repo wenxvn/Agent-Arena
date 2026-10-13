@@ -36,7 +36,7 @@ Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实�
 
 定向 fixture 覆盖公开 frontier 与成功边、v3 访问集合在 v2 12 项短列表达到容量后的正确性、必需房间/出口/边/事件容量边界、事件顺序不预设、episode reset、公开前置条件修复、超限压缩与显式失败、v3 provenance/step statistics、config 兼容及旧 trace 审计读取。测试和静态检查不证明模型收益。
 
-后续 S2.4 离线复核补充覆盖非法 provider 候选与 correction request 不生成执行记忆、已读码后继续移动并回程、单向出口不推断反边、同一公开事件修正摘要，以及同一房间 Observation 更正后只保留最新 room fact。该工作不发起 provider 请求，不改变三份 pilot ledger，也不构成模型效果证据。
+后续 S2.4 离线复核补充覆盖非法 provider 候选与 correction request 不生成执行记忆、已读码后继续移动并回程、单向出口不推断反边、同一公开事件修正摘要，以及同一房间 Observation 更正后只保留最新 room fact。全量 pytest 355 passed、Ruff 和 mypy（49 个源文件）通过；提交 `b29fe93f92761808cccff918071b742f908cde45` 的 [GitHub Actions run #76](https://github.com/wenxvn/Agent-Arena/actions/runs/38381561646) 通过。该工作未发起 provider 请求，不改变三份 pilot ledger，也不构成模型效果证据。
 
 2026-10-13 离线验收补充：发现并补齐“完整公开 Trace 重放得到稳定 v3 memory digest”的实现缺口。`MemoryV3State.memory_digest` 对逻辑状态做排序键、紧凑 JSON 的 SHA-256，不含派生运行计数器；新增测试将 10 步公开 Trace 写入并重新读取，再独立重放两次，断言 digest、frontier、事件顺序一致。全量本地检查为 pytest 349 passed、Ruff 全仓通过、mypy 49 个源文件通过；提交 `e907237ca4c1dd4f06a48690a44a59c8568865c2` 的 [GitHub Actions run #70](https://github.com/wenxvn/Agent-Arena/actions/runs/38378309801) 通过。当前 shell 没有 `uv` 命令，未执行 `uv lock --check`；依赖文件未改动。此项只补齐离线确定性验收，不改变模型结果：三份 pilot ledger 无完整 episode，S2 Gate 仍未通过，不推进 S3。
 
