@@ -24,7 +24,7 @@ S1 审计脚本增加两项离线单元测试后，当前本地质量检查复�
 
 2026-10-13 S2 Memory v3 离线实现增加后，Ruff 与 mypy 仍通过，pytest 为 316 passed。审计产物已重生成，仍为 518 个文件、474 个唯一 episode；没有真实模型调用。S2 的 pilot 因全局 API/token 硬预算未实现而 blocked，详情见 [V2-03](03-memory-v3.md) 与 [在线运行登记表](00-run-registry.md)。
 
-2026-10-13 首次加入 S2 provider budget guard 后为 329 passed；复审修复 expected provider、活跃请求 lease、超时后记账、账本状态一致性、invocation 串行化、benchmark 非零退出及后续 cell 身份不匹配时保留已完成汇总后，Python 3.13 临时隔离环境最终验证为 Ruff 通过、mypy 49 个源文件通过、pytest 338 passed、`uv lock --check` 与 `git diff --check` 通过。依赖和 lockfile 未变化，没有真实 provider 调用；pilot 仍等代码 SHA 冻结。
+2026-10-13 首次加入 S2 provider budget guard 后为 329 passed；复审修复 expected provider、活跃请求 lease、超时后记账、账本状态一致性、invocation 串行化、benchmark 非零退出及后续 cell 身份不匹配时保留已完成汇总后，Python 3.13 临时隔离环境最终验证为 Ruff 通过、mypy 49 个源文件通过、pytest 338 passed、`uv lock --check` 与 `git diff --check` 通过。实现提交 SHA `0a09a4f479cd8b6ba49dd0eeefed80a47d623c06` 已冻结登记；真实 provider 调用尚未开始。
 
 ## S0 修复范围
 

@@ -23,7 +23,7 @@ Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实�
 | `pytest -q` | 316 passed |
 | Trace audit | 518 个文件，474 个唯一 episode，44 个重复副本；派生 CSV/JSON 已加入内存统计列，历史 trace 中携带该字段的 episode 为 0 |
 
-2026-10-13 随后加入跨 invocation 的 fail-closed provider budget guard，首次检查为 329 passed。独立复审后增加 expected provider、OS request/invocation leases、跨进程锁测试、截止时间后记账、terminal ledger status 一致性、CLI 中断状态修复，以及后续 cell 身份不匹配时保留已完成汇总；Python 3.13 临时隔离环境最终检查为 Ruff 通过、mypy 通过（49 个源文件）、全量 pytest 338 passed、`uv lock --check` 与 `git diff --check` 通过。依赖文件未改动，没有真实模型调用。完整设计见 [spec 0015](../../specs/0015-v2-provider-budget-guard/index.md)。
+2026-10-13 随后加入跨 invocation 的 fail-closed provider budget guard，首次检查为 329 passed。独立复审后增加 expected provider、OS request/invocation leases、跨进程锁测试、截止时间后记账、terminal ledger status 一致性、CLI 中断状态修复，以及后续 cell 身份不匹配时保留已完成汇总；Python 3.13 临时隔离环境最终检查为 Ruff 通过、mypy 通过（49 个源文件）、全量 pytest 338 passed、`uv lock --check` 与 `git diff --check` 通过。依赖文件未改动，实现提交 SHA `0a09a4f479cd8b6ba49dd0eeefed80a47d623c06` 已冻结登记；真实模型调用尚未开始。完整设计见 [spec 0015](../../specs/0015-v2-provider-budget-guard/index.md)。
 
 定向 fixture 覆盖公开 frontier 与成功边、v3 访问集合在 v2 12 项短列表达到容量后的正确性、必需房间/出口/边/事件容量边界、事件顺序不预设、episode reset、公开前置条件修复、超限压缩与显式失败、v3 provenance/step statistics、config 兼容及旧 trace 审计读取。测试和静态检查不证明模型收益。
 

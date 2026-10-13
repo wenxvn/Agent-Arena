@@ -6,17 +6,17 @@
 
 | experiment_id | 条件 | 地图 / seed | 局部预算 | 计划 provider / model | API 尝试 | 状态 |
 |---|---|---|---:|---|---:|---|
-| EXP-V2-S2-M1-V2-S1 | Memory v2 baseline；E1 ON / H5 / R1 / P2(world-declared) 固定 | `lunar_escape_v2_seeded` / 1 | 100 decisions | OpenAI-compatible / `muse-spark-1.3-contributor`（启动前校验） | 0 | 已预登记；等待门禁验证、提交与代码 SHA 冻结 |
-| EXP-V2-S2-M1-V2-S2 | 同条件，配对 v2 复本 | `lunar_escape_v2_seeded` / 2 | 100 decisions | 同上 | 0 | 已预登记；等待门禁验证、提交与代码 SHA 冻结 |
-| EXP-V2-S2-M1-V3-S1 | Memory v3 spatial/event；其余条件与 v2 配对 | `lunar_escape_v2_seeded` / 1 | 100 decisions | 同上 | 0 | 已预登记；等待门禁验证、提交与代码 SHA 冻结 |
-| EXP-V2-S2-M1-V3-S2 | Memory v3 spatial/event；其余条件与 v2 配对 | `lunar_escape_v2_seeded` / 2 | 100 decisions | 同上 | 0 | 已预登记；等待门禁验证、提交与代码 SHA 冻结 |
+| EXP-V2-S2-M1-V2-S1 | Memory v2 baseline；E1 ON / H5 / R1 / P2(world-declared) 固定 | `lunar_escape_v2_seeded` / 1 | 100 decisions | OpenAI-compatible / `muse-spark-1.3-contributor`（启动前校验） | 0 | 已预登记；pilot 尚未启动 |
+| EXP-V2-S2-M1-V2-S2 | 同条件，配对 v2 复本 | `lunar_escape_v2_seeded` / 2 | 100 decisions | 同上 | 0 | 已预登记；pilot 尚未启动 |
+| EXP-V2-S2-M1-V3-S1 | Memory v3 spatial/event；其余条件与 v2 配对 | `lunar_escape_v2_seeded` / 1 | 100 decisions | 同上 | 0 | 已预登记；pilot 尚未启动 |
+| EXP-V2-S2-M1-V3-S2 | Memory v3 spatial/event；其余条件与 v2 配对 | `lunar_escape_v2_seeded` / 2 | 100 decisions | 同上 | 0 | 已预登记；pilot 尚未启动 |
 
 ## 共享预算与身份冻结
 
 | 字段 | 预登记值 |
 |---|---|
 | 共享 budget experiment ID | `EXP-V2-S2-M1-BUDGET-01` |
-| Git SHA | 门禁验证后提交时填写；提交前不得发起真实请求 |
+| Git SHA | `0a09a4f479cd8b6ba49dd0eeefed80a47d623c06`（预算门禁实现；pilot 仅使用该冻结实现） |
 | Provider / model | `openai` / `muse-spark-1.3-contributor`；本机配置只在启动进程内校验，不打印凭据；不匹配时在首个请求前 fail closed |
 | world selector | `lunar-escape` / `lunar-escape-v2-seeded-zh` |
 | world definition ID / 当前锁定依赖运行时 hash | `lunar_escape_v2_seeded` / `118e8e8f7b930aa3841d6081b5b3de7ab94d1151e5fdee2e81f26f02561a7550`（seed 1 与 2 当前均解析为此值） |
@@ -62,7 +62,7 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 ## 门禁与解除条件
 
 - 截至 2026-10-13，本登记的新增真实模型 API 尝试数为 0；本轮没有读取或输出 `.env` 内容。
-- fail-closed budget guard 已进入实现和离线验证；S2 pilot 仅在 Ruff、mypy、pytest 通过且代码提交 SHA 写入本表后启动。
+- fail-closed budget guard 已提交并通过 Ruff、mypy、pytest 与 `uv lock --check` 离线验证；新增真实模型 API 尝试仍为 0，pilot 尚未启动。
 - 首个决策请求本身兼作受限 gateway probe：若 gateway 不接受输出 cap，provider error 将按整笔预留记账、关闭账本，且不会自动重试。
 - 任一 usage 缺失、usage 超过预留、provider error、账本不匹配或预算触顶均停止后续请求。中断 cell 与已完成 cell 分别报告；不把未完成运行写成最终 Episode Trace。
 - 本 pilot 仍只有四个 cell，单模型、单地图家族、两个 seeds。即使全部结束，也只作小样本方向性结果；token/成功和行为指标必须基于完成运行的真实 trace/ledger 计算，不能根据预算 cap 推测。

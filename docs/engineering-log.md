@@ -10,9 +10,9 @@
 
 验证：Ruff 通过；mypy 49 个源文件无问题；全量 pytest 338 passed；`uv lock --check` 通过；`git diff --check` 通过。未发起真实 provider API 请求，未读取或输出 `.env` 内容。
 
-下一步：提交并冻结代码 SHA 后，按登记表启动共享预算内的 Memory v2/v3 配对 pilot；pilot 结果仍须以真实 trace 和账本逐条核验。
+下一步：按登记表启动共享预算内的 Memory v2/v3 配对 pilot；pilot 结果仍须以真实 trace 和账本逐条核验。
 
-关联实现提交：待提交。
+关联实现提交：`0a09a4f479cd8b6ba49dd0eeefed80a47d623c06`。
 
 ## 2026-10-13 V2 S2 Memory v3 离线实现与 pilot 门禁
 
