@@ -1,5 +1,17 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V2 研究基线文档一致性复核
+
+事件：按 V2 提纲 §1.2 复核 README 与 Scope 中历史成功口径、E1 条件和火山难度均值。
+
+发现与改动：Scope 保留 45/45 是 9 个配置各至少一条成功、原始唯一尝试 46/51、150/150 是补跑后配置覆盖；新七世界仅火山困难均值 31.4 低于中等 35.4。README 的对应摘要与上述范围一致，但其 Memory v3 状态仍称预算门禁“尚未实现”。依据 spec 0015 和运行登记表，将其改为门禁已实现、三次隔离 pilot 未完成 episode 并 fail-closed、v2 0/2 且 v3 未启动。
+
+验证：逐项对照 README、Scope、V2-01、V2-03、spec 0015 与 run registry；历史指标未改写，也未将未提及的 E1-OFF 结果补成 README 结论。无 provider API 调用、GPU 或 pytest；`git diff --check` 通过。
+
+下一步：维持 S2 matched-pilot Gate 未通过及不推进 S3 的边界；继续检查离线资料与持久文档的一致性。
+
+关联提交：`c2a7e735f43b2a2a226fd67d3e91afce7a5b0962`。关联证据：V2-01、V2-03、spec 0015、`docs/research/v2/00-run-registry.md`。
+
 ## 2026-10-13 V2 S1.3 分层分布与里程碑间隔补充
 
 事件：从已完成的逐 episode 审计 CSV 补齐长尾 P50/P75/P90/max、executor token/延迟分布和公开里程碑间隔。
