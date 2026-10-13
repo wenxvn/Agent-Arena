@@ -208,6 +208,8 @@ BFS 对有限环境状态按 `(动作数, 移动动作数)` 字典序搜索；�
 
 V3 JSON、两个运行时 selector 与 affine seed builder 随后实现。`--verify-runtime` 将冻结清单逐行和实际 `create_environment` 对照，检查全部 120 个实例的 hash、placement、active containers、未激活容器隐藏及 seed+全集大小的周期映射；默认及 `PYTHONHASHSEED=1/42` 独立进程结果均为 120/120 一致。该核对只证明实现符合冻结定义与 split，不是模型评估。`FlexEnvironment` 动作规则和 V2 数据文件没有变化。
 
+回归覆盖位于 `tests/test_flex_v3_seeded.py` 与 `tests/test_flex_world_identity.py`：断言 120 个冻结 hash/placement/difficulty/split、非激活容器不进入公开房间对象、seed 周期、负 seed 拒绝及跨进程 identity 稳定。全量 pytest 361 passed，Ruff 全仓与 mypy 49 个源文件通过。这些检查验证实现和预注册契约，不构成 v3 模型泛化证据。
+
 该清单在新版本运行时实现前冻结，test 布局与 placement 也可从仓库文件读取，因此这是需遵守的程序性 holdout，不是隐藏或盲测集。不得用 test 结果调 prompt、机制、阈值或生成器。S5.2 仍为 partial，待 S2 Gate 允许后按预登记方案进行行为评估；没有 provider 请求或 GPU 运行。
 
 ## 后续阶段建议与结论
