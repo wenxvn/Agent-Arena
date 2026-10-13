@@ -208,13 +208,14 @@ BFS 对有限环境状态按 `(动作数, 移动动作数)` 字典序搜索；�
 
 V3 JSON、两个运行时 selector 与 affine seed builder 随后实现。`--verify-runtime` 将冻结清单逐行和实际 `create_environment` 对照，检查全部 120 个实例的 hash、placement、active containers、未激活容器隐藏及 seed+全集大小的周期映射；默认及 `PYTHONHASHSEED=1/42` 独立进程结果均为 120/120 一致。该核对只证明实现符合冻结定义与 split，不是模型评估。`FlexEnvironment` 动作规则和 V2 数据文件没有变化。
 
-回归覆盖位于 `tests/test_flex_v3_seeded.py` 与 `tests/test_flex_world_identity.py`：断言规范化清单 SHA、120 个冻结 hash/placement/difficulty/split、预注册最少动作分布、每个难度桶的 dev/test 数量、非激活容器不进入公开房间对象、seed 周期、负 seed 拒绝及跨进程 identity 稳定。生成脚本拒绝默认或显式覆盖冻结清单；`--verify-runtime` 拒绝摘要不符的清单。本轮没有重复运行 120 个布局的昂贵 BFS 穷举；预注册动作数分布由冻结清单摘要和精确分布回归锁定，先前冻结阶段的 BFS 穷举证据仍是 90/30 布局全部可解。全量 pytest 364 passed，Ruff 全仓与 mypy 49 个源文件通过。这些检查验证冻结文件身份、实现和预注册契约，不构成 v3 模型泛化证据。
+回归覆盖位于 `tests/test_flex_v3_seeded.py` 与 `tests/test_flex_world_identity.py`：断言规范化清单 SHA、120 个冻结 hash/placement/difficulty/split、预注册最少动作分布、每个难度桶的 dev/test 数量、非激活容器不进入公开房间对象、seed 周期、负 seed 拒绝及跨进程 identity 稳定。生成脚本拒绝默认或显式覆盖冻结清单；`--verify-runtime` 拒绝摘要不符的清单。本轮没有重复运行 120 个布局的昂贵 BFS 穷举；预注册动作数分布由冻结清单摘要和精确分布回归锁定，先前冻结阶段的 BFS 穷举证据仍是 90/30 布局全部可解。全量 pytest 364 passed，Ruff 全仓与 mypy 49 个源文件通过；扩充完整性回归提交 `f1d45ba87332172ac5737c8e1dfcddbae8a0d035` 的 [GitHub Actions #98](https://github.com/wenxvn/Agent-Arena/actions/runs/38402688442) 通过。这些检查验证冻结文件身份、实现和预注册契约，不构成 v3 模型泛化证据。
 
 Git 历史核对确认冻结早于运行时实现：提交 `f01b38d35029ea16a90c338fcd6911b753bd5b39`（2026-10-13 20:28 +08:00）已包含 spec、冻结清单和生成脚本，但不含 V3 seeded JSON；提交 `fac58fe0df226d14903573c6d778e91e67553949`（20:37 +08:00）随后加入两个 V3 JSON。该顺序证明实例全集及 split 在对应运行时实现前冻结。test 布局与 placement 仍可从仓库文件读取，因此这是需遵守的程序性 holdout，不是隐藏或盲测集。不得用 test 结果调 prompt、机制、阈值或生成器。S5.2 仍为 partial，待 S2 Gate 允许后按预登记方案进行行为评估；没有 provider 请求或 GPU 运行。
 
-## 后续阶段建议与结论
+## 后续阶段状态与放行条件
 
-- S2 优先实现并单独验证 M1；先覆盖 visited room/edge/frontier 和公开里程碑，不把隐藏地图信息写入 Memory。
-- S3 再针对 use 配对与条件感知重试做匹配对照；不能将 M1 的空间记忆结果冒充动作 grounding 证据。
-- S4 另行比较 P0、事件驱动的 P1 与预告顺序的 P2。现有 V1 材料显示 P2 会提前暴露阶段顺序和物品名；P1 仍缺受控结果，不能由本次 Trace 推断其效果。
-- 审计没有导出完整 decision_reason，没有新增 LLM 调用或 GPU 运行。V2 S1 只完成离线观察与假设生成；不报告 oracle 最优性、匹配因果效果或经新实验验证的改进。
+- S2 的 M1（空间边、frontier 与公开事件记忆）已按独立 spec 完成可选实现和离线验收，默认 v2 保持；完整状态及负例见 [Memory v3 报告](03-memory-v3.md)。但 BUDGET-01/02/03 均已 fail-closed，v2 matched pilot 为 0/2、v3 未启动，研究 Gate 未通过。按 [运行登记表](00-run-registry.md) 的停止规则，不重置或复用账本，不创建 BUDGET-04，也不再向该矩阵发送请求。
+- S3 暂不启动。既有审计支持对重复 look、已知无效动作和停滞信号形成可证伪假设，但离线 Trace/fixture 不是 Action Grounding 的效果证据；须按阶段依赖等待 S2 Gate。
+- S4 暂不启动。现有 Trace 缺少足以判定自主阶段理解的记录；P1 仍无受控比较证据，P2 的世界预置任务先验须继续单列。
+- S5.2 的实例全集、难度和程序性 dev/test 拆分及运行时身份核对已完成；行为评估仍等待所需 Gate。S5.3 新任务、S5.5 跨模型比较只对通过前序 Gate 的候选开放。仓库可见的 test placements 不是盲测集，不能用于调参。
+- 审计没有导出完整 `decision_reason`，没有新增 LLM 调用或 GPU 运行。V2 S1 只完成离线观察与假设生成；不报告 oracle 最优性、匹配因果效果或经新实验验证的改进。
