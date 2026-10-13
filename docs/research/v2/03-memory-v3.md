@@ -62,3 +62,9 @@ Memory v3 离线实现与 fail-closed provider budget guard 已完成本地实�
 候选比较为 `lunar_escape_v2_seeded` 的 seed 1、2，Memory v2 与 v3 配对，每局 100 decisions，E1 ON / H5 / R1 / P2(world-declared) 条件固定，串行运行。共享预算、输出 cap、deadline、ledger 和执行命令见 registry；每次请求发出前均预留，本地预算超限或 provider error 时 fail closed。计划指标为 first-recorded attempt、Success@60/100、动作数、重复边/动作、输入/输出 Token、token/success、provider_error 和延迟。world identity hash 为 `bd1f77eabdcd032e80dbbaaad29163e85cbea34caf7486c22babcb3b85cb8373`；原 pilot 源代码 SHA 为 `0d3bb0ba0b81ca682ea714941de7b5bd17fd03f9`。BUDGET-01 在第 2 次请求后 unknown spend（2/500、24,086 tokens），BUDGET-02 在第 10 次请求 timeout（10/498、40,852 tokens），BUDGET-03 在第 7 次请求通用 provider_error（7/488、35,199 tokens）；三次都没有完整 episode，seed 2 和 v3 未启动。失败账本和 partial 输出不得重置、复用或覆盖。当前登记矩阵在线尝试停止，S2 仍未完成。
 
 离线指标、源 Trace 与既有 232-action 月球长尾事实仍只支持“值得检验”的 M1 假设；没有同条件 v2/v3 完整结果，不能声称成功率、步数、重复边或 token-efficiency 改善。当前稳定 world definition hash 与旧长尾 trace 记录不同，原因仍未确认；因此旧 trace 只作假设来源，不作本轮 hash-matched 对照。BUDGET-01 根因未知；BUDGET-02 虽分类为 timeout、BUDGET-03 分类为 provider_error，provider 端实际处理/计费均未知。当前研究矩阵不再发送 provider 请求；完成 S2 Gate 前不推进 S3。
+
+## 末轮只读根因审计
+
+2026-10-13 再次只读核对三份本地账本、BUDGET-03 启动命令、配置优先级与 OpenAI adapter：失败事件的 ledger 时间间隔分别约为 BUDGET-01 30 秒、BUDGET-02 30 秒、BUDGET-03 10 秒。BUDGET-03 的进程环境变量 `AGENT_ARENA_REQUEST_TIMEOUT_SECONDS=120` 会覆盖 JSON 默认值，且配置值传入 OpenAI SDK；故该次约 10 秒失败不是本地 120 秒客户端 timeout 导致。其通用 `provider_error` 仍可能对应无 `output_text` 的响应或未分类的 SDK/网关异常。旧事件未记录异常类、HTTP status 或响应内容，不能在事后区分；BUDGET-01 的 30 秒时长与当时默认 timeout 相同，但 schema 1 没有安全分类，亦不能据此定性。以上是现有证据能支持的最细结论，不构成 provider 端根因或实际扣费证明。
+
+本轮无 provider API 请求、无 GPU 运行、无新模型行为证据。S2 matched-pilot Gate 仍失败，v2 为 0/2 完成、v3 未启动；BUDGET-01/02/03 保持关闭。依停止规则不创建 BUDGET-04、不推进 S3；S3–S6 的行为探索继续等待新的合规 S2 Gate 条件。

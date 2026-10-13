@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-13 V2 末轮只读失败诊断
+
+事件：按用户要求完成最后一轮 V2 探索；S2 matched-pilot Gate 仍未通过，进一步核查三份 provider failure 的安全 ledger、BUDGET-03 的 timeout 覆盖和 adapter 异常分类。
+
+原因：决定是否存在可在不新增 API 尝试的情况下解除 S2 阻塞，并把可证实的失败原因与不可恢复部分分开。
+
+改动：在 V2 run registry、Memory v3 报告和 Scope 中记录失败事件的 30/30/10 秒账本间隔、BUDGET-03 120 秒配置传递证据，以及 `provider_error` 仍可能对应无输出响应或未分类 SDK/网关异常的限制。BUDGET-01 的 schema 1 不含分类，不能由 30 秒间隔补判为 timeout。没有改写或扩充任何 ledger，也未修改用户未跟踪的 `研究提纲/`。
+
+验证：只读复核三份 ledger 的计数、usage/reservation、关闭状态和 in-flight 状态；检查 `RuntimeSettings` 环境前缀、OpenAI SDK timeout 传参与异常分类代码。无 provider API 请求、无 GPU 运行。`git diff --check` 待提交前执行。
+
+下一步：不创建 BUDGET-04、不推进 S3–S6；只有出现新的合规 S2 Gate 条件后才恢复行为评估。
+
+关联提交：待提交。
+
 ## 2026-10-13 V2 定时维护阶段性暂停
 
 事件：在当前没有其他可独立推进且已获准的提纲任务后，按用户指示暂停 V2 heartbeat automation。

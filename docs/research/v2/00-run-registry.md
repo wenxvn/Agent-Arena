@@ -146,6 +146,12 @@ BUDGET-01/02/03 合计占原上限 19/500 requests、100,137/4,000,000 locally c
 
 仅读取本机三份 ledger 的 allowlisted 计数和 request event 字段，并与本表逐笔对照：BUDGET-01 为 schema 1、2 条记录、1 次确认 usage / 1,509 tokens、1 笔 22,577-token reservation；BUDGET-02 为 schema 2、10 条记录、9 次确认 usage / 15,374 tokens、1 笔 25,478-token reservation（`timeout`）；BUDGET-03 为 schema 2、7 条记录、6 次确认 usage / 10,043 tokens、1 笔 25,156-token reservation（`provider_error`）。BUDGET-01 的 schema 1 不含新错误分类字段。三份 ledger 的 request-record 数、usage 与 reservation 总和均和顶层 counters 及上表一致；三者均 `provider_error_unknown_spend` 关闭且无 in-flight request。预期的 BUDGET-04 ledger 与 v2/v3 输出目录均不存在。总计仍为 19 次请求、26,926 个确认 usage tokens 加 73,211 个 reservation tokens，合计 100,137 本地记账 tokens。此核对没有 provider API 请求，不修改 ledger，也不解除停止规则。
 
+### 最后一轮只读异常链与耗时复核（2026-10-13）
+
+只读取每份 ledger 中失败事件的安全字段，按 `completed_at - created_at` 复算本地事件间隔：BUDGET-01 约 30 秒（schema 1，未保存类别），BUDGET-02 约 30 秒（`timeout`），BUDGET-03 约 10 秒（schema 2，`provider_error`，无 HTTP status）。BUDGET-03 的冻结启动命令确实设置 `AGENT_ARENA_REQUEST_TIMEOUT_SECONDS=120`；`RuntimeSettings` 的 `AGENT_ARENA_` 环境前缀映射该字段，OpenAI adapter 将它传给 SDK，并关闭 SDK 重试。因此这次约 10 秒的失败不符合本地 120 秒请求超时；上游可自行提前超时仍不能排除。
+
+源码复核显示错误分类器会沿异常 cause/context 识别常见 timeout、HTTP status、connection 与 JSON decode 错误，其余归为 `provider_error`。适配器也会将无 `output_text` 的响应转成没有底层 cause 的 `DecisionProviderError`。因此 BUDGET-03 的安全类别还可能来自无输出响应或未覆盖的 SDK/网关异常；ledger 未保存异常类型、HTTP 响应体或原始异常消息，三者无法区分。BUDGET-01 的 30 秒间隔与当时默认 timeout 相同，但 schema 1 无错误分类，不能据此回填为 timeout。历史根因到此仍不可确定；不重建、改写或推测 ledger 内容，不创建 BUDGET-04，也不再调用 provider。
+
 ## 执行命令
 
 两次 benchmark 顺序执行并共享账本。预算或 provider 门禁失败后脚本停止；不得手动重置账本继续同一 experiment ID。
