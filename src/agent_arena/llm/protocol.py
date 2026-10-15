@@ -9,8 +9,9 @@ from pydantic import TypeAdapter
 
 from agent_arena.arena import Action
 from agent_arena.arena.scenario_models import ScenarioAction
+from agent_arena.worlds.scenario_v4.models import ScenarioV4Action, V4HypothesisTable
 
-ActionContractVersion = Literal["legacy_v1", "scenario_v3"]
+ActionContractVersion = Literal["legacy_v1", "scenario_v3", "scenario_v4"]
 
 
 @dataclass(frozen=True)
@@ -33,6 +34,7 @@ class ProviderResponse:
     candidate: object
     input_tokens: int | None = None
     output_tokens: int | None = None
+    cached_input_tokens: int | None = None
 
 
 class DecisionProvider(Protocol):
@@ -47,16 +49,26 @@ def decision_response_schema(
 ) -> dict[str, object]:
     """Return the shared JSON Schema for a decision without importing Agent policy."""
 
+    action_type = (
+        Action
+        if action_contract_version == "legacy_v1"
+        else (ScenarioAction if action_contract_version == "scenario_v3" else ScenarioV4Action)
+    )
+    properties: dict[str, object] = {
+        "decision_reason": {"type": "string", "maxLength": 280},
+        "action": TypeAdapter(action_type).json_schema(),
+    }
+    required = ["decision_reason", "action"]
+    if action_contract_version == "scenario_v4":
+        properties["agent_hypothesis_table"] = {
+            "anyOf": [TypeAdapter(V4HypothesisTable).json_schema(), {"type": "null"}]
+        }
+        required.append("agent_hypothesis_table")
     return {
         "type": "object",
         "additionalProperties": False,
-        "required": ["decision_reason", "action"],
-        "properties": {
-            "decision_reason": {"type": "string", "maxLength": 280},
-            "action": TypeAdapter(
-                Action if action_contract_version == "legacy_v1" else ScenarioAction
-            ).json_schema(),
-        },
+        "required": required,
+        "properties": properties,
     }
 
 
@@ -128,6 +140,8 @@ def decision_response_schema_strict(
     }
     if action_contract_version == "legacy_v1":
         return legacy_schema
+    if action_contract_version == "scenario_v4":
+        return _scenario_v4_decision_schema_strict()
 
     properties = legacy_schema.get("properties")
     if not isinstance(properties, dict):
@@ -169,6 +183,212 @@ def decision_response_schema_strict(
         ]
     )
     return legacy_schema
+
+
+def _scenario_v4_decision_schema_strict() -> dict[str, object]:
+    """Return the strict Responses API schema for the V4 action union."""
+
+    def variant(tool: str, fields: dict[str, object] | None = None) -> dict[str, object]:
+        properties: dict[str, object] = {"tool": {"const": tool}}
+        properties.update(fields or {})
+        return {
+            "type": "object",
+            "additionalProperties": False,
+            "required": list(properties),
+            "properties": properties,
+        }
+
+    string = {"type": "string"}
+    train_id = {"type": "string", "enum": ["a", "b", "T_R1", "T_R2", "T_R3", "T_B", "T_G", "T_X"]}
+    scalar_tools = (
+        "inspect_network",
+        "move_train",
+        "observe_signpost",
+        "check_goal",
+        "return_to_camp",
+        "rollback",
+        "restart",
+    )
+    actions = [variant(tool) for tool in scalar_tools]
+    actions.extend(variant("move", {field: string}) for field in ("edge_id", "to", "bearing"))
+    actions.extend(variant("inspect", {field: string}) for field in ("target_id", "evidence_id"))
+    actions.extend(
+        [
+            variant(
+                "interact",
+                {"target_id": string, "operation": string},
+            ),
+            variant("wait", {"turns": {"type": "integer", "const": 1}}),
+            variant("set_route", {"train_id": train_id, "next_node": string}),
+            variant("occupy_siding", {"train_id": train_id, "next_node": string}),
+            variant("release_section", {"train_id": train_id, "section_id": string}),
+        ]
+    )
+
+    def joint_op(op: str, fields: dict[str, object] | None = None) -> dict[str, object]:
+        properties: dict[str, object] = {"op": {"const": op}}
+        properties.update(fields or {})
+        return {
+            "type": "object",
+            "additionalProperties": False,
+            "required": list(properties),
+            "properties": properties,
+        }
+
+    joint_operations = {
+        "anyOf": [
+            joint_op("release", {"to": string}),
+            joint_op("detour", {"to": string}),
+            joint_op("temporary_stop"),
+            joint_op(
+                "turnback",
+                {
+                    "reverse_toward": string,
+                    "duration_ticks": {"type": "integer", "minimum": 1, "maximum": 2},
+                },
+            ),
+            joint_op("cancel_service", {"task_id": string}),
+        ]
+    }
+    operations_schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["T_R1", "T_R2", "T_R3", "T_B", "T_G", "T_X"],
+        "properties": {
+            train: {"anyOf": [{"type": "null"}, joint_operations]}
+            for train in ("T_R1", "T_R2", "T_R3", "T_B", "T_G", "T_X")
+        },
+    }
+    node_fact = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["fact_type", "sign_id", "exit_bearings"],
+        "properties": {
+            "fact_type": {"const": "node_page"},
+            "sign_id": string,
+            "exit_bearings": {"type": "array", "items": string},
+        },
+    }
+    edge_fact = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": [
+            "fact_type",
+            "from_sign_id",
+            "departure_bearing",
+            "to_sign_id",
+            "arrival_reverse_bearing",
+        ],
+        "properties": {
+            "fact_type": {"const": "traversed_edge_page"},
+            "from_sign_id": string,
+            "departure_bearing": string,
+            "to_sign_id": string,
+            "arrival_reverse_bearing": string,
+        },
+    }
+    claim = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["event_id", "time", "location", "duty_code"],
+        "properties": {
+            "event_id": string,
+            "time": string,
+            "location": string,
+            "duty_code": string,
+        },
+    }
+    hypothesis_table = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": [
+            "belief_B",
+            "belief_D",
+            "belief_F",
+            "test_X_result",
+            "test_Y_result",
+            "next_test",
+        ],
+        "properties": {
+            "belief_B": {"type": "number", "minimum": 0, "maximum": 1},
+            "belief_D": {"type": "number", "minimum": 0, "maximum": 1},
+            "belief_F": {"type": "number", "minimum": 0, "maximum": 1},
+            "test_X_result": {
+                "anyOf": [
+                    {"type": "string", "enum": ["pulse_amber", "pulse_slate"]},
+                    {"type": "null"},
+                ]
+            },
+            "test_Y_result": {
+                "anyOf": [
+                    {"type": "string", "enum": ["pulse_cobalt", "pulse_slate"]},
+                    {"type": "null"},
+                ]
+            },
+            "next_test": {"type": "string", "enum": ["X", "Y", "repair"]},
+        },
+    }
+    actions.extend(
+        [
+            variant(
+                "set_timetable",
+                {
+                    "tick": {"type": "integer", "minimum": 0},
+                    "operations": operations_schema,
+                },
+            ),
+            variant(
+                "write_memory",
+                {"facts": {"type": "array", "items": {"anyOf": [node_fact, edge_fact]}}},
+            ),
+            variant("read_log", {"log_id": string}),
+            variant("test", {"test_id": string}),
+            variant("take_spare", {"part_id": string}),
+            variant("replace", {"part_id": string}),
+            variant(
+                "interview",
+                {
+                    "npc_id": string,
+                    "topic_id": string,
+                    "shown_evidence_ids": {"type": "array", "items": string},
+                    "shown_casebook_entry_ids": {"type": "array", "items": string},
+                },
+            ),
+            variant(
+                "record",
+                {"entry_id": string, "evidence_ids": {"type": "array", "items": string}},
+            ),
+            variant(
+                "submit_intermediate_hypothesis",
+                {
+                    "candidate_person": string,
+                    "confidence": {"type": "string", "enum": ["low", "tentative"]},
+                    "event_ids_known": {"type": "array", "items": string},
+                },
+            ),
+            variant("compare_records", {"entry_ids": {"type": "array", "items": string}}),
+            variant(
+                "formal_accuse",
+                {
+                    "person_id": string,
+                    "event_claims": {"type": "array", "items": claim},
+                    "cited_entry_ids": {"type": "array", "items": string},
+                },
+            ),
+        ]
+    )
+    # The provider must emit all six MAP-18 train keys. The runner removes
+    # null values before applying the strict sparse-operation Action model.
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["decision_reason", "action", "agent_hypothesis_table"],
+        "properties": {
+            "decision_reason": {"type": "string", "maxLength": 280},
+            "action": {"anyOf": actions},
+            "agent_hypothesis_table": {"anyOf": [hypothesis_table, {"type": "null"}]},
+        },
+    }
 
 
 def candidate_selection_response_schema() -> dict[str, object]:

@@ -6,6 +6,7 @@ import json
 from dataclasses import dataclass
 from time import sleep
 from typing import Any, cast
+from urllib.parse import urlparse
 
 from openai import APIConnectionError, APITimeoutError, InternalServerError, OpenAI, RateLimitError
 from pydantic import BaseModel
@@ -19,6 +20,13 @@ from agent_arena.llm.protocol import (
     decision_response_schema_strict,
     planner_response_schema_strict,
 )
+
+
+def _session_headers(settings: RuntimeSettings) -> dict[str, str]:
+    """Keep the gateway session header away from the direct Xiaomi API."""
+    if settings.base_url and urlparse(settings.base_url).hostname == "api.xiaomimimo.com":
+        return {}
+    return {"x-opencode-session": settings.openai_session_id}
 
 
 @dataclass(frozen=True)
@@ -40,7 +48,7 @@ class OpenAIModelVerifier:
             base_url=base_url,
             timeout=settings.request_timeout_seconds,
             max_retries=0,
-            default_headers={"x-opencode-session": settings.openai_session_id},
+            default_headers=_session_headers(settings),
         )
 
     def verify(self) -> ModelVerification:
@@ -72,7 +80,7 @@ class OpenAIDecisionProvider:
             base_url=base_url,
             timeout=settings.request_timeout_seconds,
             max_retries=0,
-            default_headers={"x-opencode-session": settings.openai_session_id},
+            default_headers=_session_headers(settings),
         )
 
     def decide(self, request: DecisionRequest) -> ProviderResponse:
@@ -85,8 +93,20 @@ class OpenAIDecisionProvider:
                 InternalServerError,
                 RateLimitError,
             ) as exc:
+                if request.action_contract_version == "scenario_v4":
+                    raise DecisionProviderError(
+                        "OpenAI-compatible request outcome is unconfirmed.",
+                        error_category=type(exc).__name__,
+                        retryable=False,
+                        unknown_spend=True,
+                    ) from exc
                 if attempt == self._settings.retry_count:
-                    raise DecisionProviderError("OpenAI request failed.") from exc
+                    raise DecisionProviderError(
+                        "OpenAI request failed.",
+                        error_category=type(exc).__name__,
+                        retryable=True,
+                        unknown_spend=False,
+                    ) from exc
                 sleep(self._settings.retry_backoff_seconds[attempt])
             except DecisionProviderError:
                 raise
@@ -125,23 +145,54 @@ class OpenAIDecisionProvider:
             "input": "\n".join(input_parts),
             "temperature": 0,
             "text": {"format": _response_format(self._settings.response_format, request)},
-            "store": False,
         }
+        if request.action_contract_version == "scenario_v4":
+            # MiMo defaults to enabled reasoning; explicitly disable it for the
+            # frozen V5 condition even when the shared settings default to none.
+            request_kwargs["reasoning"] = {"effort": "none"}
+        else:
+            request_kwargs["store"] = False
         if request.max_output_tokens is not None:
             request_kwargs["max_output_tokens"] = request.max_output_tokens
-        if self._settings.reasoning_effort != "none":
+        if (
+            request.action_contract_version != "scenario_v4"
+            and self._settings.reasoning_effort != "none"
+        ):
             request_kwargs["reasoning"] = {"effort": self._settings.reasoning_effort}
         response = self._client.responses.create(**cast(Any, request_kwargs))
-        if not response.output_text:
-            raise DecisionProviderError("OpenAI provider returned no decision.")
         try:
             usage = response.usage
+            details = getattr(usage, "input_tokens_details", None) if usage else None
+            cached_tokens = getattr(details, "cached_tokens", None)
+            input_tokens = usage.input_tokens if usage else None
+            output_tokens = usage.output_tokens if usage else None
+            cached_input_tokens = cached_tokens if isinstance(cached_tokens, int) else None
+            if not response.output_text:
+                if request.action_contract_version == "scenario_v4":
+                    return ProviderResponse(
+                        candidate=None,
+                        input_tokens=input_tokens,
+                        output_tokens=output_tokens,
+                        cached_input_tokens=cached_input_tokens,
+                    )
+                raise DecisionProviderError("OpenAI provider returned no decision.")
             return ProviderResponse(
                 candidate=json.loads(response.output_text),
-                input_tokens=usage.input_tokens if usage else None,
-                output_tokens=usage.output_tokens if usage else None,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                cached_input_tokens=cached_input_tokens,
             )
         except json.JSONDecodeError as exc:
+            if request.action_contract_version == "scenario_v4":
+                usage = response.usage
+                details = getattr(usage, "input_tokens_details", None) if usage else None
+                cached_tokens = getattr(details, "cached_tokens", None)
+                return ProviderResponse(
+                    candidate=None,
+                    input_tokens=usage.input_tokens if usage else None,
+                    output_tokens=usage.output_tokens if usage else None,
+                    cached_input_tokens=(cached_tokens if isinstance(cached_tokens, int) else None),
+                )
             raise DecisionProviderError("OpenAI provider returned malformed JSON.") from exc
 
 

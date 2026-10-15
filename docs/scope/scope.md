@@ -28,7 +28,7 @@
 | 17 | 任务结构 pilot：分支/并行/反转 + seeded（flex 引擎） | Research Core | done |
 | 18 | 旧三世界重制图：去换皮，新 10×3 矩阵 | Research Core | done |
 | 19 | V3 主题世界：10 家族 × 3 难度 × 30 手工关卡 | Research Core | done |
-| 20 | V4 手工关卡运行时 | Research Core | planned |
+| 20 | V5 六图运行时与能力测量 | Research Core | in-progress |
 
 ## Foundation
 
@@ -386,8 +386,16 @@ V3 按 [spec 0017](../specs/0017-world-redesign-v3/index.md) 推进，内容来�
 最终验证：全量 pytest、Ruff、mypy 和 `git diff --check` 的准确结果追加在 `docs/engineering-log.md`。项目虚拟环境 Python 3.13 可用；当前 shell 没有 `uv`，`uv lock --check` 未运行且依赖文件未改。未进行真实 Provider 请求、GPU 训练或模型行为对照；离线 Oracle 不构成模型能力证据。
 - [x] S2.4 离线负例与公开事实更正：新增非法 provider 候选/correction request、回程导航、单向出口、重复事件摘要、同房间 Observation 更正及 room-fact 压缩保留当前描述用例；普通 facts 压缩精确断言删 8/24、留 16/24，20 条失败动作仍保留；默认 v2 provider memory-data 有 golden fixture，legacy Trace 缺少 `memory_statistics` 时仍可读取。全量 pytest 357 passed、Ruff 和 mypy 49 个源文件通过，`git diff --check` 通过。此前实现/fixture 提交的 Actions #76/#78 均通过，本轮 fixture 提交 `29d6917c8f2825b175735f92443d1692b14e843d` 的 [Actions #81](https://github.com/wenxvn/Agent-Arena/actions/runs/38383303143) 通过。S2 Gate 仍未通过，不推进 S3；无 provider 请求。
 
-### 20. V4 手工关卡运行时 · planned · needs a decision
+### 20. V5 六图运行时与能力测量 · in-progress
 
-将已逐关手工设计的30张V4地图接入独立的`scenario_v4`运行时，保留V3与Legacy边界，并逐图验证规则和公开Observation。
-**Done when:** 30张地图有确定性环境规则、逐图测试和可重复Oracle，V3/Legacy回归通过；运行时离线证据与真实模型评测分开报告。
-- [ ] 设计运行时契约与实施计划（spec）：`/architect V4 手工关卡运行时`
+先将MAP-08、16、18、22、26、30接入隔离的`scenario_v4`运行时，再根据结果说明其余24图的接入条件。
+**Done when:** 六图逐关离线验收、V3/Legacy回归和成本受限的模型试验完成；环境、模型通关与能力效度分开报告。
+- [x] 设计运行时契约与实施计划（spec）：[0018](../specs/0018-v5-six-map-measurement.md)
+- [ ] Build it: `/develop V5 六图运行时与能力测量`
+  - [x] 实现隔离的 V4 契约、六图运行时、公开视图与裁判状态，覆盖 AC-1 至 AC-5
+  - [x] 实现 V5 episode、配对条件、Trace、指标、manifest 与恢复点，覆盖 AC-2、AC-7、AC-10
+  - [x] 完成 Oracle 回放、失败机制、独立求解、泄漏和全项目回归，覆盖 AC-4 至 AC-6；此前实现和 39 局扩展矩阵均经第二模型只读复核为 Approve
+  - [ ] 实现 fail-closed MiMo pilot、账本与最终研究报告，覆盖 AC-7 至 AC-12
+- [ ] Verify it: `/check verify V5 六图运行时与能力测量`
+- [ ] Test it: `/test V5 六图运行时与能力测量`
+Spec [0018](../specs/0018-v5-six-map-measurement.md)

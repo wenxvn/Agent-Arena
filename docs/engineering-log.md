@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-16 V5 六图 39 局矩阵离线实现与复审
+
+事件：按用户提供的 V5 测量提纲建立获准六图的隔离运行时和完整能力对照矩阵。当前仅完成离线实现/复核，尚未发起真实模型请求。
+
+范围：MAP-08、MAP-16、MAP-18、MAP-22、MAP-26、MAP-30；MAP-08 seed label 0/4/8，其余地图最多 0/1/2。MAP-30 按提纲登记完整历史、最近五步、最近五步加案卷三条件；MAP-26 将三个故障 seed 与 seed 0 三条恢复反馈支路分开计数。矩阵 39 局，6 局 seed 0 smoke 复用登记 episode，余下 33 局仅在 smoke 验收后释放。未扩展其余 24 图或 Stage D。
+
+改动：新增 spec 0018、隔离 `scenario_v4` 六图环境和 V5 Runner/账本/pilot 门禁；锁定 3,662 次全局请求、33,748,992 token reservation，单币种 CNY ¥37.50 或 USD $5.25。Stage B 余数从登记矩阵与 smoke IDs 派生。MAP-30 的合法问询在 evidence 解锁时向所有条件返回同一公开 fact/witness payload；A 保留完整公开行动与证据历史，C 保留已记录结构化案卷，B 只保留滚动窗口。Episode manifest 按实际条件写入 context policy。用户原有 V1/V2/V4/V5 提纲未修改、未暂存。
+
+验证：第二模型复核 39 局矩阵为 Approve，Stage B 余数、canonical ID 可见性及 manifest Minor 均复查通过。全量 pytest 511 passed；V5/Runtime 定向用例 45 passed；scoped Ruff、mypy（79 source files）、六图 Oracle replay、六图独立求解器和 39 局 Fake dry-run 均通过。MAP-30 全历史 A 前缀请求界 7,880 bytes、再追加一条决策为 7,985 bytes，小于 8,192。dry-run 为六次 fake request、0 paid API call、无持久 dry-run 输出。V5 pilot registry 查询为 `None`；2026-10-16 再查 [官方价格页](https://mimo.mi.com/models/zh-CN/mimo-v2.6-flash)，CNY/USD 缓存/未缓存/输出费率与预登记值相同。宿主无 `uv`，未运行 `uv lock --check`；完整 gate 尚未在提交 HEAD 冻结。离线字节审查额外留下 ignored `runs/temporary-review-only.jsonl`，只有 `offline-fake-v5` 的 `pilot_created` 行，没有请求或 episode，位于正式 V5 registry 外，不得作为 paid ledger 复用。
+
+下一步：确认当前 MiMo 官方费率，按文件白名单提交实现/研究记录；在提交 HEAD 运行冻结门禁。只有 gate 通过后执行 CNY 上限 ¥37.50 的 Stage B 六局 smoke；严格按账本验收后再执行余下 33 局。任何 unknown spend、上下文超限或预算关闭均按记录停止，不新建第二账本。
+
+关联提交：待完成。
+
 ## 2026-10-15 V4 三十张手工地图设计完成
 
 事件：完成用户V4提纲要求的30张独立地图设计与逐图离线审计。每张地图手工设定自身机制、成功路线、失败因果、边界和测量，不以批量随机布局或换主题文字代替设计。

@@ -21,6 +21,19 @@ class ModelVerificationError(RuntimeError):
 class DecisionProviderError(RuntimeError):
     """A safe provider failure that never exposes response or exception bodies."""
 
+    def __init__(
+        self,
+        message: str,
+        *,
+        error_category: str = "unknown_provider_error",
+        retryable: bool = False,
+        unknown_spend: bool = True,
+    ) -> None:
+        super().__init__(message)
+        self.error_category = error_category
+        self.retryable = retryable
+        self.unknown_spend = unknown_spend
+
 
 @dataclass(frozen=True)
 class ModelVerification:
