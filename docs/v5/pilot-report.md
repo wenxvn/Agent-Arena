@@ -24,6 +24,28 @@
 \* 上述 70 个已结算请求中缓存 token 合计 34,176；并非每个 settled usage 都提供缓存字段。\
 \*\* 这是 70 个已结算响应按报告 usage 计算的费用，不是最终账单确认；第 71 个请求的 usage 未知。
 
+### 39 局登记矩阵状态
+
+| Map | Condition | Seed labels | 当前状态 |
+|---|---|---|---|
+| MAP-08 | no_hypothesis_table | 0, 4, 8 | seed 0 部分运行后停止；seed 4、8 未启动 |
+| MAP-08 | hypothesis_table | 0, 4, 8 | 未启动 |
+| MAP-16 | react | 0, 1, 2 | 未启动 |
+| MAP-16 | constraint_table | 0, 1, 2 | 未启动 |
+| MAP-18 | alert_off | 0, 1, 2 | 未启动 |
+| MAP-18 | alert_on | 0, 1, 2 | 未启动 |
+| MAP-22 | history5 | 0, 1, 2 | 未启动 |
+| MAP-22 | history5_graph_memory | 0, 1, 2 | 未启动 |
+| MAP-26 | free_diagnosis | 0, 1, 2 | 未启动 |
+| MAP-26 | recovery_full | 0 | 未启动 |
+| MAP-26 | recovery_hidden | 0 | 未启动 |
+| MAP-26 | recovery_structured | 0 | 未启动 |
+| MAP-30 | history_full | 0, 1, 2 | 未启动 |
+| MAP-30 | history5 | 0, 1, 2 | 未启动 |
+| MAP-30 | history5_casebook | 0, 1, 2 | 未启动 |
+
+矩阵共 39 个 episode ID：1 个开始但未完成，38 个未启动，0 个完成。Stage B smoke 的其他五局没有启动；Stage C 不能通过 smoke gate。
+
 ## 账务与完成审计
 
 - Run/experiment ID：`d3f3d7be-c928-4433-b6aa-9a269d97f593`。
