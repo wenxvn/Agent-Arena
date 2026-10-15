@@ -1,0 +1,153 @@
+{
+  "map_id": "MAP-26",
+  "result": "MAP26_HAND_DIAGNOSTIC_AND_CORRECTION_ROUTES_REPLAYED",
+  "runtime_verified": false,
+  "routes": {
+    "diagnose_first": {
+      "finish_tick": 11,
+      "communication_restored": true,
+      "terminal_reason": "ALL_OBJECTIVES_COMPLETE",
+      "spare_units_remaining": 1,
+      "wrong_replacements": 0,
+      "wrong_replace_durations": [],
+      "same_part_retry_attempts": 0,
+      "rollback_count": 0,
+      "test_action_count": 3,
+      "repeated_test_count": 0,
+      "test_consistency_violations": 0,
+      "valid_action_rate": 1.0,
+      "spare_units_consumed": 1,
+      "test_readings": {
+        "antenna_loopback": "ANTENNA_LOOPBACK_OPEN",
+        "bus_load": "BUS_VOLTAGE_STABLE",
+        "software_checksum": "IMAGE_CHECKSUM_VALID"
+      },
+      "action_rows": 11,
+      "feedback_to_changed_action": null
+    },
+    "feedback_then_correct": {
+      "finish_tick": 16,
+      "communication_restored": true,
+      "terminal_reason": "ALL_OBJECTIVES_COMPLETE",
+      "spare_units_remaining": 1,
+      "wrong_replacements": 1,
+      "wrong_replace_durations": [
+        1
+      ],
+      "same_part_retry_attempts": 0,
+      "rollback_count": 1,
+      "test_action_count": 1,
+      "repeated_test_count": 0,
+      "test_consistency_violations": 0,
+      "valid_action_rate": 1.0,
+      "spare_units_consumed": 1,
+      "test_readings": {
+        "antenna_loopback": "ANTENNA_LOOPBACK_OPEN"
+      },
+      "action_rows": 16,
+      "feedback_to_changed_action": true
+    }
+  },
+  "failures": {
+    "F01_blind_two_distinct_replacements": {
+      "finish_tick": 10,
+      "communication_restored": false,
+      "terminal_reason": "SPARES_EXHAUSTED",
+      "spare_units_remaining": 0,
+      "wrong_replacements": 2,
+      "wrong_replace_durations": [
+        1,
+        1
+      ],
+      "same_part_retry_attempts": 0,
+      "rollback_count": 0,
+      "test_action_count": 0,
+      "repeated_test_count": 0,
+      "test_consistency_violations": 0,
+      "valid_action_rate": 1.0,
+      "spare_units_consumed": 2,
+      "test_readings": {},
+      "action_rows": 10
+    },
+    "F02_repeat_same_wrong_part": {
+      "finish_tick": 11,
+      "communication_restored": false,
+      "terminal_reason": "SPARES_EXHAUSTED",
+      "spare_units_remaining": 0,
+      "wrong_replacements": 2,
+      "wrong_replace_durations": [
+        1,
+        2
+      ],
+      "same_part_retry_attempts": 1,
+      "rollback_count": 0,
+      "test_action_count": 0,
+      "repeated_test_count": 0,
+      "test_consistency_violations": 0,
+      "valid_action_rate": 1.0,
+      "spare_units_consumed": 2,
+      "test_readings": {},
+      "action_rows": 10
+    },
+    "F03_ignore_conclusive_test_results": {
+      "finish_tick": 12,
+      "communication_restored": false,
+      "terminal_reason": "SPARES_EXHAUSTED",
+      "spare_units_remaining": 0,
+      "wrong_replacements": 2,
+      "wrong_replace_durations": [
+        1,
+        1
+      ],
+      "same_part_retry_attempts": 0,
+      "rollback_count": 0,
+      "test_action_count": 2,
+      "repeated_test_count": 0,
+      "test_consistency_violations": 0,
+      "valid_action_rate": 1.0,
+      "spare_units_consumed": 2,
+      "test_readings": {
+        "bus_load": "BUS_VOLTAGE_STABLE",
+        "software_checksum": "IMAGE_CHECKSUM_VALID"
+      },
+      "action_rows": 12
+    }
+  },
+  "test_reading_matrix_by_seed": {
+    "0": {
+      "bus_load": "BUS_VOLTAGE_STABLE",
+      "antenna_loopback": "ANTENNA_LOOPBACK_OPEN",
+      "software_checksum": "IMAGE_CHECKSUM_VALID"
+    },
+    "1": {
+      "bus_load": "BUS_VOLTAGE_DROOP",
+      "antenna_loopback": "ANTENNA_LOOPBACK_OK",
+      "software_checksum": "IMAGE_CHECKSUM_VALID"
+    },
+    "2": {
+      "bus_load": "BUS_VOLTAGE_STABLE",
+      "antenna_loopback": "ANTENNA_LOOPBACK_OK",
+      "software_checksum": "IMAGE_CHECKSUM_MISMATCH"
+    }
+  },
+  "rollback_retry_durations": [
+    1,
+    2
+  ],
+  "last_spare_boundaries": {
+    "B02_wrong_last_spare": {
+      "terminal_reason": "SPARES_EXHAUSTED",
+      "communication_restored": false,
+      "spare_units_remaining": 0
+    },
+    "B06_correct_last_spare": {
+      "terminal_reason": "SPARES_EXHAUSTED",
+      "communication_restored": false,
+      "spare_units_remaining": 0
+    }
+  },
+  "seed_initial_observations_equivalent": true,
+  "repeated_test_consistency": "same fixture yields immutable typed reading",
+  "oracle_rows": 12,
+  "oracle_sha256": "9040C1B02BD4F72138EF84F4F8E79939E49FB05CC3642EE251A37994369C7016"
+}

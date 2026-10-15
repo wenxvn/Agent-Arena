@@ -1,0 +1,39 @@
+{
+  "map_id": "MAP-16",
+  "runtime_verified": false,
+  "topology": "A-X-M-Y-B with siding M-D",
+  "reachable_collision_free_position_states": 28,
+  "unrecoverable_deadlock_states": [
+    {
+      "a": "A",
+      "b": "X"
+    },
+    {
+      "a": "Y",
+      "b": "B"
+    }
+  ],
+  "shortest_conflict_free_makespan_ticks": 6,
+  "lower_bound": "the siding train's six required segment traversals",
+  "manual_plans": {
+    "a_yields_siding": {
+      "ticks": 6,
+      "primitive_actions": 16,
+      "final_positions": {
+        "a": "B",
+        "b": "A"
+      },
+      "optimality_gap": 0.0
+    },
+    "b_yields_siding": {
+      "ticks": 6,
+      "primitive_actions": 16,
+      "final_positions": {
+        "a": "B",
+        "b": "A"
+      },
+      "optimality_gap": 0.0
+    }
+  },
+  "both_train_orders_are_distinct_and_optimal": true
+}

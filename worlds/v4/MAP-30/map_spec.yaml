@@ -1,0 +1,140 @@
+id: MAP-30
+title: 30 午夜审判
+world: castle
+capability_primary: long_horizon_evidence_memory_and_cautious_decision
+capability_secondary: [cross_source_consistency, evidence_conditioned_interview, chronological_reasoning]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: deterministic_seed0_midnight_case
+topology:
+  floors:
+    ground: [H, B, K, Y]
+    upper: [L, A, T]
+  nodes:
+    H: {role: entrance_hall_and_route_to_court, floor: ground}
+    B: {role: banquet_hall_and_key_handoff, floor: ground}
+    K: {role: kitchen_and_wax_plate, floor: ground}
+    Y: {role: courtyard_and_empty_bell_mount, floor: ground}
+    L: {role: study_and_stair_landing, floor: upper}
+    A: {role: archive_and_Q4_index, floor: upper}
+    T: {role: tower_and_bell_chain, floor: upper}
+    J: {role: midnight_courtroom, floor: ground}
+  undirected_edges:
+    - {a: H, b: B, duration_ticks: 1, route: banquet_corridor}
+    - {a: B, b: K, duration_ticks: 1, route: service_corridor}
+    - {a: K, b: Y, duration_ticks: 1, route: courtyard_door}
+    - {a: H, b: L, duration_ticks: 1, route: grand_stair}
+    - {a: L, b: A, duration_ticks: 1, route: archive_aisle}
+    - {a: A, b: T, duration_ticks: 1, route: tower_passage}
+    - {a: K, b: T, duration_ticks: 1, route: sealed_K_T_shortcut}
+    - {a: H, b: J, duration_ticks: 1, route: court_door}
+  edges_bidirectional: true
+  topology_notes:
+    - H-L is the explicitly designed floor connection omitted from the outline's node chain.
+    - K-T is a one-tick secret passage; it joins both floors and creates a meaningful route choice.
+    - Y is a clue-free courtyard spur, not a mandatory object stop.
+actors:
+  MARA_VENN: {role: archive_clerk, status: private_candidate}
+  ORIN_VALE: {role: banquet_captain, status: private_candidate}
+  PELL_ROOK: {role: tower_engineer, status: private_candidate}
+npcs:
+  ARCHIVE_CLERK: {location: A, knowledge: fixed_Q4_index_custodian}
+  BANQUET_CLERK: {location: B, knowledge: evidence_conditioned_handoff_memory}
+  KITCHEN_COOK: {location: K, knowledge: evidence_conditioned_wax_memory}
+  TOWER_WATCH: {location: T, knowledge: evidence_conditioned_signal_memory}
+initial_state:
+  location: H
+  tick: 0
+  midnight_deadline_tick: 40
+  public_alert: MIDNIGHT_TRIAL_PENDING
+  casebook: []
+  recent_action_window: 5
+  current_hypothesis: null
+  unsupported_formal_accusations: 0
+  max_unsupported_formal_accusations: 1
+  terminal: false
+deadline:
+  meaning: actions must complete before the castle midnight hearing closes
+  each_valid_action_costs_ticks: 1
+  success_on_tick_40_takes_precedence_over_deadline_failure: true
+  unresolved_case_after_tick_40: DEADLINE_REACHED
+  no_generic_hazard_or_periodic_countdown: true
+evidence_memory:
+  casebook_capacity: 4
+  required_entry_ids: [Q4_CODEBOOK, EVENT_1_HANDOFF, EVENT_2_WAX, EVENT_3_SIGNAL]
+  discovered_evidence_is_available_from_recent_action_window_or_casebook_only: true
+  record_cost_ticks: 1
+  records_are_typed_and_append_only: true
+  Q4_must_be_recorded_before_it_leaves_recent_action_window: true
+  entries_can_be_extended_with_later_corroboration: true
+events:
+  - id: EVENT_1_HANDOFF
+    private_truth: {time: '23:10', location: B, action: master_key_K7_handed_to_duty_code_M4}
+    required_sources: [B_KEY_STUB_2310, B_WITNESS_HANDOFF]
+    precedes: EVENT_2_WAX
+  - id: EVENT_2_WAX
+    private_truth: {time: '23:22', location: K, action: wax_plate_heated_with_master_key_K7_by_duty_code_M4}
+    required_sources: [K_WAX_PLATE_2322, K_WITNESS_WAX_ROUTE]
+    precedes: EVENT_3_SIGNAL
+    interview_unlock_entry: EVENT_1_HANDOFF
+  - id: EVENT_3_SIGNAL
+    private_truth: {time: '23:40', location: T, action: bell_chain_activated_by_duty_code_M4}
+    required_sources: [T_CHAIN_REGISTER_2340, T_WITNESS_SIGNAL_ROUTE]
+    interview_unlock_entry: EVENT_2_WAX
+code_key:
+  id: Q4_CODE_INDEX
+  location: A
+  discoverable_after: {inspect: Q4_ARCHIVE_DOCKET, interview_npc: ARCHIVE_CLERK, topic_id: Q4_INDEX}
+  private_fact: {duty_code: M4, person: MARA_VENN}
+  required_casebook_entry: Q4_CODEBOOK
+  final_citation_required: true
+actions:
+  - {name: move, parameters: [adjacent_node], duration_ticks: 1, invalid_cost: 0}
+  - {name: inspect, parameters: [local_evidence_id], duration_ticks: 1, evidence_becomes_recent: true}
+  - {name: interview, parameters: [npc_id, topic_id, shown_evidence_ids, shown_casebook_entry_ids], duration_ticks: 1, deterministic_conditional_answers: true}
+  - {name: record, parameters: [casebook_entry_id, currently_available_evidence_ids], duration_ticks: 1, append_only: true}
+  - {name: submit_intermediate_hypothesis, parameters: [typed_provisional_claim], duration_ticks: 1, adjudication_feedback: none}
+  - {name: compare_records, parameters: [casebook_entry_ids], duration_ticks: 1, requires_previously_recorded_entries: true}
+  - {name: formal_accuse, parameters: [person_id, event_claims, cited_casebook_entry_ids], location: J, duration_ticks: 1}
+npc_response_rules:
+  response_renderer: fixed_seed_answer_table
+  freeform_llm_generation: forbidden
+  same_seed_same_npc_same_topic_same_public_evidence_state_same_answer: true
+  banquet_handoff_requires_shown: [B_KEY_STUB_2310]
+  archive_code_requires_shown: [Q4_ARCHIVE_DOCKET]
+  kitchen_exact_memory_requires_shown_entry: EVENT_1_HANDOFF
+  tower_exact_memory_requires_shown_entry: EVENT_2_WAX
+  newly_disclosed_facts_do_not_mutate_truth: true
+formal_trial:
+  valid_case_requires:
+    - Q4_CODEBOOK cites Q4_CODE_INDEX and maps M4 to MARA_VENN
+    - EVENT_1_HANDOFF contains B_KEY_STUB_2310 and B_WITNESS_HANDOFF
+    - EVENT_2_WAX contains K_WAX_PLATE_2322 and K_WITNESS_WAX_ROUTE
+    - EVENT_3_SIGNAL contains T_CHAIN_REGISTER_2340 and T_WITNESS_SIGNAL_ROUTE
+    - compare_records has confirmed chronological continuity 23:10 < 23:22 < 23:40
+  required_claims:
+    - {event_id: EVENT_1_HANDOFF, time: '23:10', location: B, duty_code: M4}
+    - {event_id: EVENT_2_WAX, time: '23:22', location: K, duty_code: M4}
+    - {event_id: EVENT_3_SIGNAL, time: '23:40', location: T, duty_code: M4}
+  correct_person: MARA_VENN
+  maximum_unsustained_formal_filings_before_success: 1
+  generic_public_rejection: ACCUSATION_NOT_SUSTAINED
+  rejection_must_not_reveal_truth_or_missing_private_fact: true
+  success: ALL_THREE_EVENTS_ACCOUNTED_FOR_AND_MARA_VENN_PROVEN
+  second_unsustained_filing: ACCUSATION_LIMIT_EXCEEDED
+  one_unsustained_filing_can_be_recovered_after_more_evidence: true
+observation_contract:
+  fields: [current_tick, current_node, local_neighbors, public_alert, visible_local_evidence, recent_action_window, casebook, current_hypothesis, unsupported_formal_accusations, last_action_result, terminal, terminal_reason]
+  no_truth_or_future_event_leak: true
+  no_unvisited_evidence_or_unasked_interview_text: true
+  evidence_facts_appear_only_after_discovery: true
+  complete_casebook_persists_after_recent_action_window_expires: true
+  accusation_rejection_truth_neutral: true
+reason_codes: [MOVE_SUCCEEDED, EVIDENCE_FOUND, ANSWER_RECEIVED, NO_ADDITIONAL_RECOLLECTION, ENTRY_RECORDED, HYPOTHESIS_RECORDED, CHAIN_COHERENT, CODE_KEY_NOT_RECORDED, RECORDS_DO_NOT_ALIGN, ACCUSATION_NOT_SUSTAINED, ACCUSATION_LIMIT_EXCEEDED, DEADLINE_REACHED, ALL_THREE_EVENTS_ACCOUNTED_FOR_AND_MARA_VENN_PROVEN]
+metrics: [finish_tick, event_claim_accuracy, evidence_chain_completeness, Q4_recall_after_long_gap, timeline_consistency, casebook_sources_retained, unsupported_formal_accusation_count, premature_accusation_rate]
+private_fixture_path: evidence_or_rules.yaml
+manual_scenarios_path: planning/hand_traces.json
+failure_cases_path: failure_traces/cases.yaml
+seed_replay_path: planning/seed_replay.yaml
+oracle_path: oracle_trace.jsonl

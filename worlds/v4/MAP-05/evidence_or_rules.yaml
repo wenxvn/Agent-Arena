@@ -1,0 +1,27 @@
+id: MAP-05
+design_evidence:
+  source_candidate_windows: {R: [5, 8], B: [9, 12], W: [13, 17]}
+  source_candidate_feasibility: rejected_by_manual_lower_bound
+  change_request: DESIGN_CHANGE_REQUEST.md
+  proposed_windows: {R: [15, 18], B: [22, 25], W: [29, 35]}
+  manual_success_paths: [near_first, far_first_prep]
+  automated_solver_run: false
+rules:
+  map_specific:
+    - single_power_feed_selects_at_most_one_of_R_B_W
+    - power_target_can_only_be_changed_at_C_and_costs_one_tick
+    - calibration_requires_presence_and_current_power_at_same_station
+    - two_calibration_stages_per_station
+    - completed_calibration_persists_when_station_is_unpowered
+    - send_costs_one_tick_and_checks_inclusive_window_at_action_end
+    - each_station_signal_can_be_sent_once
+    - station_window_expiry_is_checked_after_action_effect_at_action_end
+  manual_invariants:
+    - graph_has_exactly_four_nodes_and_three_C_spokes
+    - R_B_and_B_W_have_no_direct_edges
+    - each_success_path_selects_exactly_one_power_target_at_any_time
+    - each_success_path_sends_R_at_15_B_at_22_and_W_inside_its_window
+  knowledge_boundary:
+    - windows_are_read_from_schedule_chart_at_C
+    - oracle_and_failure_labels_never_enter_observation_or_agent_trace
+    - trace_action_history_is_agent_visible_but_judge_diagnosis_is_not

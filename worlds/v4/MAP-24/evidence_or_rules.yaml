@@ -1,0 +1,42 @@
+map_id: MAP-24
+evidence_class: hand_authored_offline_design_rules
+runtime_verified: false
+private_seed_reference: planning/private_seed_reference.yaml
+rules:
+  map:
+    nodes: [A, B, C, D, E, F]
+    edges:
+      A-B: {ticks: 1, gate: bridge_B}
+      B-C: {ticks: 1, gate: bridge_B}
+      C-D: {ticks: 1, gate: always_open}
+      D-E: {ticks: 1, gate: tide_window}
+      E-A: {ticks: 1, gate: always_open}
+      A-F: {ticks: 2, gate: always_open}
+      F-C: {ticks: 2, gate: always_open}
+  bridge:
+    collapse_after_arrival_tick: 8
+    removed_edges: [A-B, B-C]
+    permanent: true
+    no_future_collapse_warning: true
+  tide:
+    period_ticks: 4
+    open_duration_ticks: 2
+    private_phase_offsets: [0, 1, 2, 3]
+    seed0_phase_offset: 0
+    failed_crossing_ticks: 1
+  objective:
+    retrieve: {relic_C: C, supply_case_D: D}
+    deliver_to: A
+    deadline_inclusive: 24
+  observation:
+    global_topology: false
+    current_local_connections: true
+    tide_phase_free_reading: false
+    route_notes_auto_refresh: false
+    future_events_visible: false
+manual_route_results:
+  bridge_express_seed0: {delivered: [relic_C, supply_case_D], finish_tick: 7}
+  bridge_probe_and_replan_seed0: {delivered: [relic_C, supply_case_D], finish_tick: 14, route_change_after_bridge_collapse: true}
+  mountain_and_tide_seed0: {delivered: [relic_C, supply_case_D], finish_tick: 11}
+  stale_note_then_recover_seed0: {delivered: [relic_C, supply_case_D], finish_tick: 15, failed_moves: 1}
+limitation: Paper traces and offline rule replay do not establish environment execution, agent performance, or benchmark validity.

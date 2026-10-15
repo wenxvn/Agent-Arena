@@ -1,0 +1,78 @@
+map_id: MAP-24
+authorship: 每条失败轨迹按手工拓扑逐动作结算；F02/F03的重复段分别固定次数以精确跨越24 tick界限。
+cases:
+  - id: F01
+    name: 携物停在桥心做地图记录后被孤立
+    seed: 0
+    actions:
+      - {action: move, to: B}
+      - {action: move, to: C}
+      - {action: take, item: relic_C}
+      - {action: move, to: D}
+      - {action: take, item: supply_case_D}
+      - {action: move, to: C}
+      - {action: move, to: B}
+      - {action: record_route}
+    expected: {terminal_reason: STRANDED_ON_BRIDGE, final_node: B, finish_tick: 8, carried_items: [relic_C, supply_case_D], success: false}
+
+  - id: F02
+    name: 看到C侧桥边断开后仍沿旧图重试至超时
+    seed: 0
+    prefix_actions:
+      - {action: move, to: B}
+      - {action: probe_bridge}
+      - {action: record_route}
+      - {action: move, to: C}
+      - {action: take, item: relic_C}
+      - {action: move, to: D}
+      - {action: take, item: supply_case_D}
+      - {action: move, to: C}
+    repeat_after_prefix: {action: move, to: B, count: 16}
+    expected: {terminal_reason: DEADLINE_EXCEEDED, final_node: C, finish_tick: 25, stale_route_attempts: 16, carried_items: [relic_C, supply_case_D], success: false}
+
+  - id: F03
+    name: 把测水动作重复当成等待而不离开河岸
+    seed: 0
+    prefix_actions:
+      - {action: move, to: F}
+      - {action: move, to: C}
+      - {action: take, item: relic_C}
+      - {action: move, to: D}
+      - {action: take, item: supply_case_D}
+    repeat_after_prefix: {action: measure_tide, count: 18}
+    expected: {terminal_reason: DEADLINE_EXCEEDED, final_node: D, finish_tick: 25, tide_measurements: 18, carried_items: [relic_C, supply_case_D], success: false}
+
+boundary_cases:
+  - id: B01
+    name: C到B在tick7抵达后于tick8坍塌
+    initial: {tick: 7, node: C, bridge_open: true}
+    action: {action: move, to: B, duration_ticks: 1}
+    expected: {arrival_tick: 8, destination_before_event: B, terminal_reason: STRANDED_ON_BRIDGE}
+  - id: B02
+    name: B到A在tick7出发恰好先离开桥再结算坍塌
+    initial: {tick: 7, node: B, bridge_open: true}
+    action: {action: move, to: A, duration_ticks: 1}
+    expected: {arrival_tick: 8, destination_after_event: A, bridge_collapsed: true, stranded: false}
+  - id: B03
+    name: seed0潮道开放与关闭出发端点
+    seed: 0
+    departures: [{tick: 1, expected: OPEN}, {tick: 2, expected: CLOSED}, {tick: 5, expected: OPEN}, {tick: 6, expected: CLOSED}]
+  - id: B04
+    name: 最后时刻交付端点
+    states:
+      - {tick: 23, node: E, carried_items: [relic_C, supply_case_D], action: {action: move, to: A}, expected: {tick: 24, success: true}}
+      - {tick: 24, node: E, carried_items: [relic_C, supply_case_D], action: {action: move, to: A}, expected: {tick: 25, success: false, terminal_reason: DEADLINE_EXCEEDED}}
+  - id: B05
+    name: 低潮关闭时的失败移动原地耗一拍
+    seed: 0
+    initial: {tick: 2, node: D}
+    action: {action: move, to: E}
+    expected: {tick: 3, node: D, action_result: MOVE_FAILED_EDGE_CLOSED, failed_moves: 1}
+
+seed_replay:
+  seed: 0
+  private_fixture_path: planning/private_seed_reference.yaml
+  expected_route: bridge_probe_then_update
+  expected_public_actions: [move_A_B, probe_bridge, record_route_B, move_B_C, take_C, move_C_D, take_D, move_D_C, record_route_C, move_C_F, move_F_A]
+  expected_terminal: {reason: ALL_ITEMS_DELIVERED, finish_tick: 14}
+  public_trace_may_not_include: [bridge_collapse_tick, tide_phase_offset, unseen_tide_phase, future_event_log, globally_updated_map]

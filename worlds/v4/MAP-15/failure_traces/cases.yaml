@@ -1,0 +1,56 @@
+map_id: MAP-15
+seed: 0
+private_target_colors_are_judge_only: true
+failure_traces:
+  - id: F01_reuse_slot_number_across_training_rooms
+    initial: {area: A, tick: 0, resources: 4, test_errors: 0}
+    actions:
+      - {tick: 0, action: {tool: inspect_symbols, area: A}, effect: signs_visible_no_tick_change}
+      - {tick_before: 0, action: {tool: choose_door, slot_index: 1}, private_target: red, outcome: passed, tick_after: 1, area_after: B, resources_after: 4}
+      - {tick: 1, action: {tool: inspect_symbols, area: B}, effect: signs_visible_no_tick_change}
+      - {tick_before: 1, action: {tool: choose_door, slot_index: 1}, private_target: blue, outcome: rejected, tick_after: 2, area_after: B, resources_after: 3}
+      - {tick_before: 2, action: {tool: choose_door, slot_index: 1}, private_target: red, outcome: rejected, tick_after: 3, area_after: B, resources_after: 2}
+      - {tick_before: 3, action: {tool: choose_door, slot_index: 1}, private_target: blue, outcome: rejected, tick_after: 4, area_after: B, resources_after: 1}
+      - {tick_before: 4, action: {tool: choose_door, slot_index: 1}, private_target: red, outcome: terminal_failure, reason: RESOURCE_DEPLETED, tick_after: 5, resources_after: 0}
+    explanation: A的槽1恰好是红门；B槽1换成绿门，连续复用槽号会在B耗尽资源。失败反馈不指出目标颜色。
+
+  - id: F02_evaluate_parity_after_advancing_tick
+    initial: {area: A, tick: 0, resources: 4, test_errors: 0}
+    actions:
+      - {tick: 0, action: {tool: inspect_symbols, area: A}, effect: signs_visible_no_tick_change}
+      - {tick_before: 0, action: {tool: choose_door, slot_index: 2}, chosen: blue, private_target: red, outcome: rejected, tick_after: 1, resources_after: 3}
+      - {tick_before: 1, action: {tool: choose_door, slot_index: 1}, chosen: red, private_target: blue, outcome: rejected, tick_after: 2, resources_after: 2}
+      - {tick_before: 2, action: {tool: choose_door, slot_index: 2}, chosen: blue, private_target: red, outcome: rejected, tick_after: 3, resources_after: 1}
+      - {tick_before: 3, action: {tool: choose_door, slot_index: 1}, chosen: red, private_target: blue, outcome: terminal_failure, reason: RESOURCE_DEPLETED, tick_after: 4, resources_after: 0}
+    explanation: 玩家把每次动作推进后的tick用于本次判定，四次均与动作开始时的奇偶规则相反。
+
+  - id: F03_repeat_test_door_after_phase_changed
+    initial: {area: A, tick: 0, resources: 4, test_errors: 0}
+    actions:
+      - {tick: 0, action: {tool: inspect_symbols, area: A}}
+      - {tick_before: 0, action: {tool: choose_door, slot_index: 1}, outcome: passed, tick_after: 1, area_after: B}
+      - {tick: 1, action: {tool: inspect_symbols, area: B}}
+      - {tick_before: 1, action: {tool: choose_door, slot_index: 2}, outcome: passed, tick_after: 2, area_after: C}
+      - {tick: 2, action: {tool: inspect_symbols, area: C}}
+      - {tick_before: 2, action: {tool: choose_door, slot_index: 2}, outcome: passed, tick_after: 3, area_after: T}
+      - {tick: 3, action: {tool: inspect_symbols, area: T}}
+      - {tick_before: 3, action: {tool: choose_door, slot_index: 2}, chosen: red, private_target: green, outcome: rejected, tick_after: 4, test_errors_after: 1, resources_after: 3}
+      - {tick_before: 4, action: {tool: choose_door, slot_index: 2}, chosen: red, private_target: gold, outcome: terminal_failure, reason: TEST_WRONG_LIMIT, tick_after: 5, test_errors_after: 2, resources_after: 2}
+    explanation: 测试门布局固定但目标随tick奇偶翻转；第一次失败后应根据tick4重算，不得沿用槽2。
+
+boundary_case:
+  id: B01_last_resource_and_second_test_error
+  rationale: 从seed0可达；先在A、B各错一次后成功离开，再在T错一次，第二次T错误恰好耗尽最后一枚资源。
+  actions:
+    - {tick: 0, action: {tool: inspect_symbols, area: A}, effect: signs_visible_no_tick_change}
+    - {tick_before: 0, action: {tool: choose_door, slot_index: 2}, private_target: red, outcome: rejected, resources_after: 3, tick_after: 1}
+    - {tick_before: 1, action: {tool: choose_door, slot_index: 2}, private_target: blue, outcome: passed, resources_after: 3, tick_after: 2, area_after: B}
+    - {tick: 2, action: {tool: inspect_symbols, area: B}, effect: signs_visible_no_tick_change}
+    - {tick_before: 2, action: {tool: choose_door, slot_index: 2}, private_target: red, outcome: rejected, resources_after: 2, tick_after: 3}
+    - {tick_before: 3, action: {tool: choose_door, slot_index: 2}, private_target: blue, outcome: passed, resources_after: 2, tick_after: 4, area_after: C}
+    - {tick: 4, action: {tool: inspect_symbols, area: C}, effect: signs_visible_no_tick_change}
+    - {tick_before: 4, action: {tool: choose_door, slot_index: 2}, private_target: gold, outcome: passed, resources_after: 2, tick_after: 5, area_after: T}
+    - {tick: 5, action: {tool: inspect_symbols, area: T}, effect: signs_visible_no_tick_change}
+    - {tick_before: 5, action: {tool: choose_door, slot_index: 1}, private_target: green, outcome: rejected, resources_after: 1, test_errors_after: 1, tick_after: 6}
+    - {tick_before: 6, action: {tool: choose_door, slot_index: 2}, private_target: gold, outcome: terminal_failure, reason: RESOURCE_DEPLETED, resources_after: 0, test_errors_after: 2, tick_after: 7}
+  expected_terminal_event_order: [increment_tick, decrement_resource, increment_test_error, RESOURCE_DEPLETED_before_TEST_WRONG_LIMIT]

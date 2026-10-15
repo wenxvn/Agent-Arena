@@ -1,0 +1,49 @@
+{
+  "map_id": "MAP-28",
+  "classification": "HAND_AUTHORED_OFFLINE_INVESTIGATIONS",
+  "seed": 0,
+  "truth_never_in_public_trace": true,
+  "routes": [
+    {
+      "id": "physical_then_witness",
+      "intent": "先查锁和鞋印，再读登记与询问厨师；用物证修正目击者的人名",
+      "actions": [
+        {"name": "move", "to": "V"}, {"name": "investigate", "target_id": "vault_lock_events"},
+        {"name": "move", "to": "S"}, {"name": "investigate", "target_id": "footprint_trail"},
+        {"name": "move", "to": "K"}, {"name": "move", "to": "G"}, {"name": "move", "to": "A"},
+        {"name": "read_record", "record_id": "key_registry"},
+        {"name": "record", "evidence_id": "KEY_REGISTER_K3_CELINE"},
+        {"name": "record", "evidence_id": "LOCK_ENTRY_K3_2106"},
+        {"name": "record", "evidence_id": "LOCK_EXIT_S_2114"},
+        {"name": "record", "evidence_id": "PRINT_C7_ROUTE_SV"},
+        {"name": "move", "to": "G"}, {"name": "move", "to": "K"},
+        {"name": "interview", "witness_id": "kitchen_cook"},
+        {"name": "record", "evidence_id": "WITNESS_BASIL_S_WINDOW"},
+        {"name": "move", "to": "G"}, {"name": "move", "to": "V"}, {"name": "move", "to": "H"},
+        {"name": "submit", "claims": {"person_id": "CELINE", "entry_path_id": "SECRET_S_V", "entry_time": "21:06", "exit_time": "21:14"}, "citations_by_claim": {"person_id": ["KEY_REGISTER_K3_CELINE", "LOCK_ENTRY_K3_2106"], "entry_path_id": ["LOCK_ENTRY_K3_2106", "PRINT_C7_ROUTE_SV"], "entry_time": ["LOCK_ENTRY_K3_2106", "PRINT_C7_ROUTE_SV"], "exit_time": ["LOCK_EXIT_S_2114", "PRINT_C7_ROUTE_SV"]}}
+      ],
+      "expected": {"finish_tick": 20, "success": true, "factual_accuracy": "4/4", "evidence_coverage": "4/4", "witness_identity_revised_after_physical_evidence": true}
+    },
+    {
+      "id": "witness_then_verify",
+      "intent": "先听并记录Basil目击说法，再用登记、锁日志和脚印纠正身份并交叉验证路径/时间",
+      "actions": [
+        {"name": "move", "to": "V"}, {"name": "move", "to": "G"}, {"name": "move", "to": "K"},
+        {"name": "interview", "witness_id": "kitchen_cook"},
+        {"name": "record", "evidence_id": "WITNESS_BASIL_S_WINDOW"},
+        {"name": "move", "to": "G"}, {"name": "move", "to": "A"},
+        {"name": "read_record", "record_id": "key_registry"},
+        {"name": "record", "evidence_id": "KEY_REGISTER_K3_CELINE"},
+        {"name": "move", "to": "G"}, {"name": "move", "to": "V"},
+        {"name": "investigate", "target_id": "vault_lock_events"},
+        {"name": "record", "evidence_id": "LOCK_ENTRY_K3_2106"},
+        {"name": "record", "evidence_id": "LOCK_EXIT_S_2114"},
+        {"name": "move", "to": "S"}, {"name": "investigate", "target_id": "footprint_trail"},
+        {"name": "record", "evidence_id": "PRINT_C7_ROUTE_SV"},
+        {"name": "move", "to": "V"}, {"name": "move", "to": "H"},
+        {"name": "submit", "claims": {"person_id": "CELINE", "entry_path_id": "SECRET_S_V", "entry_time": "21:06", "exit_time": "21:14"}, "citations_by_claim": {"person_id": ["KEY_REGISTER_K3_CELINE", "PRINT_C7_ROUTE_SV"], "entry_path_id": ["LOCK_ENTRY_K3_2106", "PRINT_C7_ROUTE_SV"], "entry_time": ["LOCK_ENTRY_K3_2106", "PRINT_C7_ROUTE_SV"], "exit_time": ["LOCK_EXIT_S_2114", "PRINT_C7_ROUTE_SV"]}}
+      ],
+      "expected": {"finish_tick": 20, "success": true, "factual_accuracy": "4/4", "evidence_coverage": "4/4", "witness_identity_revised_after_physical_evidence": true}
+    }
+  ]
+}

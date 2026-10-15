@@ -1,0 +1,22 @@
+id: MAP-09
+cases:
+  - id: F01_OPEN_BULKHEAD_SHORTS_E
+    precondition: [tick=0, location=E, water_E=3, water_P=5, e_p_bulkhead_open=true]
+    actions: ["wait(1)", "wait(1)"]
+    state_after_each_tick:
+      - {tick: 1, water_E: 4, water_P: 4, reason: none}
+      - {tick: 2, water_E: 5, water_P: 3, reason: SHORT_CIRCUIT}
+    expected_terminal: {status: scenario_failure, reason: SHORT_CIRCUIT, tick: 2}
+    diagnosis: 忽略 P-E 漏闸；E=4仍安全，但下一 tick 到5时电力短路。
+  - id: F02_OVERPUMP_LEAVES_NO_RADIO_POWER
+    precondition: [tick=0, location=E, battery=5, water_P=5, oxygen_reserve=12]
+    actions: ["isolate(P-E,preserve)", "move(E_P)", "pump_once", "pump_once", "pump_once", "move(E_P)", "restore_power_line", "move(E_C_EMERGENCY)", "move(O_C)", "restart_oxygen", "replenish_oxygen", "move(O_C)", "send_distress_packet"]
+    state_at_send_attempt: {tick: 12, location: C, battery: 2, water_P: 0, oxygen_stable_ticks: 3}
+    expected_terminal: {status: scenario_failure, reason: INSUFFICIENT_TRANSMIT_POWER, tick: 13}
+    diagnosis: P 已降至0仍多抽一 tick，把完整求救包所需的3电量耗掉1格；发报门槛校验耗1 tick后以电量不足终止，不扣剩余电量。
+  - id: F03_OXYGEN_RESERVE_DEPLETED
+    precondition: [tick=0, location=E, oxygen_reserve=12, oxygen_support_on=false]
+    actions: ["isolate(P-E,sacrifice)", "wait(1) × 11"]
+    oxygen_after_each_tick: [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+    expected_terminal: {status: scenario_failure, reason: OXYGEN_DEPLETED, tick: 12}
+    diagnosis: 封舱不会自行恢复生命支持；不修电线、不重启 O，使氧储备在第12 tick耗尽。

@@ -1,0 +1,32 @@
+id: MAP-07
+cases:
+  - id: F01_BYPASS_BACKFLOWS_INTO_A
+    precondition: [tick=0, water_A=6, water_C=4, all_valves_closed, pump_off]
+    actions: ["interact(control_panel,set_valve(v4,open))", "wait(1)", "wait(1)"]
+    water_after_each_tick:
+      - {tick: 1, A: 7, B: 2, C: 3, D: 0}
+      - {tick: 2, A: 8, B: 2, C: 2, D: 0}
+      - {tick: 3, A: 9, B: 2, C: 1, D: 0}
+    expected_terminal: {status: scenario_failure, reason: COMPARTMENT_OVERFLOW_A, tick: 3}
+    diagnosis: 把单向旁路误当泄压支路；v4 实际将 C 水量送回已接近阈值的 A。
+  - id: F02_UPSTREAM_FLOW_WITHOUT_DRAIN
+    precondition: [tick=0, water_A=6, water_B=2, water_C=4, all_valves_closed, pump_off]
+    actions: ["interact(control_panel,start_pump)", "interact(control_panel,set_valve(v1,open))", "interact(control_panel,set_valve(v2,open))", "wait(1)", "wait(1)"]
+    water_after_each_tick:
+      - {tick: 1, A: 6, B: 2, C: 4, D: 0}
+      - {tick: 2, A: 4, B: 4, C: 4, D: 0}
+      - {tick: 3, A: 2, B: 4, C: 6, D: 0}
+      - {tick: 4, A: 0, B: 4, C: 8, D: 0}
+      - {tick: 5, A: 0, B: 2, C: 10, D: 0}
+    expected_terminal: {status: scenario_failure, reason: COMPARTMENT_OVERFLOW_C, tick: 5}
+    diagnosis: 泵只能从 D 排水；没开 v3 时即使泵已运行，也不能排出 B→C 输来的水。
+  - id: F03_BYPASS_AND_V1_FILL_B
+    precondition: [tick=0, water_A=6, water_B=2, water_C=4, all_valves_closed, pump_off]
+    actions: ["interact(control_panel,set_valve(v1,open))", "interact(control_panel,set_valve(v4,open))", "wait(1)", "wait(1)"]
+    water_after_each_tick:
+      - {tick: 1, A: 4, B: 4, C: 4, D: 0}
+      - {tick: 2, A: 3, B: 6, C: 3, D: 0}
+      - {tick: 3, A: 2, B: 8, C: 2, D: 0}
+      - {tick: 4, A: 1, B: 10, C: 1, D: 0}
+    expected_terminal: {status: scenario_failure, reason: COMPARTMENT_OVERFLOW_B, tick: 4}
+    diagnosis: v1 把 A 的水压入 B，而 v2 未开；v4 回流补充 A 后，下一 tick 又把水推入 B。

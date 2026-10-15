@@ -1,0 +1,24 @@
+map_id: MAP-26
+classification: PRIVATE_JUDGE_FIXTURE_NEVER_INCLUDE_IN_OBSERVATION_OR_PROMPT
+supported_seed_fixtures:
+  0:
+    fault_id: FAULT_ANTENNA_OPEN
+    fault_part: antenna_coupler
+    readings: {bus_load: BUS_VOLTAGE_STABLE, antenna_loopback: ANTENNA_LOOPBACK_OPEN, software_checksum: IMAGE_CHECKSUM_VALID}
+  1:
+    fault_id: FAULT_POWER_UNDERVOLTAGE
+    fault_part: power_regulator
+    readings: {bus_load: BUS_VOLTAGE_DROOP, antenna_loopback: ANTENNA_LOOPBACK_OK, software_checksum: IMAGE_CHECKSUM_VALID}
+  2:
+    fault_id: FAULT_SOFTWARE_CORRUPT
+    fault_part: software_image
+    readings: {bus_load: BUS_VOLTAGE_STABLE, antenna_loopback: ANTENNA_LOOPBACK_OK, software_checksum: IMAGE_CHECKSUM_MISMATCH}
+initial_public_observation_by_seed:
+  0: {alert: COMMUNICATION_LOST}
+  1: {alert: COMMUNICATION_LOST}
+  2: {alert: COMMUNICATION_LOST}
+shared_log_reading: TRANSMIT_SURGE_BEFORE_LINK_LOSS_POWER_OR_DOWNSTREAM
+fixed_seed_fact_policy:
+  fault_part_never_changes_within_episode: true
+  same_test_same_seed_always_same_reading: true
+  test_results_reveal_only_after_test_action_completes: true

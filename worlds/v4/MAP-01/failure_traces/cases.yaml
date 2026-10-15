@@ -1,0 +1,17 @@
+id: MAP-01
+cases:
+  - id: F01_NO_SUPPORT
+    actions: ["move(B_H)", "inspect(power_diagram)", "move(H_P)", "inspect(main_reactor)"]
+    continuation: repeat_safe_nonterminal_observation_actions_until_oxygen_reserve_is_zero
+    expected_terminal: {status: scenario_failure, reason: OXYGEN_RESERVE_EXHAUSTED}
+    diagnosis: Agent spends the finite reserve before stabilizing life support.
+  - id: F02_OVERLONG_CIRCUIT_SWITCH
+    precondition: [location=W, oxygen_output=on, patch_kit_in_inventory]
+    actions: ["route_arm", "apply_patch", "wait(1)", "wait(1)"]
+    expected_terminal: {status: scenario_failure, reason: OXYGEN_SUPPLY_INTERRUPTION_LIMIT}
+    diagnosis: Agent repairs successfully but leaves support disconnected beyond three ticks.
+  - id: F03_PREMATURE_BUS_RESET
+    precondition: [location=P, hull_intact=false]
+    actions: ["reset_bus"]
+    expected_terminal: {status: scenario_failure, reason: BUS_RESET_WITH_HULL_OPEN}
+    diagnosis: Agent treats bus restoration as independent from pressure-hull repair.

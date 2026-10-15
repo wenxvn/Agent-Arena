@@ -1,0 +1,155 @@
+{
+  "map_id": "MAP-28",
+  "result": "MAP28_CROSS_SOURCE_CASE_AND_UNIQUE_TUPLE_REPLAYED",
+  "runtime_verified": false,
+  "truth_tuple_for_judge_audit": {
+    "person_id": "CELINE",
+    "entry_path_id": "SECRET_S_V",
+    "entry_time": "21:06",
+    "exit_time": "21:14"
+  },
+  "unique_truth_tuple_count": 1,
+  "routes": {
+    "physical_then_witness": {
+      "finish_tick": 20,
+      "terminal_reason": "ALL_CLAIMS_SUPPORTED_AND_CORRECT",
+      "private_judge_reason": "ACCEPTED",
+      "success": true,
+      "factual_accuracy": "4/4",
+      "evidence_coverage": "4/4",
+      "supported_claim_count": 4,
+      "unsupported_claim_count": 0,
+      "independent_source_classes_by_claim": {
+        "entry_path_id": 2,
+        "entry_time": 2,
+        "exit_time": 2,
+        "person_id": 2
+      },
+      "witness_identity_revised_after_physical_evidence": true,
+      "evidence_ids_recorded": [
+        "KEY_REGISTER_K3_CELINE",
+        "LOCK_ENTRY_K3_2106",
+        "LOCK_EXIT_S_2114",
+        "PRINT_C7_ROUTE_SV",
+        "WITNESS_BASIL_S_WINDOW"
+      ],
+      "invalid_actions": 0,
+      "action_rows": 20
+    },
+    "witness_then_verify": {
+      "finish_tick": 20,
+      "terminal_reason": "ALL_CLAIMS_SUPPORTED_AND_CORRECT",
+      "private_judge_reason": "ACCEPTED",
+      "success": true,
+      "factual_accuracy": "4/4",
+      "evidence_coverage": "4/4",
+      "supported_claim_count": 4,
+      "unsupported_claim_count": 0,
+      "independent_source_classes_by_claim": {
+        "entry_path_id": 2,
+        "entry_time": 2,
+        "exit_time": 2,
+        "person_id": 2
+      },
+      "witness_identity_revised_after_physical_evidence": true,
+      "evidence_ids_recorded": [
+        "KEY_REGISTER_K3_CELINE",
+        "LOCK_ENTRY_K3_2106",
+        "LOCK_EXIT_S_2114",
+        "PRINT_C7_ROUTE_SV",
+        "WITNESS_BASIL_S_WINDOW"
+      ],
+      "invalid_actions": 0,
+      "action_rows": 20
+    }
+  },
+  "failures": {
+    "F01_witness_only_accusation": {
+      "finish_tick": 9,
+      "terminal_reason": "CASE_REJECTED",
+      "private_judge_reason": "INSUFFICIENT_INDEPENDENT_SUPPORT",
+      "success": false,
+      "factual_accuracy": "3/4",
+      "evidence_coverage": "0/4",
+      "supported_claim_count": 0,
+      "unsupported_claim_count": 4,
+      "independent_source_classes_by_claim": {
+        "entry_path_id": 1,
+        "entry_time": 1,
+        "exit_time": 1,
+        "person_id": 1
+      },
+      "witness_identity_revised_after_physical_evidence": false,
+      "evidence_ids_recorded": [
+        "WITNESS_BASIL_S_WINDOW"
+      ],
+      "invalid_actions": 0,
+      "action_rows": 9
+    },
+    "F02_force_witness_claim_against_records": {
+      "finish_tick": 20,
+      "terminal_reason": "CASE_REJECTED",
+      "private_judge_reason": "CLAIM_CONTRADICTS_RECORDED_EVIDENCE",
+      "success": false,
+      "factual_accuracy": "3/4",
+      "evidence_coverage": "3/4",
+      "supported_claim_count": 3,
+      "unsupported_claim_count": 1,
+      "independent_source_classes_by_claim": {
+        "entry_path_id": 2,
+        "entry_time": 2,
+        "exit_time": 2,
+        "person_id": 1
+      },
+      "witness_identity_revised_after_physical_evidence": false,
+      "evidence_ids_recorded": [
+        "KEY_REGISTER_K3_CELINE",
+        "LOCK_ENTRY_K3_2106",
+        "LOCK_EXIT_S_2114",
+        "PRINT_C7_ROUTE_SV",
+        "WITNESS_BASIL_S_WINDOW"
+      ],
+      "invalid_actions": 0,
+      "action_rows": 20
+    },
+    "F03_correct_guess_one_source_class": {
+      "finish_tick": 11,
+      "terminal_reason": "CASE_REJECTED",
+      "private_judge_reason": "INSUFFICIENT_INDEPENDENT_SUPPORT",
+      "success": false,
+      "factual_accuracy": "4/4",
+      "evidence_coverage": "0/4",
+      "supported_claim_count": 0,
+      "unsupported_claim_count": 4,
+      "independent_source_classes_by_claim": {
+        "entry_path_id": 1,
+        "entry_time": 1,
+        "exit_time": 1,
+        "person_id": 1
+      },
+      "witness_identity_revised_after_physical_evidence": false,
+      "evidence_ids_recorded": [
+        "PRINT_C7_ROUTE_SV"
+      ],
+      "invalid_actions": 0,
+      "action_rows": 11
+    }
+  },
+  "source_classes": {
+    "LOCK_ENTRY_K3_2106": "instrument_log",
+    "LOCK_EXIT_S_2114": "instrument_log",
+    "PRINT_C7_ROUTE_SV": "physical_trace",
+    "KEY_REGISTER_K3_CELINE": "documentary_register",
+    "WITNESS_BASIL_S_WINDOW": "testimony"
+  },
+  "boundary_results": {
+    "same_class_logs_count": 1,
+    "exact_entry_time": "21:06",
+    "exact_exit_time": "21:14",
+    "unobserved_record_cost": 0,
+    "invalid_path_enum_cost": 0,
+    "initial_truth_leaked": false
+  },
+  "oracle_rows": 21,
+  "oracle_sha256": "8F0FFFFB0DF2291F694AC16A47A982FEFEA01EA943AAC40C97F837B5AD313887"
+}

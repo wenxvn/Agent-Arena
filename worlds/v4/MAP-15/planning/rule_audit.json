@@ -1,0 +1,115 @@
+{
+  "map_id": "MAP-15",
+  "runtime_verified": false,
+  "rule_id": "R_EVEN_SAME_ODD_COMPLEMENT",
+  "complement_pairs": {
+    "red": "blue",
+    "blue": "red",
+    "gold": "green",
+    "green": "gold"
+  },
+  "manually_authored_samples_and_test": [
+    {
+      "area": "A",
+      "role": "training",
+      "tick_before": 0,
+      "parity": "even",
+      "wall_color": "red",
+      "door_colors": [
+        "red",
+        "blue",
+        "gold"
+      ],
+      "target_color": "red",
+      "accepted_slot": 1
+    },
+    {
+      "area": "B",
+      "role": "training",
+      "tick_before": 1,
+      "parity": "odd",
+      "wall_color": "red",
+      "door_colors": [
+        "green",
+        "blue",
+        "red"
+      ],
+      "target_color": "blue",
+      "accepted_slot": 2
+    },
+    {
+      "area": "C",
+      "role": "training",
+      "tick_before": 2,
+      "parity": "even",
+      "wall_color": "gold",
+      "door_colors": [
+        "blue",
+        "gold",
+        "green"
+      ],
+      "target_color": "gold",
+      "accepted_slot": 2
+    },
+    {
+      "area": "T",
+      "role": "test",
+      "tick_before": 3,
+      "parity": "odd",
+      "wall_color": "gold",
+      "door_colors": [
+        "gold",
+        "red",
+        "green",
+        "blue"
+      ],
+      "target_color": "green",
+      "accepted_slot": 3
+    }
+  ],
+  "training_order_sequences": {
+    "A": [
+      "red",
+      "blue",
+      "gold"
+    ],
+    "B": [
+      "green",
+      "blue",
+      "red"
+    ],
+    "C": [
+      "blue",
+      "gold",
+      "green"
+    ],
+    "T": [
+      "gold",
+      "red",
+      "green",
+      "blue"
+    ]
+  },
+  "test_sequence_differs_from_every_training_sequence": true,
+  "same_wall_color_shown_at_both_parities": {
+    "red": [
+      0,
+      1
+    ],
+    "gold": [
+      0,
+      1
+    ]
+  },
+  "one_test_error_recovery": {
+    "test_wall_color": "gold",
+    "wrong_choice_tick": 3,
+    "wrong_choice_color": "red",
+    "tick_after_wrong": 4,
+    "recomputed_target_color": "gold",
+    "recovery_slot": 1
+  },
+  "resources_start": 4,
+  "test_wrong_limit": 1,
+  "all_regions_have_one_unique_matching_door_at_the_entry_tick": true
+}

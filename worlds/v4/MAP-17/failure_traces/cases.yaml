@@ -1,0 +1,44 @@
+map_id: MAP-17
+seed: 0
+failure_cases:
+  - id: F01_dispatch_both_directions_on_BC
+    initial: {tick: 0, positions: {T_A: A, T_C: C, T_D: D, T_F: F}, energy: 0}
+    timetable_rows:
+      - {tick: 0, operations: {T_A: {op: stop, board: {A_to_C: 2}}, T_C: {op: stop, board: {C_to_F: 2}}}}
+      - {tick: 1, operations: {T_A: {op: release, to: B}, T_C: {op: delay}}}
+      - {tick: 2, operations: {T_A: {op: release, to: C}, T_C: {op: release, to: B}, T_D: {op: delay}, T_F: {op: delay}}}
+    expected_failure: {tick: 2, code: SHARED_SEGMENT_CONFLICT, positions_unchanged: {T_A: B, T_C: C}, energy_unchanged: 1, wait_unchanged_on_failed_tick: true}
+    explanation: T_A的B→C与T_C的C→B是同一物理段BC在同tick的反向交换；冲突在等待结算前检测，整行不提交。
+
+  - id: F02_exceed_B_platform_two_berths
+    initial: {tick: 0, positions: {T_A: A, T_C: C, T_D: D, T_F: F}, energy: 0}
+    timetable_rows:
+      - {tick: 0, operations: {T_A: {op: stop, board: {A_to_C: 2}}, T_C: {op: stop, board: {C_to_F: 2}}, T_F: {op: stop, board: {F_to_A: 2}}}}
+      - {tick: 1, operations: {T_A: {op: release, to: B}, T_C: {op: release, to: B}, T_F: {op: release, to: E}}}
+      - {tick: 2, operations: {T_A: {op: delay}, T_C: {op: switch_line, line: branch, board: {B_to_E: 1}}, T_F: {op: release, to: B}}}
+    expected_failure: {tick: 2, code: PLATFORM_CAPACITY, B_berths_after_proposed_move: 3, positions_unchanged: {T_A: B, T_C: B, T_F: E}, energy_unchanged: 3}
+    explanation: T_A与T_C已占B的两泊位，T_F从E放行入B会使终态站台出现三车；第三行不结算，T_C该tick也不登车。
+
+  - id: F03_energy_only_but_miss_service_threshold
+    initial: {tick: 0, positions: {T_A: A, T_C: C, T_D: D, T_F: F}, energy: 0}
+    timetable_rows:
+      - {tick: 0, operations: {T_C: {op: stop, board: {C_to_F: 2}}, T_D: {op: stop, board: {D_to_B: 2}}}}
+      - {tick: 1, operations: {T_C: {op: release, to: B}, T_D: {op: release, to: C}}}
+      - {tick: 2, operations: {T_C: {op: switch_line, line: branch, board: {B_to_E: 1}}, T_D: {op: delay}}}
+      - {tick: 3, operations: {T_C: {op: release, to: E}, T_D: {op: release, to: B}}}
+      - {tick: 4, operations: {T_C: {op: release, to: F}, T_D: {op: switch_line, line: branch, board: {B_to_E: 1}}}}
+      - {tick: 5, operations: {T_D: {op: release, to: E}}}
+      - {tick: 6, operations: {}}
+      - {tick: 7, operations: {}}
+      - {tick: 8, operations: {}}
+      - {tick: 9, operations: {}}
+      - {tick: 10, operations: {}}
+      - {tick: 11, operations: {}}
+    expected_failure: {tick: 12, delivered: 6, demand: 10, service_rate: 0.6, passenger_wait_person_ticks: 60, energy: 6, last_delivery_tick: 6, code: DEADLINE_SERVICE_BELOW_80}
+    explanation: 仅运营C/D两班，确实节能且没有冲突，但遗漏A→C与F→A两组共4人，不能通过最低服务率。
+
+boundary_case:
+  id: B01_exact_80_percent_service_threshold
+  source_plan: energy_priority
+  expected_metrics: {delivered: 8, demand: 10, service_rate: 0.8, energy: 8, passenger_wait_person_ticks: 38, completion_tick: 6, terminal_at_horizon: DEMAND_THRESHOLD_MET}
+  rationale: 成功谓词包含等于80%的端点；F站F→A两人等满12 tick仍未服务，但其余8人已在tick6前送达。

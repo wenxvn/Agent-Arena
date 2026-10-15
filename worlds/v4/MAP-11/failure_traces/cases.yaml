@@ -1,0 +1,31 @@
+id: MAP-11
+cases:
+  - id: F01_SEVEN_SUPPLIES_CANNOT_CLOSE_SHORT_LOOP
+    seed: 0
+    precondition: [tick=0, location=B, supply_depot_B=8, carried_supply=0, agent_heat=10, teammate_heat=10, teammate_life_remaining=15]
+    actions: ["resupply(7)", "move(B_P_SHORT,from=B)", "move(P_S_SHORT,from=P)", "rescue", "move(P_S_SHORT,from=S,loaded)", "move(B_P_SHORT,from=P,loaded)"]
+    state_before_last_return: {tick: 6, location: P, carried_supply: 1, agent_heat: 7, teammate_heat: 8, teammate_life_remaining: 11}
+    failed_action_resolution: {tick: 7, location: P, carried_supply: 1, reason: SUPPLY_SHORTAGE, edge_progress: 0}
+    expected_terminal: {status: scenario_failure, reason: SUPPLY_SHORTAGE, tick: 7}
+    diagnosis: 七单位可让Agent走到P并救到队员，但完整短路往返必须四次各耗2；最后一段不足2时不能靠忽略负重成本回家。
+  - id: F02_FALSE_NEGATIVE_SCOUT_LEADS_INTO_TWO_STORMS
+    seed: 8
+    precondition: [tick=0, location=B, hidden_regime=unstable, future_short_storm_mask="1001", supply_depot_B=8, teammate_life_remaining=15]
+    actions: ["scout", "resupply(8)", "move(B_P_SHORT,from=B)", "move(P_S_SHORT,from=P)", "rescue", "move(P_S_SHORT,from=S,loaded)", "move(B_P_SHORT,from=P,loaded)"]
+    state_after_each_critical_tick:
+      - {tick: 2, location: B, last_scout_signal: falling, forecast_p: 0.2, teammate_life_remaining: 13}
+      - {tick: 4, location: P, current_storm: storm, forecast_p: 0.4, agent_heat: 4, teammate_life_remaining: 11}
+      - {tick: 5, location: S, current_storm: clear, forecast_p: 0.3, agent_heat: 3, teammate_heat: 9, teammate_life_remaining: 10}
+      - {tick: 6, location: S, teammate_rescued: true, teammate_life_remaining: 9}
+      - {tick: 8, location: P, current_storm: clear, forecast_p: 0.214286, agent_heat: 2, teammate_heat: 8, carried_supply: 2}
+      - {tick: 10, location: B, current_storm: storm, forecast_p: 0.42, agent_heat: -4, teammate_heat: 2, reason: BODY_HEAT_DEPLETED}
+    expected_terminal: {status: scenario_failure, reason: BODY_HEAT_DEPLETED, tick: 10}
+    diagnosis: falling信号把预测降到0.2但未揭示未来；seed8仍在首段和返程末段命中暴风，救到人也不能让体温风险消失。
+  - id: F03_SCOUT_AND_TWO_RESTS_EXPIRE_RESCUE_WINDOW
+    seed: 7
+    precondition: [tick=0, location=B, teammate_life_remaining=15, supply_depot_B=8, agent_heat=10, teammate_heat=10]
+    actions: ["resupply(8)", "scout", "move(B_D_LONG,from=B)", "rest", "move(D_Q_LONG,from=D)", "rest", "move(Q_S_LONG,from=Q)", "rescue"]
+    state_before_rescue: {tick: 14, location: S, teammate_life_remaining: 1, carried_supply: 3, agent_heat: 9, teammate_heat: 10}
+    state_at_terminal: {tick: 15, location: S, teammate_life_remaining: 0, teammate_rescued: false, reason: TEAM_LIFE_EXPIRED}
+    expected_terminal: {status: scenario_failure, reason: TEAM_LIFE_EXPIRED, tick: 15}
+    diagnosis: 侦察和两次避风休息都能耗时/补温，但队员计时不停；到达S时只剩1 tick，救援动作结算前计时先归零。

@@ -1,0 +1,45 @@
+{
+  "map_id": "MAP-29",
+  "classification": "HAND_AUTHORED_QUERY_STRATEGIES",
+  "seed": 0,
+  "routes": [
+    {
+      "id": "broad_then_narrow",
+      "intent": "先各問四人開放敘述，再向檔案保管人與甲定向追問，物證後比對",
+      "actions": [
+        {"name": "move", "to": "L"}, {"name": "ask", "npc_id": "A", "question_template_id": "OPEN_ACCOUNT"},
+        {"name": "ask", "npc_id": "A", "question_template_id": "TIME_BASIS"}, {"name": "investigate", "target_id": "study_clock"},
+        {"name": "move", "to": "H"}, {"name": "move", "to": "K"},
+        {"name": "ask", "npc_id": "B", "question_template_id": "OPEN_ACCOUNT"},
+        {"name": "ask", "npc_id": "B", "question_template_id": "LOCATION_BASIS"},
+        {"name": "move", "to": "H"}, {"name": "move", "to": "Y"},
+        {"name": "ask", "npc_id": "C", "question_template_id": "OPEN_ACCOUNT"},
+        {"name": "investigate", "target_id": "courtyard_bell_trace"},
+        {"name": "move", "to": "H"}, {"name": "move", "to": "G"},
+        {"name": "ask", "npc_id": "D", "question_template_id": "OPEN_ACCOUNT"},
+        {"name": "ask", "npc_id": "D", "question_template_id": "ARCHIVE_CROSS_INDEX"},
+        {"name": "compare_testimony", "npc_id": "A", "statement_ids": ["A_TIME_CLAIM_0005", "A_TIME_BASIS_STOPPED_0000"], "against_evidence_ids": ["STUDY_CLOCK_STOPPED_0000", "ARCHIVE_EVENT_2340_Y"]},
+        {"name": "move", "to": "H"},
+        {"name": "submit", "event_time": "23:40", "event_location": "Y", "unreliable_npc_id": "A", "support_ids": ["ARCHIVE_EVENT_2340_Y", "YARD_BELL_MARK_2340"], "unreliability_proof_ids": ["A_TIME_CLAIM_0005", "A_TIME_BASIS_STOPPED_0000", "STUDY_CLOCK_STOPPED_0000", "ARCHIVE_EVENT_2340_Y"]}
+      ],
+      "expected": {"finish_tick": 19, "questions_used": 7, "questions_remaining": 1, "success": true, "event_time": "23:40", "event_location": "Y", "unreliable_npc_id": "A", "question_efficiency": "3/7"}
+    },
+    {
+      "id": "high_information_first",
+      "intent": "先问丁档案交叉索引，再针对甲的时间偏差追问并查停钟/庭院撞针",
+      "actions": [
+        {"name": "move", "to": "G"}, {"name": "ask", "npc_id": "D", "question_template_id": "ARCHIVE_CROSS_INDEX"},
+        {"name": "move", "to": "H"}, {"name": "move", "to": "L"},
+        {"name": "ask", "npc_id": "A", "question_template_id": "OPEN_ACCOUNT"},
+        {"name": "ask", "npc_id": "A", "question_template_id": "TIME_BASIS"},
+        {"name": "investigate", "target_id": "study_clock"},
+        {"name": "move", "to": "H"}, {"name": "move", "to": "Y"},
+        {"name": "investigate", "target_id": "courtyard_bell_trace"},
+        {"name": "compare_testimony", "npc_id": "A", "statement_ids": ["A_TIME_CLAIM_0005", "A_TIME_BASIS_STOPPED_0000"], "against_evidence_ids": ["STUDY_CLOCK_STOPPED_0000", "ARCHIVE_EVENT_2340_Y"]},
+        {"name": "move", "to": "H"},
+        {"name": "submit", "event_time": "23:40", "event_location": "Y", "unreliable_npc_id": "A", "support_ids": ["ARCHIVE_EVENT_2340_Y", "YARD_BELL_MARK_2340"], "unreliability_proof_ids": ["A_TIME_CLAIM_0005", "A_TIME_BASIS_STOPPED_0000", "STUDY_CLOCK_STOPPED_0000", "ARCHIVE_EVENT_2340_Y"]}
+      ],
+      "expected": {"finish_tick": 13, "questions_used": 3, "questions_remaining": 5, "success": true, "event_time": "23:40", "event_location": "Y", "unreliable_npc_id": "A", "question_efficiency": "3/3"}
+    }
+  ]
+}

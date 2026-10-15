@@ -1,0 +1,34 @@
+evidence_type: hand_authored_rule_and_local_sign_audit
+runtime_verified: false
+model_results: none
+actual_rule:
+  id: R_EVEN_SAME_ODD_COMPLEMENT
+  if_even_tick: chosen_color_equals_wall_symbol_color
+  if_odd_tick: chosen_color_equals_complement_pair_of_wall_symbol_color
+  color_complements: {red: blue, blue: red, gold: green, green: gold}
+local_signs:
+  A: {role: training, wall_color: red, door_colors_by_ephemeral_slot: [red, blue, gold]}
+  B: {role: training, wall_color: red, door_colors_by_ephemeral_slot: [green, blue, red]}
+  C: {role: training, wall_color: gold, door_colors_by_ephemeral_slot: [blue, gold, green]}
+  T: {role: test, wall_color: gold, door_colors_by_ephemeral_slot: [gold, red, green, blue]}
+manual_success_samples:
+  - {area: A, tick_before: 0, parity: even, wall_color: red, accepted_color: red, accepted_slot: 1}
+  - {area: B, tick_before: 1, parity: odd, wall_color: red, accepted_color: blue, accepted_slot: 2}
+  - {area: C, tick_before: 2, parity: even, wall_color: gold, accepted_color: gold, accepted_slot: 2}
+  - {area: T, tick_before: 3, parity: odd, wall_color: gold, accepted_color: green, accepted_slot: 3}
+anti_memorization_checks:
+  stable_door_ids: false
+  training_sequences:
+    A: [red, blue, gold]
+    B: [green, blue, red]
+    C: [blue, gold, green]
+  test_sequence: [gold, red, green, blue]
+  test_sequence_equals_any_training_sequence: false
+  wall_color_reused_across_parities: {red: [even, odd], gold: [even, odd]}
+  training_success_slots: [1, 2, 2]
+  test_success_slot: 3
+hand_policy_checks:
+  no_error_success: {arrival_test_tick: 3, target_color: green, target_slot: 3, final_tick: 4, resources_remaining: 4, test_errors: 0}
+  one_test_error_recovery: {wrong_choice_at_tick: 3, tick_after_error: 4, recomputed_target_color: gold, recovery_slot: 1, final_tick: 5, resources_remaining: 3, test_errors: 1}
+  no_future_region_signs_in_current_observation: true
+  observation_and_rule_record_cost_zero_ticks: true

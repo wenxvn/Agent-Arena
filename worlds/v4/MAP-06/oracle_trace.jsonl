@@ -1,0 +1,16 @@
+{"trace_id":"immediate_short","seed_id":0,"step":1,"tick_before":0,"location":"Q","action":{"tool":"move","edge_id":"Q_P"},"expected":"tick=1;location=P;risk=0"}
+{"trace_id":"immediate_short","seed_id":0,"step":2,"tick_before":1,"location":"P","action":{"tool":"interact","target_id":"P","operation":"repair_lighthouse"},"expected":"tick=3;lamp_restored=true;risk=0;terminal=scenario_success"}
+{"trace_id":"harden_long","seed_id":5,"step":1,"tick_before":0,"location":"Q","action":{"tool":"move","edge_id":"M_Q"},"expected":"tick=1;location=M;risk=0"}
+{"trace_id":"harden_long","seed_id":5,"step":2,"tick_before":1,"location":"M","action":{"tool":"move","edge_id":"M_G"},"expected":"tick=3;location=G;risk=0"}
+{"trace_id":"harden_long","seed_id":5,"step":3,"tick_before":3,"location":"G","action":{"tool":"interact","target_id":"G","operation":"harden"},"expected":"tick=6;storm_shield=true;risk=0"}
+{"trace_id":"harden_long","seed_id":5,"step":4,"tick_before":6,"location":"G","action":{"tool":"move","edge_id":"G_P"},"expected":"tick=8;location=P;risk=2"}
+{"trace_id":"harden_long","seed_id":5,"step":5,"tick_before":8,"location":"P","action":{"tool":"interact","target_id":"P","operation":"repair_lighthouse"},"expected":"tick=10;lamp_restored=true;storm_shield=false;risk=2;terminal=scenario_success"}
+{"trace_id":"forecast_short_correct","seed_id":0,"step":1,"tick_before":0,"location":"Q","action":{"tool":"inspect","target_id":"forecast"},"expected":"tick=2;forecast_reading=short"}
+{"trace_id":"forecast_short_correct","seed_id":0,"step":2,"tick_before":2,"location":"Q","action":{"tool":"move","edge_id":"Q_P"},"expected":"tick=3;location=P;risk=0"}
+{"trace_id":"forecast_short_correct","seed_id":0,"step":3,"tick_before":3,"location":"P","action":{"tool":"interact","target_id":"P","operation":"repair_lighthouse"},"expected":"tick=5;lamp_restored=true;risk=0;terminal=scenario_success"}
+{"trace_id":"forecast_long_correct","seed_id":5,"step":1,"tick_before":0,"location":"Q","action":{"tool":"inspect","target_id":"forecast"},"expected":"tick=2;forecast_reading=long"}
+{"trace_id":"forecast_long_correct","seed_id":5,"step":2,"tick_before":2,"location":"Q","action":{"tool":"move","edge_id":"M_Q"},"expected":"tick=3;location=M;risk=0"}
+{"trace_id":"forecast_long_correct","seed_id":5,"step":3,"tick_before":3,"location":"M","action":{"tool":"move","edge_id":"M_G"},"expected":"tick=5;location=G;risk=0"}
+{"trace_id":"forecast_long_correct","seed_id":5,"step":4,"tick_before":5,"location":"G","action":{"tool":"interact","target_id":"G","operation":"harden"},"expected":"tick=8;storm_shield=true;risk=0"}
+{"trace_id":"forecast_long_correct","seed_id":5,"step":5,"tick_before":8,"location":"G","action":{"tool":"move","edge_id":"G_P"},"expected":"tick=10;location=P;risk=2"}
+{"trace_id":"forecast_long_correct","seed_id":5,"step":6,"tick_before":10,"location":"P","action":{"tool":"interact","target_id":"P","operation":"repair_lighthouse"},"expected":"tick=12;lamp_restored=true;storm_shield=false;risk=2;terminal=scenario_success"}

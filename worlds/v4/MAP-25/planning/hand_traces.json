@@ -1,0 +1,37 @@
+{
+  "map_id": "MAP-25",
+  "authorship": "两个EVA成功流程分别手工排列设备核验与装备顺序；两者逐项走完安全门、诊断依赖、工具调用和舱外氧气账。",
+  "initial_oxygen": 12,
+  "routes": {
+    "inspect_then_equip": {
+      "description": "先核对T工具清单，再按诊断仪、扳手、EVA服顺序装备。",
+      "seed": 0,
+      "actions": [
+        {"action": "move", "to": "T"}, {"action": "inspect", "target": "equipment"},
+        {"action": "equip", "item_id": "diagnostic_unit"}, {"action": "equip", "item_id": "wrench"},
+        {"action": "equip", "item_id": "eva_suit"}, {"action": "move", "to": "A"},
+        {"action": "equip", "item_id": "safety_tether", "target_id": "anchor"}, {"action": "depressurize"},
+        {"action": "eva_exit"}, {"action": "inspect", "target": "array"},
+        {"action": "diagnose", "device_id": "diagnostic_unit"},
+        {"action": "repair", "target_id": "array_fuse_B", "tool_ids": ["diagnostic_unit", "wrench"], "diagnosis_code": "FUSE_BANK_B_OPEN"},
+        {"action": "return_to_A"}, {"action": "pressurize"}, {"action": "move", "to": "T"}, {"action": "move", "to": "H"}
+      ],
+      "expected": {"success": true, "finish_tick": 17, "oxygen_used": 6, "oxygen_remaining": 6, "tool_call_attempts": 6, "valid_tool_calls": 6, "executed_tool_errors": 0}
+    },
+    "suit_first_then_verify": {
+      "description": "先穿EVA服，依次收好扳手和诊断仪后检查工具，再进入相同的安全诊断链。",
+      "seed": 0,
+      "actions": [
+        {"action": "move", "to": "T"}, {"action": "equip", "item_id": "eva_suit"},
+        {"action": "equip", "item_id": "wrench"}, {"action": "equip", "item_id": "diagnostic_unit"},
+        {"action": "inspect", "target": "equipment"}, {"action": "move", "to": "A"},
+        {"action": "equip", "item_id": "safety_tether", "target_id": "anchor"}, {"action": "depressurize"},
+        {"action": "eva_exit"}, {"action": "inspect", "target": "array"},
+        {"action": "diagnose", "device_id": "diagnostic_unit"},
+        {"action": "repair", "target_id": "array_fuse_B", "tool_ids": ["diagnostic_unit", "wrench"], "diagnosis_code": "FUSE_BANK_B_OPEN"},
+        {"action": "return_to_A"}, {"action": "pressurize"}, {"action": "move", "to": "T"}, {"action": "move", "to": "H"}
+      ],
+      "expected": {"success": true, "finish_tick": 17, "oxygen_used": 6, "oxygen_remaining": 6, "tool_call_attempts": 6, "valid_tool_calls": 6, "executed_tool_errors": 0}
+    }
+  }
+}

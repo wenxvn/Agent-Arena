@@ -1,0 +1,90 @@
+id: MAP-22
+title: 没有地图的森林
+world: jungle
+capability_primary: topological_memory
+capability_secondary: [local_landmark_identification, edge_recording, manual_return_navigation]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: deterministic_fixed_topology_seed_0_no_random_events
+movement_step_limit: 30
+topology:
+  nodes:
+    A: {role: camp, sign_id: CAMP_LANTERN_RING, coarse_silhouette: forked_lantern, distinctive_feature: three_brass_prongs_and_ring_notch, exits: {NE: B, SE: C}}
+    B: {role: forest_junction, sign_id: B_RED_NICK, coarse_silhouette: three_pronged_forkpost, distinctive_feature: red_diagonal_nick_at_northern_foot, exits: {SW: A, NE: D, E: E}}
+    C: {role: forest_junction, sign_id: C_WHITE_BIRCH_THREAD, coarse_silhouette: pale_trunk, distinctive_feature: single_red_thread_on_white_birch, exits: {NW: A, E: F}}
+    D: {role: forest_junction, sign_id: D_TWIN_CUT_STONE, coarse_silhouette: narrow_stone, distinctive_feature: two_vertical_cuts_facing_uphill, exits: {SW: B, E: G}}
+    E: {role: forest_junction, sign_id: E_ROOT_CROSSBAR, coarse_silhouette: three_pronged_forkpost, distinctive_feature: two_pale_roots_under_eastern_rail, exits: {W: B, S: F, E: H}}
+    F: {role: forest_junction, sign_id: F_CRACKED_BELL, coarse_silhouette: hanging_bell, distinctive_feature: bell_crack_open_to_north, exits: {W: C, N: E, NE: I}}
+    G: {role: forest_junction, sign_id: G_BLUE_CAIRN, coarse_silhouette: three_stone_cairn, distinctive_feature: blue_thread_under_top_stone, exits: {W: D, E: J}}
+    H: {role: forest_junction, sign_id: H_TWIN_BAR_SADDLE, coarse_silhouette: three_pronged_forkpost, distinctive_feature: paired_horizontal_cuts_below_saddle, exits: {W: E, S: I, E: K}}
+    I: {role: forest_junction, sign_id: I_MOSS_ARCH, coarse_silhouette: basalt_arch, distinctive_feature: one_moss_spot_on_inner_left_pillar, exits: {SW: F, N: H, E: L}}
+    J: {role: forest_junction, sign_id: J_RED_RESIN_PINE, coarse_silhouette: bent_pine, distinctive_feature: two_red_resin_drops_on_east_bend, exits: {W: G, S: K}}
+    K: {role: forest_junction, sign_id: K_MOSS_WEDGE, coarse_silhouette: three_pronged_forkpost, distinctive_feature: moss_wedge_on_western_foot, exits: {W: H, N: J, S: L}}
+    L: {role: ruin_goal, sign_id: RUIN_TRIPLE_ARCH, coarse_silhouette: dark_arch, distinctive_feature: three_nested_black_arcs_over_stone_threshold, exits: {W: I, N: K}}
+  undirected_edge_count: 15
+  graph_cycle_rank: 4
+  all_edges_traversable_in_both_directions: true
+  each_edge_travel_cost_steps: 1
+  movement_uses_only_current_signpost_bearings: true
+  target_marker_given_to_player: RUIN_TRIPLE_ARCH
+  shortest_A_to_L_path: [A, C, F, I, L]
+  shortest_round_trip_steps: 8
+  internally_vertex_disjoint_A_L_paths:
+    - [A, C, F, I, L]
+    - [A, B, E, H, K, L]
+initial_state:
+  current_node_private_id: A
+  movement_steps: 0
+  target_visited_private: false
+  active_goal: RUIN_TRIPLE_ARCH
+  memory_journal: []
+signpost_observation:
+  ordinary_observation_shows_only: [current_coarse_silhouette, visible_exit_bearings]
+  observe_signpost_reveals: [current_sign_id, current_distinctive_feature]
+  never_shows_neighbor_sign_ids: true
+  never_shows_unvisited_node_exits: true
+memory:
+  write_action: write_memory
+  maximum_facts: 32
+  movement_cost: 0
+  fact_types:
+    node_page: current_inspected_sign_id_plus_current_visible_exit_bearings
+    traversed_edge_page: current_and_arrived_sign_ids_plus_the_bearing_used_and_reverse_bearing
+  evidence_gate: may_write_only_current_inspection_or_edge_traversed_on_most_recent_move
+  not_automatically_populated: true
+  visible_to_agent_after_written: true
+  complete_adjacency_request_supported: false
+actions:
+  - {name: observe_signpost, movement_step_cost: 0, effect: reveal_only_current_sign_unique_feature}
+  - {name: write_memory, movement_step_cost: 0, uses: up_to_32_observed_facts, effect: persist_only_current_or_just_traversed_evidence}
+  - {name: move, movement_step_cost: 1, parameter: visible_exit_bearing, effect: move_one_adjacent_edge}
+  - {name: check_goal, movement_step_cost: 0, effect: confirm_whether_current_sign_is_the_named_ruin_marker}
+  - {name: return_to_camp, movement_step_cost: 0, effect: set_active_goal_to_CAMP_LANTERN_RING_without_navigation}
+observation_fields: [movement_steps, current_coarse_silhouette, visible_exit_bearings, inspected_current_sign_detail, active_goal_marker, agent_authored_memory_journal, terminal, terminal_reason]
+private_fields: [canonical_node_id, complete_adjacency_table, target_visited_private, uninspected_sign_features]
+forbidden_information: [full_neighbor_list, neighbor_sign_ids, unvisited_node_features, auto_return_route, future_route]
+event_order:
+  - show_current_silhouette_and_only_current_node_exit_bearings
+  - observe_signpost_if_requested_then_reveal_only_this_nodes_unique_detail
+  - write_memory_only_for_current_inspected_node_or_edge_on_most_recent_move
+  - accept_move_only_for_one_visible_exit_and_increment_movement_steps_by_one
+  - entering_target_sign_marks_target_visited_in_private_episode_state
+  - return_to_camp_changes_goal_only_and_never_moves_or_selects_a_bearing
+  - if_target_visited_and_current_node_A_and_movement_steps_lte_30_then_success
+  - at_movement_step_30_without_success_then_STEP_LIMIT_REACHED
+  - invalid_or_full_map_actions_are_rejected_without_movement_or_memory_mutation
+terminal_success: [target_L_visited, player_returns_to_A, movement_steps_lte_30]
+terminal_failure: [movement_step_30_reached_without_both_goal_conditions]
+reason_codes: [RETURNED_TO_CAMP_WITH_RUIN_RECORD, STEP_LIMIT_REACHED, INVALID_BEARING, ACTION_NOT_AVAILABLE, MEMORY_CAPACITY_EXCEEDED]
+evaluation_tracks:
+  - {id: no_memory_local_priority, memory_enabled: false, fixed_bearing_priority: [N, NE, E, SE, S, SW, W, NW]}
+  - {id: external_graph_journal, memory_enabled: true, route: full_edge_euler_tour}
+  - {id: complete_map_upper_bound, full_graph_available_offline_only: true, route: unique_shortest_A_L_and_reverse}
+metrics: [movement_steps, unique_nodes_seen, unique_edges_traversed, repeated_node_visits, repeated_edge_traversals, return_success, shortest_route_gap]
+manual_scenarios_path: planning/hand_traces.json
+failure_cases_path: failure_traces/cases.yaml
+graph_reference_path: planning/graph_reference.json
+oracle_path: oracle_trace.jsonl
+runtime_verified: false
+model_results: none

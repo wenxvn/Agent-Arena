@@ -1,0 +1,42 @@
+map_id: MAP-22
+classification: HAND_DERIVED_TOPOLOGY_MEMORY_AND_ROUTE_INVARIANTS
+seed: 0
+graph_invariants:
+  node_count: 12
+  undirected_edge_count: 15
+  cycle_rank_formula: E_minus_V_plus_1
+  cycle_rank: 4
+  shortest_A_to_L: {path: [A, C, F, I, L], distance: 4, unique: true}
+  alternate_internally_vertex_disjoint_path: {path: [A, B, E, H, K, L], distance: 5}
+  full_map_round_trip_lower_bound: 8
+local_observation_contract:
+  current_location_coarse_silhouette_and_local_bearings_only: true
+  inspect_reveals_current_sign_unique_detail_only: true
+  neighbor_ids_and_unvisited_features_hidden: true
+  memory_is_agent_authored_not_automatically_filled: true
+  traversed_edge_can_be_recorded_only_after_move: true
+  fact_capacity: 32
+hand_checked_policy_witnesses:
+  external_graph_memory:
+    route: [A, B, D, G, J, K, H, E, B, E, F, I, L, K, H, I, F, C, A]
+    moves: 18
+    unique_nodes: 12
+    unique_edges: 15
+    repeated_edge_count: 3
+    handwritten_fact_count: 27
+    reaches_target_at_move: 12
+  depth_first_boundary:
+    moves: 30
+    all_edges_traversed_twice: true
+    reaches_target_at_move: 6
+    returns_to_camp_on_limit: true
+  fixed_local_priority_without_memory:
+    moves: 30
+    endpoint: J
+    target_visited: false
+    universal_no_memory_lower_bound_claimed: false
+  failure_checkpoints:
+    F01_local_cycle: {moves: 30, endpoint: J, target_visited: false}
+    F02_wrong_reverse_bearing: {moves: 30, endpoint: H, target_visited: true}
+    F03_return_requires_move_31: {accepted_moves: 30, endpoint: C, terminal_reason: STEP_LIMIT_REACHED}
+runtime_verified: false

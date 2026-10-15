@@ -1,0 +1,49 @@
+id: MAP-05
+title: 三束信号
+world: lighthouse
+capability_primary: shared_resource_scheduling
+capability_secondary: [travel_cost_tradeoff, persistent_calibration]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+nodes:
+  - {id: C, description: 唯一供电切换台}
+  - {id: R, description: 红塔接收与发射台}
+  - {id: B, description: 蓝塔接收与发射台}
+  - {id: W, description: 白塔接收与发射台}
+edges:
+  - {id: C_R, from: C, to: R, directed: false, cost_ticks: 1}
+  - {id: C_B, from: C, to: B, directed: false, cost_ticks: 2}
+  - {id: C_W, from: C, to: W, directed: false, cost_ticks: 3}
+initial_state:
+  location: C
+  tick: 0
+  power_target: null
+  calibration: {R: 0, B: 0, W: 0}
+  transmitted: {R: false, B: false, W: false}
+  signal_windows: {R: [15, 18], B: [22, 25], W: [29, 35]}
+  schedule_chart_inspected: false
+public_observation_fields: [location, visible_neighbors, current_tick, current_power_target, local_calibration_state, local_transmission_state]
+private_state: [oracle_trace, failure_diagnosis_labels, scoring_implementation]
+actions:
+  - {name: inspect, parameters: [target_id], cost_ticks: 1, valid_targets: [schedule_chart, receiver_status]}
+  - {name: switch_power, parameters: [station], location_required: C, cost_ticks: 1, capacity: 1}
+  - {name: move, parameters: [edge_id], cost_ticks: edge_defined_cost, one_edge_per_action: true}
+  - {name: interact, parameters: [target_id, operation, arguments], operations: [calibrate_align, calibrate_phase_lock, send_signal], cost_ticks: 1}
+  - {name: wait, parameters: [ticks=1], cost_ticks: 1}
+transitions:
+  - {when: inspect_schedule_chart_at_C, effect: reveal_all_three_windows_to_agent_and_consume_1_tick}
+  - {when: switch_power_at_C_to_station, effect: power_target_becomes_station_and_consume_1_tick}
+  - {when: calibrate_station_with_agent_present_and_powered, effect: advance_that_station_one_calibration_stage_and_consume_1_tick}
+  - {when: station_reaches_calibration_stage_2, effect: calibrated_state_persists_after_power_loss}
+  - {when: send_signal_with_agent_present_powered_calibrated_and_end_tick_in_window, effect: mark_station_transmitted_and_consume_1_tick}
+  - {when: action_ends_and_unsent_window_end_is_reached_or_crossed, effect: terminal_failure_SIGNAL_WINDOW_MISSED_after_action_effect_check}
+terminal_success: [transmitted.R, transmitted.B, transmitted.W]
+terminal_failure: [any_unsent_signal_window_ended]
+reason_codes: [INVALID_LOCATION, STATION_NOT_POWERED, CALIBRATION_INCOMPLETE, SIGNAL_WINDOW_NOT_OPEN, SIGNAL_ALREADY_SENT, SIGNAL_WINDOW_MISSED]
+scoring:
+  primary: all_three_signals_sent_in_their_own_inclusive_windows
+  hard_constraints: [at_most_one_power_target, calibration_requires_local_power, sent_signal_requires_calibration_and_power, no_duplicate_signal]
+  auxiliary: [completion_tick, idle_ticks, travel_ticks, power_switch_count, per_station_calibration_tick, calibrated_unpowered_ticks]
+seed_policy: deterministic_fixed_schedule
+oracle_path: oracle_trace.jsonl

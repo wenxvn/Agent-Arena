@@ -1,0 +1,52 @@
+id: MAP-07
+title: 逆流阀门
+world: deep_sea
+capability_primary: causal_consequence_prediction
+capability_secondary: [ordered_flow_control, threshold_safety]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+control_location: P
+hydraulic_nodes: [A, B, C, D]
+valves:
+  v1: {from: A, to: B, capacity_per_tick: 2, initially_open: false, order: 1}
+  v2: {from: B, to: C, capacity_per_tick: 2, initially_open: false, order: 2}
+  v3: {from: C, to: D, capacity_per_tick: 2, initially_open: false, order: 3}
+  v4: {from: C, to: A, capacity_per_tick: 1, initially_open: false, order: 4, one_way: true}
+initial_state:
+  seed: 0
+  tick: 0
+  water: {A: 6, B: 2, C: 4, D: 0}
+  overflow_limit_exclusive: 8
+  pump_active: false
+  pump_power_per_tick: 2
+  fixed_power_supply_per_tick: 2
+  low_water_threshold_inclusive: 2
+  consecutive_low_ticks: 0
+public_observation_fields: [tick, current_water_levels, visible_valve_states, pump_active, pump_power_draw, low_water_streak]
+private_state: [oracle_trace, prediction_error_labels, scoring_implementation]
+actions:
+  - {name: inspect, parameters: [target_id], targets: [water_levels, pipe_diagram], cost_ticks: 1}
+  - {name: interact, target_id: control_panel, parameters: [operation, arguments], operations: [set_valve, start_pump, predict_next_levels], cost_ticks: 1, effect_before_current_tick_flow: true}
+  - {name: wait, parameters: [ticks=1], cost_ticks: 1}
+transitions:
+  - {when: each_action_effect_is_applied, effect: begin_ordered_flow_tick}
+  - {when: v1_open, effect: transfer_min_2_from_A_to_B_using_current_levels}
+  - {when: v2_open_after_v1, effect: transfer_min_2_from_current_B_to_C}
+  - {when: v3_open_after_v2, effect: transfer_min_2_from_current_C_to_D}
+  - {when: v4_open_after_v3, effect: transfer_min_1_from_current_C_to_A}
+  - {when: pump_active_after_all_valves, effect: drain_min_2_from_D_to_sink}
+  - {when: predict_next_levels_submitted, effect: record_judge_side_error_then_continue_normal_one_tick_flow}
+  - {when: after_flow_A_or_B_or_C_gt_8, effect: terminal_failure_COMPARTMENT_OVERFLOW}
+  - {when: after_flow_A_lte_2_and_B_lte_2_and_C_lte_2, effect: consecutive_low_ticks_plus_1}
+  - {when: after_flow_any_target_level_gt_2, effect: consecutive_low_ticks_reset_to_0}
+  - {when: consecutive_low_ticks_eq_2, effect: terminal_success}
+terminal_success: [A_lte_2, B_lte_2, C_lte_2, consecutive_low_ticks_gte_2]
+terminal_failure: [any_of_A_B_C_gt_8]
+reason_codes: [INVALID_VALVE, INVALID_CONTROL, COMPARTMENT_OVERFLOW_A, COMPARTMENT_OVERFLOW_B, COMPARTMENT_OVERFLOW_C]
+scoring:
+  primary: two_consecutive_ticks_all_target_compartments_lte_2_without_overflow
+  auxiliary: [prediction_l1_error, overflow_count, first_overflow_tick, control_steps, pump_energy, peak_B_or_C]
+  prediction_metric: mean_absolute_error_over_submitted_predict_next_levels_actions
+seed_policy: deterministic_fixed_seed_0_no_randomness
+oracle_path: oracle_trace.jsonl

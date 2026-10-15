@@ -1,0 +1,39 @@
+evidence_type: exhaustive_finite_truth_table_and_hand_route_replay
+runtime_verified: false
+model_results: none
+audit:
+  implementation: planning/truth_table_audit.py
+  output: planning/truth_table_audit.json
+  candidate_states: 9
+  fixed_query_order: [A1, A2, B1, B2]
+  fixed_four_query_codes_unique_over_all_9_states: true
+  archive_statement: ARCHIVE_NOT_C
+  states_after_archive: 6
+  archive_query_order: [A1, B1, B2]
+  archive_route_actual_answers: [yes, yes, no]
+  archive_route_unique_state: {configuration: B, truthful_priest: 乙}
+  adaptive_policy_worst_case_questions: 4
+  adaptive_route_actual_questions: [A1, A2, B1]
+  adaptive_route_actual_answers: [yes, no, yes]
+  adaptive_route_unique_state: {configuration: B, truthful_priest: 乙}
+  F03_ambiguous_query_subset: [A1, A2, B2, C1]
+  F03_compatible_states: [{configuration: A, truthful_priest: 甲}, {configuration: B, truthful_priest: 乙}]
+  runtime_verified: false
+hand_routes:
+  source: planning/hand_traces.json
+  replay: planning/replay_hand_traces.py
+  output: oracle_trace.jsonl
+  archive_then_ask: {ticks: 11, questions: 3, archive_read: true, result: GATE_OPENED}
+  adaptive_without_archive: {ticks: 8, questions: 3, archive_read: false, result: GATE_OPENED}
+failure_reason_checks:
+  F01: treats_a_liar_as_truthful_and_contradicts_B_priest_answers
+  F02: submits_configuration_directly_excluded_by_archive
+  F03: query_subset_leaves_both_A_honest_and_B_honest_hypotheses
+  all_fail_after_second_wrong_configuration_submission: true
+manual_review:
+  - exactly_two_fixed_claims_per_priest
+  - exactly_one_honest_speaker_and_two_inverse_answer_speakers
+  - no NPC free_text_or_random_truth_assignment
+  - archive_and_claim contents are public only at their intended locations
+  - evidence comparison records player input without correctness feedback
+  - lock configuration is the win predicate; truthful-priest inference is scored separately

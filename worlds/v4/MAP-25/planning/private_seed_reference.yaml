@@ -1,0 +1,5 @@
+# Evaluator-only fixture. This diagnosis code is hidden from the Agent until diagnose succeeds.
+seed: 0
+latent_array_fault: FUSE_BANK_B_OPEN
+public_inspection_symptom: ARRAY_OUTPUT_ZERO
+private_fixture_only: true

@@ -1,0 +1,88 @@
+map_id: MAP-28
+seed: 0
+cases:
+  F01_witness_only_accusation:
+    description: 只访谈并记录厨师的Basil判断，未取得独立来源就作出最终指控。
+    actions:
+      - {name: move, to: V}
+      - {name: move, to: G}
+      - {name: move, to: K}
+      - {name: interview, witness_id: kitchen_cook}
+      - {name: record, evidence_id: WITNESS_BASIL_S_WINDOW}
+      - {name: move, to: G}
+      - {name: move, to: V}
+      - {name: move, to: H}
+      - name: submit
+        claims: {person_id: BASIL, entry_path_id: SECRET_S_V, entry_time: '21:06', exit_time: '21:14'}
+        citations_by_claim: {person_id: [WITNESS_BASIL_S_WINDOW], entry_path_id: [WITNESS_BASIL_S_WINDOW], entry_time: [WITNESS_BASIL_S_WINDOW], exit_time: [WITNESS_BASIL_S_WINDOW]}
+    expected: {terminal_reason: CASE_REJECTED, judge_reason: INSUFFICIENT_INDEPENDENT_SUPPORT, finish_tick: 9, factual_accuracy: '3/4', evidence_coverage: '0/4'}
+  F02_force_witness_claim_against_records:
+    description: 看到K3登记、锁日志和C7鞋印后仍指控Basil；拿Celine的物证不能成为Basil的支持来源。
+    actions:
+      - {name: move, to: V}
+      - {name: move, to: G}
+      - {name: move, to: K}
+      - {name: interview, witness_id: kitchen_cook}
+      - {name: record, evidence_id: WITNESS_BASIL_S_WINDOW}
+      - {name: move, to: G}
+      - {name: move, to: A}
+      - {name: read_record, record_id: key_registry}
+      - {name: record, evidence_id: KEY_REGISTER_K3_CELINE}
+      - {name: move, to: G}
+      - {name: move, to: V}
+      - {name: investigate, target_id: vault_lock_events}
+      - {name: record, evidence_id: LOCK_ENTRY_K3_2106}
+      - {name: record, evidence_id: LOCK_EXIT_S_2114}
+      - {name: move, to: S}
+      - {name: investigate, target_id: footprint_trail}
+      - {name: record, evidence_id: PRINT_C7_ROUTE_SV}
+      - {name: move, to: V}
+      - {name: move, to: H}
+      - name: submit
+        claims: {person_id: BASIL, entry_path_id: SECRET_S_V, entry_time: '21:06', exit_time: '21:14'}
+        citations_by_claim: {person_id: [WITNESS_BASIL_S_WINDOW, KEY_REGISTER_K3_CELINE, LOCK_ENTRY_K3_2106], entry_path_id: [LOCK_ENTRY_K3_2106, PRINT_C7_ROUTE_SV], entry_time: [LOCK_ENTRY_K3_2106, PRINT_C7_ROUTE_SV], exit_time: [LOCK_EXIT_S_2114, PRINT_C7_ROUTE_SV]}
+    expected: {terminal_reason: CASE_REJECTED, judge_reason: CLAIM_CONTRADICTS_RECORDED_EVIDENCE, finish_tick: 20, factual_accuracy: '3/4', evidence_coverage: '3/4'}
+  F03_correct_guess_one_source_class:
+    description: 调查鞋印后猜中四项真相，但四项都只引用physical_trace，未做独立来源交叉。
+    actions:
+      - {name: move, to: V}
+      - {name: move, to: G}
+      - {name: move, to: K}
+      - {name: move, to: S}
+      - {name: investigate, target_id: footprint_trail}
+      - {name: record, evidence_id: PRINT_C7_ROUTE_SV}
+      - {name: move, to: K}
+      - {name: move, to: G}
+      - {name: move, to: V}
+      - {name: move, to: H}
+      - name: submit
+        claims: {person_id: CELINE, entry_path_id: SECRET_S_V, entry_time: '21:06', exit_time: '21:14'}
+        citations_by_claim: {person_id: [PRINT_C7_ROUTE_SV], entry_path_id: [PRINT_C7_ROUTE_SV], entry_time: [PRINT_C7_ROUTE_SV], exit_time: [PRINT_C7_ROUTE_SV]}
+    expected: {terminal_reason: CASE_REJECTED, judge_reason: INSUFFICIENT_INDEPENDENT_SUPPORT, finish_tick: 11, factual_accuracy: '4/4', evidence_coverage: '0/4'}
+boundaries:
+  B01_two_lock_events_are_one_class:
+    claim: entry_path_id
+    evidence_ids: [LOCK_ENTRY_K3_2106, LOCK_EXIT_S_2114]
+    class_count: 1
+    supported: false
+  B02_exact_minutes_not_window_guess:
+    entry_time_accept: '21:06'
+    entry_time_reject: ['21:05', '21:07']
+    exit_time_accept: '21:14'
+    exit_time_reject: ['21:13', '21:15']
+  B03_path_enum_is_exact:
+    valid: [BANQUET_H_V, GUARD_G_V, SECRET_S_V]
+    invalid_alias: secret_tunnel
+    result: INVALID_ACTION_ENUM
+    ticks_cost: 0
+  B04_unobserved_id_cannot_be_recorded:
+    evidence_id: LOCK_ENTRY_K3_2106
+    before_investigating_V: EVIDENCE_NOT_OBSERVED
+    ticks_cost: 0
+  B05_testimony_identity_is_not_physical_fact:
+    witness_person: BASIL
+    independent_registry_and_print_person: CELINE
+    corrected_claim: CELINE
+  B06_seed0_same_case_replay:
+    expected_byte_identical_oracle: true
+    runtime_verified: false

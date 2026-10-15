@@ -1,0 +1,35 @@
+id: MAP-01
+model: deterministic_resource_and_precedence
+constants:
+  battery_load_limit: 6
+  fixed_load: 3
+  oxygen_branch_load: 2
+  repair_arm_branch_load: 2
+  oxygen_reserve_initial: 18
+  oxygen_off_tick_limit: 3
+power:
+  equation: fixed_load + active_branch_load <= battery_load_limit
+  feasible_modes:
+    - {mode: support, active_branch_load: 2, total_load: 5}
+    - {mode: repair_arm, active_branch_load: 2, total_load: 5}
+    - {mode: both, active_branch_load: 4, total_load: 7, result: forbidden}
+precedence:
+  - oxygen_output_on_before_pickup_patch
+  - patch_in_inventory_before_apply_patch
+  - repair_arm_on_before_apply_patch
+  - hull_intact_before_reset_main_bus
+  - oxygen_output_on_and_main_bus_on_before_pressure_test
+  - pressure_test_pass_before_bridge_confirmation
+failure_causes:
+  OXYGEN_RESERVE_EXHAUSTED: oxygen_reserve_reaches_zero
+  OXYGEN_SUPPLY_INTERRUPTION_LIMIT: oxygen_off_ticks_exceeds_three
+  BUS_RESET_WITH_HULL_OPEN: reset_main_bus_when_hull_intact_is_false
+observability:
+  public: [current_oxygen_reserve, current_power_route, hull_status, main_bus_status, airlock_pressure_status]
+  private: [judge_counters]
+  forbidden: [oracle_trace, future_events, optimal_route_label]
+counterfactual_controls:
+  held_constant: [topology, action_costs, initial_state, failure_rules]
+  contrasts:
+    - {id: dependency_diagram_hidden, only_change: hide_power_diagram_and_precedence_labels}
+    - {id: dependency_diagram_shown, only_change: expose_power_diagram_and_precedence_labels}

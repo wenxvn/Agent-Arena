@@ -1,0 +1,25 @@
+id: MAP-08
+design_evidence:
+  initial_sensor_equivalence: [B, D, F]
+  test_signature_table:
+    B: {X: pulse_amber, Y: pulse_slate}
+    D: {X: pulse_slate, Y: pulse_cobalt}
+    F: {X: pulse_slate, Y: pulse_slate}
+  base_prior: {B: 0.3333333333, D: 0.3333333333, F: 0.3333333334}
+  prior_control_counts:
+    B_heavy_10: {B: 6, D: 2, F: 2}
+    D_heavy_10: {B: 2, D: 6, F: 2}
+  entropy_bits_initial: 1.5849625
+  expected_entropy_after_first_test_bits: 0.6666667
+  expected_information_gain_bits: 0.9182958
+  oracle_completion_tick_ranges: {X_first: {B: 6, D: 10, F: 10}, Y_first: {D: 6, B: 12, F: 12}}
+  automated_enumeration_run: false
+rules:
+  experiment_X: {location: X, duration_ticks: 2, partition: [B, [D, F]]}
+  experiment_Y: {location: Y, duration_ticks: 2, partition: [D, [B, F]]}
+  leak_pressure: {initial: 1.0, per_unsealed_tick: 0.5, safe_at: 7.0, fail_if_gt: 7.0}
+  sealant: {initial_count: 1, correct_repair_duration: 1, wrong_repair_duration: 4, wrong_repair_terminal: SEALANT_MISUSED}
+  observation_control:
+    - baseline_sensor_and_descriptions_identical_for_all_candidate_sites
+    - true_site_and_seed_id_never_appear_in_agent_observation
+    - pressure_tests_are_deterministic_given_true_site

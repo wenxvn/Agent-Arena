@@ -1,0 +1,70 @@
+map_id: MAP-13
+wrong_attempt_terminal_threshold: 3
+feedback_after_wrong: generic_gate_closed_no_symbol_or_clue_feedback
+failure_traces:
+  - id: F01_orientation_marker_skipped
+    initial: {seed: 0, tick: 0, location: C, observed_clues: [], recorded_clues: [], incorrect_attempts: 0}
+    actions:
+      - {tick: 1, action: {tool: set_trial_layout, layout_by_room: {N: 甲, E: 眼, S: 芦, W: 日}}, outcome: trial_set_no_attempt}
+      - {tick: 2, action: {tool: verify_layout}, outcome: gate_closed, incorrect_attempts: 1}
+      - {tick: 3, action: {tool: set_trial_layout, layout_by_room: {N: 日, E: 甲, S: 芦, W: 眼}}, outcome: trial_set_no_attempt}
+      - {tick: 4, action: {tool: verify_layout}, outcome: gate_closed, incorrect_attempts: 2}
+      - {tick: 5, action: {tool: set_trial_layout, layout_by_room: {N: 甲, E: 日, S: 眼, W: 芦}}, outcome: trial_set_no_attempt}
+      - {tick: 6, action: {tool: verify_layout}, outcome: terminal_failure, incorrect_attempts: 3, reason: INCORRECT_ATTEMPT_LIMIT}
+    explanation: The first guess is the unique layout under the unannounced mirror order N-W-S-E; the actor never reads the C orientation marker. The following blind guesses also receive no location hint.
+
+  - id: F02_east_clue_omitted
+    initial: {seed: 0, tick: 0, location: C, incorrect_attempts: 0}
+    prep_actions:
+      - {tick: 1, action: {tool: read_inscription, room: C}}
+      - {tick: 2, action: {tool: record_constraint, clue_id: ORIENTATION_ORDER}}
+      - {tick: 3, action: {tool: move, edge_id: C_N, from_node: C, to_node: N}}
+      - {tick: 4, action: {tool: read_inscription, room: N}}
+      - {tick: 5, action: {tool: move, edge_id: C_N, from_node: N, to_node: C}}
+      - {tick: 6, action: {tool: record_constraint, clue_id: N_SUN_NOT_END}}
+      - {tick: 7, action: {tool: move, edge_id: C_S, from_node: C, to_node: S}}
+      - {tick: 8, action: {tool: read_inscription, room: S}}
+      - {tick: 9, action: {tool: move, edge_id: C_S, from_node: S, to_node: C}}
+      - {tick: 10, action: {tool: record_constraint, clue_id: S_ARMOR_ADJACENT_TO_SUN}}
+      - {tick: 11, action: {tool: move, edge_id: C_W, from_node: C, to_node: W}}
+      - {tick: 12, action: {tool: read_inscription, room: W}}
+      - {tick: 13, action: {tool: move, edge_id: C_W, from_node: W, to_node: C}}
+      - {tick: 14, action: {tool: record_constraint, clue_id: W_REED_NOT_FIRST}}
+    omitted_clue: E_EYE_RIGHT_OF_REED
+    wrong_layouts_all_satisfy_other_three_position_clues: true
+    actions:
+      - {tick: 15, action: {tool: set_trial_layout, layout_by_room: {N: 眼, E: 日, S: 甲, W: 芦}}}
+      - {tick: 16, action: {tool: verify_layout}, outcome: gate_closed, incorrect_attempts: 1}
+      - {tick: 17, action: {tool: set_trial_layout, layout_by_room: {N: 眼, E: 芦, S: 日, W: 甲}}}
+      - {tick: 18, action: {tool: verify_layout}, outcome: gate_closed, incorrect_attempts: 2}
+      - {tick: 19, action: {tool: set_trial_layout, layout_by_room: {N: 眼, E: 甲, S: 日, W: 芦}}}
+      - {tick: 20, action: {tool: verify_layout}, outcome: terminal_failure, incorrect_attempts: 3, reason: INCORRECT_ATTEMPT_LIMIT}
+    explanation: All three assignments violate only the unread East inscription among the four position rules, showing why the evidence cannot be skipped.
+
+  - id: F03_west_clue_omitted
+    initial: {seed: 0, tick: 0, location: C, incorrect_attempts: 0}
+    prep_actions:
+      - {tick: 1, action: {tool: read_inscription, room: C}}
+      - {tick: 2, action: {tool: record_constraint, clue_id: ORIENTATION_ORDER}}
+      - {tick: 3, action: {tool: move, edge_id: C_N, from_node: C, to_node: N}}
+      - {tick: 4, action: {tool: read_inscription, room: N}}
+      - {tick: 5, action: {tool: move, edge_id: C_N, from_node: N, to_node: C}}
+      - {tick: 6, action: {tool: record_constraint, clue_id: N_SUN_NOT_END}}
+      - {tick: 7, action: {tool: move, edge_id: C_E, from_node: C, to_node: E}}
+      - {tick: 8, action: {tool: read_inscription, room: E}}
+      - {tick: 9, action: {tool: move, edge_id: C_E, from_node: E, to_node: C}}
+      - {tick: 10, action: {tool: record_constraint, clue_id: E_EYE_RIGHT_OF_REED}}
+      - {tick: 11, action: {tool: move, edge_id: C_S, from_node: C, to_node: S}}
+      - {tick: 12, action: {tool: read_inscription, room: S}}
+      - {tick: 13, action: {tool: move, edge_id: C_S, from_node: S, to_node: C}}
+      - {tick: 14, action: {tool: record_constraint, clue_id: S_ARMOR_ADJACENT_TO_SUN}}
+    omitted_clue: W_REED_NOT_FIRST
+    wrong_layouts_all_satisfy_other_three_position_clues: true
+    actions:
+      - {tick: 15, action: {tool: set_trial_layout, layout_by_room: {N: 芦, E: 日, S: 甲, W: 眼}}}
+      - {tick: 16, action: {tool: verify_layout}, outcome: gate_closed, incorrect_attempts: 1}
+      - {tick: 17, action: {tool: set_trial_layout, layout_by_room: {N: 芦, E: 眼, S: 日, W: 甲}}}
+      - {tick: 18, action: {tool: verify_layout}, outcome: gate_closed, incorrect_attempts: 2}
+      - {tick: 19, action: {tool: set_trial_layout, layout_by_room: {N: 芦, E: 甲, S: 日, W: 眼}}}
+      - {tick: 20, action: {tool: verify_layout}, outcome: terminal_failure, incorrect_attempts: 3, reason: INCORRECT_ATTEMPT_LIMIT}
+    explanation: The three candidate orders obey the North/East/South clues but put 芦 in slot1, contrary to the unread West inscription.

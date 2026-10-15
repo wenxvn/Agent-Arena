@@ -1,0 +1,51 @@
+{
+  "map_id": "MAP-13",
+  "trace_authorship": "Two hand-authored action sequences; the enumerator checks the deduction but does not construct these routes.",
+  "correct_layout": {"N": "甲", "E": "日", "S": "芦", "W": "眼"},
+  "plans": {
+    "constraint_propagation": [
+      {"tool": "read_inscription", "room": "C"},
+      {"tool": "record_constraint", "clue_id": "ORIENTATION_ORDER"},
+      {"tool": "move", "edge_id": "C_N", "from_node": "C", "to_node": "N"},
+      {"tool": "read_inscription", "room": "N"},
+      {"tool": "move", "edge_id": "C_N", "from_node": "N", "to_node": "C"},
+      {"tool": "record_constraint", "clue_id": "N_SUN_NOT_END"},
+      {"tool": "move", "edge_id": "C_E", "from_node": "C", "to_node": "E"},
+      {"tool": "read_inscription", "room": "E"},
+      {"tool": "move", "edge_id": "C_E", "from_node": "E", "to_node": "C"},
+      {"tool": "record_constraint", "clue_id": "E_EYE_RIGHT_OF_REED"},
+      {"tool": "move", "edge_id": "C_S", "from_node": "C", "to_node": "S"},
+      {"tool": "read_inscription", "room": "S"},
+      {"tool": "move", "edge_id": "C_S", "from_node": "S", "to_node": "C"},
+      {"tool": "record_constraint", "clue_id": "S_ARMOR_ADJACENT_TO_SUN"},
+      {"tool": "move", "edge_id": "C_W", "from_node": "C", "to_node": "W"},
+      {"tool": "read_inscription", "room": "W"},
+      {"tool": "move", "edge_id": "C_W", "from_node": "W", "to_node": "C"},
+      {"tool": "record_constraint", "clue_id": "W_REED_NOT_FIRST"},
+      {"tool": "set_trial_layout", "layout_by_room": {"N": "甲", "E": "日", "S": "芦", "W": "眼"}},
+      {"tool": "verify_layout"}
+    ],
+    "systematic_enumeration": [
+      {"tool": "read_inscription", "room": "C"},
+      {"tool": "move", "edge_id": "C_W", "from_node": "C", "to_node": "W"},
+      {"tool": "read_inscription", "room": "W"},
+      {"tool": "move", "edge_id": "C_W", "from_node": "W", "to_node": "C"},
+      {"tool": "move", "edge_id": "C_S", "from_node": "C", "to_node": "S"},
+      {"tool": "read_inscription", "room": "S"},
+      {"tool": "move", "edge_id": "C_S", "from_node": "S", "to_node": "C"},
+      {"tool": "move", "edge_id": "C_E", "from_node": "C", "to_node": "E"},
+      {"tool": "read_inscription", "room": "E"},
+      {"tool": "move", "edge_id": "C_E", "from_node": "E", "to_node": "C"},
+      {"tool": "move", "edge_id": "C_N", "from_node": "C", "to_node": "N"},
+      {"tool": "read_inscription", "room": "N"},
+      {"tool": "move", "edge_id": "C_N", "from_node": "N", "to_node": "C"},
+      {"tool": "record_constraint", "clue_id": "ORIENTATION_ORDER"},
+      {"tool": "record_constraint", "clue_id": "W_REED_NOT_FIRST"},
+      {"tool": "record_constraint", "clue_id": "S_ARMOR_ADJACENT_TO_SUN"},
+      {"tool": "record_constraint", "clue_id": "E_EYE_RIGHT_OF_REED"},
+      {"tool": "record_constraint", "clue_id": "N_SUN_NOT_END"},
+      {"tool": "set_trial_layout", "layout_by_room": {"N": "甲", "E": "日", "S": "芦", "W": "眼"}},
+      {"tool": "verify_layout"}
+    ]
+  }
+}

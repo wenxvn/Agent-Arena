@@ -1,0 +1,89 @@
+map_id: MAP-18
+authorship: 手写具体动作轨迹；失败用例从给定状态逐tick审查，不从成功Oracle自动变形。
+cases:
+  - id: F01
+    name: 无告警时红线同段对向早发
+    alert_mode: disabled
+    operations:
+      - {tick: 0, T_B: {op: release, to: B2}, T_G: {op: release, to: G2}}
+      - {tick: 1, T_B: {op: release, to: B3}, T_G: {op: release, to: G3}}
+      - {tick: 2}
+      - {tick: 3}
+      - {tick: 4, T_R2: {op: release, to: R3}, T_R3: {op: release, to: R2}}
+    expected:
+      terminal_reason: HEAD_ON_COLLISION
+      failure_tick: 4
+      final_tick: 4
+      no_partial_movement_on_failure_tick: true
+      R2_R3_fault_not_yet_observable: true
+    rationale: 此为一个具体的错误早发策略，说明警报可以改变行动窗口；不将其推广为无告警Agent必然失败。
+
+  - id: F02
+    name: 闭塞期硬闯并在复开时相向争抢
+    alert_mode: disabled
+    operations:
+      - {tick: 0, T_B: {op: release, to: B2}, T_G: {op: release, to: G2}}
+      - {tick: 1, T_B: {op: release, to: B3}, T_G: {op: release, to: G3}}
+      - {tick: 2}
+      - {tick: 3}
+      - {tick: 4}
+      - {tick: 5, T_R1: {op: release, to: R2}, T_X: {op: detour, to: B2}, T_R2: {op: release, to: R3}, T_R3: {op: release, to: R2}}
+      - {tick: 6, T_X: {op: release, to: B3}, T_R2: {op: release, to: R3}, T_R3: {op: release, to: R2}}
+      - {tick: 7, T_X: {op: release, to: G2}, T_R2: {op: release, to: R3}, T_R3: {op: release, to: R2}}
+      - {tick: 8, T_R2: {op: release, to: R3}, T_R3: {op: release, to: R2}}
+      - {tick: 9, T_R2: {op: release, to: R3}, T_R3: {op: release, to: R2}}
+      - {tick: 10, T_R2: {op: release, to: R3}, T_R3: {op: release, to: R2}}
+    expected:
+      blocked_attempts:
+        - {tick: 5, trains: [T_R2, T_R3], reason: TRACK_CLOSED}
+        - {tick: 6, trains: [T_R2, T_R3], reason: TRACK_CLOSED}
+        - {tick: 7, trains: [T_R2, T_R3], reason: TRACK_CLOSED}
+        - {tick: 8, trains: [T_R2, T_R3], reason: TRACK_CLOSED}
+        - {tick: 9, trains: [T_R2, T_R3], reason: TRACK_CLOSED}
+      terminal_reason: HEAD_ON_COLLISION
+      failure_tick: 10
+      final_tick: 10
+      no_partial_movement_on_failure_tick: true
+
+  - id: F03
+    name: 同时取消两条故障班次跌破服务率
+    alert_mode: disabled
+    operations:
+      - {tick: 0, T_B: {op: release, to: B2}, T_G: {op: release, to: G2}}
+      - {tick: 1, T_B: {op: release, to: B3}, T_G: {op: release, to: G3}}
+      - {tick: 2}
+      - {tick: 3}
+      - {tick: 4}
+      - {tick: 5, T_R1: {op: release, to: R2}, T_X: {op: detour, to: B2}, T_R2: {op: cancel_service, task_id: TASK_R2_R3}, T_R3: {op: cancel_service, task_id: TASK_R3_R2}}
+      - {tick: 6, T_X: {op: release, to: B3}}
+      - {tick: 7, T_X: {op: release, to: G2}}
+      - {tick: 8}
+      - {tick: 9}
+      - {tick: 10}
+      - {tick: 11}
+    expected:
+      delivered_by_deadline: 12
+      canceled_passengers: 6
+      denominator: 18
+      service_rate: 0.6666666666666666
+      terminal_reason: DEADLINE_SERVICE_BELOW_70
+      failure_tick: 11
+      collision_free: true
+
+boundary_cases:
+  - id: B01
+    closed_tick: 9
+    operation: {train: T_R2, op: release, to: R3}
+    expected: {reason: TRACK_CLOSED, position: R2, tick_after: 10}
+  - id: B02
+    reopened_tick: 10
+    operation: {train: T_R2, op: release, to: R3}
+    expected: {reason: null, position_after: R3, arrival_tick: 11}
+  - id: B03
+    alert_tick: 4
+    operation: {train: T_X, op: detour, to: B2}
+    expected: {alert_contains_fault_id: false, arrival_tick_at_B2: 5}
+
+seed_replay:
+  seed: 0
+  expected: Two consecutive hand-oracle builds have byte-identical content and state rows.

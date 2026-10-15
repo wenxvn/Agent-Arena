@@ -1,0 +1,130 @@
+id: MAP-27
+title: 月面联合行动
+world: moon
+capability_primary: long_horizon_tool_and_resource_coordination
+capability_secondary: [two_slot_vehicle_cargo, relay_gated_remote_rescue, finite_charging, multi_objective_return]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: deterministic_seed0_joint_operation_fixture
+topology:
+  nodes: [B, S, R, P, E]
+  roles: {B: base_and_submission, S: supply_depot_and_one_use_charger, R: communication_relay, P: sample_site, E: injured_crew_site}
+  undirected_edges:
+    - {a: B, b: S, type: near_supply_road, ticks: 1, battery_cost: 1, oxygen_cost: 1}
+    - {a: S, b: R, type: relay_access_road, ticks: 2, battery_cost: 2, oxygen_cost: 2}
+    - {a: R, b: P, type: sample_access_road, ticks: 2, battery_cost: 2, oxygen_cost: 2}
+    - {a: P, b: E, type: remote_rescue_road, ticks: 4, battery_cost: 4, oxygen_cost: 4}
+    - {a: S, b: E, type: short_rescue_road, ticks: 1, battery_cost: 1, oxygen_cost: 1}
+  edges_bidirectional: true
+initial_state:
+  location: B
+  tick: 0
+  vehicle_battery: 14
+  vehicle_battery_capacity: 14
+  crew_oxygen: 18
+  crew_alive: true
+  cargo_capacity_slots: 2
+  cargo: []
+  sample_container_at_B: 1
+  medical_kits_at_S: 1
+  relay_repair_kits_at_S: 1
+  one_use_charge_cells_at_S: 1
+  relay_state: OFFLINE
+  sample_state: UNSAMPLED
+  survivor_state: UNSUPPORTED
+  terminal: false
+charging:
+  location: S
+  units_at_start: 1
+  battery_gain_per_unit: 4
+  battery_capacity_hard_cap: 14
+  duration_ticks: 2
+  consuming_one_cell_is_atomic: true
+  unused_capacity_is_lost: true
+  second_charge_result: CHARGER_EMPTY
+  recharge_after_consumption: false
+cargo:
+  capacity_slots: 2
+  item_slot_costs: {sample_container: 1, medical_kit: 1, relay_repair_kit: 1}
+  sample_container_starts_at_B: 1
+  sample_replaces_empty_container_state_without_extra_slot: true
+  medical_kit_consumed_by_field_stabilization: true
+  relay_repair_kit_consumed_by_relay_repair: true
+  load_duration_ticks: 1
+  overflow_result: CARGO_CAPACITY_EXCEEDED
+relay:
+  location: R
+  initial_state: OFFLINE
+  repair_requires: [relay_repair_kit_carried]
+  repair_duration_ticks: 2
+  repair_is_permanent: true
+  repair_consumes_kit: true
+  repeat_repair_result: RELAY_ALREADY_ONLINE
+sample:
+  location: P
+  requires: [sample_container_carried]
+  duration_ticks: 1
+  produces: sealed_sample_in_container
+  container_slot_after_sampling: 1
+rescue:
+  injured_crew_location: E
+  field_stabilization:
+    location: E
+    requires: [medical_kit_carried]
+    duration_ticks: 1
+    consumes_medical_kit: true
+    effect: survivor_state_STABILIZED
+    relay_not_required: true
+  remote_evacuation:
+    valid_call_locations: [R, E]
+    requires: [relay_online, survivor_state_STABILIZED]
+    duration_ticks: 1
+    effect: survivor_state_RESCUED_and_transferred_to_B
+  invalid_without_stabilization: CASUALTY_NOT_STABILIZED
+  invalid_without_relay: RELAY_OFFLINE
+vehicle:
+  only_vehicle_moves_between_nodes: true
+  action_name: drive
+  drive_costs_are_exact_edge_costs: true
+  insufficient_battery_terminal: VEHICLE_STRANDED
+  strand_condition: minimum_battery_path_to_B_exceeds_remaining_battery
+  oxygen_exhaustion_terminal: CREW_OXYGEN_DEPLETED
+  no_oxygen_replenishment: true
+  battery_zero_at_B_is_safe_after_final_arrival: true
+submission:
+  location: B
+  action: submit
+  success_requires: [sealed_sample_at_B, survivor_state_RESCUED, relay_state_ONLINE, crew_alive, crew_oxygen_greater_than_zero]
+  incomplete_submission_terminal: OBJECTIVES_INCOMPLETE_AT_BASE
+success_predicate: [location_B, sealed_sample_returned, survivor_rescued, relay_online, crew_alive, crew_oxygen_gt_0]
+failure_predicates: [vehicle_cannot_reach_B_with_remaining_battery, crew_oxygen_reaches_zero, submit_at_B_with_missing_objective]
+actions:
+  - {name: load, item_id: [sample_container, medical_kit, relay_repair_kit], location_specific: true, duration_ticks: 1}
+  - {name: drive, to: adjacent_node, consumes_edge_battery_and_oxygen_and_ticks: true}
+  - {name: charge, location: S, duration_ticks: 2, consumes_one_charge_cell: true}
+  - {name: repair_relay, location: R, kit_id: relay_repair_kit, duration_ticks: 2}
+  - {name: sample, location: P, container_id: sample_container, duration_ticks: 1}
+  - {name: rescue, mode: [field_stabilize, remote_evacuation], typed_item_id: medical_kit, duration_ticks: mode_specific}
+  - {name: submit, location: B, duration_ticks: 0}
+public_observation_fields: [current_tick, current_node, local_drive_edges_with_costs, battery_remaining, oxygen_remaining, cargo_ids_and_slots, supply_remaining_here, charger_cells_remaining, relay_state, sample_state, survivor_state, crew_alive, last_action_result, terminal, terminal_reason]
+private_fields: [evaluator_only_seed_replay_marker, unperformed_action_outcomes]
+observation_contract:
+  current_inventory_and_local_supply_only: true
+  no_hidden_future_events: true
+  exact_action_failure_codes: true
+  no_auto_replenishment_or_unbounded_charge: true
+event_order:
+  - validate_typed_action_and_location
+  - resolve_action_and_consume_items_or_one_use_charge_cell
+  - for_drive_apply_edge_tick_battery_and_oxygen_costs_atomically
+  - update_stranded_and_crew_alive_state_after_segment_arrival
+  - evaluate_remote_evacuation_only_after_relay_is_online
+  - evaluate_submit_at_B_against_all_four_objectives_and_positive_oxygen
+reason_codes: [LOAD_SUCCEEDED, CARGO_CAPACITY_EXCEEDED, DRIVE_SUCCEEDED, BATTERY_INSUFFICIENT, VEHICLE_STRANDED, CREW_OXYGEN_DEPLETED, CHARGED, CHARGER_EMPTY, BATTERY_ALREADY_FULL, RELAY_REPAIRED, RELAY_TOOL_REQUIRED, RELAY_ALREADY_ONLINE, SAMPLE_SEALED, SAMPLE_CONTAINER_REQUIRED, CASUALTY_STABILIZED, MEDICAL_KIT_REQUIRED, RELAY_OFFLINE, CASUALTY_NOT_STABILIZED, REMOTE_EVACUATION_COMPLETE, OBJECTIVES_INCOMPLETE_AT_BASE, ALL_OBJECTIVES_COMPLETE]
+metrics: [finish_tick, objective_coverage, battery_consumed, oxygen_consumed, charge_cells_used, cargo_peak_slots, cargo_capacity_errors, tools_or_kit_failures, remote_rescue_order, sample_returned, survivor_rescued, crew_alive]
+manual_scenarios_path: planning/hand_traces.json
+failure_cases_path: failure_traces/cases.yaml
+boundary_cases_path: failure_traces/cases.yaml
+seed_replay_path: planning/seed_replay.yaml
+oracle_path: oracle_trace.jsonl

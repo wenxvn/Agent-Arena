@@ -1,0 +1,68 @@
+id: MAP-17
+title: 早高峰
+world: metro
+capability_primary: multi_objective_schedule_optimization
+capability_secondary: [shared_bottleneck_dispatch, passenger_service_rate, pareto_tradeoff]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: deterministic_seed_0_fixed_demand
+time_horizon_ticks: 12
+energy_budget: 18
+topology:
+  ring_nodes: [A, B, C, D]
+  ring_segments: [AB, BC, CD, DA]
+  branch_nodes: [B, E, F]
+  branch_segments: [BE, EF]
+  segment_travel_ticks: 1
+  segment_capacity_per_tick: 1
+  shared_bidirectional_segment: BC
+  station_train_berth_capacity: 2
+initial_trains:
+  T_A: {station: A, seat_capacity: 3}
+  T_C: {station: C, seat_capacity: 3}
+  T_D: {station: D, seat_capacity: 3}
+  T_F: {station: F, seat_capacity: 3}
+initial_state:
+  tick: 0
+  waiting_demand: {A_to_C: 2, B_to_E: 2, C_to_F: 2, D_to_B: 2, F_to_A: 2}
+  onboard_passengers: {T_A: {}, T_C: {}, T_D: {}, T_F: {}}
+  delivered_by_od: {A_to_C: 0, B_to_E: 0, C_to_F: 0, D_to_B: 0, F_to_A: 0}
+  energy_consumed: 0
+  passenger_wait_person_ticks: 0
+  terminal: false
+public_observation_fields: [tick, ticks_remaining, topology, demand_matrix, train_positions, train_seat_capacity, onboard_passengers, waiting_demand, delivered_by_od, energy_consumed, energy_remaining, passenger_wait_person_ticks, terminal, terminal_reason]
+initial_demand_tick: 0
+demand_units: {A_to_C: 2, B_to_E: 2, C_to_F: 2, D_to_B: 2, F_to_A: 2}
+total_demand: 10
+success_predicate: [no_track_or_platform_conflict, energy_consumed_lte_18, delivered_passengers_gte_8_by_tick_12]
+actions:
+  - {name: set_timetable, parameters: [current_tick, joint_train_operations], tick_cost: 1, frequency: one_joint_row_per_tick, effect: atomically_execute_current_tick_operations}
+  - {name: release, parameters: [train_id, next_adjacent_station], energy_cost: 1, effect: traverse_one_segment_during_current_timetable_row}
+  - {name: stop, parameters: [train_id, boarding_manifest, transfer_manifest], energy_cost: 0, effect: dwell_one_tick_and_board_or_transfer_manifest}
+  - {name: switch_line, parameters: [train_id, ring_or_branch, boarding_manifest, transfer_manifest], only_at: B, energy_cost: 0, effect: dwell_one_tick_set_line_and_board_or_transfer_manifest}
+  - {name: delay, parameters: [train_id], energy_cost: 0, effect: hold_one_tick_without_boarding_or_alighting}
+constants:
+  waiting_accounting: one_passenger_tick_per_unboarded_person_per_elapsed_tick_until_boarding_or_tick_12
+  movement_arrival: automatically_alight_matching_destination_units
+  transfer_at_B: {minimum_wait_ticks: 1, wait_kpi_units_per_person: 1, energy_cost: 0}
+  B_route_selection:
+    default: ring
+    branch_exit_requires_switch_line_branch: true
+    switch_selection_lifetime: until_next_departure_from_B
+    ring_exits: [A, C]
+    branch_exit: E
+  omitted_train_operation: hold
+  scoring_is_vector_not_weighted_sum: true
+event_order:
+  each_tick: [validate_operations_and_adjacency, validate_boarding_manifests, reserve_all_segments, check_segment_capacity_and_head_on, check_energy_budget, check_post_move_station_berths, accrue_wait_for_current_queues, move_all_releasing_trains_simultaneously, auto_alight_arriving_passengers, execute_stop_and_switch_boarding, increment_tick, at_tick_12_score_service_rate]
+failure_codes: [SHARED_SEGMENT_CONFLICT, PLATFORM_CAPACITY, ENERGY_BUDGET_EXCEEDED, DEADLINE_SERVICE_BELOW_80, INVALID_LINE_SWITCH, INVALID_BOARDING_MANIFEST]
+metrics:
+  primary: [service_rate, passenger_wait_person_ticks, energy_consumed, last_delivery_tick]
+  auxiliary: [transfers_at_B, segment_conflicts, platform_capacity_conflicts, unused_energy]
+  reference_front_path: planning/pareto_reference.json
+  distance_formula: min_euclidean_distance_to_reference_vectors_on_normalized_dimensions
+  normalization_ranges: {service_loss: [0, 1], passenger_wait_person_ticks: [0, 120], energy_consumed: [0, 18], last_delivery_tick: [0, 12]}
+  reference_scope: two_hand_authored_anchor_schedules_not_claimed_global_front
+manual_schedule_path: planning/hand_traces.json
+oracle_path: oracle_trace.jsonl

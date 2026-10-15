@@ -1,0 +1,39 @@
+map_id: MAP-29
+classification: PRIVATE_FIXED_NPC_KNOWLEDGE_AND_BIAS_RULES_NEVER_EXPOSE_TABLE
+seed: 0
+truth: {event_time: '23:40', event_location: Y}
+npcs:
+  A:
+    location: L
+    bias: time_memory_anchored_to_stopped_clock
+    answers:
+      OPEN_ACCOUNT: {answer_id: A_OPEN_ACCOUNT, event_time_claim: '00:05', event_location_claim: Y, source_claim_id: A_TIME_CLAIM_0005, rendered_text: '我记得铃在00:05响，声源方向像是庭院。'}
+      TIME_BASIS: {answer_id: A_TIME_BASIS, basis_id: A_TIME_BASIS_STOPPED_0000, statement: looked_at_study_clock_stopped_at_00_00, rendered_text: '我看的是书房那只钟；后来才发现它停在00:00。'}
+      default: {answer_id: A_NO_ADDITIONAL_KNOWLEDGE, rendered_text: '我没有其他可补充的事实。'}
+  B:
+    location: K
+    bias: deliberate_location_concealment
+    answers:
+      OPEN_ACCOUNT: {answer_id: B_OPEN_ACCOUNT, event_time_claim: '23:40', event_location_claim: L, source_claim_id: B_LOCATION_CLAIM_L, rendered_text: '那声铃大约在23:40，我记得是在书房L。'}
+      LOCATION_BASIS: {answer_id: B_LOCATION_BASIS, repeats_location_claim_id: B_LOCATION_CLAIM_L, response: insists_event_was_in_L, rendered_text: '我还是坚持说是在书房L。'}
+      default: {answer_id: B_NO_ADDITIONAL_KNOWLEDGE, rendered_text: '我没有其他可补充的事实。'}
+  C:
+    location: Y
+    knowledge_limit: sound_only
+    answers:
+      OPEN_ACCOUNT: {answer_id: C_SOUND_ONLY, event_time_claim: UNKNOWN, event_location_claim: UNKNOWN, sound_pattern: DOUBLE_LOW_HIGH, rendered_text: '我只听见两声低高音；不知道准确时间，也不知道从哪间房传来。'}
+      SOUND_PATTERN: {answer_id: C_SOUND_ONLY, sound_pattern: DOUBLE_LOW_HIGH, rendered_text: '听起来是低音后接高音的双响。'}
+      default: {answer_id: C_NO_ADDITIONAL_KNOWLEDGE, rendered_text: '我不知道更多。'}
+  D:
+    location: G
+    knowledge: fixed_event_archive
+    answers:
+      OPEN_ACCOUNT: {answer_id: D_ARCHIVE_EXISTS, fact: a_signed_bell_docket_is_kept_here, rendered_text: '守门铃事件簿保存在我这里，但要查索引才能定位那一条。'}
+      ARCHIVE_CROSS_INDEX: {answer_id: ARCHIVE_EVENT_2340_Y, event_time: '23:40', event_location: Y, source_class: documentary_record, rendered_text: '交叉索引记载：23:40，庭院Y银铃撞击一次。'}
+      default: {answer_id: D_NO_ADDITIONAL_KNOWLEDGE, rendered_text: '档案里没有这类索引。'}
+fixed_answer_rules:
+  same_npc_same_template_same_answer_id_and_payload: true
+  repeats_consume_one_question_each: true
+  answer_generation_uses_no_llm_or_freeform_sampling: true
+  case_truth_never_mutates_when_answers_are_repeated: true
+  eight_question_budget: true

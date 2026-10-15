@@ -1,0 +1,42 @@
+{
+  "map_id": "MAP-22",
+  "authorship": "拓扑、路标差异、方向、18步全边巡回、30步DFS边界和无记忆贪心路径均按本图12节点15条边手工确定。",
+  "target_sign_id": "RUIN_TRIPLE_ARCH",
+  "movement_limit": 30,
+  "strategies": {
+    "no_memory_local_priority": {
+      "description": "不 inspect、不写笔记、不带episode history；每次选固定罗盘序中最靠前的当前出口。",
+      "bearing_priority": ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
+      "node_route_first_30_moves": ["A", "B", "D", "G", "J", "K", "J", "K", "J", "K", "J", "K", "J", "K", "J", "K", "J", "K", "J", "K", "J", "K", "J", "K", "J", "K", "J", "K", "J", "K", "J"],
+      "expected": {"movement_steps": 30, "final_node": "J", "target_visited": false, "return_success": false, "unique_nodes_seen": 6, "unique_edges_traversed": 5, "repeated_node_visits": 25, "repeated_edge_traversals": 25, "terminal_reason": "STEP_LIMIT_REACHED"}
+    },
+    "external_graph_memory_euler_tour": {
+      "description": "逐节点观察并记录局部路标卡，实际走过边后记录端点关系；18步完成全图边巡回，到L后按日志回A。",
+      "node_route": ["A", "B", "D", "G", "J", "K", "H", "E", "B", "E", "F", "I", "L", "K", "H", "I", "F", "C", "A"],
+      "directions": ["NE", "NE", "E", "E", "S", "W", "W", "W", "E", "S", "NE", "E", "N", "W", "S", "SW", "W", "NW"],
+      "target_first_visited_at_step": 12,
+      "unique_nodes_seen": 12,
+      "unique_edges_traversed": 15,
+      "repeated_node_visits": 7,
+      "repeated_edge_traversals": 3,
+      "repeated_edges": ["B-E", "F-I", "H-K"],
+      "memory_facts_written": {"node_pages": 12, "edge_pages": 15, "total": 27},
+      "expected": {"movement_steps": 18, "final_node": "A", "target_visited": true, "return_success": true, "terminal_reason": "RETURNED_TO_CAMP_WITH_RUIN_RECORD"}
+    },
+    "complete_map_upper_bound": {
+      "description": "离线完整邻接图只用于上界：唯一最短A-L路线，原路返回。运行时不能调用完整图接口。",
+      "node_route": ["A", "C", "F", "I", "L", "I", "F", "C", "A"],
+      "movement_steps": 8,
+      "expected": {"final_node": "A", "target_visited": true, "return_success": true, "shortest_round_trip_steps": 8, "route_is_unique_shortest": true}
+    },
+    "depth_first_exact_30_boundary": {
+      "description": "本图专属方向序导出的手写DFS全边回访路径，每条边往返一次；在第30步恰回A。",
+      "node_route": ["A", "B", "D", "G", "J", "K", "L", "I", "H", "K", "H", "E", "F", "I", "F", "C", "A", "C", "F", "E", "B", "E", "H", "I", "L", "K", "J", "G", "D", "B", "A"],
+      "target_first_visited_at_step": 6,
+      "unique_nodes_seen": 12,
+      "unique_edges_traversed": 15,
+      "edge_traversals_each_unique_edge": 2,
+      "expected": {"movement_steps": 30, "final_node": "A", "target_visited": true, "return_success": true, "terminal_reason": "RETURNED_TO_CAMP_WITH_RUIN_RECORD"}
+    }
+  }
+}

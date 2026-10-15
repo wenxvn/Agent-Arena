@@ -1,0 +1,26 @@
+map_id: MAP-26
+evidence_class: hand_authored_offline_design_rules
+runtime_verified: false
+seed0_public_trace_only: true
+truth_fixtures_are_private: planning/private_seed_reference.yaml
+hand_route_evidence:
+  diagnose_first: {expected_tick: 11, communication_restored: true, uninstalled_spares_remaining: 1}
+  feedback_then_correct:
+    expected_tick: 16
+    first_trial: power_regulator
+    first_feedback: POWER_SELF_TEST_OK_LINK_STILL_DOWN
+    rollback_recovers_trial_unit: true
+    retry_history_preserved: true
+    communication_restored: true
+    uninstalled_spares_remaining: 1
+failure_evidence:
+  F01: {cause: two_distinct_wrong_parts_without_testing, result: SPARES_EXHAUSTED}
+  F02: {cause: repeat_same_wrong_part_without_rollback, replacement_durations: [1, 2], result: SPARES_EXHAUSTED}
+  F03: {cause: ignore_two_conclusive_nonfault_readings, result: SPARES_EXHAUSTED}
+anti_leakage:
+  shared_initial_observation_across_seed_fixtures: true
+  no_private_fault_id_in_public_oracle: true
+  no_future_test_results_in_public_oracle: true
+determinism:
+  same_seed_test_reading_is_immutable: true
+  same_seed_public_oracle_generation_byte_stable: true

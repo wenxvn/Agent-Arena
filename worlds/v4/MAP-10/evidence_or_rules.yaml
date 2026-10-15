@@ -1,0 +1,35 @@
+id: MAP-10
+design_evidence:
+  source_initial_fuel: 12
+  source_heater_period_ticks: 2
+  source_snowmobile_fuel_per_edge: 2
+  source_generator_start_fuel: 3
+  source_initial_temperature: 5
+  manual_refinements:
+    - {item: fuel_location, decision: all_12_begin_in_B_depot_and_loaded_fuel_is_transferred_not_burned}
+    - {item: carried_capacity, decision: 5_units_exactly_covers_one_snowmobile_edge_plus_generator_start}
+    - {item: route_duration, decision: {B_E_walk: 4, E_T_walk: 3, B_W_walk: 1, W_T_walk: 1, E_W_snowmobile: 1}}
+    - {item: heater_initial_state, decision: on_at_tick_0_with_first_settlement_at_tick_2}
+    - {item: transmission_duration, decision: 1_tick}
+  hand_checked_routes:
+    walk_keep_fuel: {completion_tick: 10, depot_fuel_remaining: 4, carried_fuel_remaining: 0, minimum_temperature: 5}
+    snowmobile_shortcut: {completion_tick: 8, depot_fuel_remaining: 3, carried_fuel_remaining: 0, minimum_temperature: 5}
+  automated_model_check_run: false
+rules:
+  fuel:
+    starting_partition: {depot_B: 12, carried: 0}
+    load: {action_ticks: 1, maximum_capacity: 5, transfer_only: true}
+    heater: {period_ticks: 2, first_tick: 2, per_settlement: 1, source: depot_B}
+    snowmobile: {edge: E_W_SNOWMOBILE, action_ticks: 1, carried_fuel_per_traversal: 2, bidirectional: true}
+    generator: {location: E, action_ticks: 1, carried_fuel: 3}
+    invariant: depot_B_plus_carried_plus_spent_equals_12
+  temperature:
+    initial: 5
+    funded_heating_delta_per_settlement: 0
+    unheated_delta_per_settlement: -1
+    terminal_at_or_below: 0
+    failure_checked_before_transmission_success: true
+  knowledge_boundary:
+    - all_fuel_partitions_temperature_heater_and_generator_states_are_public
+    - no_future_resource_events_are_exposed
+    - seed_0_has_no_randomness_and_same_action_log_must_replay_identically

@@ -1,0 +1,70 @@
+map_id: MAP-20
+authorship: 三条失败轨迹分别击中热账、水源总量约束、旁路损失账；均使用该图固定的十分之一流量刻度和手算状态，不从Oracle自动生成。
+cases:
+  - id: F01
+    name: 三区满载却只给每区直供两单位
+    operations:
+      - {tick: 0, direct_flow_tenths: [20, 20, 20], bypasses: {AB: null, BC: null}, load_modes: [FULL, FULL, FULL], expected_delivery_tenths: [20, 20, 20]}
+      - {tick: 1, direct_flow_tenths: [20, 20, 20], bypasses: {AB: null, BC: null}, load_modes: [FULL, FULL, FULL], expected_delivery_tenths: [20, 20, 20]}
+    expected:
+      terminal_reason: THERMAL_OVERHEAT
+      failure_tick: 1
+      temperatures_after_failure_tenths: [110, 80, 50]
+      overheated_zones: [A]
+      failed_interval_production_credit: 0
+
+  - id: F02
+    name: 直供各支管合法但水源总量超预算
+    operations:
+      - {tick: 0, direct_flow_tenths: [25, 25, 25]}
+    expected:
+      terminal_reason: SOURCE_BUDGET_EXCEEDED
+      failure_tick: 0
+      total_draw_tenths: 75
+      each_feeder_within_25_tenths: true
+      no_partial_flow_commit: true
+      tick_after_failure: 0
+      temperatures_unchanged: [70, 60, 50]
+
+  - id: F03
+    name: 把B到A旁路当成无损水量
+    operations:
+      - {tick: 0, direct_flow_tenths: [20, 20, 20], bypasses: {AB: {from: B, to: A, input_tenths: 10}, BC: null}, load_modes: [FULL, REDUCED, REDUCED], expected_delivery_tenths: [28, 10, 20]}
+      - {tick: 1, direct_flow_tenths: [20, 20, 20], bypasses: {AB: {from: B, to: A, input_tenths: 10}, BC: null}, load_modes: [FULL, REDUCED, REDUCED], expected_delivery_tenths: [28, 10, 20]}
+      - {tick: 2, direct_flow_tenths: [20, 20, 20], bypasses: {AB: {from: B, to: A, input_tenths: 10}, BC: null}, load_modes: [FULL, REDUCED, REDUCED], expected_delivery_tenths: [28, 10, 20]}
+    expected:
+      terminal_reason: THERMAL_OVERHEAT
+      failure_tick: 2
+      temperatures_after_failure_tenths: [106, 90, 20]
+      overheated_zones: [A]
+      no_loss_expected_but_actual_A_receipt_tenths: [30, 30, 30]
+
+boundary_cases:
+  - id: B01
+    name: 源预算精确六单位
+    tick: 0
+    direct_flow_tenths: [20, 20, 20]
+    total_draw_tenths: 60
+    expected: {accepted: true, temperatures_after_tenths: [90, 70, 50]}
+  - id: B02
+    name: 十tick产能精确15
+    hand_plan: exact_production_boundary
+    expected: success
+  - id: B03
+    name: C区阀门刚好被旁路流量顶超
+    tick: 0
+    direct_flow_tenths: [20, 20, 20]
+    bypasses: {AB: null, BC: {from: B, to: C, input_tenths: 15}}
+    expected_delivery_tenths: [20, 5, 32]
+    expected: {terminal_reason: ZONE_VALVE_CAPACITY, C_limit_tenths: 30, no_partial_commit: true, tick_after: 0}
+
+linear_relaxation_reference:
+  source_water_upper_tenths_over_horizon: 600
+  initial_temperature_headroom_tenths: [30, 40, 50]
+  total_headroom_tenths: 120
+  production_upper_points: 72
+  exact_integer_global_optimum_claimed: false
+
+seed_replay:
+  seed: 0
+  expected: Two consecutive hand-oracle builds have byte-identical thermal and flow ledgers.

@@ -1,0 +1,26 @@
+map_id: MAP-29
+classification: JUDGE_SIDE_DETERMINISTIC_COMPARISON_RULES
+runtime_verified: false
+case_truth: {event_time: '23:40', event_location: Y}
+evidence_catalog:
+  A_TIME_CLAIM_0005: {source: NPC_A, class: testimony, supports: {event_time_claim: '00:05', event_location_claim: Y}}
+  A_TIME_BASIS_STOPPED_0000: {source: NPC_A, class: testimony, explains: anchored_to_study_clock}
+  B_LOCATION_CLAIM_L: {source: NPC_B, class: testimony, supports: {event_location_claim: L}, truth_status: deliberate_falsehood}
+  C_SOUND_ONLY: {source: NPC_C, class: testimony, supports: {sound_pattern: DOUBLE_LOW_HIGH}, scope: no_time_or_location_knowledge}
+  D_ARCHIVE_EXISTS: {source: NPC_D, class: testimony, supports: {archive_exists: true}}
+  ARCHIVE_EVENT_2340_Y: {source: archive_at_G, class: documentary_record, supports: {event_time: '23:40', event_location: Y}}
+  STUDY_CLOCK_STOPPED_0000: {source: study_clock_at_L, class: physical_trace, supports: {clock_failure: stopped_at_00_00}}
+  YARD_BELL_MARK_2340: {source: bell_mechanism_at_Y, class: physical_trace, supports: {event_time: '23:40', event_location: Y}}
+comparison_outcomes:
+  A: {required_ids: [A_TIME_CLAIM_0005, A_TIME_BASIS_STOPPED_0000, STUDY_CLOCK_STOPPED_0000, ARCHIVE_EVENT_2340_Y], result: TIME_CLAIM_CONTRADICTED_AND_EXPLAINED}
+  B: {required_ids: [B_LOCATION_CLAIM_L, ARCHIVE_EVENT_2340_Y, YARD_BELL_MARK_2340], result: LOCATION_CLAIM_CONTRADICTED}
+  C: {result: KNOWLEDGE_LIMIT_NOT_UNRELIABILITY}
+  D: {result: ARCHIVE_MATCHES_PHYSICAL_EVIDENCE}
+submit_requirements:
+  event_time: exact_truth
+  event_location: exact_truth
+  unreliable_npc: a_prior_compare_testimony_result
+  time_support: [ARCHIVE_EVENT_2340_Y, YARD_BELL_MARK_2340]
+  location_support: [ARCHIVE_EVENT_2340_Y, YARD_BELL_MARK_2340]
+public_rejection: CASE_REJECTED
+rejection_discloses_truth: false

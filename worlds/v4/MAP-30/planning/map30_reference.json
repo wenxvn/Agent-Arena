@@ -1,0 +1,173 @@
+{
+  "map_id": "MAP-30",
+  "result": "MAP30_LONG_GAP_EVIDENCE_CHAIN_AND_CAUTION_REPLAYED",
+  "runtime_verified": false,
+  "routes": {
+    "event_by_event_archive_first": {
+      "finish_tick": 25,
+      "success": true,
+      "terminal_reason": "ALL_THREE_EVENTS_ACCOUNTED_FOR_AND_MARA_VENN_PROVEN",
+      "unsupported_formal_accusations": 0,
+      "casebook_entry_count": 4,
+      "casebook_source_count": 7,
+      "q4_recorded": true,
+      "q4_recalled_after_gap": true,
+      "event_claim_accuracy": "3/3",
+      "timeline_consistent": true,
+      "comparison_succeeded": true,
+      "npc_answer_ids": [
+        "ARCHIVE_Q4_INDEX_CONFIRMED",
+        "B_WITNESS_HANDOFF",
+        "K_WITNESS_WAX_ROUTE",
+        "T_WITNESS_SIGNAL_ROUTE"
+      ],
+      "npc_condition_keys": [
+        "Q4_with_docket",
+        "HANDOFF_with_stub",
+        "WAX_with_event_1",
+        "SIGNAL_with_event_2"
+      ],
+      "action_rows": 25
+    },
+    "physical_records_before_witness_round": {
+      "finish_tick": 32,
+      "success": true,
+      "terminal_reason": "ALL_THREE_EVENTS_ACCOUNTED_FOR_AND_MARA_VENN_PROVEN",
+      "unsupported_formal_accusations": 0,
+      "casebook_entry_count": 4,
+      "casebook_source_count": 7,
+      "q4_recorded": true,
+      "q4_recalled_after_gap": true,
+      "event_claim_accuracy": "3/3",
+      "timeline_consistent": true,
+      "comparison_succeeded": true,
+      "npc_answer_ids": [
+        "ARCHIVE_Q4_INDEX_CONFIRMED",
+        "T_GENERIC_NIGHT_MEMORY",
+        "B_WITNESS_HANDOFF",
+        "K_WITNESS_WAX_ROUTE",
+        "T_WITNESS_SIGNAL_ROUTE"
+      ],
+      "npc_condition_keys": [
+        "Q4_with_docket",
+        "SIGNAL_without_event_2",
+        "HANDOFF_with_stub",
+        "WAX_with_event_1",
+        "SIGNAL_with_event_2"
+      ],
+      "action_rows": 32
+    },
+    "incremental_timeline_hypotheses": {
+      "finish_tick": 34,
+      "success": true,
+      "terminal_reason": "ALL_THREE_EVENTS_ACCOUNTED_FOR_AND_MARA_VENN_PROVEN",
+      "unsupported_formal_accusations": 0,
+      "casebook_entry_count": 4,
+      "casebook_source_count": 7,
+      "q4_recorded": true,
+      "q4_recalled_after_gap": true,
+      "event_claim_accuracy": "3/3",
+      "timeline_consistent": true,
+      "comparison_succeeded": true,
+      "npc_answer_ids": [
+        "ARCHIVE_Q4_INDEX_CONFIRMED",
+        "B_WITNESS_HANDOFF",
+        "K_WITNESS_WAX_ROUTE",
+        "T_WITNESS_SIGNAL_ROUTE"
+      ],
+      "npc_condition_keys": [
+        "Q4_with_docket",
+        "HANDOFF_with_stub",
+        "WAX_with_event_1",
+        "SIGNAL_with_event_2"
+      ],
+      "action_rows": 34
+    }
+  },
+  "failures": {
+    "F01_two_unsupported_formal_charges": {
+      "finish_tick": 3,
+      "success": false,
+      "terminal_reason": "ACCUSATION_LIMIT_EXCEEDED",
+      "unsupported_formal_accusations": 2,
+      "casebook_entry_count": 0,
+      "casebook_source_count": 0,
+      "q4_recorded": false,
+      "q4_recalled_after_gap": false,
+      "event_claim_accuracy": "0/3",
+      "timeline_consistent": false,
+      "comparison_succeeded": false,
+      "npc_answer_ids": [],
+      "npc_condition_keys": [],
+      "action_rows": 3
+    },
+    "F02_omit_early_Q4_code_index": {
+      "finish_tick": 19,
+      "success": false,
+      "terminal_reason": "ACCUSATION_LIMIT_EXCEEDED",
+      "unsupported_formal_accusations": 2,
+      "casebook_entry_count": 3,
+      "casebook_source_count": 6,
+      "q4_recorded": false,
+      "q4_recalled_after_gap": false,
+      "event_claim_accuracy": "3/3",
+      "timeline_consistent": true,
+      "comparison_succeeded": false,
+      "npc_answer_ids": [
+        "B_WITNESS_HANDOFF",
+        "K_WITNESS_WAX_ROUTE",
+        "T_WITNESS_SIGNAL_ROUTE"
+      ],
+      "npc_condition_keys": [
+        "HANDOFF_with_stub",
+        "WAX_with_event_1",
+        "SIGNAL_with_event_2"
+      ],
+      "action_rows": 19
+    },
+    "F03_swap_K_and_T_times_at_trial": {
+      "finish_tick": 26,
+      "success": false,
+      "terminal_reason": "ACCUSATION_LIMIT_EXCEEDED",
+      "unsupported_formal_accusations": 2,
+      "casebook_entry_count": 4,
+      "casebook_source_count": 7,
+      "q4_recorded": true,
+      "q4_recalled_after_gap": true,
+      "event_claim_accuracy": "1/3",
+      "timeline_consistent": false,
+      "comparison_succeeded": true,
+      "npc_answer_ids": [
+        "ARCHIVE_Q4_INDEX_CONFIRMED",
+        "B_WITNESS_HANDOFF",
+        "K_WITNESS_WAX_ROUTE",
+        "T_WITNESS_SIGNAL_ROUTE"
+      ],
+      "npc_condition_keys": [
+        "Q4_with_docket",
+        "HANDOFF_with_stub",
+        "WAX_with_event_1",
+        "SIGNAL_with_event_2"
+      ],
+      "action_rows": 26
+    }
+  },
+  "wrong_filing_recovery": {
+    "unsupported_formal_accusations_before_success": 1,
+    "finish_tick": 26,
+    "success": true
+  },
+  "tick_40_boundary": {
+    "correct_final_action_at_tick_39": "ALL_THREE_EVENTS_ACCOUNTED_FOR_AND_MARA_VENN_PROVEN",
+    "finish_tick": 40,
+    "unresolved_at_tick_40": "DEADLINE_REACHED"
+  },
+  "conditional_interview": {
+    "before": "K_GENERIC_OVEN_MEMORY",
+    "after": "K_WITNESS_WAX_ROUTE",
+    "same_state_repeat_fixed": true
+  },
+  "oracle_rows": 26,
+  "oracle_sha256": "D35E73E4094CFDCC35CFA4EEB7D23458EE9C73A28A82E4F696C864064E3DDBE4",
+  "seed0_double_replay_byte_identical": true
+}

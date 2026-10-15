@@ -1,0 +1,51 @@
+{
+  "map_id": "MAP-12",
+  "authorship": "Human-authored calendars; the planner searches feasibility independently and does not construct these policies.",
+  "plans": {
+    "research_priority": {
+      "greenhouse_batches": [
+        {"power_day": 1, "plant_day": 1}
+      ],
+      "research_days": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+      "part_transfers": [
+        {"day": 2, "edge_id": "G_S", "from_node": "S", "to_node": "G", "quantity": 2},
+        {"day": 3, "edge_id": "E_G", "from_node": "G", "to_node": "E", "quantity": 2},
+        {"day": 4, "edge_id": "G_S", "from_node": "S", "to_node": "G", "quantity": 2},
+        {"day": 5, "edge_id": "E_G", "from_node": "G", "to_node": "E", "quantity": 2},
+        {"day": 11, "edge_id": "G_S", "from_node": "S", "to_node": "G", "quantity": 2},
+        {"day": 12, "edge_id": "E_G", "from_node": "G", "to_node": "E", "quantity": 2},
+        {"day": 25, "edge_id": "G_S", "from_node": "S", "to_node": "G", "quantity": 2},
+        {"day": 26, "edge_id": "E_G", "from_node": "G", "to_node": "E", "quantity": 2}
+      ],
+      "food_transfers": [
+        {"day": 6, "edge_id": "E_G", "from_node": "G", "to_node": "E", "quantity": 5},
+        {"day": 8, "edge_id": "H_E", "from_node": "E", "to_node": "H", "quantity": 5}
+      ],
+      "design_intent": "Reach 12 research points as early as the four three-day cycles permit; keep one greenhouse batch and a 7-fuel final reserve."
+    },
+    "safety_buffer": {
+      "greenhouse_batches": [
+        {"power_day": 1, "plant_day": 1},
+        {"power_day": 4, "plant_day": 4}
+      ],
+      "research_days": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+      "part_transfers": [
+        {"day": 2, "edge_id": "G_S", "from_node": "S", "to_node": "G", "quantity": 2},
+        {"day": 3, "edge_id": "E_G", "from_node": "G", "to_node": "E", "quantity": 2},
+        {"day": 8, "edge_id": "G_S", "from_node": "S", "to_node": "G", "quantity": 2},
+        {"day": 9, "edge_id": "E_G", "from_node": "G", "to_node": "E", "quantity": 2},
+        {"day": 15, "edge_id": "G_S", "from_node": "S", "to_node": "G", "quantity": 2},
+        {"day": 16, "edge_id": "E_G", "from_node": "G", "to_node": "E", "quantity": 2},
+        {"day": 22, "edge_id": "G_S", "from_node": "S", "to_node": "G", "quantity": 2},
+        {"day": 23, "edge_id": "E_G", "from_node": "G", "to_node": "E", "quantity": 2}
+      ],
+      "food_transfers": [
+        {"day": 5, "edge_id": "E_G", "from_node": "G", "to_node": "E", "quantity": 5},
+        {"day": 6, "edge_id": "H_E", "from_node": "E", "to_node": "H", "quantity": 5},
+        {"day": 7, "edge_id": "E_G", "from_node": "G", "to_node": "E", "quantity": 5},
+        {"day": 8, "edge_id": "H_E", "from_node": "E", "to_node": "H", "quantity": 5}
+      ],
+      "design_intent": "Use one extra powered crop cycle to finish with five more food and three fewer fuel; schedule repairs around the later research window."
+    }
+  }
+}

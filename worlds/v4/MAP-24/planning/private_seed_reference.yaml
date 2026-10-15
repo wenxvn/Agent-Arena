@@ -1,0 +1,5 @@
+# Evaluator-only fixture. Do not include these fields in Observation, prompt, or public trace.
+seed: 0
+bridge_collapse_tick: 8
+tide_phase_offset: 0
+private_fixture_only: true

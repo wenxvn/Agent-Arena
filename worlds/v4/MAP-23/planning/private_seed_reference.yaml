@@ -1,0 +1,6 @@
+# Seed replay fixture is offline evaluation data, not Agent input.
+seed: 0
+variant_id: Z_TRUE
+true_entrance: Z
+public_oracle_policy: river_scout_then_probe_Y_before_Z
+expected_river_signal: WATER_TWIN_RIPPLES

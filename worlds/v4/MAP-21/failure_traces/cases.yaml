@@ -1,0 +1,84 @@
+map_id: MAP-21
+authorship: 三条失败由本图的喷发时刻、固定传感器似然、特定取样路线及动作耗时逐事件手写。
+cases:
+  - id: F01
+    name: 不测量盲追高值样
+    hidden_eruption_tick_private_for_audit: 12
+    operations:
+      - {tick_range: [0, 1], action: move, edge: O_R, duration: 1}
+      - {tick_range: [1, 3], action: move, edge: R_W, duration: 2}
+      - {tick_range: [3, 5], action: move, edge: W_S, duration: 2}
+      - {tick_range: [5, 6], action: reinforce_sample_case, at: S, duration: 1}
+      - {tick_range: [6, 12], action: collect_and_carry_sample, sample: S_DEEP_ISOTOPE, reinforced: true, duration: 6}
+      - {tick_range: [12, 14], action: move, edge: S_E, duration: 2}
+    expected:
+      terminal_reason: FATAL_ERUPTION
+      failure_tick: 12
+      location_at_failure: S
+      sample_score_awarded: 0
+
+  - id: F02
+    name: 晚报误导下的中阶加固路线遭遇最早喷发
+    hidden_eruption_tick_private_for_audit: 12
+    measurement_outcome_private_for_audit: LATE_WARNING
+    measurement_likelihood: 0.2
+    public_posterior_after_measurement: [0.06060606060606061, 0.5303030303030303, 0.4090909090909091]
+    operations:
+      - {tick_range: [0, 2], action: measure, at: O, duration: 2}
+      - {tick_range: [2, 3], action: move, edge: O_R, duration: 1}
+      - {tick_range: [3, 5], action: move, edge: R_W, duration: 2}
+      - {tick_range: [5, 6], action: reinforce_sample_case, at: W, duration: 1}
+      - {tick_range: [6, 11], action: collect_and_carry_sample, sample: W_LAYERED_CORE, reinforced: true, duration: 5}
+      - {tick_range: [11, 13], action: move, edge: W_S, duration: 2}
+    expected:
+      terminal_reason: FATAL_ERUPTION
+      failure_tick: 12
+      location_at_failure: IN_TRANSIT_W_S
+      posterior_did_not_identify_truth: true
+      sample_and_measurement_score_awarded: 0
+
+  - id: F03
+    name: 收到早报仍追逐深部样
+    hidden_eruption_tick_private_for_audit: 12
+    measurement_outcome_private_for_audit: EARLY_WARNING
+    measurement_likelihood: 0.8
+    public_posterior_after_measurement: [0.47058823529411764, 0.4411764705882353, 0.08823529411764706]
+    operations:
+      - {tick_range: [0, 2], action: measure, at: O, duration: 2}
+      - {tick_range: [2, 3], action: move, edge: O_R, duration: 1}
+      - {tick_range: [3, 5], action: move, edge: R_W, duration: 2}
+      - {tick_range: [5, 7], action: move, edge: W_S, duration: 2}
+      - {tick_range: [7, 8], action: reinforce_sample_case, at: S, duration: 1}
+      - {tick_range: [8, 14], action: collect_and_carry_sample, sample: S_DEEP_ISOTOPE, reinforced: true, duration: 6}
+    expected:
+      terminal_reason: FATAL_ERUPTION
+      failure_tick: 12
+      location_at_failure: S
+      expected_score_of_policy_branch: 0
+      decision_error: ignored_nonzero_early_eruption_posterior
+
+boundary_cases:
+  - id: B01
+    name: 中阶未加固样tick12同刻抵E
+    plan: unreinforced_medium_sample_exact_boundary
+    hidden_eruption_tick: 12
+    expected: {arrival_tick: 12, terminal_reason: EVACUATED_BEFORE_ERUPTION, score: 112}
+  - id: B02
+    name: 加固多耗一tick使tick12边界失守
+    plan: reinforced_medium_sample_misses_eruption_edge
+    hidden_eruption_tick: 12
+    expected: {failure_tick: 12, terminal_reason: FATAL_ERUPTION}
+  - id: B03
+    name: 早晚信号后验都保留三个可行真值
+    expected:
+      early_posterior: [0.47058823529411764, 0.4411764705882353, 0.08823529411764706]
+      late_posterior: [0.06060606060606061, 0.5303030303030303, 0.4090909090909091]
+      neither_signal_identifies_exact_eruption_tick: true
+
+seed_replay:
+  seed: 0
+  hidden_fixture_is_offline_only: true
+  public_oracle_may_not_include: [hidden_eruption_tick, measurement_uniform_draw, scoring_reference]
+  expected_observed_signal: LATE_WARNING
+  expected_safe_arrival_tick: 15
+  expected_score: 122

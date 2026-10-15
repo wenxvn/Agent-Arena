@@ -1,0 +1,105 @@
+{
+  "map_id": "MAP-13",
+  "permutation_count": 24,
+  "primary_clues": [
+    "N_SUN_NOT_END",
+    "E_EYE_RIGHT_OF_REED",
+    "S_ARMOR_ADJACENT_TO_SUN",
+    "W_REED_NOT_FIRST"
+  ],
+  "candidate_counts_clockwise": [
+    {
+      "after": "unfiltered",
+      "count": 24
+    },
+    {
+      "after": "N_SUN_NOT_END",
+      "count": 12
+    },
+    {
+      "after": "E_EYE_RIGHT_OF_REED",
+      "count": 6
+    },
+    {
+      "after": "S_ARMOR_ADJACENT_TO_SUN",
+      "count": 4
+    },
+    {
+      "after": "W_REED_NOT_FIRST",
+      "count": 1
+    }
+  ],
+  "solutions_clockwise": [
+    {
+      "N": "甲",
+      "E": "日",
+      "S": "芦",
+      "W": "眼"
+    }
+  ],
+  "clue_deletion_solution_counts_clockwise": {
+    "N_SUN_NOT_END": 2,
+    "E_EYE_RIGHT_OF_REED": 5,
+    "S_ARMOR_ADJACENT_TO_SUN": 2,
+    "W_REED_NOT_FIRST": 4
+  },
+  "solutions_counterclockwise_mirror": [
+    {
+      "N": "甲",
+      "W": "日",
+      "S": "芦",
+      "E": "眼"
+    }
+  ],
+  "distinct_physical_layouts_without_orientation_marker": 2,
+  "orientation_marker_is_necessary_to_select_physical_room_mapping": true,
+  "failure_candidate_layouts": {
+    "F01_orientation_marker_skipped": {
+      "N": "甲",
+      "W": "日",
+      "S": "芦",
+      "E": "眼"
+    },
+    "F02_east_clue_omitted": [
+      {
+        "N": "眼",
+        "E": "日",
+        "S": "甲",
+        "W": "芦"
+      },
+      {
+        "N": "眼",
+        "E": "芦",
+        "S": "日",
+        "W": "甲"
+      },
+      {
+        "N": "眼",
+        "E": "甲",
+        "S": "日",
+        "W": "芦"
+      }
+    ],
+    "F03_west_clue_omitted": [
+      {
+        "N": "芦",
+        "E": "日",
+        "S": "甲",
+        "W": "眼"
+      },
+      {
+        "N": "芦",
+        "E": "眼",
+        "S": "日",
+        "W": "甲"
+      },
+      {
+        "N": "芦",
+        "E": "甲",
+        "S": "日",
+        "W": "眼"
+      }
+    ]
+  },
+  "runtime_verified": false
+}

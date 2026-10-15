@@ -1,0 +1,56 @@
+id: MAP-16
+title: 单线会车
+world: metro
+capability_primary: deadlock_avoidance
+capability_secondary: [reservation_planning, single_track_scheduling, atomic_handoff]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: deterministic_seed_0_no_random_events
+initial_state:
+  tick: 0
+  train_positions: {a: A, b: B}
+  train_goals: {a: B, b: A}
+  pending_route_reservations: {}
+  terminal: false
+topology:
+  mainline_nodes: [A, X, M, Y, B]
+  siding_node: D
+  segments: [AX, XM, MY, YB, MD]
+  adjacency: {A: [X], X: [A, M], M: [X, Y, D], Y: [M, B], B: [Y], D: [M]}
+  section_capacity: 1
+  node_capacity: {A: 1, X: 1, M: 1, Y: 1, B: 1, D: 1}
+  independent_sidings: {S_main: M, S_siding: D, capacity_each: 1}
+train_route_directions:
+  a: {A: [X], X: [M], M: [Y, D], D: [M], Y: [B], B: []}
+  b: {B: [Y], Y: [M], M: [X, D], D: [M], X: [A], A: []}
+public_observation_fields: [tick, topology, train_route_directions, train_positions, train_goals, segment_capacities, node_capacities, occupied_nodes, pending_route_reservations, terminal, terminal_reason]
+actions:
+  - {name: inspect_network, tick_cost: 0, effect: expose_current_positions_public_topology_and_reservations}
+  - {name: set_route, parameters: [train_id, next_adjacent_node], tick_cost: 0, precondition: adjacent_next_node_and_no_route_already_set_for_train, effect: reserve_one_outgoing_physical_segment_for_current_tick}
+  - {name: occupy_siding, parameters: [train_id], tick_cost: 0, precondition: train_at_M_and_no_route_already_set_for_train, effect: reserve_segment_MD_and_destination_D}
+  - {name: release_section, parameters: [train_id, section_id], tick_cost: 0, effect: cancel_owned_uncommitted_route_reservation}
+  - {name: move_train, parameters: [], tick_cost: 1, effect: atomically_resolve_all_pending_routes_and_advance_tick}
+constants:
+  max_route_intents_per_train_per_tick: 1
+  unassigned_train_behavior: hold_position
+  route_reservation_lifetime: until_move_train_or_release_section
+  segment_capacity_checked: per_tick_across_both_directions
+  allow_enter_node_vacated_in_same_atomic_resolution: true
+  same_tick_opposite_edge_swap_allowed: false
+event_order:
+  set_route: [validate_train_position_and_adjacent_destination, identify_undirected_section, if_section_reserved_in_opposite_direction_fail_HEAD_ON_SWAP, if_section_already_reserved_fail_SECTION_RESERVATION_CONFLICT, reserve_section_for_current_tick]
+  occupy_siding: [validate_train_at_M, validate_siding_route_slot, reserve_MD_for_current_tick]
+  release_section: [validate_reservation_owned_by_train_and_uncommitted, clear_route_and_section_reservation]
+  move_train: [validate_at_least_one_route_intent, check_head_on_swap, check_duplicate_section_reservations, build_all_post_move_positions_atomically, check_node_and_siding_capacity, commit_positions_and_release_old_occupancy, clear_route_reservations, increment_tick, detect_unrecoverable_deadlock, check_both_opposite_endpoints_reached]
+  conflict: [set_terminal_reason, do_not_move_trains, do_not_increment_tick]
+  invalid_or_cancelled_route: [clear_or_reject_reservation, do_not_move_trains, do_not_increment_tick]
+terminal_success: [a_at_B, b_at_A, no_conflict]
+terminal_failure: [SECTION_RESERVATION_CONFLICT, HEAD_ON_SWAP, NODE_CAPACITY_CONFLICT, SIDING_CAPACITY_CONFLICT, DEADLOCK]
+reason_codes: [GATE_OPENED, SECTION_RESERVATION_CONFLICT, HEAD_ON_SWAP, NODE_CAPACITY_CONFLICT, SIDING_CAPACITY_CONFLICT, DEADLOCK, INVALID_ROUTE, NO_PENDING_ROUTE]
+scoring:
+  primary: [both_trains_reach_opposite_endpoints, conflict_free, makespan_ticks, optimality_gap]
+  auxiliary: [deadlock_count, section_reservation_conflicts, head_on_swap_conflicts, node_capacity_conflicts, siding_capacity_conflicts, route_action_count]
+oracle_path: oracle_trace.jsonl
+manual_schedules_path: planning/hand_traces.json
+finite_state_audit_path: planning/route_audit.json

@@ -1,0 +1,47 @@
+{
+  "map_id": "MAP-24",
+  "authorship": "四条路线分别按桥环时限、桥坍塌后的本地路线更新、山路/潮窗和过时笔记恢复手工逐拍推演；seed0相位偏移0。",
+  "deadline_tick_inclusive": 24,
+  "routes": {
+    "bridge_express": {
+      "description": "在桥坍塌前完成两处取物并沿当期开启的潮道返营，构成静态路径基线。",
+      "seed": 0,
+      "actions": [
+        {"action": "move", "to": "B"}, {"action": "move", "to": "C"}, {"action": "take", "item": "relic_C"},
+        {"action": "move", "to": "D"}, {"action": "take", "item": "supply_case_D"}, {"action": "move", "to": "E"}, {"action": "move", "to": "A"}
+      ],
+      "expected": {"success": true, "finish_tick": 7, "stale_route_attempts": 0, "failed_moves": 0}
+    },
+    "bridge_probe_then_update": {
+      "description": "探桥本身耗时，携物返程时到达桥边坍塌后的C侧，读取新邻接并改走F。",
+      "seed": 0,
+      "actions": [
+        {"action": "move", "to": "B"}, {"action": "probe_bridge"}, {"action": "record_route"}, {"action": "move", "to": "C"},
+        {"action": "take", "item": "relic_C"}, {"action": "move", "to": "D"}, {"action": "take", "item": "supply_case_D"},
+        {"action": "move", "to": "C"}, {"action": "record_route"}, {"action": "move", "to": "F"}, {"action": "move", "to": "A"}
+      ],
+      "expected": {"success": true, "finish_tick": 14, "stale_route_attempts": 0, "failed_moves": 0, "collapse_observed_at_tick": 9}
+    },
+    "mountain_tide": {
+      "description": "从始发就用长但稳定的山路抵达两处物资，再在D测当前潮位后走潮道。",
+      "seed": 0,
+      "actions": [
+        {"action": "move", "to": "F"}, {"action": "move", "to": "C"}, {"action": "record_route"},
+        {"action": "take", "item": "relic_C"}, {"action": "move", "to": "D"}, {"action": "take", "item": "supply_case_D"},
+        {"action": "measure_tide"}, {"action": "move", "to": "E"}, {"action": "move", "to": "A"}
+      ],
+      "expected": {"success": true, "finish_tick": 11, "stale_route_attempts": 0, "failed_moves": 0, "measured_status": "OPEN"}
+    },
+    "stale_note_then_recover": {
+      "description": "对照一次过时桥笔记错误：在C尝试已断的C-B后，用当前局部观察覆盖笔记并转F。",
+      "seed": 0,
+      "actions": [
+        {"action": "move", "to": "B"}, {"action": "probe_bridge"}, {"action": "record_route"}, {"action": "move", "to": "C"},
+        {"action": "take", "item": "relic_C"}, {"action": "move", "to": "D"}, {"action": "take", "item": "supply_case_D"},
+        {"action": "move", "to": "C"}, {"action": "move", "to": "B"}, {"action": "record_route"},
+        {"action": "move", "to": "F"}, {"action": "move", "to": "A"}
+      ],
+      "expected": {"success": true, "finish_tick": 15, "stale_route_attempts": 1, "failed_moves": 1, "collapse_observed_at_tick": 9}
+    }
+  }
+}

@@ -1,0 +1,17 @@
+id: MAP-02
+cases:
+  - id: F01_DELAY_ISOLATION
+    precondition: [tick=4, location=C, leak_active=true, center_gate=open, spread_ticks=2]
+    actions: ["inspect(alarm_panel)", "wait(1)"]
+    expected_terminal: {status: scenario_failure, reason: NAV_CORE_FLOODED}
+    diagnosis: Two post-event actions pass without isolating the central gate.
+  - id: F02_LATE_RESCUE
+    precondition: [tick=4, location=C, leak_active=true, center_gate=closed]
+    actions: ["wait(1) × 7", "move(C_X)"]
+    expected_terminal: {status: scenario_failure, reason: CREW_PRESSURE_LOST}
+    diagnosis: The eighth post-event tick ends before the crew reaches R2.
+  - id: F03_RESCUE_ONLY
+    precondition: [tick=4, location=C, leak_active=true, center_gate=closed]
+    actions: ["move(C_X)", "move(X_L2)", "interact(crew, escort)", "move(X_L2)", "move(C_X)", "move(C_R1)", "move(R1_R2)", "wait(1) × 9"]
+    expected_terminal: {status: scenario_failure, reason: GLOBAL_DEADLINE}
+    diagnosis: The crew is safe but the navigation core is never secured by tick 20.

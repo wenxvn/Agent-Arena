@@ -1,0 +1,130 @@
+{
+  "map_id": "MAP-24",
+  "kind": "offline_hand_route_and_event_replay",
+  "seed0_private_fixture": {
+    "seed": 0,
+    "bridge_collapse_tick": 8,
+    "tide_phase_offset": 0,
+    "private_fixture_only": true
+  },
+  "manual_route_results": {
+    "bridge_express": {
+      "success": true,
+      "finish_tick": 7,
+      "failed_moves": 0,
+      "stale_route_attempts": 0,
+      "tide_measurements": 0,
+      "unique_nodes_visited": 5,
+      "repeated_node_visits": 1,
+      "carried_items": [
+        "relic_C",
+        "supply_case_D"
+      ],
+      "terminal_reason": "ALL_ITEMS_DELIVERED"
+    },
+    "bridge_probe_then_update": {
+      "success": true,
+      "finish_tick": 14,
+      "failed_moves": 0,
+      "stale_route_attempts": 0,
+      "tide_measurements": 0,
+      "unique_nodes_visited": 5,
+      "repeated_node_visits": 2,
+      "carried_items": [
+        "relic_C",
+        "supply_case_D"
+      ],
+      "terminal_reason": "ALL_ITEMS_DELIVERED",
+      "collapse_observed_tick": 9,
+      "actions_until_F_departure": 2
+    },
+    "mountain_tide": {
+      "success": true,
+      "finish_tick": 11,
+      "failed_moves": 0,
+      "stale_route_attempts": 0,
+      "tide_measurements": 1,
+      "unique_nodes_visited": 5,
+      "repeated_node_visits": 1,
+      "carried_items": [
+        "relic_C",
+        "supply_case_D"
+      ],
+      "terminal_reason": "ALL_ITEMS_DELIVERED"
+    },
+    "stale_note_then_recover": {
+      "success": true,
+      "finish_tick": 15,
+      "failed_moves": 1,
+      "stale_route_attempts": 1,
+      "tide_measurements": 0,
+      "unique_nodes_visited": 5,
+      "repeated_node_visits": 2,
+      "carried_items": [
+        "relic_C",
+        "supply_case_D"
+      ],
+      "terminal_reason": "ALL_ITEMS_DELIVERED",
+      "collapse_observed_tick": 9,
+      "actions_until_F_departure": 3
+    }
+  },
+  "tide_phase_policy_results_private_for_audit": [
+    {
+      "private_phase_offset_for_audit": 0,
+      "measurements_until_open": 1,
+      "finish_tick": 11,
+      "success": true
+    },
+    {
+      "private_phase_offset_for_audit": 1,
+      "measurements_until_open": 3,
+      "finish_tick": 13,
+      "success": true
+    },
+    {
+      "private_phase_offset_for_audit": 2,
+      "measurements_until_open": 2,
+      "finish_tick": 12,
+      "success": true
+    },
+    {
+      "private_phase_offset_for_audit": 3,
+      "measurements_until_open": 1,
+      "finish_tick": 11,
+      "success": true
+    }
+  ],
+  "failure_results": {
+    "F01": {
+      "terminal_reason": "STRANDED_ON_BRIDGE",
+      "finish_tick": 8,
+      "location": "B",
+      "failed_moves": 0,
+      "tide_measurements": 0
+    },
+    "F02": {
+      "terminal_reason": "DEADLINE_EXCEEDED",
+      "finish_tick": 25,
+      "location": "C",
+      "failed_moves": 16,
+      "tide_measurements": 0
+    },
+    "F03": {
+      "terminal_reason": "DEADLINE_EXCEEDED",
+      "finish_tick": 25,
+      "location": "D",
+      "failed_moves": 0,
+      "tide_measurements": 18
+    }
+  },
+  "boundary_results": {
+    "B01": "STRANDED_ON_BRIDGE",
+    "B02": "SAFE_AT_A_AFTER_TICK_8",
+    "B03": "OPEN_CLOSED_ENDPOINTS_MATCH",
+    "B04": "24_SUCCESS_25_FAIL",
+    "B05": "CLOSED_TIDE_FAILED_MOVE_COSTS_ONE_TICK"
+  },
+  "public_oracle_rows": 11,
+  "runtime_verified": false
+}

@@ -1,0 +1,79 @@
+id: MAP-10
+title: 最后一桶燃料
+world: polar
+capability_primary: multi_purpose_resource_budgeting
+capability_secondary: [route_time_fuel_tradeoff, remote_base_heat_reserve]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+nodes: [B, E, W, T]
+edges:
+  - {id: B_E, from: B, to: E, directed: false, mode: walk, cost_ticks: 4, fuel_cost: 0, terrain: long_slope}
+  - {id: E_T, from: E, to: T, directed: false, mode: walk, cost_ticks: 3, fuel_cost: 0, terrain: exposed_ridge}
+  - {id: B_W, from: B, to: W, directed: false, mode: walk, cost_ticks: 1, fuel_cost: 0}
+  - {id: W_T, from: W, to: T, directed: false, mode: walk, cost_ticks: 1, fuel_cost: 0}
+  - {id: E_W_SNOWMOBILE, from: E, to: W, directed: false, mode: snowmobile_only, cost_ticks: 1, fuel_cost: 2}
+initial_state:
+  seed: 0
+  location: B
+  tick: 0
+  fuel_depot_B: 12
+  carried_fuel: 0
+  carried_fuel_capacity: 5
+  base_temperature: 5
+  heater_on: true
+  generator_online: false
+  transmission_complete: false
+constants:
+  heater_settlement_period_ticks: 2
+  heater_first_settlement_tick: 2
+  heater_fuel_per_settlement: 1
+  heater_consumes_from: fuel_depot_B
+  heater_on_with_fuel_temperature_delta: 0
+  heater_off_or_unfunded_temperature_delta: -1
+  failure_if_base_temperature_lte: 0
+  fuel_load_cost_ticks: 1
+  fuel_load_effect: transfer_from_B_depot_to_carried_no_burn
+  generator_start_fuel_cost: 3
+  generator_start_action_ticks: 1
+  generator_fuel_source: carried_fuel
+  snowmobile_edge: E_W_SNOWMOBILE
+  snowmobile_edge_fuel_cost: 2
+  snowmobile_edge_ticks: 1
+  transmission_ticks: 1
+  transmission_requires_generator_online: true
+public_observation_fields: [location, visible_neighbors, current_tick, fuel_depot_B, carried_fuel, carried_fuel_capacity, base_temperature, heater_on, generator_online]
+private_state: [oracle_trace_labels, scoring_implementation]
+actions:
+  - {name: walk, parameters: [edge_id], allowed_edges: [B_E, E_T, B_W, W_T], cost_ticks: edge_defined_cost}
+  - {name: drive_snowmobile, parameters: [edge_id], allowed_edges: [E_W_SNOWMOBILE], cost_ticks: 1, fuel_cost: 2}
+  - {name: load_fuel, parameters: [quantity], location: B, cost_ticks: 1, constraints: [quantity_gt_0, carried_fuel_plus_quantity_lte_5, quantity_lte_fuel_depot]}
+  - {name: set_heating, parameters: [on], location: B, cost_ticks: 1}
+  - {name: activate_generator, parameters: [], location: E, cost_ticks: 1, fuel_cost: 3}
+  - {name: transmit, parameters: [], location: T, cost_ticks: 1}
+  - {name: wait, parameters: [ticks=1], cost_ticks: ticks}
+event_order:
+  action_start: [validate_action, commit_fuel_transfer_or_resource_cost]
+  each_elapsed_tick: [increment_tick, advance_action_and_movement, commit_edge_destination_on_final_movement_tick, settle_even_tick_heating, check_base_frozen, check_action_completion_and_terminal_success]
+transitions:
+  - {when: valid_load_fuel_at_B, effect: transfer_quantity_from_depot_to_carried_at_action_start}
+  - {when: load_exceeds_depot_or_carried_capacity, effect: reject_without_time_or_fuel_transfer_with_INSUFFICIENT_FUEL_or_CARRY_CAPACITY_EXCEEDED}
+  - {when: set_heating_at_B, effect: set_heater_on_to_requested_value_at_action_start}
+  - {when: valid_drive_over_E_W_SNOWMOBILE, effect: carried_fuel_minus_2_and_move_to_other_endpoint}
+  - {when: drive_snowmobile_with_carried_fuel_lt_2, effect: one_tick_failed_drive_check_then_terminal_INSUFFICIENT_FUEL_without_move_or_deduction}
+  - {when: valid_generator_start_at_E_with_carried_fuel_gte_3, effect: carried_fuel_minus_3_and_generator_online_true}
+  - {when: generator_start_at_E_with_carried_fuel_lt_3, effect: one_tick_failed_start_check_then_terminal_GENERATOR_FUEL_SHORTAGE_without_fuel_deduction}
+  - {when: each_even_elapsed_tick_heater_on_and_depot_fuel_gte_1, effect: fuel_depot_B_minus_1_temperature_unchanged}
+  - {when: each_even_elapsed_tick_heater_off_or_depot_fuel_zero, effect: heater_off_and_base_temperature_minus_1}
+  - {when: base_temperature_lte_0, effect: terminal_failure_BASE_FROZEN_before_success}
+  - {when: transmit_at_T_with_generator_online_and_temperature_gt_0_after_tick_settlement, effect: transmission_complete_true_terminal_success}
+  - {when: transmit_at_T_with_generator_offline, effect: one_tick_failed_transmit_then_terminal_GRID_OFFLINE}
+terminal_success: [transmission_complete, base_temperature_gt_0]
+terminal_failure: [base_temperature_lte_0, generator_start_with_carried_fuel_lt_3, transmit_with_generator_offline]
+reason_codes: [BASE_FROZEN, GENERATOR_FUEL_SHORTAGE, GRID_OFFLINE, INVALID_LOCATION, INVALID_EDGE, CARRY_CAPACITY_EXCEEDED, INSUFFICIENT_FUEL]
+scoring:
+  primary: [transmission_complete, base_temperature_at_terminal_gt_0]
+  auxiliary: [completion_tick, total_fuel_remaining, fuel_depot_B_remaining, carried_fuel_remaining, minimum_base_temperature, heater_fuel_spent, snowmobile_fuel_spent]
+seed_policy: deterministic_fixed_seed_0_no_randomness
+fuel_ledger_invariant: fuel_depot_B_plus_carried_fuel_plus_cumulative_fuel_spent_equals_12
+oracle_path: oracle_trace.jsonl

@@ -1,0 +1,17 @@
+id: MAP-03
+cases:
+  - id: F01_FORGOTTEN_K7
+    precondition: [P1=true, P2=true, P3=true, P4=true, location=U2, route_tag_read=true]
+    actions: ["submit(route_console, K1)"]
+    expected_terminal: {status: scenario_failure, reason: ROUTE_KEY_REJECTED}
+    diagnosis: All physical phases are complete, but the one-time early fact was not retained.
+  - id: F02_SAMPLE_NOT_STABILIZED
+    precondition: [location=U1, aux_power=on, route_tag_read=false]
+    actions: ["interact(sample_manifest, read_tag)", "wait(1) × 4"]
+    expected_terminal: {status: scenario_failure, reason: SAMPLE_COLD_WINDOW_EXPIRED}
+    diagnosis: Agent records the long-term key but forgets the immediate sample deadline.
+  - id: F03_EVA_WASTE
+    precondition: [location=D3, sample_cold=true, eva_supply=3]
+    actions: ["move(D3_V)", "inspect(antenna_panel)", "interact(antenna, repair)"]
+    expected_terminal: {status: scenario_failure, reason: EVA_OXYGEN_EXHAUSTED}
+    diagnosis: An unnecessary external inspection consumes the return reserve before the agent can leave V.

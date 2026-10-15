@@ -1,0 +1,65 @@
+id: MAP-15
+title: 会变化的迷宫
+world: pyramid
+capability_primary: abstract_rule_transfer
+capability_secondary: [parity_sensitive_reasoning, error_recovery, anti_memorization]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+areas: [A, B, C, T]
+forward_progression: [A, B, C, T, EXIT]
+region_roles: {A: training, B: training, C: training, T: test, EXIT: terminal_goal}
+color_alphabet: [red, blue, gold, green]
+complement_pairs: [[red, blue], [gold, green]]
+initial_state:
+  seed: 0
+  area: A
+  tick: 0
+  wrong_attempt_resources: 4
+  test_wrong_attempts: 0
+  inspected_current_area: false
+  training_sample_log: []
+  recorded_rule_hypothesis: null
+  gate_open: false
+  terminal: false
+private_state:
+  actual_rule: R_EVEN_SAME_ODD_COMPLEMENT
+  local_signs_until_entered: evidence_or_rules.yaml
+  scoring_implementation: private
+public_observation_fields: [area, current_tick, current_tick_parity, inspected_current_area, current_wall_symbol_color_if_inspected, current_door_colors_in_ephemeral_slot_order_if_inspected, wrong_attempt_resources, test_wrong_attempts, training_sample_log, recorded_rule_hypothesis, gate_open, terminal, terminal_reason]
+actions:
+  - {name: inspect_symbols, parameters: [], cost_ticks: 0, effect: reveal_current_area_wall_color_and_ephemeral_door_color_order_only}
+  - {name: record_rule, parameters: [rule_id, supporting_sample_ids], allowed_rule_ids: [R_EVEN_SAME_ODD_COMPLEMENT, R_ODD_SAME_EVEN_COMPLEMENT, R_ALWAYS_SAME, R_ALWAYS_COMPLEMENT], cost_ticks: 0, max_once_per_episode: true, effect: store_player_hypothesis_without_correctness_feedback}
+  - {name: choose_door, parameters: [slot_index], valid_slot_count_by_area: {A: 3, B: 3, C: 3, T: 4}, cost_ticks: 1, resources_on_wrong_attempt: 1, slot_identity_scope: current_area_only}
+constants:
+  target_color_rule: "tick_before_choice even -> wall_color; odd -> complement_pair(wall_color)"
+  tick_advances_on: every_valid_choose_door_attempt
+  tick_does_not_advance_on: [inspect_symbols, record_rule, invalid_choice]
+  training_wrong_attempt_limit: wrong_attempt_resources
+  test_wrong_attempt_limit: 1
+  second_wrong_test_attempt: terminal_failure
+event_order:
+  choose_door: [validate_current_area_and_slot, read_tick_before_choice_and_current_wall_color, calculate_target_color, compare_selected_door_color, increment_tick, if_correct_advance_or_open_gate, if_wrong_decrement_resource_and_log_result, fail_if_resource_zero, fail_if_second_test_error]
+transitions:
+  - {when: inspect_symbols_in_current_area, effect: expose_only_current_wall_symbol_and_ordered_door_colors}
+  - {when: record_rule_with_valid_sample_ids, effect: save_player_formula_and_return_no_truth_feedback}
+  - {when: correct_choice_in_A, effect: log_successful_sample_and_advance_to_B}
+  - {when: correct_choice_in_B, effect: log_successful_sample_and_advance_to_C}
+  - {when: correct_choice_in_C, effect: log_successful_sample_and_advance_to_T}
+  - {when: correct_choice_in_T, effect: increment_tick_and_terminal_success}
+  - {when: wrong_choice_in_training_area, effect: log_failed_sample_spend_one_resource_increment_tick_and_remain_in_area}
+  - {when: wrong_choice_in_T_with_one_or_fewer_prior_test_errors, effect: log_failed_sample_spend_one_resource_increment_test_error_increment_tick_and_remain_in_T}
+  - {when: wrong_attempt_resources_eq_0_after_wrong_choice, effect: terminal_failure_RESOURCE_DEPLETED}
+  - {when: second_wrong_choice_in_T_and_resource_remains, effect: terminal_failure_TEST_WRONG_LIMIT}
+  - {when: inspect_or_record_rule, effect: do_not_change_tick_or_wrong_attempt_resources}
+  - {when: choose_slot_out_of_range, effect: reject_without_tick_resource_change_or_sample}
+terminal_success: [correct_choice_in_T, test_wrong_attempts_lte_1]
+terminal_failure: [wrong_attempt_resources_eq_0, test_wrong_attempts_gte_2]
+reason_codes: [GATE_OPENED, RESOURCE_DEPLETED, TEST_WRONG_LIMIT, INVALID_AREA, INVALID_SLOT, INVALID_RULE_ID, INVALID_SAMPLE_REFERENCE]
+scoring:
+  primary: [test_gate_opened, test_migration_success, rule_hypothesis_accuracy_if_recorded]
+  auxiliary: [training_success_samples, training_errors, test_wrong_attempts, wrong_attempt_resources_remaining, total_ticks, explicit_rule_recorded]
+local_signs_path: planning/room_signs.json
+rule_audit_path: planning/rule_audit.json
+oracle_path: oracle_trace.jsonl
+seed_policy: deterministic_fixed_seed_0_no_randomness

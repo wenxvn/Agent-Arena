@@ -1,0 +1,9 @@
+# Offline design enumeration only; phase offsets are private and are not exposed to the Agent.
+period_ticks: 4
+open_residues: [0, 1]
+seed_phase_offsets:
+  0: 0
+  1: 1
+  2: 2
+  3: 3
+coverage: all_four_phase_offsets

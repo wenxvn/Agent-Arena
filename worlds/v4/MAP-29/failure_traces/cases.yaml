@@ -1,0 +1,77 @@
+map_id: MAP-29
+seed: 0
+cases:
+  F01_anchor_on_stopped_clock:
+    description: 甲的时间说法依赖已停的书房钟，调查员仍把00:05作为事件时间提交。
+    actions:
+      - {name: move, to: L}
+      - {name: ask, npc_id: A, question_template_id: OPEN_ACCOUNT}
+      - {name: ask, npc_id: A, question_template_id: TIME_BASIS}
+      - {name: investigate, target_id: study_clock}
+      - {name: move, to: H}
+      - name: submit
+        event_time: '00:05'
+        event_location: Y
+        unreliable_npc_id: A
+        support_ids: [YARD_BELL_MARK_2340]
+        unreliability_proof_ids: [A_TIME_CLAIM_0005, A_TIME_BASIS_STOPPED_0000, STUDY_CLOCK_STOPPED_0000]
+    expected: {terminal_reason: CASE_REJECTED, judge_reason: WRONG_EVENT_TIME, finish_tick: 6, questions_used: 2, factual_accuracy: '1/2'}
+  F02_repeat_kitchen_location_lie:
+    description: 已看丁档案与庭院撞针并比对出乙隐瞒地点，却仍将书房L提交为事件地点。
+    actions:
+      - {name: move, to: G}
+      - {name: ask, npc_id: D, question_template_id: ARCHIVE_CROSS_INDEX}
+      - {name: move, to: H}
+      - {name: move, to: K}
+      - {name: ask, npc_id: B, question_template_id: OPEN_ACCOUNT}
+      - {name: move, to: H}
+      - {name: move, to: Y}
+      - {name: investigate, target_id: courtyard_bell_trace}
+      - {name: compare_testimony, npc_id: B, statement_ids: [B_LOCATION_CLAIM_L], against_evidence_ids: [ARCHIVE_EVENT_2340_Y, YARD_BELL_MARK_2340]}
+      - {name: move, to: H}
+      - name: submit
+        event_time: '23:40'
+        event_location: L
+        unreliable_npc_id: B
+        support_ids: [ARCHIVE_EVENT_2340_Y, YARD_BELL_MARK_2340]
+        unreliability_proof_ids: [B_LOCATION_CLAIM_L, ARCHIVE_EVENT_2340_Y, YARD_BELL_MARK_2340]
+    expected: {terminal_reason: CASE_REJECTED, judge_reason: WRONG_EVENT_LOCATION, finish_tick: 11, questions_used: 2, factual_accuracy: '1/2'}
+  F03_treat_sound_limit_as_lie:
+    description: 丙只报告双音且明确不知道时地，调查员却把知识限制当成撒谎，猜测其为不可靠证人。
+    actions:
+      - {name: move, to: Y}
+      - {name: ask, npc_id: C, question_template_id: OPEN_ACCOUNT}
+      - {name: move, to: H}
+      - name: submit
+        event_time: '23:40'
+        event_location: Y
+        unreliable_npc_id: C
+        support_ids: []
+        unreliability_proof_ids: [C_SOUND_ONLY]
+    expected: {terminal_reason: CASE_REJECTED, judge_reason: NO_PROVEN_UNRELIABLE_WITNESS, finish_tick: 4, questions_used: 1, factual_accuracy: '2/2'}
+boundaries:
+  B01_eighth_and_ninth_question:
+    npc_id: A
+    template_id: OPEN_ACCOUNT
+    first_eight_answers_identical: true
+    question_budget_after_eight: 0
+    ninth_result: QUESTION_BUDGET_EXHAUSTED
+    ninth_extra_cost: {questions: 0, ticks: 0}
+  B02_repeated_question_is_not_new_evidence:
+    repeat_pair: [A, OPEN_ACCOUNT]
+    answer_id_both_times: A_OPEN_ACCOUNT
+    budget_spend_each_time: 1
+    unique_answer_count_after_two: 1
+  B03_physical_inspection_is_not_a_question:
+    target: courtyard_bell_trace
+    question_budget_cost: 0
+    duration_ticks: 1
+  B04_stopped_clock_only_explains_bias:
+    evidence_id: STUDY_CLOCK_STOPPED_0000
+    proves_true_event_time_alone: false
+  B05_testimony_does_not_mutate_physical_record:
+    false_claim: B_LOCATION_CLAIM_L
+    physical_fact_remains: YARD_BELL_MARK_2340
+  B06_seed0_answer_replay:
+    expected_byte_identical_public_oracle: true
+    runtime_verified: false

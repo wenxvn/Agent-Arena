@@ -1,0 +1,71 @@
+id: MAP-09
+title: 深海连锁故障
+world: deep_sea
+capability_primary: cross_system_causal_control
+capability_secondary: [shared_energy_budget, oxygen_communication_dependency]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+nodes: [E, P, O, C]
+edges:
+  - {id: E_P, from: E, to: P, directed: false, cost_ticks: 1, route: main_square}
+  - {id: P_O, from: P, to: O, directed: false, cost_ticks: 1, route: main_square}
+  - {id: O_C, from: O, to: C, directed: false, cost_ticks: 1, route: main_square}
+  - {id: C_E, from: C, to: E, directed: false, cost_ticks: 1, route: main_square}
+  - {id: E_C_EMERGENCY, from: E, to: C, directed: false, cost_ticks: 1, route: emergency_corridor}
+initial_state:
+  seed: 0
+  location: E
+  tick: 0
+  battery: 5
+  water: {P: 5, E: 3}
+  e_p_bulkhead_open: true
+  p_sacrificed: false
+  external_generator_online: false
+  oxygen_reserve: 12
+  oxygen_support_on: false
+  oxygen_stable_ticks: 0
+  packet_complete: false
+constants:
+  leak_transfer_P_to_E_per_tick: 1
+  short_circuit_if_E_water_gt: 4
+  pump_water_removed_per_action: 2
+  pump_battery_cost_per_action: 1
+  pump_required_strokes_to_reach_P_lte_1: 2
+  hydraulic_and_electrical_isolation_independent: true
+  repaired_generator_route_to_oxygen: [E, C, O]
+  oxygen_reserve_loss_per_tick_when_off: 1
+  oxygen_reserve_failure_if_lte: 0
+  packet_battery_reservation: 3
+  packet_duration_ticks: 2
+  packet_requires_oxygen_stable_ticks_gte: 2
+public_observation_fields: [location, visible_neighbors, current_tick, battery, water_P, water_E, bulkhead_state, p_sacrificed, generator_online, oxygen_reserve, oxygen_support_on, oxygen_stable_ticks, packet_complete]
+private_state: [oracle_trace_labels, scoring_implementation]
+actions:
+  - {name: move, parameters: [edge_id], cost_ticks: edge_defined_cost, one_edge_per_action: true}
+  - {name: interact, parameters: [target_id, operation, arguments], operations: [isolate_compartment, pump_once, restore_power_line, restart_oxygen, replenish_oxygen, send_distress_packet], costs: {isolate_compartment: 1, pump_once: 1, restore_power_line: 1, restart_oxygen: 1, replenish_oxygen: 1, send_distress_packet: 2}}
+  - {name: inspect, parameters: [target_id], targets: [power_panel, oxygen_panel, water_gauges], cost_ticks: 1}
+  - {name: wait, parameters: [ticks=1], cost_ticks: 1}
+transitions:
+  - {when: each_elapsed_tick_with_ep_bulkhead_open, effect: transfer_min_1_water_P_to_E}
+  - {when: pump_once_action_at_P_with_battery_gte_1, effect: battery_minus_1_then_pump_min_2_water_from_P_during_action_tick}
+  - {when: each_elapsed_tick_after_leak_and_pump, effect: update_oxygen_then_check_short_and_oxygen_failures}
+  - {when: e_p_bulkhead_closed, effect: no_P_to_E_leak}
+  - {when: water_E_gt_4, effect: terminal_failure_SHORT_CIRCUIT}
+  - {when: restore_power_line_at_E_and_water_E_lte_4, effect: external_generator_online_true_no_battery_recharge}
+  - {when: oxygen_support_off_each_tick, effect: oxygen_reserve_minus_1}
+  - {when: oxygen_reserve_lte_0, effect: terminal_failure_OXYGEN_DEPLETED}
+  - {when: restart_oxygen_at_O_with_generator_online, effect: oxygen_support_on_true}
+  - {when: oxygen_support_on_each_tick, effect: oxygen_stable_ticks_plus_1_and_reserve_fixed}
+  - {when: replenish_oxygen_at_O_with_support_on, effect: oxygen_reserve_set_to_12}
+  - {when: send_packet_at_C_with_battery_gte_3_and_oxygen_stable_ticks_gte_2, effect: battery_minus_3_then_transmit_continuously_for_2_ticks}
+  - {when: send_packet_at_C_with_battery_lt_3, effect: one_tick_failed_power_check_then_terminal_INSUFFICIENT_TRANSMIT_POWER_without_battery_deduction}
+  - {when: send_packet_at_C_with_battery_gte_3_but_oxygen_stability_lt_2, effect: no_packet_sent_and_action_rejected_with_1_elapsed_tick}
+terminal_success: [external_generator_online, oxygen_support_on, packet_complete]
+terminal_failure: [water_E_gt_4, oxygen_reserve_lte_0, send_packet_without_battery_3]
+reason_codes: [SHORT_CIRCUIT, OXYGEN_DEPLETED, INSUFFICIENT_TRANSMIT_POWER, OXYGEN_NOT_STABLE, INVALID_LOCATION, INVALID_OPERATION]
+scoring:
+  primary: oxygen_restored_and_complete_two_tick_packet_sent
+  auxiliary: [battery_spent_on_pump, battery_left, oxygen_offline_ticks, oxygen_stable_ticks_at_send, water_E_peak, water_P_after_recovery, sacrifice_P, completion_tick]
+seed_policy: deterministic_fixed_seed_0_no_randomness
+oracle_path: oracle_trace.jsonl

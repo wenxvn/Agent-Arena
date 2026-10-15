@@ -1,0 +1,59 @@
+id: MAP-04
+title: 潮汐密道
+world: lighthouse
+capability_primary: periodic_phase_prediction
+capability_secondary: [time_window_planning, route_choice]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+nodes:
+  - {id: T, description: 灯塔与灯座}
+  - {id: S, description: 潮道石阶}
+  - {id: G, description: 安全礁洞与灯芯}
+  - {id: D, description: 码头}
+  - {id: B1, description: 绕行海岸路 1}
+  - {id: B2, description: 绕行海岸路 2}
+  - {id: B3, description: 绕行海岸路 3}
+  - {id: B4, description: 绕行海岸路 4}
+edges:
+  - {id: T_S, from: T, to: S, directed: false, cost_ticks: 1, condition: always}
+  - {id: S_G, from: S, to: G, directed: false, cost_ticks: 1, condition: tide_phase_in_0_1}
+  - {id: G_D, from: G, to: D, directed: false, cost_ticks: 1, condition: always}
+  - {id: T_B1, from: T, to: B1, directed: false, cost_ticks: 1, condition: always}
+  - {id: B1_B2, from: B1, to: B2, directed: false, cost_ticks: 1, condition: always}
+  - {id: B2_B3, from: B2, to: B3, directed: false, cost_ticks: 1, condition: always}
+  - {id: B3_B4, from: B3, to: B4, directed: false, cost_ticks: 1, condition: always}
+  - {id: B4_D, from: B4, to: D, directed: false, cost_ticks: 1, condition: always}
+initial_state:
+  location: T
+  tick: 0
+  tide_phase: 2
+  tide_period: 6
+  s_g_open_phases: [0, 1]
+  inventory: []
+  wick_at: G
+  lamp_wick_fitted: false
+  lamp_lit: false
+  rescue_deadline_tick: 18
+public_observation_fields: [location, visible_neighbors, tide_phase, tide_period, s_g_open_phases, wick_location_when_visible, lamp_state, rescue_time_remaining]
+private_state: [oracle_trace, scoring_labels]
+actions:
+  - {name: move, parameters: [edge_id], cost_ticks: 1}
+  - {name: inspect, parameters: [target_id], cost_ticks: 1}
+  - {name: pickup, parameters: [item_id], cost_ticks: 1}
+  - {name: interact, parameters: [target_id, choice], cost_ticks: 1}
+  - {name: wait, parameters: [turns=1], cost_ticks: 1}
+transitions:
+  - {when: every_schema_legal_environment_action_finishes, effect: tick_plus_1_and_tide_phase_plus_1_mod_6}
+  - {when: move_S_G_or_G_S_starts_at_phase_not_in_0_1, effect: stay_put_and_return_TIDE_WINDOW_CLOSED}
+  - {when: attempt_light_at_tick_end_at_or_before_deadline, effect: lamp_lit_true_and_success_before_deadline_failure_check}
+  - {when: tick_reaches_18_and_lamp_not_lit, terminal: failure, reason: RESCUE_SIGNAL_WINDOW_EXPIRED}
+scheduled_events: []
+terminal_success: [lamp_wick_fitted, lamp_lit, tick_lte_18]
+terminal_failure: [tick_eq_18_and_not_lamp_lit]
+scoring:
+  primary: lamp_lit_before_rescue_deadline
+  hard_constraints: [lamp_wick_fitted_before_ignite, phase_checked_at_departure]
+  auxiliary: [phase_mispredictions, missed_windows, waits, repeated_tide_queries, completion_tick]
+seed_policy: deterministic_phase_2_period_6
+oracle_path: oracle_trace.jsonl

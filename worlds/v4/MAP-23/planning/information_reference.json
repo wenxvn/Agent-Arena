@@ -1,0 +1,207 @@
+{
+  "map_id": "MAP-23",
+  "kind": "offline_exact_variant_and_supply_enumeration",
+  "variants_private_for_audit": {
+    "X_TRUE": {
+      "truth": "X",
+      "signals": {
+        "N": "STONE_SPLIT",
+        "R": "WATER_UPSTREAM_SINK",
+        "H": "RIDGE_NORTH_WHITE_MARK"
+      }
+    },
+    "Y_TRUE": {
+      "truth": "Y",
+      "signals": {
+        "N": "STONE_SPLIT",
+        "R": "WATER_TWIN_RIPPLES",
+        "H": "RIDGE_CENTER_AMBER_MARK"
+      }
+    },
+    "Z_TRUE": {
+      "truth": "Z",
+      "signals": {
+        "N": "STONE_THREE_RINGS",
+        "R": "WATER_TWIN_RIPPLES",
+        "H": "RIDGE_LOW_BLACK_MARK"
+      }
+    }
+  },
+  "equal_prior_weights": {
+    "X_TRUE": 1,
+    "Y_TRUE": 1,
+    "Z_TRUE": 1
+  },
+  "scout_information": {
+    "N": {
+      "signal_counts": {
+        "STONE_SPLIT": 2,
+        "STONE_THREE_RINGS": 1
+      },
+      "information_gain_bits": 0.9182958340544896,
+      "travel_plus_scout_supply": 3,
+      "bits_per_supply_including_travel": 0.3060986113514965
+    },
+    "R": {
+      "signal_counts": {
+        "WATER_UPSTREAM_SINK": 1,
+        "WATER_TWIN_RIPPLES": 2
+      },
+      "information_gain_bits": 0.9182958340544896,
+      "travel_plus_scout_supply": 4,
+      "bits_per_supply_including_travel": 0.2295739585136224
+    },
+    "H": {
+      "signal_counts": {
+        "RIDGE_NORTH_WHITE_MARK": 1,
+        "RIDGE_CENTER_AMBER_MARK": 1,
+        "RIDGE_LOW_BLACK_MARK": 1
+      },
+      "information_gain_bits": 1.584962500721156,
+      "travel_plus_scout_supply": 4,
+      "bits_per_supply_including_travel": 0.396240625180289
+    }
+  },
+  "prior_entropy_bits": 1.584962500721156,
+  "direct_first_X_probe_information_gain_bits": 0.9182958340544894,
+  "direct_first_X_probe_efficiency_bits_per_supply": 0.1836591668108979,
+  "strategy_results": {
+    "ridge_exact_scout": {
+      "per_variant": {
+        "X_TRUE": {
+          "remaining_supply": 9,
+          "probes": 1,
+          "move_count": 4,
+          "unique_nodes": 4,
+          "terminal_reason": "TRUE_ENTRANCE_FOUND"
+        },
+        "Y_TRUE": {
+          "remaining_supply": 9,
+          "probes": 1,
+          "move_count": 4,
+          "unique_nodes": 4,
+          "terminal_reason": "TRUE_ENTRANCE_FOUND"
+        },
+        "Z_TRUE": {
+          "remaining_supply": 7,
+          "probes": 1,
+          "move_count": 4,
+          "unique_nodes": 4,
+          "terminal_reason": "TRUE_ENTRANCE_FOUND"
+        }
+      },
+      "mean_remaining_supply": 8.333333333333334,
+      "mean_entrance_probes": 1.0,
+      "success_probability": 1.0
+    },
+    "north_stone_partition": {
+      "per_variant": {
+        "X_TRUE": {
+          "remaining_supply": 7,
+          "probes": 1,
+          "move_count": 2,
+          "unique_nodes": 3,
+          "terminal_reason": "TRUE_ENTRANCE_FOUND"
+        },
+        "Y_TRUE": {
+          "remaining_supply": 2,
+          "probes": 2,
+          "move_count": 4,
+          "unique_nodes": 4,
+          "terminal_reason": "TRUE_ENTRANCE_FOUND"
+        },
+        "Z_TRUE": {
+          "remaining_supply": 3,
+          "probes": 1,
+          "move_count": 4,
+          "unique_nodes": 4,
+          "terminal_reason": "TRUE_ENTRANCE_FOUND"
+        }
+      },
+      "mean_remaining_supply": 4.0,
+      "mean_entrance_probes": 1.3333333333333333,
+      "success_probability": 1.0
+    },
+    "river_water_partition": {
+      "per_variant": {
+        "X_TRUE": {
+          "remaining_supply": 9,
+          "probes": 1,
+          "move_count": 4,
+          "unique_nodes": 4,
+          "terminal_reason": "TRUE_ENTRANCE_FOUND"
+        },
+        "Y_TRUE": {
+          "remaining_supply": 7,
+          "probes": 1,
+          "move_count": 2,
+          "unique_nodes": 3,
+          "terminal_reason": "TRUE_ENTRANCE_FOUND"
+        },
+        "Z_TRUE": {
+          "remaining_supply": 1,
+          "probes": 2,
+          "move_count": 4,
+          "unique_nodes": 4,
+          "terminal_reason": "TRUE_ENTRANCE_FOUND"
+        }
+      },
+      "mean_remaining_supply": 5.666666666666667,
+      "mean_entrance_probes": 1.3333333333333333,
+      "success_probability": 1.0
+    },
+    "low_cost_direct_probe": {
+      "per_variant": {
+        "X_TRUE": {
+          "remaining_supply": 9,
+          "probes": 1,
+          "move_count": 2,
+          "unique_nodes": 3,
+          "terminal_reason": "TRUE_ENTRANCE_FOUND"
+        },
+        "Y_TRUE": {
+          "remaining_supply": 4,
+          "probes": 2,
+          "move_count": 4,
+          "unique_nodes": 4,
+          "terminal_reason": "TRUE_ENTRANCE_FOUND"
+        },
+        "Z_TRUE": {
+          "remaining_supply": 7,
+          "probes": 3,
+          "move_count": 8,
+          "unique_nodes": 6,
+          "terminal_reason": "TRUE_ENTRANCE_FOUND"
+        }
+      },
+      "mean_remaining_supply": 6.666666666666667,
+      "mean_entrance_probes": 2.0,
+      "success_probability": 1.0
+    }
+  },
+  "failures": {
+    "F01": {
+      "terminal_reason": "SUPPLY_DEPLETED",
+      "supply_remaining": 0,
+      "location": "Y"
+    },
+    "F02": {
+      "terminal_reason": "SUPPLY_STRANDED",
+      "supply_remaining": 1,
+      "location": "Z"
+    },
+    "F03": {
+      "terminal_reason": "SUPPLY_DEPLETED",
+      "supply_remaining": 0,
+      "location": "N"
+    }
+  },
+  "variant_signal_changes_on_rotation": [
+    2,
+    2,
+    3
+  ],
+  "seed0_public_signal": "WATER_TWIN_RIPPLES",
+  "seed0_public_oracle_actions": 9,
+  "runtime_verified": false
+}

@@ -1,0 +1,71 @@
+map_id: MAP-26
+seed: 0
+cases:
+  F01_blind_two_distinct_replacements:
+    description: 不读日志也不测试，连续盲换两个不同候选部件。
+    actions:
+      - {name: move, to: D}
+      - {name: move, to: A}
+      - {name: move, to: B}
+      - {name: take_spare, part_id: power_regulator}
+      - {name: move, to: A}
+      - {name: replace, part_id: power_regulator}
+      - {name: move, to: B}
+      - {name: take_spare, part_id: software_image}
+      - {name: move, to: A}
+      - {name: replace, part_id: software_image}
+    expected: {terminal_reason: SPARES_EXHAUSTED, communication_restored: false, spare_units_remaining: 0, wrong_replacements: 2, tick: 10}
+  F02_repeat_same_wrong_part:
+    description: 首次错误电源替换得到支路通过但链路仍断的反馈，却仍重复同一替换。
+    actions:
+      - {name: move, to: D}
+      - {name: move, to: A}
+      - {name: move, to: B}
+      - {name: take_spare, part_id: power_regulator}
+      - {name: move, to: A}
+      - {name: replace, part_id: power_regulator}
+      - {name: move, to: B}
+      - {name: take_spare, part_id: power_regulator}
+      - {name: move, to: A}
+      - {name: replace, part_id: power_regulator}
+    expected: {terminal_reason: SPARES_EXHAUSTED, communication_restored: false, spare_units_remaining: 0, wrong_replacements: 2, wrong_replace_durations: [1, 2], tick: 11}
+  F03_ignore_conclusive_test_results:
+    description: 测得供电稳定且软件校验通过后，仍用尽备件更换这两个无故障部件。
+    actions:
+      - {name: move, to: D}
+      - {name: test, test_id: bus_load}
+      - {name: test, test_id: software_checksum}
+      - {name: move, to: A}
+      - {name: move, to: B}
+      - {name: take_spare, part_id: power_regulator}
+      - {name: move, to: A}
+      - {name: replace, part_id: power_regulator}
+      - {name: move, to: B}
+      - {name: take_spare, part_id: software_image}
+      - {name: move, to: A}
+      - {name: replace, part_id: software_image}
+    expected: {terminal_reason: SPARES_EXHAUSTED, communication_restored: false, spare_units_remaining: 0, wrong_replacements: 2, test_readings: {bus_load: BUS_VOLTAGE_STABLE, software_checksum: IMAGE_CHECKSUM_VALID}, tick: 12}
+boundaries:
+  B01_one_spare_left_after_repair:
+    starting_spares: 2
+    correct_part: antenna_coupler
+    after: {communication_restored: true, spare_units_remaining: 1, terminal_reason: ALL_OBJECTIVES_COMPLETE}
+  B02_wrong_last_spare:
+    starting_spares: 1
+    action: {name: replace, part_id: power_regulator}
+    expected: {terminal_reason: SPARES_EXHAUSTED, spare_units_remaining: 0}
+  B03_same_part_retry_surcharge:
+    part_id: power_regulator
+    wrong_attempt_durations: [1, 2]
+    rollback_resets_retry_count: false
+  B04_repeat_test_consistency:
+    seed: 0
+    test_id: antenna_loopback
+    readings: [ANTENNA_LOOPBACK_OPEN, ANTENNA_LOOPBACK_OPEN]
+  B05_seed_initial_observation_equivalence:
+    observations: [{seed: 0, alert: COMMUNICATION_LOST}, {seed: 1, alert: COMMUNICATION_LOST}, {seed: 2, alert: COMMUNICATION_LOST}]
+    private_fault_exposed_before_test: false
+  B06_correct_last_spare_is_insufficient:
+    starting_spares: 1
+    correct_part: antenna_coupler
+    expected: {terminal_reason: SPARES_EXHAUSTED, communication_restored: false}

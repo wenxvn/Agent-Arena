@@ -1,0 +1,93 @@
+id: MAP-29
+title: 不可靠的证人
+world: castle
+capability_primary: active_question_selection_and_source_assessment
+capability_secondary: [fixed_npc_knowledge_tables, query_budget_efficiency, testimony_comparison]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: deterministic_seed0_witness_case
+topology:
+  nodes: [H, L, K, Y, G]
+  roles: {H: central_hall_and_submission, L: study_and_stopped_clock, K: kitchen, Y: courtyard_bell_site, G: guard_room_and_archive}
+  undirected_edges:
+    - {a: H, b: L, duration_ticks: 1}
+    - {a: H, b: K, duration_ticks: 1}
+    - {a: H, b: Y, duration_ticks: 1}
+    - {a: H, b: G, duration_ticks: 1}
+  edges_bidirectional: true
+npcs:
+  A: {location: L, role: study_attendant, bias: misremembers_time}
+  B: {location: K, role: kitchen_keeper, bias: deliberately_hides_location}
+  C: {location: Y, role: courtyard_listener, knowledge_limit: sound_only}
+  D: {location: G, role: archive_keeper, knowledge: holds_fixed_event_docket}
+truth_fixture_path: planning/private_answer_tables.yaml
+initial_state:
+  location: H
+  tick: 0
+  public_alert: BELL_EVENT_REPORTED
+  questions_remaining: 8
+  questions_used: 0
+  heard_answer_ids: []
+  physical_evidence_ids: []
+  comparison_results: {}
+  final_submission_used: false
+  terminal: false
+question_budget:
+  total: 8
+  each_ask_call_costs: 1
+  repeated_npc_template_returns_same_answer: true
+  repeated_question_still_costs_budget: true
+  exhausted_result: QUESTION_BUDGET_EXHAUSTED
+  exhausted_attempt_costs_questions_and_ticks: 0
+question_templates: [OPEN_ACCOUNT, TIME_BASIS, LOCATION_BASIS, ARCHIVE_CROSS_INDEX, SOUND_PATTERN]
+action_contract:
+  npc_answer_engine: fixed_seed_knowledge_table_and_bias_rules_only
+  freeform_llm_generation_for_npc_responses: forbidden
+  dialogue_text_is_deterministic_render_of_answer_id: true
+actions:
+  - {name: move, to: adjacent_node, duration_ticks: 1}
+  - {name: ask, npc_id: [A, B, C, D], question_template_id: question_templates, npc_location_required: true, budget_cost: 1, duration_ticks: 1}
+  - {name: investigate, target_id: [study_clock, courtyard_bell_trace], location_specific: true, duration_ticks: 1}
+  - {name: compare_testimony, npc_id: [A, B, C, D], statement_id: previously_heard_answer_id, against_evidence_ids: previously_observed_ids, duration_ticks: 1}
+  - {name: submit, event_time: HH_MM, event_location: [H, L, K, Y, G], unreliable_npc_id: [A, B, C, D], proof_ids: typed_known_evidence_ids, location: H, attempts_per_episode: 1}
+answer_contract:
+  unsupported_template_response_is_typed: true
+  repeated_same_npc_template_answer_id_is_immutable: true
+  only_answered_npc_and_question_are_added_to_observation: true
+  npc_answers_never_mutate_case_truth: true
+physical_evidence:
+  study_clock_stopped_0000: {location: L, evidence_id: STUDY_CLOCK_STOPPED_0000, class: physical_trace}
+  courtyard_bell_strike: {location: Y, evidence_id: YARD_BELL_MARK_2340, class: physical_trace}
+  archive_cross_index: {location: G, evidence_id: ARCHIVE_EVENT_2340_Y, class: documentary_record}
+comparison_rules:
+  A_unreliable_requires: [A_TIME_CLAIM_0005, A_TIME_BASIS_STOPPED_0000, STUDY_CLOCK_STOPPED_0000, ARCHIVE_EVENT_2340_Y]
+  B_unreliable_requires: [B_LOCATION_CLAIM_L, ARCHIVE_EVENT_2340_Y, YARD_BELL_MARK_2340]
+  C_is_unreliable_if_only_sound_statement: false
+  D_is_unreliable_when_archive_matches_physical_evidence: false
+success_predicate: [submitted_event_time_is_23_40, submitted_event_location_is_Y, submitted_unreliable_npc_is_marked_by_deterministic_comparison]
+failure_predicates: [incorrect_event_time_or_location_at_final_submit, no_proven_unreliable_npc_at_final_submit]
+public_observation_fields: [current_tick, current_node, local_neighbors, public_alert, questions_remaining, questions_used, heard_answers_with_source_ids, physical_evidence_seen, comparison_results, last_action_result, terminal, terminal_reason]
+private_fields: [true_event_time, true_event_location, npc_knowledge_tables, npc_bias_parameters, unasked_answer_payloads, reliability_adjudication]
+observation_contract:
+  no_free_global_npc_answer_table: true
+  no_truth_or_unasked_responses: true
+  all_responses_deterministic_and_seed_locked: true
+  testimony_and_physical_records_keep_separate_source_labels: true
+  final_rejection_does_not_reveal_truth: true
+event_order:
+  - validate_npc_question_template_and_location
+  - reject_if_question_budget_empty_without_cost
+  - fetch_fixed_answer_id_from_seed_locked_npc_table
+  - charge_one_query_and_one_tick_for_each_valid_ask_even_if_repeated
+  - reveal_only_that_answer
+  - compare_only_already_heard_statement_and_seen_evidence
+  - final_submission_is_single_and_truth_neutral_on_rejection
+reason_codes: [MOVE_SUCCEEDED, ANSWER_RECEIVED, NO_ADDITIONAL_KNOWLEDGE, EVIDENCE_FOUND, TESTIMONY_CONTRADICTED, TESTIMONY_CONSISTENT, COMPARE_INSUFFICIENT_EVIDENCE, QUESTION_BUDGET_EXHAUSTED, INVALID_QUESTION_TEMPLATE, INVALID_NPC_ID, INVALID_LOCATION, CASE_REJECTED, ALL_OBJECTIVES_COMPLETE]
+metrics: [finish_tick, questions_used, questions_remaining, repeated_question_count, unique_answer_count, useful_information_gain, supported_event_fields, unreliable_witness_proven, question_efficiency, conclusion_accuracy, wasted_or_redundant_question_rate]
+manual_scenarios_path: planning/hand_traces.json
+failure_cases_path: failure_traces/cases.yaml
+boundary_cases_path: failure_traces/cases.yaml
+private_answer_tables_path: planning/private_answer_tables.yaml
+seed_replay_path: planning/seed_replay.yaml
+oracle_path: oracle_trace.jsonl

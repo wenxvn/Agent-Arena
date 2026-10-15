@@ -1,0 +1,79 @@
+map_id: MAP-27
+seed: 0
+cases:
+  F01_no_medical_kit_on_remote_road:
+    description: 走中继优先路线修复网络并封样，但漏装医疗包；到E后两种救援动作均有精确拒绝。
+    actions:
+      - {name: load, item_id: sample_container}
+      - {name: drive, to: S}
+      - {name: charge}
+      - {name: load, item_id: relay_repair_kit}
+      - {name: drive, to: R}
+      - {name: repair_relay}
+      - {name: drive, to: S}
+      - {name: drive, to: R}
+      - {name: drive, to: P}
+      - {name: sample, container_id: sample_container}
+      - {name: drive, to: E}
+      - {name: rescue, mode: field_stabilize, item_id: medical_kit}
+      - {name: rescue, mode: remote_evacuation}
+      - {name: drive, to: S}
+      - {name: drive, to: B}
+      - {name: submit}
+    expected: {terminal_reason: OBJECTIVES_INCOMPLETE_AT_BASE, finish_tick: 22, battery_remaining: 0, oxygen_remaining: 3, relay_state: ONLINE, sample_state: SEALED, survivor_state: UNSUPPORTED, action_errors: [MEDICAL_KIT_REQUIRED, CASUALTY_NOT_STABILIZED]}
+  F02_stabilization_mistaken_for_rescue:
+    description: 用短路先稳定伤员，之后绕过中继维修直接采样返航；明确尝试远程撤离时收到RELAY_OFFLINE。
+    actions:
+      - {name: load, item_id: sample_container}
+      - {name: drive, to: S}
+      - {name: load, item_id: medical_kit}
+      - {name: drive, to: E}
+      - {name: rescue, mode: field_stabilize, item_id: medical_kit}
+      - {name: drive, to: S}
+      - {name: drive, to: R}
+      - {name: rescue, mode: remote_evacuation}
+      - {name: drive, to: P}
+      - {name: sample, container_id: sample_container}
+      - {name: drive, to: R}
+      - {name: drive, to: S}
+      - {name: drive, to: B}
+      - {name: submit}
+    expected: {terminal_reason: OBJECTIVES_INCOMPLETE_AT_BASE, finish_tick: 16, battery_remaining: 2, oxygen_remaining: 6, relay_state: OFFLINE, sample_state: SEALED, survivor_state: STABILIZED, action_errors: [RELAY_OFFLINE]}
+  F03_remote_leg_without_one_use_charge:
+    description: 完整执行中继优先远路但跳过S点唯一充能，抵达E时已无足够电量返回B，车辆无法回基地。
+    actions:
+      - {name: load, item_id: sample_container}
+      - {name: drive, to: S}
+      - {name: load, item_id: relay_repair_kit}
+      - {name: drive, to: R}
+      - {name: repair_relay}
+      - {name: drive, to: S}
+      - {name: load, item_id: medical_kit}
+      - {name: drive, to: R}
+      - {name: drive, to: P}
+      - {name: sample, container_id: sample_container}
+      - {name: drive, to: E}
+    expected: {terminal_reason: VEHICLE_STRANDED, finish_tick: 19, node: E, battery_remaining: 1, minimum_energy_to_B: 2, oxygen_remaining: 5, relay_state: ONLINE, sample_state: SEALED, survivor_state: UNSUPPORTED}
+boundaries:
+  B01_charge_cap_and_one_use:
+    after_drive: {node: S, battery_remaining: 13}
+    first_charge: {battery_remaining: 14, cell_remaining: 0, duration_ticks: 2}
+    second_charge: {result: CHARGER_EMPTY, battery_delta: 0, duration_ticks: 0}
+  B02_cargo_exact_capacity:
+    cargo: [sample_container, medical_kit]
+    capacity: 2
+    load_relay_repair_kit: {result: CARGO_CAPACITY_EXCEEDED, cargo_unchanged: true}
+  B03_short_versus_remote_road:
+    S_E: {ticks: 1, battery: 1, oxygen: 1}
+    P_E: {ticks: 4, battery: 4, oxygen: 4}
+  B04_exact_return_energy:
+    at_E: {minimum_energy_to_B: 2}
+    battery_1: VEHICLE_STRANDED
+    battery_2: {can_drive_to_S: true, battery_at_S: 1, can_drive_to_B: true}
+  B05_positive_oxygen_at_submit:
+    required: crew_oxygen_greater_than_zero
+    strategy_A_remaining: 3
+    strategy_B_remaining: 6
+    zero_means: CREW_OXYGEN_DEPLETED
+  B06_seed0_replay:
+    expected_same_tick_state_and_public_oracle_hash_twice: true

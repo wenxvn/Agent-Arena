@@ -1,0 +1,73 @@
+id: MAP-20
+title: 冷却网络
+world: volcano
+capability_primary: lossy_water_resource_allocation
+capability_secondary: [multi_zone_thermal_control, bypass_tradeoff, load_rotation]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: deterministic_seed_0_no_random_events
+time_horizon_ticks: 10
+production_threshold: 15
+temperature_limit: {tenths_of_degree: 100, failure_if_strictly_greater: true}
+topology:
+  source: S
+  direct_branches: [S_A, S_B, S_C]
+  heat_zones: [A, B, C]
+  adjustable_bypasses: [A_B, B_C]
+  bypass_direction: either_direction_but_at_most_one_direction_per_link_per_tick
+  downstream_zone_valves_max_flow_units: {A: 4, B: 4, C: 3}
+  upstream_direct_feeder_max_flow_units_each: 2.5
+initial_state:
+  tick: 0
+  private_temperature_tenths: {A: 70, B: 60, C: 50}
+  public_temperature_bands: {A: WARM, B: WARM, C: COOL}
+  source_water_units_per_tick: 6
+  initial_load_modes: {A: FULL, B: FULL, C: FULL}
+  production_points: 0
+flow_model:
+  flow_unit_scale: 10
+  one_flow_unit_equals: 10_integer_flow_tenths
+  direct_flow_range_tenths_each_branch: [0, 25]
+  direct_source_budget_tenths_per_tick: 60
+  bypass_input_tenths_range: [0, 20]
+  bypass_input_quantum_tenths: 5
+  bypass_loss_numerator: 1
+  bypass_loss_denominator: 5
+  bypass_delivered_fraction: 0.8
+  delivered_water_tenths:
+    A: direct_A_plus_0_8_B_to_A_minus_A_to_B
+    B: direct_B_plus_0_8_A_to_B_plus_0_8_C_to_B_minus_B_to_A_minus_B_to_C
+    C: direct_C_plus_0_8_B_to_C_minus_C_to_B
+  total_delivered_equals_source_draw_minus_bypass_losses: true
+  downstream_valve_max_tenths: {A: 40, B: 40, C: 30}
+thermal_loads:
+  full: {heat_tenths: [40, 30, 20], production_points: [4, 3, 2]}
+  reduced: {heat_tenths: [20, 20, 10], production_points: [2, 2, 1]}
+  idle: {heat_tenths: [0, 0, 0], production_points: [0, 0, 0]}
+  initial_temperature_tenths: [70, 60, 50]
+  transition: max_zero_current_temperature_tenths_plus_heat_tenths_minus_delivered_water_tenths
+  temperature_bands: {COOL: [0, 50], WARM: [51, 80], HOT: [81, 100], OVERHEAT: [101, 999]}
+actions:
+  - {name: read_temperature, parameters: [zone], tick_cost: 0, frequency: at_most_one_zone_per_tick, effect: exact_current_temperature_tenths_and_previous_tick_delta_only}
+  - {name: set_flow, parameters: [direct_A_B_C_tenths], tick_cost: 0, frequency: one_vector_per_tick, precondition: each_0_to_25_and_sum_lte_60}
+  - {name: open_bypass, parameters: [AB_direction_and_input_tenths, BC_direction_and_input_tenths], tick_cost: 0, frequency: one_setting_per_link_per_tick, precondition: input_multiple_of_5_and_at_most_20}
+  - {name: adjust_load, parameters: [zone_to_FULL_REDUCED_or_IDLE], tick_cost: 0, frequency: one_setting_per_zone_per_tick, effect: apply_selected_heat_and_production_mode_this_tick}
+  - {name: wait, parameters: [], tick_cost: 1, effect: validate_mass_balance_then_update_all_three_temperatures}
+public_observation_fields: [tick, ticks_remaining, temperature_bands, current_load_modes, previous_tick_flow_ledger, source_water_remaining_this_tick, production_points, production_target, terminal, terminal_reason]
+private_state: [exact_current_temperatures_except_returned_sensor_reading, future_oracle_allocations, scoring_reference]
+event_order:
+  tick: [read_current_observation, allow_one_exact_zone_read, set_direct_flow, set_bypass_transfers, set_load_modes, validate_source_and_feeder_caps, route_bypass_water_and_apply_exact_20_percent_loss, validate_nonnegative_receipts_and_zone_valve_caps, compute_temperature_updates_simultaneously, if_any_temperature_gt_10_fail_without_production_credit, otherwise_credit_mode_production, increment_tick, at_tick_10_require_production_gte_15]
+  invalid_flow: [set_terminal_reason, reject_entire_control_frame, no_partial_water_allocation, no_temperature_or_tick_change_or_tick_advance]
+terminal_success: [10_safe_water_heat_transitions, production_points_gte_15]
+terminal_failure: [any_zone_temperature_gt_10, source_or_valve_constraint_violation, production_points_lt_15_at_tick_10]
+reason_codes: [THERMAL_OVERHEAT, SOURCE_BUDGET_EXCEEDED, FEEDER_CAPACITY_EXCEEDED, ZONE_VALVE_CAPACITY, INVALID_BYPASS_TRANSFER, PRODUCTION_BELOW_15, PRODUCTION_TARGET_MET]
+metrics:
+  primary: [overheat_count, total_production_points, source_water_used_units, bypass_loss_units]
+  reference_upper_bound: {kind: linear_energy_balance_relaxation, maximum_production_points: 72, global_integer_optimum_proven: false}
+manual_schedules_path: planning/hand_traces.json
+failure_cases_path: failure_traces/cases.yaml
+flow_reference_path: planning/flow_reference.json
+oracle_path: oracle_trace.jsonl
+runtime_verified: false
+model_results: none

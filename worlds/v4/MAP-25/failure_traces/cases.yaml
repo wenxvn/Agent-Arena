@@ -1,0 +1,84 @@
+map_id: MAP-25
+authorship: 三条轨迹分别命中未穿服、无系绳和重复违反诊断/工具依赖造成的氧气预算耗尽。
+cases:
+  - id: F01
+    name: 未穿EVA服直接要求出舱
+    actions:
+      - {action: move, to: T}
+      - {action: move, to: A}
+      - {action: eva_exit}
+    expected: {terminal_reason: UNSUITED_EVA, final_node: A, oxygen_remaining: 12, array_repaired: false, success: false}
+
+  - id: F02
+    name: 穿服并排压但忘记安全绳
+    actions:
+      - {action: move, to: T}
+      - {action: equip, item_id: eva_suit}
+      - {action: equip, item_id: diagnostic_unit}
+      - {action: equip, item_id: wrench}
+      - {action: move, to: A}
+      - {action: depressurize}
+      - {action: eva_exit}
+    expected: {terminal_reason: UNSAFE_UNTETHERED_EVA, final_node: A, oxygen_remaining: 12, tool_call_attempts: 3, valid_tool_calls: 3, array_repaired: false, success: false}
+
+  - id: F03
+    name: 忽略診斷與工具錯誤後耗盡維修氧氣預算
+    actions:
+      - {action: move, to: T}
+      - {action: equip, item_id: eva_suit}
+      - {action: equip, item_id: diagnostic_unit}
+      - {action: equip, item_id: wrench}
+      - {action: move, to: A}
+      - {action: equip, item_id: safety_tether, target_id: anchor}
+      - {action: depressurize}
+      - {action: eva_exit}
+      - {action: inspect, target: array}
+      - {action: repair, target_id: array_fuse_B, tool_ids: [wrench], diagnosis_code: null}
+      - {action: diagnose, device_id: diagnostic_unit}
+      - {action: repair, target_id: array_fuse_B, tool_ids: [wrench], diagnosis_code: FUSE_BANK_B_OPEN}
+      - {action: repair, target_id: array_fuse_B, tool_ids: [wrench], diagnosis_code: FUSE_BANK_B_OPEN}
+      - {action: repair, target_id: array_fuse_B, tool_ids: [wrench], diagnosis_code: FUSE_BANK_B_OPEN}
+      - {action: return_to_A}
+      - {action: pressurize}
+      - {action: move, to: T}
+      - {action: move, to: H}
+    expected: {terminal_reason: OBJECTIVE_INCOMPLETE_AT_H, final_node: H, finish_tick: 22, oxygen_remaining: 0, tool_call_attempts: 9, valid_tool_calls: 5, executed_tool_errors: 4, array_repaired: false, success: false}
+
+boundary_cases:
+  - id: B01
+    name: S点余1氧返舱恰好在A归零
+    initial: {node: S, oxygen_remaining: 1, suit_worn: true, tether_attached: true, airlock_pressure: VACUUM, array_repaired: true}
+    actions: [{action: return_to_A}, {action: pressurize}, {action: move, to: T}, {action: move, to: H}]
+    expected: {terminal_reason: ALL_OBJECTIVES_COMPLETE, final_node: H, oxygen_remaining: 0, success: true}
+  - id: B02
+    name: S点零氧无法启动返舱
+    initial: {node: S, oxygen_remaining: 0, suit_worn: true, tether_attached: true, airlock_pressure: VACUUM, array_repaired: true}
+    actions: [{action: return_to_A}]
+    expected: {terminal_reason: OXYGEN_DEPLETED, final_node: S, oxygen_remaining: 0, success: false}
+  - id: B03
+    name: 未知工具ID在执行前按schema拒绝
+    initial: {node: S, oxygen_remaining: 8, suit_worn: true, tether_attached: true, array_inspected: true, array_diagnosed: true}
+    action: {action: repair, target_id: array_fuse_B, tool_ids: [spanner], diagnosis_code: FUSE_BANK_B_OPEN}
+    expected: {error_code: INVALID_TOOL_ID, tick_cost: 0, oxygen_cost: 0, oxygen_remaining: 8}
+  - id: B04
+    name: 已知扳手单独调用是typed错误但真实耗氧
+    initial: {node: S, oxygen_remaining: 7, suit_worn: true, tether_attached: true, array_inspected: true}
+    action: {action: repair, target_id: array_fuse_B, tool_ids: [wrench], diagnosis_code: null}
+    expected: {error_code: DIAGNOSIS_REQUIRED, tick_cost: 2, oxygen_cost: 2, oxygen_remaining: 5}
+  - id: B05
+    name: 未知诊断枚举在执行前拒绝
+    initial: {node: S, oxygen_remaining: 8, suit_worn: true, tether_attached: true, array_inspected: true, array_diagnosed: true}
+    action: {action: repair, target_id: array_fuse_B, tool_ids: [diagnostic_unit, wrench], diagnosis_code: FUSE_BANK_C_OPEN}
+    expected: {error_code: INVALID_DIAGNOSIS_CODE, tick_cost: 0, oxygen_cost: 0, oxygen_remaining: 8}
+  - id: B06
+    name: 维修动作必须保留一拍返舱氧气
+    initial: {node: S, oxygen_remaining: 2, suit_worn: true, tether_attached: true, array_inspected: true, diagnosis_code: FUSE_BANK_B_OPEN, diagnostic_unit_carried: true, wrench_carried: true}
+    action: {action: repair, target_id: array_fuse_B, tool_ids: [diagnostic_unit, wrench], diagnosis_code: FUSE_BANK_B_OPEN}
+    expected: {error_code: OXYGEN_RESERVE_REQUIRED_FOR_RETURN, tick_cost: 0, oxygen_cost: 0, oxygen_remaining: 2}
+
+seed_replay:
+  seed: 0
+  private_fixture_path: planning/private_seed_reference.yaml
+  expected_route: inspect_then_equip
+  expected_terminal: {reason: ALL_OBJECTIVES_COMPLETE, finish_tick: 17, oxygen_remaining: 6}
+  public_trace_may_not_include: [latent_array_fault_before_diagnosis, private_fixture_only, future_action_outcomes, chain_of_thought]

@@ -1,0 +1,29 @@
+id: MAP-10
+cases:
+  - id: F01_SHORTCUT_SPENDS_GENERATOR_RESERVE
+    precondition: [tick=0, location=B, fuel_depot_B=12, carried_fuel=0, heater_on=true]
+    actions: ["load_fuel(4)", "walk(B_W)", "drive_snowmobile(W_to_E)", "activate_generator"]
+    state_before_generator: {tick: 3, location: E, fuel_depot_B: 7, carried_fuel: 2, base_temperature: 5}
+    failed_action_resolution: {tick: 4, fuel_depot_B: 6, carried_fuel: 2, generator_online: false, reason: GENERATOR_FUEL_SHORTAGE}
+    expected_terminal: {status: scenario_failure, reason: GENERATOR_FUEL_SHORTAGE, tick: 4}
+    diagnosis: 4单位可装载不代表够用；雪地车先消耗2后，E点启动发电机的3单位门槛无法满足。
+  - id: F02_WALKING_WITH_HEATER_OFF_FREEZES_AT_TOWER
+    precondition: [tick=0, location=B, fuel_depot_B=12, carried_fuel=0, base_temperature=5, heater_on=true]
+    actions: ["set_heating(off)", "load_fuel(3)", "walk(B_E)", "activate_generator", "walk(E_T)"]
+    state_after_each_critical_tick:
+      - {tick: 2, location: B, base_temperature: 4, heater_on: false}
+      - {tick: 4, location: B_to_E, base_temperature: 3, heater_on: false}
+      - {tick: 6, location: E, base_temperature: 2, heater_on: false}
+      - {tick: 7, location: E, base_temperature: 2, generator_online: true}
+      - {tick: 8, location: E_to_T, base_temperature: 1, heater_on: false}
+      - {tick: 10, location: T, base_temperature: 0, reason: BASE_FROZEN}
+    expected_terminal: {status: scenario_failure, reason: BASE_FROZEN, tick: 10}
+    diagnosis: 关闭供暖省下燃料，却让4 tick长坡和3 tick暴露脊线把温度恰好压到0；结算先于发报。
+  - id: F03_WAIT_BURNS_THROUGH_BASE_RESERVE
+    precondition: [tick=0, location=B, fuel_depot_B=12, carried_fuel=0, base_temperature=5, heater_on=true]
+    actions: ["load_fuel(5)", "wait(16)", "walk(B_W)", "drive_snowmobile(W_to_E)", "activate_generator", "walk(E_T)", "transmit"]
+    state_after_wait: {tick: 17, location: B, fuel_depot_B: 0, carried_fuel: 5, base_temperature: 4, heater_on: false, heat_payments_at: [2, 4, 6, 8, 10, 12, 14], unfunded_settlement_at: 16}
+    state_before_transmit: {tick: 23, location: T, fuel_depot_B: 0, carried_fuel: 0, base_temperature: 1, generator_online: true}
+    state_at_terminal: {tick: 24, location: T, base_temperature: 0, reason: BASE_FROZEN, transmission_complete: false}
+    expected_terminal: {status: scenario_failure, reason: BASE_FROZEN, tick: 24}
+    diagnosis: 快速路线仍不能挽回在 B 的长时间空等；7单位基地库存被供暖烧完后，热量下降在通信完成边界先结算。

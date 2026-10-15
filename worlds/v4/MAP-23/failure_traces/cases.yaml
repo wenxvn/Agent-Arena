@@ -1,0 +1,73 @@
+map_id: MAP-23
+authorship: 失败轨迹均固定隐藏变体和逐动作补给扣账；错误调查、错读报告与缓存时机分别定位。
+cases:
+  - id: F01
+    name: 收到支持X的水纹却耗尽在错误入口
+    hidden_variant_private_for_audit: X_TRUE
+    actions:
+      - {action: move, from: A, to: R, supply_before: 14, cost: 2, supply_after: 12}
+      - {action: scout, at: R, signal: WATER_UPSTREAM_SINK, supports: [X], supply_before: 12, cost: 2, supply_after: 10}
+      - {action: mark, entrance: Z}
+      - {action: move, from: R, to: Z, supply_before: 10, cost: 2, supply_after: 8}
+      - {action: investigate, entrance: Z, is_true_private: false, supply_before: 8, cost: 3, supply_after: 5}
+      - {action: move, from: Z, to: R, supply_before: 5, cost: 2, supply_after: 3}
+      - {action: mark, entrance: Y}
+      - {action: move, from: R, to: Y, supply_before: 3, cost: 1, supply_after: 2}
+      - {action: investigate, entrance: Y, is_true_private: false, supply_before: 2, cost: 2, supply_after: 0}
+    expected: {terminal_reason: SUPPLY_DEPLETED, success: false, final_node: Y, supply_remaining: 0, true_X_not_reached: true}
+
+  - id: F02
+    name: 忽略山脊唯一线索后被困在假Z
+    hidden_variant_private_for_audit: X_TRUE
+    actions:
+      - {action: move, from: A, to: H, supply_before: 14, cost: 2, supply_after: 12}
+      - {action: scout, at: H, signal: RIDGE_NORTH_WHITE_MARK, supports: [X], supply_before: 12, cost: 2, supply_after: 10}
+      - {action: move, from: H, to: A, supply_before: 10, cost: 2, supply_after: 8}
+      - {action: mark, entrance: Z}
+      - {action: move, from: A, to: R, supply_before: 8, cost: 2, supply_after: 6}
+      - {action: move, from: R, to: Z, supply_before: 6, cost: 2, supply_after: 4}
+      - {action: investigate, entrance: Z, is_true_private: false, supply_before: 4, cost: 3, supply_after: 1}
+    expected: {terminal_reason: SUPPLY_STRANDED, final_node: Z, supply_remaining: 1, return_edge_cost_R: 2, success: false}
+
+  - id: F03
+    name: 提前耗掉唯一补给缓存后用低成本探测耗尽
+    hidden_variant_private_for_audit: Z_TRUE
+    actions:
+      - {action: move, from: A, to: H, supply_before: 14, cost: 2, supply_after: 12}
+      - {action: move, from: H, to: A, supply_before: 12, cost: 2, supply_after: 10}
+      - {action: resupply, supply_before: 10, refill_to: 14, cache_after: unavailable}
+      - {action: move, from: A, to: N, supply_before: 14, cost: 1, supply_after: 13}
+      - {action: move, from: N, to: X, supply_before: 13, cost: 1, supply_after: 12}
+      - {action: investigate, entrance: X, is_true_private: false, supply_before: 12, cost: 3, supply_after: 9}
+      - {action: move, from: X, to: N, supply_before: 9, cost: 1, supply_after: 8}
+      - {action: move, from: N, to: Y, supply_before: 8, cost: 2, supply_after: 6}
+      - {action: investigate, entrance: Y, is_true_private: false, supply_before: 6, cost: 2, supply_after: 4}
+      - {action: move, from: Y, to: R, supply_before: 4, cost: 1, supply_after: 3}
+      - {action: move, from: R, to: A, supply_before: 3, cost: 2, supply_after: 1}
+      - {action: move, from: A, to: N, supply_before: 1, cost: 1, supply_after: 0}
+    expected: {terminal_reason: SUPPLY_DEPLETED, success: false, final_node: N, supply_remaining: 0, true_Z_not_reached: true, cache_unavailable: true}
+
+boundary_cases:
+  - id: B01
+    name: 真Z入口调查后严格剩余1补给
+    hidden_variant_private_for_audit: Z_TRUE
+    initial: {node: Z, supply: 4, entrance_unsearched: true}
+    action: {action: investigate, entrance: Z, cost: 3}
+    expected: {supply_after: 1, terminal_reason: TRUE_ENTRANCE_FOUND, success: true}
+  - id: B02
+    name: 真Z入口虽被发现但调查后补给恰为0
+    hidden_variant_private_for_audit: Z_TRUE
+    initial: {node: Z, supply: 3, entrance_unsearched: true}
+    action: {action: investigate, entrance: Z, cost: 3}
+    expected: {supply_after: 0, terminal_reason: SUPPLY_MUST_REMAIN_POSITIVE, success: false}
+  - id: B03
+    name: 变体同步改写入口和三处线索
+    source: planning/private_variant_reference.yaml
+    expected: {all_variants_signal_support_contains_true_entrance: true, no_variant_id_in_observation: true}
+
+seed_replay:
+  seed: 0
+  hidden_fixture_is_offline_only: true
+  expected_public_actions: [move_A_R, scout_R, mark_Y, move_R_Y, investigate_Y_false, move_Y_R, mark_Z, move_R_Z, investigate_Z_true]
+  expected_terminal: {reason: TRUE_ENTRANCE_FOUND, supply_remaining: 1}
+  public_trace_may_not_include: [variant_id, true_entrance, unscouted_signals, private_truth_table]

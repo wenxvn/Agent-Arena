@@ -1,0 +1,14 @@
+{"trace_id":"downstream_first","step":1,"tick_before":0,"action":{"tool":"interact","target_id":"control_panel","operation":"start_pump","arguments":{}},"expected":"tick=1;water={A:6,B:2,C:4,D:0};pump_active=true;pump_energy=2"}
+{"trace_id":"downstream_first","step":2,"tick_before":1,"action":{"tool":"interact","target_id":"control_panel","operation":"set_valve","arguments":{"valve_id":"v3","open":true}},"expected":"tick=2;water={A:6,B:2,C:2,D:0};pump_energy=4"}
+{"trace_id":"downstream_first","step":3,"tick_before":2,"action":{"tool":"interact","target_id":"control_panel","operation":"set_valve","arguments":{"valve_id":"v2","open":true}},"expected":"tick=3;water={A:6,B:0,C:2,D:0};pump_energy=6"}
+{"trace_id":"downstream_first","step":4,"tick_before":3,"action":{"tool":"interact","target_id":"control_panel","operation":"set_valve","arguments":{"valve_id":"v1","open":true}},"expected":"tick=4;water={A:4,B:0,C:2,D:0};pump_energy=8"}
+{"trace_id":"downstream_first","step":5,"tick_before":4,"action":{"tool":"wait","ticks":1},"expected":"tick=5;water={A:2,B:0,C:2,D:0};low_water_streak=1;pump_energy=10"}
+{"trace_id":"downstream_first","step":6,"tick_before":5,"action":{"tool":"wait","ticks":1},"expected":"tick=6;water={A:0,B:0,C:2,D:0};low_water_streak=2;pump_energy=12;terminal=scenario_success"}
+{"trace_id":"upstream_staged","step":1,"tick_before":0,"action":{"tool":"interact","target_id":"control_panel","operation":"set_valve","arguments":{"valve_id":"v1","open":true}},"expected":"tick=1;water={A:4,B:4,C:4,D:0};pump_active=false"}
+{"trace_id":"upstream_staged","step":2,"tick_before":1,"action":{"tool":"interact","target_id":"control_panel","operation":"set_valve","arguments":{"valve_id":"v2","open":true}},"expected":"tick=2;water={A:2,B:4,C:6,D:0};pump_active=false"}
+{"trace_id":"upstream_staged","step":3,"tick_before":2,"action":{"tool":"interact","target_id":"control_panel","operation":"set_valve","arguments":{"valve_id":"v3","open":true}},"expected":"tick=3;water={A:0,B:4,C:6,D:2};pump_active=false"}
+{"trace_id":"upstream_staged","step":4,"tick_before":3,"action":{"tool":"interact","target_id":"control_panel","operation":"start_pump","arguments":{}},"expected":"tick=4;water={A:0,B:2,C:6,D:2};pump_energy=2"}
+{"trace_id":"upstream_staged","step":5,"tick_before":4,"action":{"tool":"wait","ticks":1},"expected":"tick=5;water={A:0,B:0,C:6,D:2};pump_energy=4"}
+{"trace_id":"upstream_staged","step":6,"tick_before":5,"action":{"tool":"wait","ticks":1},"expected":"tick=6;water={A:0,B:0,C:4,D:2};pump_energy=6"}
+{"trace_id":"upstream_staged","step":7,"tick_before":6,"action":{"tool":"wait","ticks":1},"expected":"tick=7;water={A:0,B:0,C:2,D:2};low_water_streak=1;pump_energy=8"}
+{"trace_id":"upstream_staged","step":8,"tick_before":7,"action":{"tool":"wait","ticks":1},"expected":"tick=8;water={A:0,B:0,C:0,D:2};low_water_streak=2;pump_energy=10;terminal=scenario_success"}

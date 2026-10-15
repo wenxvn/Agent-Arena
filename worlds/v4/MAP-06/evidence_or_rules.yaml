@@ -1,0 +1,35 @@
+id: MAP-06
+design_evidence:
+  provenance: hand_authored_from_V4_candidate_and_explicitly_defined_weather_rules
+  automated_solver_run: false
+  manual_oracle: oracle_trace.jsonl
+  base_seed_count: 10
+  prior_short: 0.5
+  prior_long: 0.5
+  forecast_accuracy: 0.8
+  joint_seed_counts: {short_forecast_short: 4, short_forecast_long: 1, long_forecast_long: 4, long_forecast_short: 1}
+  expected_policy_metrics:
+    immediate_no_forecast: {success: 0.5, terminal_tick_mean: 3.0, risk_mean: 3.5, utility_mean: 24.9}
+    harden_no_forecast: {success: 1.0, terminal_tick_mean: 10.0, risk_mean: 1.0, utility_mean: 27.0}
+    forecast_branch: {success: 0.9, terminal_tick_mean: 8.5, risk_mean: 1.5, utility_mean: 27.3}
+rules:
+  explicit:
+    - storm_type_is_hidden_and_seed_fixed
+    - forecast_outcome_is_seed_fixed_and_matches_weather_in_eight_of_ten_base_seeds
+    - every_exposed_tick_in_long_storm_adds_one_risk_point
+    - every_unshielded_long_storm_repair_tick_adds_three_risk_points
+    - harden_at_G_takes_three_ticks_and_shields_exactly_one_lighthouse_repair
+    - risk_budget_failure_occurs_only_when_risk_points_exceed_four
+    - restoration_at_tick_14_is_success_if_repair_effect_commits_before_deadline_check
+  manual_calculations:
+    - immediate_short_route: {tick: 3, risk: 0, success: true}
+    - immediate_long_route: {tick: 3, risk: 7, success: false}
+    - harden_route_long: {tick: 10, risk: 2, success: true}
+    - forecast_joint_short_short: {probability: 0.4, tick: 5, risk: 0, success: true}
+    - forecast_joint_short_long: {probability: 0.1, tick: 12, risk: 0, success: true}
+    - forecast_joint_long_long: {probability: 0.4, tick: 12, risk: 2, success: true}
+    - forecast_joint_long_short: {probability: 0.1, tick: 5, risk: 7, success: false}
+  knowledge_boundary:
+    - forecast_reading_is_visible_only_after_query_at_Q
+    - seed_truth_and_joint_outcome_table_are_judge_only
+    - evacuation_is_a_safe_non_success_terminal_option

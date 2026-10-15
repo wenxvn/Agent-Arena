@@ -1,0 +1,58 @@
+id: MAP-11
+design_evidence:
+  source: V4提纲 MAP-11 失联的小队
+  source_values: {agent_heat: 10, supply: 8, teammate_life_countdown: 15}
+  source_mechanics: [short_route_per_segment_supply_2_and_frostbite_risk, long_route_per_segment_supply_1, scout_cost_2_ticks_updates_storm_probability, loaded_return_adds_1_cost_per_segment]
+  manual_refinements:
+    - {item: initial_supply_location, decision: all_8_begin_in_B_cache_and_resupply_transfers_a_chosen_quantity_to_pack}
+    - {item: return_cost_unit, decision: plus_1_is_one_tick_per_loaded_return_edge_not_extra_supply}
+    - {item: travel_duration, decision: {short_edge_ticks: 1, long_edge_ticks: 3}}
+    - {item: temperature_scope, decision: agent_and_teammate_each_start_at_10_and_either_at_zero_fails}
+    - {item: scout_model, decision: equal_prior_quiet_unstable_regimes_with_noisy_rising_falling_signal_and_hidden_edge_draws}
+  hand_calculations:
+    short_quiet_success_probability: 0.9477
+    short_unstable_success_probability: 0.1792
+    short_prior_success_probability: 0.56345
+    short_after_falling_success_probability: 0.794
+    short_after_rising_success_probability: 0.3329
+    adaptive_short_if_falling_long_if_rising_success_probability: 0.897
+  fixed_fixture_counts:
+    quiet_storm_edges: {observed: 2, opportunities: 20}
+    unstable_storm_edges: {observed: 12, opportunities: 20}
+    rising_signals_given_quiet: {observed: 1, seeds: 5}
+    rising_signals_given_unstable: {observed: 4, seeds: 5}
+  automated_model_check_run: false
+rules:
+  teammate_life:
+    initial: 15
+    decreases_every_elapsed_tick_until_rescue: true
+    zero_checked_before_rescue_completion: true
+  supplies:
+    total: 8
+    initial_partition: {B_cache: 8, carried: 0}
+    resupply: {location: B, duration_ticks: 1, transfer_only: true, capacity: 8}
+    short_route: {per_segment_each_traversal: 2, round_trip_total: 8}
+    long_route: {per_segment_each_traversal: 1, round_trip_total: 6}
+  return_burden:
+    applies_after_rescue: true
+    extra_tick_each_edge: 1
+    extra_supply_each_edge: 0
+  heat_and_weather:
+    initial_agent_and_teammate_heat: 10
+    short_segment_base_loss_per_traversing_person: 1
+    storm_extra_loss_per_affected_person: 5
+    long_segment_loss_per_traversing_person: 1
+    terminal_at_or_below: 0
+    observed_storm_or_clear_updates_hidden_regime_posterior: true
+  weather_belief:
+    posterior_after_storm: "0.6*u/(0.6*u+0.1*(1-u))"
+    posterior_after_clear: "0.4*u/(0.4*u+0.9*(1-u))"
+    forecast_next_crossing: "0.1+0.5*u"
+  rest:
+    locations: [B, D, Q]
+    cost: {ticks: 1, carried_supply: 1}
+    recovery: {heat: 2, maximum: 10, targets: people_present}
+knowledge_boundary:
+  public: [current_storm_status, current_forecast_probability, current_supply_positions, current_body_heats, teammate_life_remaining]
+  private: [hidden_weather_regime, future_short_storm_mask, seed_fixture_rows]
+  no_future_storm_outcomes_in_observation: true

@@ -90,3 +90,4 @@ _这是新 Agent 和新对话的持久入口。工程级事实改变时，用 `/
 ## Context files
 
 - [src/agent_arena/AGENTS.md](src/agent_arena/AGENTS.md)：应用包的局部模块边界、运行入口和质量检查。
+- [worlds/v4/AGENTS.md](worlds/v4/AGENTS.md)：V4逐关设计约束、离线审计入口和运行时边界。

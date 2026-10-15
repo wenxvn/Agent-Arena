@@ -1,0 +1,374 @@
+{
+  "map_id": "MAP-14",
+  "runtime_verified": false,
+  "configurations": [
+    "A",
+    "B",
+    "C"
+  ],
+  "truth_teller_candidates": [
+    "甲",
+    "乙",
+    "丙"
+  ],
+  "claims": {
+    "A1": {
+      "priest": "甲",
+      "true_for": [
+        "A"
+      ],
+      "text": "当前锁型是日轮锁A吗？"
+    },
+    "A2": {
+      "priest": "甲",
+      "true_for": [
+        "B"
+      ],
+      "text": "当前锁型是月牙锁B吗？"
+    },
+    "B1": {
+      "priest": "乙",
+      "true_for": [
+        "A",
+        "B"
+      ],
+      "text": "当前锁型不是星井锁C吗？"
+    },
+    "B2": {
+      "priest": "乙",
+      "true_for": [
+        "A",
+        "C"
+      ],
+      "text": "当前锁型不是月牙锁B吗？"
+    },
+    "C1": {
+      "priest": "丙",
+      "true_for": [
+        "C"
+      ],
+      "text": "当前锁型是星井锁C吗？"
+    },
+    "C2": {
+      "priest": "丙",
+      "true_for": [
+        "B",
+        "C"
+      ],
+      "text": "当前锁型不是日轮锁A吗？"
+    }
+  },
+  "candidate_count": 9,
+  "full_four_query_codes_are_unique": true,
+  "systematic_query_order": [
+    "A1",
+    "A2",
+    "B1",
+    "B2"
+  ],
+  "archive_excludes_configuration": "C",
+  "archive_candidate_count": 6,
+  "archive_query_order": [
+    "A1",
+    "B1",
+    "B2"
+  ],
+  "archive_actual_answers": [
+    "yes",
+    "yes",
+    "no"
+  ],
+  "archive_route_unique_state": {
+    "configuration": "B",
+    "truthful_priest": "乙"
+  },
+  "adaptive_query_limit": 4,
+  "adaptive_tree": {
+    "ask": "A1",
+    "if_no": {
+      "ask": "A2",
+      "if_no": {
+        "leaf": {
+          "configuration": "C",
+          "truthful_priest": "甲"
+        }
+      },
+      "if_yes": {
+        "ask": "B1",
+        "if_no": {
+          "ask": "B2",
+          "if_no": {
+            "leaf": {
+              "configuration": "A",
+              "truthful_priest": "丙"
+            }
+          },
+          "if_yes": {
+            "leaf": {
+              "configuration": "B",
+              "truthful_priest": "甲"
+            }
+          }
+        },
+        "if_yes": {
+          "leaf": {
+            "configuration": "A",
+            "truthful_priest": "乙"
+          }
+        }
+      }
+    },
+    "if_yes": {
+      "ask": "A2",
+      "if_no": {
+        "ask": "B1",
+        "if_no": {
+          "ask": "B2",
+          "if_no": {
+            "leaf": {
+              "configuration": "A",
+              "truthful_priest": "甲"
+            }
+          },
+          "if_yes": {
+            "leaf": {
+              "configuration": "B",
+              "truthful_priest": "丙"
+            }
+          }
+        },
+        "if_yes": {
+          "leaf": {
+            "configuration": "B",
+            "truthful_priest": "乙"
+          }
+        }
+      },
+      "if_yes": {
+        "ask": "B1",
+        "if_no": {
+          "leaf": {
+            "configuration": "C",
+            "truthful_priest": "乙"
+          }
+        },
+        "if_yes": {
+          "leaf": {
+            "configuration": "C",
+            "truthful_priest": "丙"
+          }
+        }
+      }
+    }
+  },
+  "adaptive_actual_path": [
+    {
+      "claim_id": "A1",
+      "answer": "yes"
+    },
+    {
+      "claim_id": "A2",
+      "answer": "no"
+    },
+    {
+      "claim_id": "B1",
+      "answer": "yes"
+    }
+  ],
+  "adaptive_actual_leaf": {
+    "configuration": "B",
+    "truthful_priest": "乙"
+  },
+  "F03_ambiguous_question_subset": {
+    "query_order": [
+      "A1",
+      "A2",
+      "B2",
+      "C1"
+    ],
+    "actual_answers": [
+      "yes",
+      "no",
+      "no",
+      "yes"
+    ],
+    "compatible_states": [
+      {
+        "configuration": "A",
+        "truthful_priest": "甲"
+      },
+      {
+        "configuration": "B",
+        "truthful_priest": "乙"
+      }
+    ]
+  },
+  "actual_hidden_state_for_seed_0": {
+    "configuration": "B",
+    "truthful_priest": "乙"
+  },
+  "full_truth_table": [
+    {
+      "configuration": "A",
+      "truthful_priest": "甲",
+      "claim_truth_values": {
+        "A1": true,
+        "A2": false,
+        "B1": true,
+        "B2": true,
+        "C1": false,
+        "C2": false
+      },
+      "systematic_A1_A2_B1_B2_answers": [
+        "yes",
+        "no",
+        "no",
+        "no"
+      ]
+    },
+    {
+      "configuration": "A",
+      "truthful_priest": "乙",
+      "claim_truth_values": {
+        "A1": true,
+        "A2": false,
+        "B1": true,
+        "B2": true,
+        "C1": false,
+        "C2": false
+      },
+      "systematic_A1_A2_B1_B2_answers": [
+        "no",
+        "yes",
+        "yes",
+        "yes"
+      ]
+    },
+    {
+      "configuration": "A",
+      "truthful_priest": "丙",
+      "claim_truth_values": {
+        "A1": true,
+        "A2": false,
+        "B1": true,
+        "B2": true,
+        "C1": false,
+        "C2": false
+      },
+      "systematic_A1_A2_B1_B2_answers": [
+        "no",
+        "yes",
+        "no",
+        "no"
+      ]
+    },
+    {
+      "configuration": "B",
+      "truthful_priest": "甲",
+      "claim_truth_values": {
+        "A1": false,
+        "A2": true,
+        "B1": true,
+        "B2": false,
+        "C1": false,
+        "C2": true
+      },
+      "systematic_A1_A2_B1_B2_answers": [
+        "no",
+        "yes",
+        "no",
+        "yes"
+      ]
+    },
+    {
+      "configuration": "B",
+      "truthful_priest": "乙",
+      "claim_truth_values": {
+        "A1": false,
+        "A2": true,
+        "B1": true,
+        "B2": false,
+        "C1": false,
+        "C2": true
+      },
+      "systematic_A1_A2_B1_B2_answers": [
+        "yes",
+        "no",
+        "yes",
+        "no"
+      ]
+    },
+    {
+      "configuration": "B",
+      "truthful_priest": "丙",
+      "claim_truth_values": {
+        "A1": false,
+        "A2": true,
+        "B1": true,
+        "B2": false,
+        "C1": false,
+        "C2": true
+      },
+      "systematic_A1_A2_B1_B2_answers": [
+        "yes",
+        "no",
+        "no",
+        "yes"
+      ]
+    },
+    {
+      "configuration": "C",
+      "truthful_priest": "甲",
+      "claim_truth_values": {
+        "A1": false,
+        "A2": false,
+        "B1": false,
+        "B2": true,
+        "C1": true,
+        "C2": true
+      },
+      "systematic_A1_A2_B1_B2_answers": [
+        "no",
+        "no",
+        "yes",
+        "no"
+      ]
+    },
+    {
+      "configuration": "C",
+      "truthful_priest": "乙",
+      "claim_truth_values": {
+        "A1": false,
+        "A2": false,
+        "B1": false,
+        "B2": true,
+        "C1": true,
+        "C2": true
+      },
+      "systematic_A1_A2_B1_B2_answers": [
+        "yes",
+        "yes",
+        "no",
+        "yes"
+      ]
+    },
+    {
+      "configuration": "C",
+      "truthful_priest": "丙",
+      "claim_truth_values": {
+        "A1": false,
+        "A2": false,
+        "B1": false,
+        "B2": true,
+        "C1": true,
+        "C2": true
+      },
+      "systematic_A1_A2_B1_B2_answers": [
+        "yes",
+        "yes",
+        "yes",
+        "no"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "map_id": "MAP-26",
+  "classification": "HAND_AUTHORED_OFFLINE_PLANS",
+  "seed": 0,
+  "routes": [
+    {
+      "id": "diagnose_first",
+      "intent": "读取非唯一日志后用三项确定性检查定位，再安装唯一匹配部件",
+      "actions": [
+        {"name": "move", "to": "D"}, {"name": "read_log", "log_id": "COMM_LOSS_LAST_TRANSMIT"},
+        {"name": "test", "test_id": "bus_load"}, {"name": "test", "test_id": "antenna_loopback"},
+        {"name": "test", "test_id": "software_checksum"}, {"name": "move", "to": "A"},
+        {"name": "move", "to": "B"}, {"name": "take_spare", "part_id": "antenna_coupler"},
+        {"name": "move", "to": "A"}, {"name": "replace", "part_id": "antenna_coupler"}, {"name": "restart"}
+      ],
+      "expected": {"tick": 11, "communication_restored": true, "uninstalled_spares_remaining": 1, "wrong_replacements": 0}
+    },
+    {
+      "id": "feedback_then_correct",
+      "intent": "把日志当作假设而非结论；一次电源试换收到反证后回滚，转做诊断并修天线",
+      "actions": [
+        {"name": "move", "to": "D"}, {"name": "read_log", "log_id": "COMM_LOSS_LAST_TRANSMIT"},
+        {"name": "move", "to": "A"}, {"name": "move", "to": "B"},
+        {"name": "take_spare", "part_id": "power_regulator"}, {"name": "move", "to": "A"},
+        {"name": "replace", "part_id": "power_regulator"}, {"name": "rollback"},
+        {"name": "move", "to": "D"}, {"name": "test", "test_id": "antenna_loopback"},
+        {"name": "move", "to": "A"}, {"name": "move", "to": "B"},
+        {"name": "take_spare", "part_id": "antenna_coupler"}, {"name": "move", "to": "A"},
+        {"name": "replace", "part_id": "antenna_coupler"}, {"name": "restart"}
+      ],
+      "expected": {"tick": 16, "communication_restored": true, "uninstalled_spares_remaining": 1, "wrong_replacements": 1, "rollback_count": 1, "feedback_to_changed_action": true}
+    }
+  ]
+}

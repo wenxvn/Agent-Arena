@@ -1,0 +1,37 @@
+{
+  "map_id": "MAP-27",
+  "classification": "HAND_AUTHORED_OFFLINE_PLANS",
+  "seed": 0,
+  "routes": [
+    {
+      "id": "relay_first_remote_road",
+      "intent": "先以中继维修盒修R，回S换装医疗包；带样本容器和医疗包走P-E远路，救援后原路近返",
+      "actions": [
+        {"name": "load", "item_id": "sample_container"}, {"name": "drive", "to": "S"},
+        {"name": "charge"}, {"name": "load", "item_id": "relay_repair_kit"},
+        {"name": "drive", "to": "R"}, {"name": "repair_relay"}, {"name": "drive", "to": "S"},
+        {"name": "load", "item_id": "medical_kit"}, {"name": "drive", "to": "R"},
+        {"name": "drive", "to": "P"}, {"name": "sample", "container_id": "sample_container"},
+        {"name": "drive", "to": "E"}, {"name": "rescue", "mode": "field_stabilize", "item_id": "medical_kit"},
+        {"name": "rescue", "mode": "remote_evacuation"}, {"name": "drive", "to": "S"},
+        {"name": "drive", "to": "B"}, {"name": "submit"}
+      ],
+      "expected": {"finish_tick": 25, "battery_remaining": 0, "oxygen_remaining": 3, "charge_cells_used": 1, "cargo_peak_slots": 2, "relay_state": "ONLINE", "sample_state": "SEALED", "survivor_state": "RESCUED", "success": true}
+    },
+    {
+      "id": "stabilize_first_short_road",
+      "intent": "先把医疗包带到E稳定伤员，消耗后空出货位；再装中继维修盒，修复后远程撤离，最后经R-P采样返回",
+      "actions": [
+        {"name": "load", "item_id": "sample_container"}, {"name": "drive", "to": "S"},
+        {"name": "load", "item_id": "medical_kit"}, {"name": "drive", "to": "E"},
+        {"name": "rescue", "mode": "field_stabilize", "item_id": "medical_kit"},
+        {"name": "drive", "to": "S"}, {"name": "load", "item_id": "relay_repair_kit"},
+        {"name": "drive", "to": "R"}, {"name": "repair_relay"},
+        {"name": "rescue", "mode": "remote_evacuation"}, {"name": "drive", "to": "P"},
+        {"name": "sample", "container_id": "sample_container"}, {"name": "drive", "to": "R"},
+        {"name": "drive", "to": "S"}, {"name": "drive", "to": "B"}, {"name": "submit"}
+      ],
+      "expected": {"finish_tick": 20, "battery_remaining": 2, "oxygen_remaining": 6, "charge_cells_used": 0, "cargo_peak_slots": 2, "relay_state": "ONLINE", "sample_state": "SEALED", "survivor_state": "RESCUED", "success": true}
+    }
+  ]
+}

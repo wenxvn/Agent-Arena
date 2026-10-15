@@ -1,0 +1,76 @@
+{
+  "map_id": "MAP-25",
+  "kind": "offline_hand_authored_tool_and_oxygen_replay",
+  "seed0_private_fixture": {
+    "seed": 0,
+    "latent_array_fault": "FUSE_BANK_B_OPEN",
+    "public_inspection_symptom": "ARRAY_OUTPUT_ZERO",
+    "private_fixture_only": true
+  },
+  "successful_routes": {
+    "inspect_then_equip": {
+      "success": true,
+      "finish_tick": 17,
+      "oxygen_used": 6,
+      "oxygen_remaining": 6,
+      "tool_call_attempts": 6,
+      "valid_tool_calls": 6,
+      "typed_tool_call_validity_rate": 1.0,
+      "executed_tool_errors": 0,
+      "terminal_reason": "ALL_OBJECTIVES_COMPLETE"
+    },
+    "suit_first_then_verify": {
+      "success": true,
+      "finish_tick": 17,
+      "oxygen_used": 6,
+      "oxygen_remaining": 6,
+      "tool_call_attempts": 6,
+      "valid_tool_calls": 6,
+      "typed_tool_call_validity_rate": 1.0,
+      "executed_tool_errors": 0,
+      "terminal_reason": "ALL_OBJECTIVES_COMPLETE"
+    }
+  },
+  "failure_routes": {
+    "F01": {
+      "terminal_reason": "UNSUITED_EVA",
+      "finish_tick": 2,
+      "node": "A",
+      "oxygen_remaining": 12,
+      "oxygen_used_outside": 0,
+      "tool_call_attempts": 0,
+      "valid_tool_calls": 0,
+      "executed_tool_errors": 0
+    },
+    "F02": {
+      "terminal_reason": "UNSAFE_UNTETHERED_EVA",
+      "finish_tick": 6,
+      "node": "A",
+      "oxygen_remaining": 12,
+      "oxygen_used_outside": 0,
+      "tool_call_attempts": 3,
+      "valid_tool_calls": 3,
+      "executed_tool_errors": 0
+    },
+    "F03": {
+      "terminal_reason": "OBJECTIVE_INCOMPLETE_AT_H",
+      "finish_tick": 22,
+      "node": "H",
+      "oxygen_remaining": 0,
+      "oxygen_used_outside": 12,
+      "tool_call_attempts": 9,
+      "valid_tool_calls": 5,
+      "executed_tool_errors": 4
+    }
+  },
+  "boundary_results": {
+    "B01": "ALL_OBJECTIVES_COMPLETE",
+    "B02": "OXYGEN_DEPLETED",
+    "B03": "INVALID_TOOL_ID",
+    "B04": "DIAGNOSIS_REQUIRED",
+    "B05": "INVALID_DIAGNOSIS_CODE",
+    "B06": "OXYGEN_RESERVE_REQUIRED_FOR_RETURN"
+  },
+  "public_oracle_rows": 16,
+  "runtime_verified": false
+}

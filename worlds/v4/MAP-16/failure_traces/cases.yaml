@@ -1,0 +1,62 @@
+map_id: MAP-16
+seed: 0
+failure_traces:
+  - id: F01_both_reserve_single_station_mainline
+    initial: {tick: 0, positions: {a: A, b: B}}
+    actions:
+      - {tool: set_route, tick: 0, train_id: a, from: A, to: X, outcome: reserved}
+      - {tool: set_route, tick: 0, train_id: b, from: B, to: Y, outcome: reserved}
+      - {tool: move_train, tick_before: 0, positions_after: {a: X, b: Y}, outcome: committed, tick_after: 1}
+      - {tool: set_route, tick: 1, train_id: a, from: X, to: M, section: XM, outcome: reserved}
+      - {tool: set_route, tick: 1, train_id: b, from: Y, to: M, section: YM, outcome: reserved}
+      - {tool: move_train, tick_before: 1, pending_destinations: {a: M, b: M}, outcome: terminal_failure, reason: NODE_CAPACITY_CONFLICT, positions_unchanged: {a: X, b: Y}, tick_after: 1}
+    explanation: 两列车分别预约不同区段却同时争用唯一S主线泊位；预约阶段均合法，原子结算检测终态容量冲突，任何列车都未移动。
+
+  - id: F02_opposite_reservation_on_XM
+    initial: {tick: 0, positions: {a: A, b: B}}
+    actions:
+      - {tool: set_route, tick: 0, train_id: a, from: A, to: X, outcome: reserved}
+      - {tool: set_route, tick: 0, train_id: b, from: B, to: Y, outcome: reserved}
+      - {tool: move_train, tick_before: 0, positions_after: {a: X, b: Y}, outcome: committed, tick_after: 1}
+      - {tool: set_route, tick: 1, train_id: b, from: Y, to: M, outcome: reserved}
+      - {tool: move_train, tick_before: 1, pending_destinations: {b: M}, positions_after: {a: X, b: M}, outcome: committed, tick_after: 2}
+      - {tool: set_route, tick: 2, train_id: a, from: X, to: M, section: XM, outcome: reserved}
+      - {tool: set_route, tick: 2, train_id: b, from: M, to: X, section: XM, direction: opposite_to_a, outcome: terminal_failure, reason: HEAD_ON_SWAP, tick_after: 2, positions_unchanged: {a: X, b: M}}
+    explanation: b已占M、a在X；两车同tick申请区段XM的反向通行，第二个预约即发现对穿，不得让列车先后“擦肩”通过。
+
+  - id: F03_enter_occupied_siding
+    initial: {tick: 0, positions: {a: A, b: B}}
+    actions:
+      - {tool: set_route, tick: 0, train_id: a, from: A, to: X, outcome: reserved}
+      - {tool: set_route, tick: 0, train_id: b, from: B, to: Y, outcome: reserved}
+      - {tool: move_train, tick_before: 0, positions_after: {a: X, b: Y}, outcome: committed, tick_after: 1}
+      - {tool: set_route, tick: 1, train_id: a, from: X, to: M, outcome: reserved}
+      - {tool: move_train, tick_before: 1, pending_destinations: {a: M}, positions_after: {a: M, b: Y}, outcome: committed, tick_after: 2}
+      - {tool: occupy_siding, tick: 2, train_id: a, from: M, to: D, outcome: reserved}
+      - {tool: set_route, tick: 2, train_id: b, from: Y, to: M, outcome: reserved}
+      - {tool: move_train, tick_before: 2, pending_destinations: {a: D, b: M}, positions_after: {a: D, b: M}, outcome: committed, tick_after: 3}
+      - {tool: occupy_siding, tick: 3, train_id: b, from: M, to: D, outcome: reserved_for_tick}
+      - {tool: move_train, tick_before: 3, pending_destinations: {b: D}, outcome: terminal_failure, reason: SIDING_CAPACITY_CONFLICT, positions_unchanged: {a: D, b: M}, tick_after: 3}
+    explanation: 侧线D仍由a占用；b错误地把“占用侧线”当作可覆盖占位，提交后会与静止列车争用同一个泊位。
+
+  - id: F04_clear_tracks_but_block_both_endpoints
+    initial: {tick: 0, positions: {a: A, b: B}}
+    actions:
+      - {tool: set_route, tick: 0, train_id: b, from: B, to: Y, outcome: reserved}
+      - {tool: move_train, tick_before: 0, positions_after: {a: A, b: Y}, outcome: committed, tick_after: 1}
+      - {tool: set_route, tick: 1, train_id: b, from: Y, to: M, outcome: reserved}
+      - {tool: move_train, tick_before: 1, positions_after: {a: A, b: M}, outcome: committed, tick_after: 2}
+      - {tool: set_route, tick: 2, train_id: b, from: M, to: X, outcome: reserved}
+      - {tool: move_train, tick_before: 2, positions_after: {a: A, b: X}, outcome: terminal_failure, reason: DEADLOCK, tick_after: 3}
+    explanation: 三轮均无区段或节点容量冲突；但a留在B方向列车必须通过的A端点，b停在a前方的X，且两车都不允许主线掉头，因而不存在无冲突完成路径。
+
+boundary_case:
+  id: B01_atomic_vacate_and_enter_at_S
+  reachable_state: {tick: 3, positions: {a: D, b: M}}
+  actions:
+    - {tool: set_route, tick: 3, train_id: a, from: D, to: M, section: MD, outcome: reserved}
+    - {tool: set_route, tick: 3, train_id: b, from: M, to: X, section: XM, outcome: reserved}
+    - {tool: move_train, tick_before: 3, pending_destinations: {a: M, b: X}, outcome: committed, positions_after: {a: M, b: X}, tick_after: 4}
+  checks:
+    - S主线泊位初态被b占用，末态由a占用，容量始终未在原子结算后的状态中超过1。
+    - 两车使用MD与XM不同区段，不构成相向交换；不得因为旧位置尚被占用而误拒同tick交班。

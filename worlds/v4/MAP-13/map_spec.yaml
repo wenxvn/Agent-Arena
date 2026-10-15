@@ -1,0 +1,62 @@
+id: MAP-13
+title: 四神之门
+world: pyramid
+capability_primary: constraint_satisfaction
+capability_secondary: [spatial_order_disambiguation, evidence_use, bounded_validation]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+nodes: [C, N, E, S, W]
+edges:
+  - {id: C_N, from: C, to: N, directed: false, cost_ticks: 1}
+  - {id: C_E, from: C, to: E, directed: false, cost_ticks: 1}
+  - {id: C_S, from: C, to: S, directed: false, cost_ticks: 1}
+  - {id: C_W, from: C, to: W, directed: false, cost_ticks: 1}
+symbol_slots: [N, E, S, W]
+symbols: [日, 眼, 芦, 甲]
+clues:
+  ORIENTATION_ORDER: {location: C, text: "从北室起，按N→E→S→W顺时针读为槽位1至4；右侧表示编号更大，相邻表示编号差1。", role: semantic_disambiguator}
+  N_SUN_NOT_END: {location: N, predicate: "pos(日) in {2,3}"}
+  E_EYE_RIGHT_OF_REED: {location: E, predicate: "pos(眼) > pos(芦)"}
+  S_ARMOR_ADJACENT_TO_SUN: {location: S, predicate: "abs(pos(甲)-pos(日)) == 1"}
+  W_REED_NOT_FIRST: {location: W, predicate: "pos(芦) != 1"}
+initial_state:
+  seed: 0
+  tick: 0
+  location: C
+  symbol_tokens_at_C: [日, 眼, 芦, 甲]
+  observed_clue_ids: []
+  recorded_clue_ids: []
+  trial_layout: null
+  incorrect_attempts: 0
+  gate_open: false
+  terminal: false
+private_state: [target_layout, correct_layout_evaluator, oracle_trace_labels, scoring_implementation]
+public_observation_fields: [current_tick, location, visible_neighbors, observed_clue_ids_and_text, recorded_clue_ids, trial_layout, incorrect_attempts, remaining_incorrect_attempts, gate_open, terminal, terminal_reason]
+actions:
+  - {name: move, parameters: [edge_id, from_node, to_node], allowed_edges: [C_N, C_E, C_S, C_W], cost_ticks: 1, requires: [endpoints_match_undirected_edge, from_node_equals_current_location]}
+  - {name: read_inscription, parameters: [room], allowed_locations: [C, N, E, S, W], cost_ticks: 1, requires: [current_location_equals_room], effect: reveal_only_the_named_room_inscription_and_add_its_id_to_observed_clue_ids}
+  - {name: record_constraint, parameters: [clue_id], location: C, cost_ticks: 1, requires: [clue_id_already_observed, clue_id_not_already_recorded], effect: add_clue_id_to_recorded_clue_ids}
+  - {name: set_trial_layout, parameters: [layout_by_room], location: C, cost_ticks: 1, requires: [exactly_rooms_N_E_S_W, each_symbol_used_once], effect: replace_trial_layout_without_consuming_verification_attempt}
+  - {name: verify_layout, parameters: [], location: C, cost_ticks: 1, requires: [complete_trial_layout], effect: correct_opens_gate_or_wrong_increments_incorrect_attempts}
+event_order:
+  action: [validate_location_and_parameters, charge_one_tick, apply_action_effect, on_verify_compare_to_private_target, terminate_if_gate_open_or_incorrect_attempts_gt_2]
+transitions:
+  - {when: read_inscription_at_C, effect: reveal_ORIENTATION_ORDER_only}
+  - {when: read_inscription_at_outer_room, effect: reveal_that_room_clue_only}
+  - {when: record_constraint_at_C_for_observed_clue, effect: persist_clue_id_without_changing_trial_layout}
+  - {when: set_valid_complete_trial_layout_at_C, effect: store_mapping_with_no_attempt_cost}
+  - {when: verify_layout_equals_unique_layout, effect: gate_open_true_and_terminal_success}
+  - {when: verify_layout_differs_from_unique_layout, effect: incorrect_attempts_plus_1_and_generic_gate_closed_response}
+  - {when: incorrect_attempts_gte_3, effect: terminal_failure_INCORRECT_ATTEMPT_LIMIT}
+  - {when: invalid_or_incomplete_trial_layout, effect: reject_without_tick_or_attempt}
+terminal_success: [gate_open]
+terminal_failure: [incorrect_attempts_gte_3]
+reason_codes: [GATE_OPENED, INCORRECT_ATTEMPT_LIMIT, INVALID_LOCATION, INVALID_EDGE, INVALID_LAYOUT, CLUE_NOT_OBSERVED, CLUE_ALREADY_RECORDED]
+scoring:
+  primary: [gate_open, verification_correctness, evidence_coverage_before_first_correct_verification]
+  auxiliary: [incorrect_attempts, clue_coverage_before_first_verification, total_ticks, travel_edges]
+evidence_use_denominator: 5
+seed_policy: deterministic_fixed_seed_0_no_randomness
+constraint_audit_path: planning/constraint_audit.json
+oracle_path: oracle_trace.jsonl

@@ -1,0 +1,104 @@
+{
+  "map_id": "MAP-21",
+  "authorship": "四条路线均按MAP21的具体边耗时、样品位置、分级价值和隐藏喷发时间逐项手写；不是从模板生成的地图换皮。",
+  "prior": {"eruption_ticks": [12, 16, 20], "probabilities": [0.2, 0.5, 0.3]},
+  "plans": {
+    "blind_fast_evacuation": {
+      "description": "放弃样品和测量数据，走O-E直达安全路。",
+      "initial_tick": 0,
+      "operations": [{"action": "move", "from": "O", "to": "E", "duration_ticks": 6}],
+      "terminal_by_hidden_tick": {"12": {"arrival_tick": 6, "score": 100}, "16": {"arrival_tick": 6, "score": 100}, "20": {"arrival_tick": 6, "score": 100}},
+      "expected": {"expected_score": 100.0, "survival_probability": 1.0, "expected_research_points": 0.0}
+    },
+    "quick_surface_sample_then_leave": {
+      "description": "经R取一tick表层灰样，再从长路线撤离；比盲撤多2tick但仍早于最小喷发时刻。",
+      "initial_tick": 0,
+      "operations": [
+        {"action": "move", "from": "O", "to": "R", "duration_ticks": 1},
+        {"action": "collect_and_carry_sample", "sample_id": "R_SURFACE_ASH", "reinforced": false, "duration_ticks": 1},
+        {"action": "move", "from": "R", "to": "W", "duration_ticks": 2},
+        {"action": "move", "from": "W", "to": "S", "duration_ticks": 2},
+        {"action": "move", "from": "S", "to": "E", "duration_ticks": 2}
+      ],
+      "terminal_by_hidden_tick": {"12": {"arrival_tick": 8, "score": 105}, "16": {"arrival_tick": 8, "score": 105}, "20": {"arrival_tick": 8, "score": 105}},
+      "expected": {"expected_score": 105.0, "survival_probability": 1.0, "expected_research_points": 5.0}
+    },
+    "measure_then_branch_by_posterior": {
+      "description": "在O耗2tick测量；早报取R样并安全撤离，晚报尝试加固W样，接受4%联合早喷发假阴性风险。",
+      "measurement": {"location": "O", "duration_ticks": 2, "early_posterior": [0.47058823529411764, 0.4411764705882353, 0.08823529411764706], "late_posterior": [0.06060606060606061, 0.5303030303030303, 0.4090909090909091]},
+      "branches": {
+        "EARLY_WARNING": {
+          "operations": [
+            {"action": "move", "from": "O", "to": "R", "duration_ticks": 1},
+            {"action": "collect_and_carry_sample", "sample_id": "R_SURFACE_ASH", "reinforced": false, "duration_ticks": 1},
+            {"action": "move", "from": "R", "to": "W", "duration_ticks": 2},
+            {"action": "move", "from": "W", "to": "S", "duration_ticks": 2},
+            {"action": "move", "from": "S", "to": "E", "duration_ticks": 2}
+          ],
+          "duration_including_measurement": 10,
+          "terminal_scores_by_hidden_tick": {"12": 107, "16": 107, "20": 107}
+        },
+        "LATE_WARNING": {
+          "operations": [
+            {"action": "move", "from": "O", "to": "R", "duration_ticks": 1},
+            {"action": "move", "from": "R", "to": "W", "duration_ticks": 2},
+            {"action": "reinforce_sample_case", "at": "W", "duration_ticks": 1},
+            {"action": "collect_and_carry_sample", "sample_id": "W_LAYERED_CORE", "reinforced": true, "duration_ticks": 5},
+            {"action": "move", "from": "W", "to": "S", "duration_ticks": 2},
+            {"action": "move", "from": "S", "to": "E", "duration_ticks": 2}
+          ],
+          "duration_including_measurement": 15,
+          "terminal_scores_by_hidden_tick": {"12": 0, "16": 122, "20": 122}
+        }
+      },
+      "enumeration": {
+        "expected_score": 112.02,
+        "survival_probability": 0.96,
+        "expected_research_points": 16.02,
+        "fatal_joint_event": "true_tick_12_and_LATE_WARNING",
+        "fatal_joint_probability": 0.04
+      }
+    },
+    "unreinforced_medium_sample_exact_boundary": {
+      "description": "不测量、不加固；W样完整保留分数但以tick12抵E，测试同tick到达先于喷发判定。",
+      "initial_tick": 0,
+      "operations": [
+        {"action": "move", "from": "O", "to": "R", "duration_ticks": 1},
+        {"action": "move", "from": "R", "to": "W", "duration_ticks": 2},
+        {"action": "collect_and_carry_sample", "sample_id": "W_LAYERED_CORE", "reinforced": false, "duration_ticks": 5},
+        {"action": "move", "from": "W", "to": "S", "duration_ticks": 2},
+        {"action": "move", "from": "S", "to": "E", "duration_ticks": 2}
+      ],
+      "terminal_by_hidden_tick": {"12": {"arrival_tick": 12, "score": 112, "same_tick_arrival_succeeds": true}, "16": {"arrival_tick": 12, "score": 112}, "20": {"arrival_tick": 12, "score": 112}},
+      "expected": {"expected_score": 112.0, "survival_probability": 1.0, "expected_research_points": 12.0}
+    },
+    "reinforced_medium_sample_misses_eruption_edge": {
+      "description": "与tick12边界表相同，但在W多花一tick加固，T=12时未能按时进入E。",
+      "initial_tick": 0,
+      "operations": [
+        {"action": "move", "from": "O", "to": "R", "duration_ticks": 1},
+        {"action": "move", "from": "R", "to": "W", "duration_ticks": 2},
+        {"action": "reinforce_sample_case", "at": "W", "duration_ticks": 1},
+        {"action": "collect_and_carry_sample", "sample_id": "W_LAYERED_CORE", "reinforced": true, "duration_ticks": 5},
+        {"action": "move", "from": "W", "to": "S", "duration_ticks": 2},
+        {"action": "move", "from": "S", "to": "E", "duration_ticks": 2}
+      ],
+      "terminal_by_hidden_tick": {"12": {"failure_tick": 12, "score": 0}, "16": {"arrival_tick": 13, "score": 120}, "20": {"arrival_tick": 13, "score": 120}},
+      "expected": {"expected_score": 96.0, "survival_probability": 0.8, "expected_research_points": 16.0}
+    },
+    "reinforced_high_value_sample_risk": {
+      "description": "不读仪器，走到S加固并采集深部同位素芯；T=12在到E前喷发，T=16/20则带50科研分抵达。",
+      "initial_tick": 0,
+      "operations": [
+        {"action": "move", "from": "O", "to": "R", "duration_ticks": 1},
+        {"action": "move", "from": "R", "to": "W", "duration_ticks": 2},
+        {"action": "move", "from": "W", "to": "S", "duration_ticks": 2},
+        {"action": "reinforce_sample_case", "at": "S", "duration_ticks": 1},
+        {"action": "collect_and_carry_sample", "sample_id": "S_DEEP_ISOTOPE", "reinforced": true, "duration_ticks": 6},
+        {"action": "move", "from": "S", "to": "E", "duration_ticks": 2}
+      ],
+      "terminal_by_hidden_tick": {"12": {"arrival_tick": 14, "score": 0, "failure_tick": 12}, "16": {"arrival_tick": 14, "score": 150}, "20": {"arrival_tick": 14, "score": 150}},
+      "expected": {"expected_score": 120.0, "survival_probability": 0.8, "expected_research_points": 40.0}
+    }
+  }
+}

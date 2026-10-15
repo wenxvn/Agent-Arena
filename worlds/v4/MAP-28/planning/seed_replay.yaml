@@ -1,0 +1,10 @@
+map_id: MAP-28
+seed: 0
+case_fixture: private_truth_table.yaml
+expected_same_seed_invariants:
+  initial_observation: {public_alert: CROWN_MISSING}
+  source_payloads_are_immutable: true
+  witness_statement_is_identical: true
+  final_truth_tuple_is_identical: true
+  oracle_generated_twice_is_byte_identical: true
+  runtime_verified: false

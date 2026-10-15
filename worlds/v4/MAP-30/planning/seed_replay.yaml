@@ -1,0 +1,15 @@
+map_id: MAP-30
+seed: 0
+determinism_contract:
+  topology_fixed: true
+  evidence_truth_fixed: true
+  npc_response_key: [seed, npc_id, topic_id, shown_evidence_ids, shown_casebook_entry_ids]
+  no_random_sampling: true
+  oracle_byte_stability_required: true
+  runtime_verified: false
+replay_route: event_by_event_archive_first
+expected_terminal: ALL_THREE_EVENTS_ACCOUNTED_FOR_AND_MARA_VENN_PROVEN
+expected_finish_tick: 25
+expected_public_oracle_rows: 26
+expected_public_oracle_sha256: D35E73E4094CFDCC35CFA4EEB7D23458EE9C73A28A82E4F696C864064E3DDBE4
+expected_private_truth_exposure: false

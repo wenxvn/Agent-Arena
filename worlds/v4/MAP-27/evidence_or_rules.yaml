@@ -1,0 +1,50 @@
+map_id: MAP-27
+classification: FIXED_JOINT_OPERATION_RESOURCE_AND_RESCUE_INVARIANTS
+seed: 0
+resource_invariants:
+  vehicle_battery_initial_and_cap: [14, 14]
+  oxygen_initial: 18
+  slot_capacity: 2
+  slot_costs: {sample_container: 1, medical_kit: 1, relay_repair_kit: 1}
+  one_charge_cell: true
+  charge_rule: min(14, battery_before_charge_plus_4)
+  charge_duration_ticks: 2
+  charge_cell_consumed_atomically: true
+  charge_cell_reusable: false
+  oxygen_consumed_per_drive_equals_edge_ticks: true
+edge_costs:
+  B_S: {ticks: 1, battery: 1, oxygen: 1}
+  S_R: {ticks: 2, battery: 2, oxygen: 2}
+  R_P: {ticks: 2, battery: 2, oxygen: 2}
+  P_E: {ticks: 4, battery: 4, oxygen: 4}
+  S_E: {ticks: 1, battery: 1, oxygen: 1}
+critical_action_order:
+  field_stabilization: medical_kit_carried_and_consumed_at_E
+  relay_repair: repair_kit_carried_and_consumed_at_R
+  remote_evacuation: relay_online_and_survivor_stabilized_at_R_or_E
+  victory: [sealed_sample_returned_to_B, survivor_rescued, relay_online, crew_alive, oxygen_gt_0]
+hand_computed_plans:
+  relay_first_remote_road:
+    finish_tick: 25
+    drive_battery_and_oxygen_consumed: [15, 15]
+    charge_cells_used: 1
+    starting_at_S_battery_before_charge: 13
+    battery_after_charge: 14
+    battery_after_return: 0
+    oxygen_after_return: 3
+  stabilize_first_short_road:
+    finish_tick: 20
+    drive_battery_and_oxygen_consumed: [12, 12]
+    charge_cells_used: 0
+    battery_after_return: 2
+    oxygen_after_return: 6
+negative_and_boundary_witnesses:
+  cargo_two_tools_plus_container: CARGO_CAPACITY_EXCEEDED
+  E_to_B_minimum_battery: 2
+  E_with_battery_1: VEHICLE_STRANDED
+  E_with_battery_2_can_return: true
+  B01_charge_at_battery_13_caps_at_14: true
+  B02_one_charge_cell_second_request: CHARGER_EMPTY
+  B03_stabilized_without_online_relay_is_not_rescued: RELAY_OFFLINE
+  B04_submission_with_oxygen_zero_is_not_success: true
+runtime_verified: false

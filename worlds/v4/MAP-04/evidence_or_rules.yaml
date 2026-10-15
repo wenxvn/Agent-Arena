@@ -1,0 +1,32 @@
+id: MAP-04
+model: deterministic_periodic_gate
+clock:
+  initial_phase: 2
+  period: 6
+  transition: (phase + 1) mod 6 after every environment action
+gate:
+  edge: S_G
+  departure_phases_open: [0, 1]
+  check_phase: before_action_clock_increment
+  rejected_move_cost_tick: 1
+  rejected_move_reason: TIDE_WINDOW_CLOSED
+objective:
+  wick_at: G
+  required_actions_in_order: [pickup_wick, return_to_T, fit_wick, ignite]
+  deadline_tick: 18
+  timeout_reason: RESCUE_SIGNAL_WINDOW_EXPIRED
+route_costs:
+  tide_route_success_actions: 14
+  detour_route_success_actions: 15
+  detour_T_to_D_edges: 5
+  tide_route_required_waits: {at_S: 3, at_G: 4}
+information:
+  phase_public: true
+  period_and_open_phases_public: true
+  future_phase_table_public_in_control_only: true
+  hidden_future_events: none
+counterfactual_controls:
+  held_constant: [topology, action_costs, initial_phase, deadline, wick_location]
+  contrasts:
+    - {id: current_phase_only, reveal: [current_phase, period, open_phases]}
+    - {id: full_forecast, additionally_reveal: all_future_phases_to_deadline}

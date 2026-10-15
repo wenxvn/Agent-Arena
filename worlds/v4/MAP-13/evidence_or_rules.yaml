@@ -1,0 +1,39 @@
+evidence_type: exhaustive_offline_constraint_audit_and_manual_trace_review
+runtime_verified: false
+model_results: none
+enumerator:
+  implementation: planning/constraint_audit.py
+  full_permutation_count: 24
+  clockwise_candidate_counts:
+    - {after: unfiltered, count: 24}
+    - {after: N_SUN_NOT_END, count: 12}
+    - {after: E_EYE_RIGHT_OF_REED, count: 6}
+    - {after: S_ARMOR_ADJACENT_TO_SUN, count: 4}
+    - {after: W_REED_NOT_FIRST, count: 1}
+  unique_clockwise_room_layout: {N: 甲, E: 日, S: 芦, W: 眼}
+  deletion_counts:
+    N_SUN_NOT_END: 2
+    E_EYE_RIGHT_OF_REED: 5
+    S_ARMOR_ADJACENT_TO_SUN: 2
+    W_REED_NOT_FIRST: 4
+  mirrored_order_if_orientation_not_read:
+    order: [N, W, S, E]
+    unique_layout: {N: 甲, W: 日, S: 芦, E: 眼}
+  distinct_physical_layouts_without_orientation_marker: 2
+  interpretation: The four position constraints already select one permutation after the order is defined. The fifth marker resolves the required physical room orientation; it is not a redundant fifth positional predicate.
+hand_trace_audit:
+  source: planning/hand_traces.json
+  replay: planning/replay_hand_traces.py
+  output: oracle_trace.jsonl
+  plans: [constraint_propagation, systematic_enumeration]
+  ticks_each: 20
+  clues_observed_each: 5
+  clues_recorded_each: 5
+  incorrect_attempts_each: 0
+manual_review:
+  - one assignment per outer room, one use of every symbol
+  - logical sequence and physical graph are distinct and labelled
+  - extra direction marker is necessary for room mapping
+  - each of the four position clues increases ambiguity when deleted
+  - wrong verification returns no clue-specific feedback
+  - all oracle and failure-case answers remain judge-side evidence

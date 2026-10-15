@@ -1,0 +1,35 @@
+id: MAP-02
+model: deterministic_event_and_two_deadlines
+event:
+  trigger: fourth_schema_legal_environment_action_after_direct_effect
+  source: L1
+  initial_private_spread_ticks: 2
+  contained_by: center_gate_isolate_L1
+  uncontained_zero_reason: NAV_CORE_FLOODED
+crew:
+  location: L2
+  pressure_budget_after_event_ticks: 8
+  destination: R2_E_pod
+  escort_path_after_isolation: [C, X, L2, X, C, R1, R2]
+  pickup_action_required: true
+  auto_board_on_entry_to: R2
+  timeout_reason: CREW_PRESSURE_LOST
+nav_core:
+  location: R1
+  repair_pack_location: R1
+  secured_by: interact_nav_core_brace_in_case
+  consumes: 1_repair_pack
+  secured_item_must_reach_E: false
+global_deadline_ticks: 20
+success_formula: nav_core_secured_and_crew_in_E_and_tick_lte_20
+reason_codes:
+  NAV_CORE_FLOODED: leak_expansion_reaches_R1
+  CREW_PRESSURE_LOST: crew_not_at_E_at_post_leak_tick_8
+  GLOBAL_DEADLINE: tick_20_reached_with_any_goal_incomplete
+public_after_event: [leak_location, crew_pressure_remaining, gate_state, visible_safe_edges]
+private_before_event: [trigger_action_index, spread_timer]
+counterfactual_controls:
+  held_constant: [graph, goals, action_costs, resource_deadlines, initial_locations]
+  contrasts:
+    - {id: no_second_alarm, change: remove_leak_event_only}
+    - {id: warning_at_start, change: publish_leak_action_index_and_source_at_tick_0}

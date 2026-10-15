@@ -1,0 +1,67 @@
+id: MAP-08
+title: 看不见的裂缝
+world: deep_sea
+capability_primary: active_experiment_design
+capability_secondary: [hypothesis_elimination, stopping_rule_under_pressure]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+nodes: [A, B, C, D, E, F, X, Y]
+edges:
+  - {id: A_B, from: A, to: B, directed: false, cost_ticks: 1}
+  - {id: B_C, from: B, to: C, directed: false, cost_ticks: 1}
+  - {id: C_D, from: C, to: D, directed: false, cost_ticks: 1}
+  - {id: D_E, from: D, to: E, directed: false, cost_ticks: 1}
+  - {id: E_F, from: E, to: F, directed: false, cost_ticks: 1}
+  - {id: F_A, from: F, to: A, directed: false, cost_ticks: 1}
+  - {id: X_A, from: X, to: A, directed: false, cost_ticks: 1}
+  - {id: X_C, from: X, to: C, directed: false, cost_ticks: 1}
+  - {id: Y_D, from: Y, to: D, directed: false, cost_ticks: 1}
+  - {id: Y_F, from: Y, to: F, directed: false, cost_ticks: 1}
+initial_state:
+  seed: 0
+  location: A
+  tick: 0
+  hidden_leak_candidates: [B, D, F]
+  prior: {B: 0.3333333333, D: 0.3333333333, F: 0.3333333334}
+  core_water: 1.0
+  water_limit_exclusive: 7.0
+  sealant_count: 1
+  ordinary_sensor_baseline: flat
+  test_results: null
+seed_policy:
+  deterministic_fixed_map: true
+  base_cohort_12:
+    - {seed_ids: [0, 1, 2, 3], leak: B}
+    - {seed_ids: [4, 5, 6, 7], leak: D}
+    - {seed_ids: [8, 9, 10, 11], leak: F}
+  prior_control_cohorts:
+    B_heavy_10:
+      seed_ids: [100, 101, 102, 103, 104, 105, 106, 107, 108, 109]
+      leak_counts: {B: 6, D: 2, F: 2}
+    D_heavy_10:
+      seed_ids: [200, 201, 202, 203, 204, 205, 206, 207, 208, 209]
+      leak_counts: {B: 2, D: 6, F: 2}
+public_observation_fields: [location, visible_neighbors, current_tick, current_core_water, baseline_sensor_reading, published_candidate_set, published_prior, known_test_semantics, sealant_count]
+private_state: [true_leak_site, seed_mapping, judge_hypothesis_labels, oracle_trace]
+actions:
+  - {name: move, parameters: [edge_id], cost_ticks: 1, one_edge_per_action: true}
+  - {name: inspect, parameters: [target_id], targets: [ordinary_sensor], cost_ticks: 1}
+  - {name: interact, parameters: [target_id, operation, arguments], operations: [pressure_test_X, pressure_test_Y, repair_leak], costs: {pressure_test_X: 2, pressure_test_Y: 2, repair_leak_correct: 1, repair_leak_wrong: 4}}
+  - {name: wait, parameters: [ticks=1], cost_ticks: 1}
+transitions:
+  - {when: any_action_elapsed_tick_and_leak_unsealed, effect: core_water_plus_0_5_before_action_completion_effect}
+  - {when: core_water_exceeds_7_0_during_action, effect: terminal_failure_CORE_WATER_LIMIT_EXCEEDED}
+  - {when: pressure_test_X_completes, effect: report_amber_if_B_else_slate}
+  - {when: pressure_test_Y_completes, effect: report_cobalt_if_D_else_slate}
+  - {when: correct_repair_completes_at_true_leak, effect: consume_one_sealant_and_seal_leak_then_success_if_core_lte_7_0}
+  - {when: repair_completes_at_wrong_candidate, effect: consume_one_sealant_and_terminal_failure_SEALANT_MISUSED}
+  - {when: repeated_same_test, effect: repeat_same_result_without_additional_information}
+terminal_success: [true_leak_sealed, core_water_lte_7_0, sealant_consumed_once]
+terminal_failure: [core_water_gt_7_0, sealant_misused]
+reason_codes: [INVALID_TEST_LOCATION, INVALID_REPAIR_LOCATION, CORE_WATER_LIMIT_EXCEEDED, SEALANT_MISUSED]
+scoring:
+  primary: correct_leak_diagnosis_and_seal_before_core_water_exceeds_7_0
+  auxiliary: [first_test_station, candidate_set_sizes, information_gain_bits, tests_run, travel_ticks, repair_tick, peak_core_water, diagnosis_accuracy]
+  initial_observation_equivalence: true
+oracle_path: oracle_trace.jsonl

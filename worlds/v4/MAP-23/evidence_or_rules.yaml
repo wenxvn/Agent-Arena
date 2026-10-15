@@ -1,0 +1,28 @@
+map_id: MAP-23
+evidence_class: hand_authored_offline_design_rules
+runtime_verified: false
+private_truth_source: planning/private_variant_reference.yaml
+rules:
+  hidden_variants:
+    prior_weights: {X_TRUE: 1, Y_TRUE: 1, Z_TRUE: 1}
+    each_variant_rewrites_all_three_site_signals: true
+    signals:
+      X_TRUE: {N: STONE_SPLIT, R: WATER_UPSTREAM_SINK, H: RIDGE_NORTH_WHITE_MARK}
+      Y_TRUE: {N: STONE_SPLIT, R: WATER_TWIN_RIPPLES, H: RIDGE_CENTER_AMBER_MARK}
+      Z_TRUE: {N: STONE_THREE_RINGS, R: WATER_TWIN_RIPPLES, H: RIDGE_LOW_BLACK_MARK}
+  resources:
+    starting_and_maximum_supply: 14
+    one_cache_refills_to_maximum_only_at_A: true
+    scout_cost_each: 2
+    entrance_investigation_costs: {X: 3, Y: 2, Z: 3}
+    success_requires_supply_after_true_investigation_gt_zero: true
+  information_partitions:
+    N: {STONE_SPLIT: [X, Y], STONE_THREE_RINGS: [Z]}
+    R: {WATER_UPSTREAM_SINK: [X], WATER_TWIN_RIPPLES: [Y, Z]}
+    H: {RIDGE_NORTH_WHITE_MARK: [X], RIDGE_CENTER_AMBER_MARK: [Y], RIDGE_LOW_BLACK_MARK: [Z]}
+  audit_claims:
+    all_three_hidden_variants_replayed: true
+    strategies_replayed: [ridge_exact_scout, north_stone_partition, river_water_partition, low_cost_direct_probe]
+    public_seed0_oracle_rows: 9
+    public_oracle_sha256: 01DCF7D5F3AEC83E7169C1A897AF8F33AF753CBBF102E979BD03CB639CF4E3E8
+    runtime_or_model_evidence: none

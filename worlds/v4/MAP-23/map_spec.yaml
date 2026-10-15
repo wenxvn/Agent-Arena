@@ -1,0 +1,95 @@
+id: MAP-23
+title: 迷雾中的遗迹
+world: jungle
+capability_primary: exploration_information_value
+capability_secondary: [resource_bounded_scouting, clue_fusion, false_entrance_recovery]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: deterministic_seeded_hidden_entrance_variant_no_public_variant_id
+hidden_variant_population: {variants: [X_TRUE, Y_TRUE, Z_TRUE], prior_weights: [1, 1, 1], normalization: equal}
+topology:
+  nodes: [A, N, R, H, X, Y, Z]
+  roles: {A: camp, N: north_forest_survey, R: river_valley_survey, H: ridge_distant_observation, X: entrance_x, Y: entrance_y, Z: entrance_z}
+  undirected_edges:
+    - {a: A, b: N, supply_cost: 1}
+    - {a: N, b: X, supply_cost: 1}
+    - {a: N, b: Y, supply_cost: 2}
+    - {a: A, b: R, supply_cost: 2}
+    - {a: R, b: Y, supply_cost: 1}
+    - {a: R, b: Z, supply_cost: 2}
+    - {a: A, b: H, supply_cost: 2}
+  edges_bidirectional: true
+  H_has_no_walkway_to_entrances: true
+  H_scout_can_view_all_three_entry_markers: true
+resources:
+  name: field_supply
+  initial: 14
+  maximum: 14
+  resupply:
+    location: A
+    uses_per_run: 1
+    condition: current_supply_below_14
+    effect: refill_to_14_not_add_14
+    supply_cost: 0
+scouting:
+  stations: [N, R, H]
+  uses_per_station_per_run: 1
+  supply_cost_each: 2
+  candidate_set_is_not_automatically_marked: true
+  clue_decoder_visible_to_agent:
+    N:
+      STONE_SPLIT: [X, Y]
+      STONE_THREE_RINGS: [Z]
+    R:
+      WATER_UPSTREAM_SINK: [X]
+      WATER_TWIN_RIPPLES: [Y, Z]
+    H:
+      RIDGE_NORTH_WHITE_MARK: [X]
+      RIDGE_CENTER_AMBER_MARK: [Y]
+      RIDGE_LOW_BLACK_MARK: [Z]
+  every_signal_excludes_at_least_one_entrance: true
+entrances:
+  ids: [X, Y, Z]
+  direct_investigation_supply_cost: {X: 3, Y: 2, Z: 3}
+  attempts_per_entrance_per_run: 1
+  false_result_is_public_and_marks_that_entrance_searched: true
+  true_result_awards_success_only_if_supply_after_cost_is_strictly_positive: true
+  unsearched_candidate_information_is_private: true
+actions:
+  - {name: scout, location: [N, R, H], supply_cost: 2, effect: return_only_this_stations_variant_signal}
+  - {name: move, parameter: locally_visible_adjacent_node, supply_cost: edge_cost, effect: traverse_one_bidirectional_edge}
+  - {name: investigate, location: [X, Y, Z], supply_cost: entrance_specific_1_to_3, effect: reveal_true_or_false_for_this_entrance}
+  - {name: mark, parameter: one_of_X_Y_Z, supply_cost: 0, effect: set_or_replace_agent_selected_candidate_marker}
+  - {name: resupply, location: A, supply_cost: 0, uses: 1, effect: restore_supply_to_14}
+public_observation_fields: [current_node, locally_visible_neighbors_and_supply_costs, supply_remaining, resupply_cache_available, available_scout_stations, clues_received, entrances_already_searched_false, agent_marked_candidate, terminal, terminal_reason]
+private_fields: [variant_id, true_entrance, clue_profile_for_unscouted_sites, all_unseen_entrance_status]
+variant_integrity:
+  true_entrance_changes_only_through_hidden_variant_selection: true
+  every_variant_rewrites_N_R_H_signals_from_the_same_true_entrance_profile: true
+  private_variant_table_path: planning/private_variant_reference.yaml
+  agent_never_receives_variant_id_or_true_entrance: true
+event_order:
+  - show_only_current_node_local_connections_and_remaining_supply
+  - scout_requires_station_and_unused_local_instrument_then_consumes_2_and_returns_current_variant_signal
+  - move_requires_visible_adjacent_node_and_affordable_edge_supply_then_consumes_cost
+  - investigate_requires_unsearched_current_entrance_and_affordable_entrance_cost
+  - false_investigation_consumes_cost_and_marks_only_that_entrance_false
+  - true_investigation_consumes_cost_but_success_requires_supply_after_cost_gt_0
+  - true_investigation_with_zero_remaining_supply_fails_as_SUPPLY_MUST_REMAIN_POSITIVE
+  - false_investigation_with_zero_remaining_supply_fails_as_SUPPLY_DEPLETED
+  - resupply_is_available_once_only_at_A_and_refills_to_14
+  - mark_changes_only_the_agent_selected_candidate_not_world_truth
+  - if_supply_is_zero_before_success_then_SUPPLY_DEPLETED
+  - if_supply_positive_but_no_affordable_world_progress_action_or_resupply_is_reachable_then_SUPPLY_STRANDED_zero_cost_mark_is_not_progress
+success_predicate: [investigated_entrance_matches_hidden_truth, supply_remaining_strictly_greater_than_0]
+failure_predicates: [supply_depleted_before_success, supply_stranded_without_affordable_progress_or_resupply]
+reason_codes: [TRUE_ENTRANCE_FOUND, FALSE_ENTRANCE, SUPPLY_MUST_REMAIN_POSITIVE, SUPPLY_DEPLETED, SUPPLY_STRANDED, INVALID_ACTION]
+metrics: [information_gain_bits, information_gain_per_supply, entrance_probes, unique_nodes_visited, supply_remaining_at_success, success_by_hidden_variant]
+manual_scenarios_path: planning/hand_traces.json
+failure_cases_path: failure_traces/cases.yaml
+information_reference_path: planning/information_reference.json
+private_seed_reference_path: planning/private_seed_reference.yaml
+oracle_path: oracle_trace.jsonl
+runtime_verified: false
+model_results: none

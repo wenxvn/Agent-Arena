@@ -1,0 +1,15 @@
+# Offline-only hidden truth/clue fixture. Never include this table in an Observation or public Oracle.
+variant_population:
+  - id: X_TRUE
+    prior_weight: 1
+    true_entrance: X
+    signals: {N: STONE_SPLIT, R: WATER_UPSTREAM_SINK, H: RIDGE_NORTH_WHITE_MARK}
+  - id: Y_TRUE
+    prior_weight: 1
+    true_entrance: Y
+    signals: {N: STONE_SPLIT, R: WATER_TWIN_RIPPLES, H: RIDGE_CENTER_AMBER_MARK}
+  - id: Z_TRUE
+    prior_weight: 1
+    true_entrance: Z
+    signals: {N: STONE_THREE_RINGS, R: WATER_TWIN_RIPPLES, H: RIDGE_LOW_BLACK_MARK}
+cross_variant_rule: change_true_entrance_and_recompute_all_three_signal_entries_from_this_profile; never_swap_location_name_without_rewriting_clues

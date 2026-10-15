@@ -1,0 +1,19 @@
+map_id: MAP-28
+classification: JUDGE_SIDE_HAND_AUTHORED_EVIDENCE_RULES
+runtime_verified: false
+source_catalog:
+  LOCK_ENTRY_K3_2106: {class: instrument_log, supports: {person_id: CELINE, entry_path_id: SECRET_S_V, entry_time: '21:06'}}
+  LOCK_EXIT_S_2114: {class: instrument_log, supports: {entry_path_id: SECRET_S_V, exit_time: '21:14'}}
+  PRINT_C7_ROUTE_SV: {class: physical_trace, supports: {person_id: CELINE, entry_path_id: SECRET_S_V, entry_time_window: ['21:05', '21:07'], exit_time_window: ['21:13', '21:15']}}
+  KEY_REGISTER_K3_CELINE: {class: documentary_register, supports: {person_id: CELINE}}
+  WITNESS_BASIL_S_WINDOW: {class: testimony, supports: {person_id: BASIL, entry_path_id: SECRET_S_V, entry_time_window: ['21:05', '21:07'], exit_time_window: ['21:13', '21:15']}, reliability: fallible_identity}
+required_independent_source_classes:
+  person_id: 2
+  entry_path_id: 2
+  entry_time: 2
+  exit_time: 2
+minimum_source_class_diversity_is_not_evidence_count: true
+truth_neutral_public_rejection: true
+seed0_public_oracle_only: true
+same_seed_source_payloads_are_immutable: true
+no_global_evidence_or_truth_disclosure: true

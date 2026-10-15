@@ -1,0 +1,580 @@
+{
+  "research_start_day": 2,
+  "days": [
+    {
+      "day": 1,
+      "actions": [
+        "start_greenhouse_power",
+        "plant_batch"
+      ],
+      "state": {
+        "parts_S": 8,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 29,
+        "research_points": 0,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 38
+      }
+    },
+    {
+      "day": 2,
+      "actions": [
+        "research"
+      ],
+      "state": {
+        "parts_S": 8,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 28,
+        "research_points": 0,
+        "research_streak": 1,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 36
+      }
+    },
+    {
+      "day": 3,
+      "actions": [
+        "research"
+      ],
+      "state": {
+        "parts_S": 8,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 5,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 27,
+        "research_points": 0,
+        "research_streak": 2,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 34
+      }
+    },
+    {
+      "day": 4,
+      "actions": [
+        "research",
+        "transfer_parts_S_to_G_edge_G_S"
+      ],
+      "state": {
+        "parts_S": 6,
+        "parts_G": 2,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 5,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 26,
+        "research_points": 3,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 33
+      }
+    },
+    {
+      "day": 5,
+      "actions": [
+        "research",
+        "transfer_parts_G_to_E_edge_E_G"
+      ],
+      "state": {
+        "parts_S": 6,
+        "parts_G": 0,
+        "parts_E_after_labor": 2,
+        "food_G_after_harvest": 5,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 25,
+        "research_points": 3,
+        "research_streak": 1,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 32
+      }
+    },
+    {
+      "day": 6,
+      "actions": [
+        "research",
+        "transfer_food_G_to_E_edge_E_G"
+      ],
+      "state": {
+        "parts_S": 6,
+        "parts_G": 0,
+        "parts_E_after_labor": 2,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 5,
+        "food_H_after_ration": 24,
+        "research_points": 3,
+        "research_streak": 2,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 31
+      }
+    },
+    {
+      "day": 7,
+      "actions": [
+        "repair_controller",
+        "research"
+      ],
+      "state": {
+        "parts_S": 6,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 5,
+        "food_H_after_ration": 23,
+        "research_points": 6,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 30
+      }
+    },
+    {
+      "day": 8,
+      "actions": [
+        "research",
+        "transfer_food_E_to_H_edge_H_E"
+      ],
+      "state": {
+        "parts_S": 6,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 27,
+        "research_points": 6,
+        "research_streak": 1,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 29
+      }
+    },
+    {
+      "day": 9,
+      "actions": [
+        "research"
+      ],
+      "state": {
+        "parts_S": 6,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 26,
+        "research_points": 6,
+        "research_streak": 2,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 28
+      }
+    },
+    {
+      "day": 10,
+      "actions": [
+        "research"
+      ],
+      "state": {
+        "parts_S": 6,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 25,
+        "research_points": 9,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 27
+      }
+    },
+    {
+      "day": 11,
+      "actions": [
+        "research"
+      ],
+      "state": {
+        "parts_S": 6,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 24,
+        "research_points": 9,
+        "research_streak": 1,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 26
+      }
+    },
+    {
+      "day": 12,
+      "actions": [
+        "research",
+        "transfer_parts_S_to_G_edge_G_S"
+      ],
+      "state": {
+        "parts_S": 4,
+        "parts_G": 2,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 23,
+        "research_points": 9,
+        "research_streak": 2,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 25
+      }
+    },
+    {
+      "day": 13,
+      "actions": [
+        "research",
+        "transfer_parts_G_to_E_edge_E_G"
+      ],
+      "state": {
+        "parts_S": 4,
+        "parts_G": 0,
+        "parts_E_after_labor": 2,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 22,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 24
+      }
+    },
+    {
+      "day": 14,
+      "actions": [
+        "repair_controller"
+      ],
+      "state": {
+        "parts_S": 4,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 21,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 23
+      }
+    },
+    {
+      "day": 15,
+      "actions": [],
+      "state": {
+        "parts_S": 4,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 20,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 22
+      }
+    },
+    {
+      "day": 16,
+      "actions": [],
+      "state": {
+        "parts_S": 4,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 19,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 21
+      }
+    },
+    {
+      "day": 17,
+      "actions": [],
+      "state": {
+        "parts_S": 4,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 18,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 20
+      }
+    },
+    {
+      "day": 18,
+      "actions": [],
+      "state": {
+        "parts_S": 4,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 17,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 19
+      }
+    },
+    {
+      "day": 19,
+      "actions": [],
+      "state": {
+        "parts_S": 4,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 16,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 18
+      }
+    },
+    {
+      "day": 20,
+      "actions": [
+        "transfer_parts_S_to_G_edge_G_S",
+        "transfer_parts_G_to_E_edge_E_G"
+      ],
+      "state": {
+        "parts_S": 2,
+        "parts_G": 0,
+        "parts_E_after_labor": 2,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 15,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 17
+      }
+    },
+    {
+      "day": 21,
+      "actions": [
+        "repair_controller"
+      ],
+      "state": {
+        "parts_S": 2,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 14,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 16
+      }
+    },
+    {
+      "day": 22,
+      "actions": [],
+      "state": {
+        "parts_S": 2,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 13,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 15
+      }
+    },
+    {
+      "day": 23,
+      "actions": [],
+      "state": {
+        "parts_S": 2,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 12,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 14
+      }
+    },
+    {
+      "day": 24,
+      "actions": [],
+      "state": {
+        "parts_S": 2,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 11,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 13
+      }
+    },
+    {
+      "day": 25,
+      "actions": [],
+      "state": {
+        "parts_S": 2,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 10,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 12
+      }
+    },
+    {
+      "day": 26,
+      "actions": [],
+      "state": {
+        "parts_S": 2,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 9,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 11
+      }
+    },
+    {
+      "day": 27,
+      "actions": [
+        "transfer_parts_S_to_G_edge_G_S",
+        "transfer_parts_G_to_E_edge_E_G"
+      ],
+      "state": {
+        "parts_S": 0,
+        "parts_G": 0,
+        "parts_E_after_labor": 2,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 8,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 10
+      }
+    },
+    {
+      "day": 28,
+      "actions": [
+        "repair_controller"
+      ],
+      "state": {
+        "parts_S": 0,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 7,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 9
+      }
+    },
+    {
+      "day": 29,
+      "actions": [],
+      "state": {
+        "parts_S": 0,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 6,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 8
+      }
+    },
+    {
+      "day": 30,
+      "actions": [],
+      "state": {
+        "parts_S": 0,
+        "parts_G": 0,
+        "parts_E_after_labor": 0,
+        "food_G_after_harvest": 0,
+        "food_E_after_labor": 0,
+        "food_H_after_ration": 5,
+        "research_points": 12,
+        "research_streak": 0,
+        "heat_shortage_streak": 0,
+        "food_shortage_streak": 0,
+        "fuel_E_after_settlement": 7
+      }
+    }
+  ],
+  "planner": "MAP-12-specific standard-library DFS; no runtime or map generator",
+  "constraints": {
+    "daily_action_limit": 2,
+    "repair_days": [
+      7,
+      14,
+      21,
+      28
+    ],
+    "parts_transfer": 2,
+    "food_transfer": 5,
+    "greenhouse_powered_days": [
+      1,
+      2,
+      3
+    ],
+    "research_days": 12,
+    "food_harvest_delivered_by_day": 8
+  }
+}

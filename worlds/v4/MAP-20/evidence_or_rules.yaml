@@ -1,0 +1,63 @@
+map_id: MAP-20
+classification: HAND_DERIVED_LOSSY_FLOW_AND_THERMAL_RULES
+seed: 0
+units:
+  one_water_unit: 10_integer_tenths
+  temperatures: integer_tenths_of_degree
+  source_budget_tenths_per_tick: 60
+  direct_feeder_cap_tenths: 25_each
+  bypass_quantum_tenths: 5
+  bypass_input_cap_tenths: 20_each_link
+  bypass_loss: {numerator: 1, denominator: 5}
+  bypass_delivery_fraction: {numerator: 4, denominator: 5}
+bypass_balance:
+  direction_encoding: one_direction_per_link_per_tick
+  incoming_to_zone_A_tenths: direct_A_plus_4_5_B_to_A_minus_A_to_B
+  incoming_to_zone_B_tenths: direct_B_plus_4_5_A_to_B_plus_4_5_C_to_B_minus_B_to_A_minus_B_to_C
+  incoming_to_zone_C_tenths: direct_C_plus_4_5_B_to_C_minus_C_to_B
+  invariants:
+    - all_delivered_zone_amounts_are_nonnegative
+    - zone_valve_caps_tenths_A_B_C: [40, 40, 30]
+    - sum_delivered_equals_sum_direct_minus_all_bypass_losses
+    - bypass_water_cannot_be_counted_as_new_source_water
+thermal_rules:
+  starting_temperature_tenths_A_B_C: [70, 60, 50]
+  temperature_after_tick: max_0_current_temperature_plus_mode_heat_minus_delivered_water
+  heat_and_production:
+    FULL: {heat_tenths_A_B_C: [40, 30, 20], production: [4, 3, 2]}
+    REDUCED: {heat_tenths_A_B_C: [20, 20, 10], production: [2, 2, 1]}
+    IDLE: {heat_tenths_A_B_C: [0, 0, 0], production: [0, 0, 0]}
+  overheat_boundary: temperature_tenths_gt_100_fails_before_production_credit
+  horizon_ticks: 10
+  success: all_10_ticks_safe_and_total_production_gte_15
+hand_checked_witnesses:
+  one_unit_B_to_A_example:
+    direct_tenths: [20, 20, 20]
+    bypass: {AB: {from: B, to: A, input_tenths: 10}, BC: null}
+    delivered_tenths: [28, 10, 20]
+    source_tenths: 60
+    bypass_loss_tenths: 2
+    delivered_sum_tenths: 58
+  A_priority_schedule:
+    production: 56
+    source_water_units: 52
+    bypass_loss_units: 0.4
+    peak_temperature_tenths: 94
+  dynamic_rotation_schedule:
+    production: 59
+    source_water_units: 57
+    bypass_loss_units: 0.8
+    peak_temperature_tenths: 94
+  provable_linear_relaxation:
+    source_water_upper_units: 60
+    initial_temperature_headroom_units: 12
+    production_upper_bound: 72
+    globally_integer_optimal_claimed: false
+negative_and_boundary_witnesses:
+  F01_full_load_without_A_bypass: {first_overheat: A, tick: 1, temperature_tenths: 110}
+  F02_source_budget_overflow: {requested_tenths: 70, limit_tenths: 60, frame_rejected_atomically: true}
+  F03_treat_loss_as_zero: {A_temperature_tenths_at_tick_2: 106, terminal_reason: THERMAL_OVERHEAT}
+  B01_source_equal_60_tenths_is_valid: true
+  B02_exact_production_15_is_success: true
+  B03_C_valve_31_tenths_is_rejected: true
+runtime_verified: false

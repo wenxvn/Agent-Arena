@@ -1,0 +1,9 @@
+map_id: MAP-29
+seed: 0
+expected_same_seed_invariants:
+  case_truth: {event_time: '23:40', event_location: Y}
+  npc_answer_table_fixed: true
+  repeated_answers_identical: true
+  physical_records_independent_of_testimony: true
+  oracle_generated_twice_is_byte_identical: true
+  runtime_verified: false

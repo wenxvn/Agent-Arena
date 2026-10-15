@@ -1,0 +1,97 @@
+id: MAP-12
+title: 极夜三十天
+world: polar
+capability_primary: cross_cycle_management
+capability_secondary: [resource_transfer_network, maintenance_deadlines, consecutive_work_cycles]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+nodes: [H, E, G, S, L]
+node_roles:
+  H: {name: 居住舱, stock: food}
+  E: {name: 能源站, stock: [fuel, repair_parts]}
+  G: {name: 温室, stock: food}
+  S: {name: 仓库, stock: repair_parts}
+  L: {name: 实验室, stock: none}
+edges:
+  - {id: H_E, from: H, to: E, directed: false}
+  - {id: E_G, from: E, to: G, directed: false}
+  - {id: G_S, from: G, to: S, directed: false}
+  - {id: S_L, from: S, to: L, directed: false}
+  - {id: H_S, from: H, to: S, directed: false}
+  - {id: G_L, from: G, to: L, directed: false}
+initial_state:
+  seed: 0
+  day: 0
+  fuel_E: 40
+  food_H: 30
+  food_G: 0
+  food_E: 0
+  parts_S: 8
+  parts_G: 0
+  parts_E: 0
+  heater_on: true
+  controller_online: true
+  greenhouse_powered: false
+  greenhouse_crop_planted: false
+  greenhouse_powered_streak: 0
+  research_streak: 0
+  research_points: 0
+  consecutive_heat_shortage_days: 0
+  consecutive_food_shortage_days: 0
+constants:
+  horizon_days: 30
+  max_labor_actions_per_day: 2
+  daily_food_ration: 1
+  daily_heating_fuel: 1
+  greenhouse_extra_fuel_per_powered_day: 1
+  greenhouse_days_to_harvest: 3
+  greenhouse_harvest_food: 5
+  research_days_per_cycle: 3
+  research_points_per_cycle: 3
+  maintenance_days: [7, 14, 21, 28]
+  repair_parts_per_maintenance: 2
+  part_transfer_limit_per_action: 2
+  food_transfer_limit_per_action: 5
+  terminal_after_consecutive_shortage_days: 2
+public_observation_fields: [day, node_inventories, fuel_E, heater_on, controller_online, greenhouse_powered, greenhouse_powered_streak, greenhouse_crop_planted, research_streak, research_points, consecutive_heat_shortage_days, consecutive_food_shortage_days, labor_slots_remaining]
+private_state: [oracle_trace_labels, planning_search_frontier, scoring_implementation]
+actions:
+  - {name: set_heating, parameters: [on], location: E, cost_labor_actions: 1, effect: heater_on_equals_on}
+  - {name: start_greenhouse_power, parameters: [], location: E, cost_labor_actions: 1, requires: [controller_online, not_greenhouse_powered]}
+  - {name: plant_batch, parameters: [], location: G, cost_labor_actions: 1, requires: [controller_online, not_greenhouse_crop_planted]}
+  - {name: repair_controller, parameters: [], location: E, cost_labor_actions: 1, requires: [parts_E_gte_2], cost: {parts_E: 2}}
+  - {name: research, parameters: [], location: L, cost_labor_actions: 1, requires: [controller_online]}
+  - {name: transfer, parameters: [commodity, edge_id, from_node, to_node, quantity], cost_labor_actions: 1, quantity_rules: {parts: "1..2", food: "1..5"}, requires: [commodity_stock_at_source_gte_quantity, endpoints_match_undirected_edge, edge_is_adjacent]}
+event_order:
+  day_start: [increment_day, apply_scheduled_equipment_wear, disconnect_greenhouse_and_lab_if_worn]
+  labor_phase: [perform_repair_if_scheduled, execute_ordered_zero_to_two_actions, reject_invalid_action_without_committing_inventory]
+  day_end: [settle_independent_heating_and_fuel, settle_greenhouse_fuel_and_consecutive_power, harvest_if_greenhouse_streak_reaches_3, distribute_one_food_from_H, update_consecutive_research, update_shortage_streaks, fail_if_any_shortage_streak_reaches_2, on_day_30_check_research_goal]
+transitions:
+  - {when: day_in_maintenance_days, effect: controller_offline_before_labor_phase_until_repaired}
+  - {when: repair_controller_at_E_with_parts_E_gte_2, effect: parts_E_minus_2_and_controller_online_true_for_remaining_day}
+  - {when: scheduled_repair_missing_parts_or_action_not_taken, effect: controller_remains_offline_and_blocks_greenhouse_and_research_without_immediate_episode_failure}
+  - {when: valid_adjacent_transfer, effect: decrement_source_and_increment_destination_by_quantity_without_changing_total_commodity}
+  - {when: heater_on_and_fuel_E_gte_1_at_day_end, effect: fuel_E_minus_1_and_heat_shortage_streak_zero}
+  - {when: heater_off_or_fuel_E_zero_at_day_end, effect: heat_shortage_streak_plus_1}
+  - {when: powered_greenhouse_and_controller_online_and_crop_planted_at_day_end, effect: fuel_E_minus_1_and_greenhouse_streak_plus_1}
+  - {when: greenhouse_streak_reaches_3, effect: food_G_plus_5_and_greenhouse_powered_false_and_streak_zero}
+  - {when: greenhouse_power_missing_or_controller_offline_or_crop_missing, effect: greenhouse_streak_zero}
+  - {when: food_H_gte_1_before_daily_distribution, effect: food_H_minus_1_and_food_shortage_streak_zero}
+  - {when: food_H_eq_0_before_daily_distribution, effect: food_shortage_streak_plus_1}
+  - {when: research_action_and_controller_online, effect: research_streak_plus_1; on_each_multiple_of_3_add_3_points_and_reset_streak}
+  - {when: no_research_action_or_controller_offline, effect: research_streak_zero}
+  - {when: heat_or_food_shortage_streak_gte_2, effect: terminal_failure}
+  - {when: day_30_and_research_points_gte_12_and_not_failed, effect: terminal_success}
+  - {when: day_30_and_research_points_lt_12_and_not_failed, effect: terminal_failure_RESEARCH_TARGET_MISSED}
+terminal_success: [day_eq_30, research_points_gte_12, consecutive_heat_shortage_days_lt_2, consecutive_food_shortage_days_lt_2]
+terminal_failure: [heat_shortage_streak_gte_2, food_shortage_streak_gte_2, day_eq_30_and_research_points_lt_12]
+reason_codes: [HEAT_SHORTAGE_STREAK, FOOD_SHORTAGE_STREAK, RESEARCH_TARGET_MISSED, INVALID_LOCATION, INVALID_EDGE, INVALID_TRANSFER, DAILY_ACTION_LIMIT]
+action_rejection_codes: [PARTS_SHORTAGE, INVALID_LOCATION, INVALID_EDGE, INVALID_TRANSFER, DAILY_ACTION_LIMIT]
+scoring:
+  primary: [survived_30_days, research_points]
+  auxiliary: [daily_fuel_remaining, daily_food_by_node, parts_by_node, heat_shortage_streak, food_shortage_streak, greenhouse_streak, research_streak, action_slots_used, controller_repairs]
+seed_policy: deterministic_fixed_seed_0_no_random_events
+planner_path: planning/policy_search.py
+planner_result_path: planning/planner_search.json
+oracle_path: oracle_trace.jsonl

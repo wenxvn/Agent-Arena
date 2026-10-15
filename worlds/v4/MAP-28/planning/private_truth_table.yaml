@@ -1,0 +1,40 @@
+map_id: MAP-28
+classification: PRIVATE_CASE_TRUTH_AND_PROOF_NEVER_EXPOSE_TO_AGENT
+seed: 0
+truth:
+  person_id: CELINE
+  entry_path_id: SECRET_S_V
+  entry_time: '21:06'
+  exit_time: '21:14'
+candidate_access_profiles:
+  ADA: {vault_key: A1, boot_tread: A4, key_window: no_access_during_case}
+  BASIL: {vault_key: K2, boot_tread: B5, key_window: signed_key_returned_21_20}
+  CELINE: {vault_key: K3, boot_tread: C7, key_window: K3_held_from_20_58_through_case}
+independent_proof:
+  person_id:
+    - {class: documentary_register, evidence_id: KEY_REGISTER_K3_CELINE}
+    - {class: instrument_log, evidence_id: LOCK_ENTRY_K3_2106}
+    - {class: physical_trace, evidence_id: PRINT_C7_ROUTE_SV}
+  entry_path_id:
+    - {class: instrument_log, evidence_id: LOCK_ENTRY_K3_2106}
+    - {class: physical_trace, evidence_id: PRINT_C7_ROUTE_SV}
+  entry_time:
+    exact: LOCK_ENTRY_K3_2106
+    independent_window: PRINT_C7_ROUTE_SV
+  exit_time:
+    exact: LOCK_EXIT_S_2114
+    independent_window: PRINT_C7_ROUTE_SV
+witness_statement:
+  evidence_id: WITNESS_BASIL_S_WINDOW
+  said_person: BASIL
+  said_entry_path: SECRET_S_V
+  entry_window: ['21:05', '21:07']
+  exit_window: ['21:13', '21:15']
+  identity_error_reason: red_service_lamp_made_dark_green_coat_look_blue
+uniqueness_proof:
+  - K3 is the only key ID observed in the V lock entry event.
+  - The signed registry assigns K3 only to CELINE for the full incident interval.
+  - C7 physical tread on the S-V trail matches CELINE and excludes A4/B5.
+  - Both independent route observations put entry/exit across S-V rather than H-V or G-V.
+  - Lock events fix entry at 21:06 and exit at 21:14; physical windows contain those same minutes.
+  - Therefore exactly one person-path-entry-exit tuple satisfies all cross-source facts.

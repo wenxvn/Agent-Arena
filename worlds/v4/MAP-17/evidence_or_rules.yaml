@@ -1,0 +1,21 @@
+evidence_type: hand_authored_demand_and_timetable_replay
+runtime_verified: false
+model_results: none
+network: {ring: [A, B, C, D, A], branch: [B, E, F], shared_segment: BC, segment_capacity: 1, platform_train_capacity: 2}
+demand: {A_to_C: 2, B_to_E: 2, C_to_F: 2, D_to_B: 2, F_to_A: 2, total: 10}
+time_priority_routes:
+  T_A: [A, B, C]
+  T_C: [C, B, E, F]
+  T_D: [D, C, B, E]
+  T_F: [F, E, B, A]
+energy_priority_routes:
+  T_A: [A, B, C]
+  T_C: [C, B, E, F]
+  T_D: [D, C, B, E]
+  T_F: []
+hand_calculated_pareto_anchors:
+  time_priority: {delivered: 10, total: 10, service_rate: 1.0, passenger_wait_person_ticks: 16, energy: 11, last_delivery_tick: 6}
+  energy_priority: {delivered: 8, total: 10, service_rate: 0.8, passenger_wait_person_ticks: 38, energy: 8, last_delivery_tick: 6}
+pareto_claim_scope: these_two_hand_authored_points_are_mutually_non_dominated_but_not_a_proof_of_global_optimality
+fixed_seed_replay: {seed: 0, stochastic_events: 0, oracle_rows: 24, oracle_sha256: 9A4733EC00AB5D68FFFE24D38D7968E2E326B9C7E541846D85EDEE5A43FC4CB5}
+agent_observation_excludes: [unsubmitted_future_plan_from_oracle, reference_front_metrics, hidden_scoring_labels]

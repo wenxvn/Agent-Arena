@@ -1,0 +1,54 @@
+{
+  "map_id": "MAP-17",
+  "runtime_verified": false,
+  "objectives": [
+    "maximize_service_rate",
+    "minimize_wait",
+    "minimize_energy",
+    "minimize_last_delivery_tick"
+  ],
+  "hand_authored_reference_points": {
+    "time_priority": {
+      "delivered": 10,
+      "service_rate": 1.0,
+      "passenger_wait_person_ticks": 16,
+      "energy": 11,
+      "last_delivery_tick": 6,
+      "transfers": 0,
+      "success": true
+    },
+    "energy_priority": {
+      "delivered": 8,
+      "service_rate": 0.8,
+      "passenger_wait_person_ticks": 38,
+      "energy": 8,
+      "last_delivery_tick": 6,
+      "transfers": 0,
+      "success": true
+    }
+  },
+  "normalized_euclidean_distance_to_reference_set": {
+    "time_priority": 0.0,
+    "energy_priority": 0.0
+  },
+  "normalization_ranges": {
+    "service_loss": [
+      0,
+      1
+    ],
+    "wait": [
+      0,
+      120
+    ],
+    "energy": [
+      0,
+      18
+    ],
+    "last_delivery_tick": [
+      0,
+      12
+    ]
+  },
+  "points_mutually_non_dominated": true,
+  "global_optimal_front_proven": false
+}

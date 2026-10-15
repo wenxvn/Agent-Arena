@@ -1,0 +1,122 @@
+id: MAP-25
+title: 第一次出舱
+world: moon
+capability_primary: tool_dependency_and_safety_sequence
+capability_secondary: [strict_action_schema, eva_resource_accounting, diagnostic_repair_chain]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: deterministic_fixed_array_fault_hidden_until_diagnosis
+topology:
+  nodes: [H, T, A, S]
+  roles: {H: habitat, T: tool_room, A: airlock, S: external_array}
+  undirected_edges:
+    - {a: H, b: T, mode: pressurized_interior_walk, duration_ticks: 1, oxygen_cost: 0}
+    - {a: T, b: A, mode: pressurized_interior_walk, duration_ticks: 1, oxygen_cost: 0}
+    - {a: A, b: S, mode: eva_only, duration_ticks: 1, oxygen_cost: 1}
+  edges_bidirectional: true
+initial_state:
+  location: H
+  oxygen_remaining: 12
+  oxygen_capacity: 12
+  airlock_pressure: PRESSURIZED
+  inner_hatch: CLOSED
+  outer_hatch: CLOSED
+  suit_worn: false
+  diagnostic_unit_carried: false
+  wrench_carried: false
+  safety_tether_attached: false
+  array_inspected: false
+  array_diagnosed: false
+  array_repaired: false
+equipment:
+  available_at_T: [eva_suit, diagnostic_unit, wrench]
+  safety_tether_anchor_at_A: true
+  inspect_equipment_required_for_success: false
+  action_schema_exact_ids: [eva_suit, diagnostic_unit, wrench, safety_tether]
+airlock:
+  depressurize:
+    location: A
+    duration_ticks: 1
+    preconditions: [suit_worn, inner_hatch_closed, outer_hatch_closed]
+    tether_required_before_depressurization: false
+  eva_exit:
+    path: [A, S]
+    requires: [suit_worn, tether_attached, airlock_pressure_vacuum, outer_hatch_closed]
+    wrong_sequence_without_suit: immediate_terminal_UNSUITED_EVA
+    wrong_sequence_without_tether: immediate_terminal_UNSAFE_UNTETHERED_EVA
+  return_to_A:
+    path: [S, A]
+    requires: [suit_worn, tether_attached, oxygen_remaining_at_least_1]
+    duration_ticks: 1
+    oxygen_cost: 1
+    effect: close_outer_hatch_on_arrival
+  pressurize:
+    location: A
+    duration_ticks: 1
+    requires: [outer_hatch_closed, airlock_pressure_vacuum]
+    effect: set_airlock_PRESSURIZED_and_unlock_inner_hatch
+oxygen:
+  starting: 12
+  consumed_per_tick_while_at_S: 1
+  consumed_actions: [eva_exit, inspect_array, diagnose, repair, return_to_A, executed_tool_error]
+  repair_duration_ticks: 2
+  executed_tool_error_duration_ticks: 2
+  zero_oxygen_at_S: immediate_terminal_OXYGEN_DEPLETED
+  zero_oxygen_on_arrival_at_A: safe_and_allowed
+  interior_consumption: 0
+array:
+  location: S
+  fixed_seed0_diagnosis_code: FUSE_BANK_B_OPEN
+  inspection_symptom_only: ARRAY_OUTPUT_ZERO
+  inspect_duration_ticks: 1
+  diagnose_duration_ticks: 1
+  diagnose_requires: [diagnostic_unit_carried, array_inspected]
+  repair_duration_ticks: 2
+  repair_target_id: array_fuse_B
+  repair_tool_ids_allowed: [diagnostic_unit, wrench]
+  repair_tool_ids_schema: non_empty_unique_subset_of_allowed_ids
+  repair_tool_ids_exact_set: [diagnostic_unit, wrench]
+  diagnosis_code_schema: [null, FUSE_BANK_B_OPEN]
+  repair_requires: [array_diagnosed, matching_diagnosis_code, all_required_tools]
+  repair_requires_oxygen_for_two_tick_action_plus_one_tick_return: true
+  minimum_oxygen_before_repair: 3
+  diagnosis_code_hidden_until_diagnose: true
+actions:
+  - {name: move, schema: {to: one_of_H_T_A}, effect: traverse_one_pressurized_interior_edge}
+  - {name: inspect, target: [equipment, array], effect: return_typed_inventory_or_surface_symptom}
+  - {name: equip, item_id: [eva_suit, diagnostic_unit, wrench, safety_tether], location_specific: true}
+  - {name: depressurize, location: A, duration_ticks: 1}
+  - {name: eva_exit, location: A, duration_ticks: 1, oxygen_cost: 1}
+  - {name: diagnose, device_id: diagnostic_unit, location: S, duration_ticks: 1, oxygen_cost: 1}
+  - {name: repair, target_id: array_fuse_B, tool_ids: non_empty_list_of_diagnostic_unit_or_wrench, diagnosis_code: [null, FUSE_BANK_B_OPEN], duration_ticks: 2, oxygen_cost: 2, minimum_oxygen_before_call: 3}
+  - {name: return_to_A, location: S, duration_ticks: 1, oxygen_cost: 1}
+  - {name: pressurize, location: A, duration_ticks: 1}
+public_observation_fields: [current_tick, current_node, oxygen_remaining, airlock_pressure, inner_hatch_locked, suit_worn, tether_attached, carried_tools, visible_equipment_here, array_surface_symptom, diagnosis_code_if_obtained, array_repaired, terminal, terminal_reason, last_action_error_code]
+private_fields: [latent_array_fault, evaluator_seed_fixture, unperformed_action_outcomes]
+observation_contract:
+  only_current_location_and_typed_tool_feedback: true
+  symptom_does_not_reveal_diagnosis_code: true
+  exact_failure_codes_visible_after_attempt: true
+  never_reveal: [latent_array_fault_before_diagnose, future_action_results, hidden_tool_requirements]
+  invalid_tool_id_schema_error_costs_no_time_or_oxygen: true
+  known_but_wrong_or_missing_tool_executes_and_costs_two_oxygen_ticks: true
+event_order:
+  - validate_action_shape_and_enum_ids
+  - evaluate_location_and_procedure_preconditions
+  - apply_action_or_return_specific_error_code
+  - consume_action_duration_and_outside_oxygen_if_executed
+  - terminal_if_oxygen_reaches_zero_at_S
+  - allow_zero_oxygen_only_if_return_action_has_arrived_at_A
+  - success_only_after_array_repaired_and_agent_returns_to_H
+success_predicate: [array_repaired, current_node_is_H, return_to_habitat_completed]
+failure_predicates: [eva_exit_without_suit, eva_exit_without_tether, oxygen_depleted_at_S, return_to_H_without_repair_and_no_oxygen_for_another_eva]
+reason_codes: [INVALID_TOOL_ID, INVALID_TARGET_ID, INVALID_DIAGNOSIS_CODE, INVALID_ACTION, INVALID_INSPECT_TARGET, EQUIPMENT_NOT_AVAILABLE_HERE, EQUIPMENT_INSPECTED, MOVED, SUIT_EQUIPPED, TOOL_EQUIPPED, TETHER_ATTACHED, AIRLOCK_DEPRESSURIZED, AIRLOCK_PRECONDITION_FAILED, AIRLOCK_NOT_DEPRESSURIZED, UNSUITED_EVA, UNSAFE_UNTETHERED_EVA, EVA_STARTED, ARRAY_OUTPUT_ZERO, DIAGNOSIS_COMPLETE, DIAGNOSIS_REQUIRED, INSPECTION_REQUIRED, MISSING_REQUIRED_TOOL, OXYGEN_RESERVE_REQUIRED_FOR_RETURN, ARRAY_REPAIRED, RETURNED_TO_A, RETURN_PRECONDITION_FAILED, AIRLOCK_PRESSURIZED, PRESSURIZATION_PRECONDITION_FAILED, OXYGEN_DEPLETED, OBJECTIVE_INCOMPLETE_AT_H, ALL_OBJECTIVES_COMPLETE]
+metrics: [typed_tool_call_validity_rate, tool_dependency_errors, procedure_order_violations, exterior_oxygen_used, oxygen_remaining_on_return, repair_success, safe_return]
+manual_scenarios_path: planning/hand_traces.json
+failure_cases_path: failure_traces/cases.yaml
+boundary_cases_path: failure_traces/cases.yaml
+private_seed_reference_path: planning/private_seed_reference.yaml
+oracle_path: oracle_trace.jsonl
+runtime_verified: false
+model_results: none

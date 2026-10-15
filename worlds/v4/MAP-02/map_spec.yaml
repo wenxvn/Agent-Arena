@@ -1,0 +1,61 @@
+id: MAP-02
+title: 双重警报
+world: spaceship
+capability_primary: event_triggered_replanning
+capability_secondary: [goal_prioritization, deadline_management]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+nodes:
+  - {id: L1, description: 泄漏源隔舱}
+  - {id: L2, description: 船员所在舱}
+  - {id: C, description: 不可逆中心闸控制点}
+  - {id: R1, description: 导航核与封存盒}
+  - {id: R2, description: 救生舱接入口}
+  - {id: X, description: 绕开泄漏区的外环交会点}
+edges:
+  - {id: L1_L2, from: L1, to: L2, directed: false, cost_ticks: 1, condition: always}
+  - {id: C_L1, from: C, to: L1, directed: false, cost_ticks: 1, condition: center_gate_open}
+  - {id: C_R1, from: C, to: R1, directed: false, cost_ticks: 1, condition: always}
+  - {id: R1_R2, from: R1, to: R2, directed: false, cost_ticks: 1, condition: always}
+  - {id: C_X, from: C, to: X, directed: false, cost_ticks: 1, condition: always}
+  - {id: X_L2, from: X, to: L2, directed: false, cost_ticks: 1, condition: always}
+initial_state:
+  location: C
+  tick: 0
+  inventory: []
+  nav_core_at: R1
+  repair_pack_at: R1
+  nav_core_secured: false
+  crew_at: L2
+  crew_in_E: false
+  center_gate: open
+  leak_active: false
+  private_leak_trigger_action_index: 4
+  private_leak_spread_ticks: 2
+  private_crew_pressure_ticks_after_leak: 8
+  global_deadline_ticks: 20
+public_observation_fields: [location, adjacent_edges, visible_objects, nav_core_location, crew_location, public_goals, leak_active, crew_pressure_ticks_after_leak, center_gate]
+private_observation_fields: [private_leak_trigger_action_index, private_leak_spread_ticks_before_event]
+actions:
+  - {name: move, parameters: [edge_id], cost_ticks: 1}
+  - {name: inspect, parameters: [target_id], cost_ticks: 1}
+  - {name: interact, parameters: [target_id, choice], cost_ticks: 1}
+  - {name: wait, parameters: [turns=1], cost_ticks: 1}
+transitions:
+  - {when: fourth_schema_legal_environment_action_completes, effect: activate_leak_in_L1}
+  - {when: leak_active_and_center_gate_open, effect: decrement_spread_ticks_after_each_action}
+  - {when: leak_spread_ticks_reaches_0, terminal: failure, reason: NAV_CORE_FLOODED}
+  - {when: center_gate_isolated, effect: cancel_leak_spread_toward_R1}
+  - {when: escorted_crew_enters_R2_by_eighth_post_leak_tick, effect: auto_board_and_rescue_success_takes_precedence_over_pressure_timeout}
+  - {when: crew_not_in_E_at_eighth_post_leak_tick, terminal: failure, reason: CREW_PRESSURE_LOST}
+  - {when: tick_reaches_20_before_both_objectives, terminal: failure, reason: GLOBAL_DEADLINE}
+scheduled_events: [{action_index: 4, event: leak_in_L1, private_until_triggered: true}]
+terminal_success: [nav_core_secured, crew_in_E, tick_lte_20]
+terminal_failure: [leak_spread_ticks_eq_0, crew_pressure_timeout, global_deadline_with_goal_incomplete]
+scoring:
+  primary: complete_both_objectives
+  hard_constraints: [crew_in_E_by_post_leak_tick_8, isolate_gate_before_spread_ticks_0, tick_lte_20]
+  auxiliary: [post_event_actions_before_isolation, crew_rescue_ticks, stale_route_edge_attempts, unmet_goal]
+seed_policy: deterministic_fixed_event_schedule
+oracle_path: oracle_trace.jsonl

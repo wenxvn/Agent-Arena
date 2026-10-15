@@ -1,0 +1,11 @@
+{
+  "map_id": "MAP-15",
+  "target_rule_id": "R_EVEN_SAME_ODD_COMPLEMENT",
+  "color_complements": {"red": "blue", "blue": "red", "gold": "green", "green": "gold"},
+  "regions": {
+    "A": {"role": "training", "wall_color": "red", "door_colors": ["red", "blue", "gold"]},
+    "B": {"role": "training", "wall_color": "red", "door_colors": ["green", "blue", "red"]},
+    "C": {"role": "training", "wall_color": "gold", "door_colors": ["blue", "gold", "green"]},
+    "T": {"role": "test", "wall_color": "gold", "door_colors": ["gold", "red", "green", "blue"]}
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "map_id": "MAP-27",
+  "result": "MAP27_TWO_ORDERED_JOINT_OPERATION_PLANS_REPLAYED",
+  "runtime_verified": false,
+  "routes": {
+    "relay_first_remote_road": {
+      "finish_tick": 25,
+      "terminal_reason": "ALL_OBJECTIVES_COMPLETE",
+      "success": true,
+      "location": "B",
+      "battery_remaining": 0,
+      "battery_consumed": 15,
+      "oxygen_remaining": 3,
+      "oxygen_consumed": 15,
+      "charge_cells_used": 1,
+      "charge_cells_remaining": 0,
+      "cargo_peak_slots": 2,
+      "cargo_capacity_errors": 0,
+      "tools_or_kit_failures": 0,
+      "action_errors": [],
+      "relay_state": "ONLINE",
+      "sample_state": "SEALED",
+      "survivor_state": "RESCUED",
+      "crew_alive": true,
+      "objective_coverage": "4/4",
+      "action_rows": 17
+    },
+    "stabilize_first_short_road": {
+      "finish_tick": 20,
+      "terminal_reason": "ALL_OBJECTIVES_COMPLETE",
+      "success": true,
+      "location": "B",
+      "battery_remaining": 2,
+      "battery_consumed": 12,
+      "oxygen_remaining": 6,
+      "oxygen_consumed": 12,
+      "charge_cells_used": 0,
+      "charge_cells_remaining": 1,
+      "cargo_peak_slots": 2,
+      "cargo_capacity_errors": 0,
+      "tools_or_kit_failures": 0,
+      "action_errors": [],
+      "relay_state": "ONLINE",
+      "sample_state": "SEALED",
+      "survivor_state": "RESCUED",
+      "crew_alive": true,
+      "objective_coverage": "4/4",
+      "action_rows": 16
+    }
+  },
+  "failures": {
+    "F01_no_medical_kit_on_remote_road": {
+      "finish_tick": 22,
+      "terminal_reason": "OBJECTIVES_INCOMPLETE_AT_BASE",
+      "success": false,
+      "location": "B",
+      "battery_remaining": 0,
+      "battery_consumed": 15,
+      "oxygen_remaining": 3,
+      "oxygen_consumed": 15,
+      "charge_cells_used": 1,
+      "charge_cells_remaining": 0,
+      "cargo_peak_slots": 2,
+      "cargo_capacity_errors": 0,
+      "tools_or_kit_failures": 2,
+      "action_errors": [
+        "MEDICAL_KIT_REQUIRED",
+        "CASUALTY_NOT_STABILIZED"
+      ],
+      "relay_state": "ONLINE",
+      "sample_state": "SEALED",
+      "survivor_state": "UNSUPPORTED",
+      "crew_alive": true,
+      "objective_coverage": "3/4",
+      "action_rows": 16
+    },
+    "F02_stabilization_mistaken_for_rescue": {
+      "finish_tick": 16,
+      "terminal_reason": "OBJECTIVES_INCOMPLETE_AT_BASE",
+      "success": false,
+      "location": "B",
+      "battery_remaining": 2,
+      "battery_consumed": 12,
+      "oxygen_remaining": 6,
+      "oxygen_consumed": 12,
+      "charge_cells_used": 0,
+      "charge_cells_remaining": 1,
+      "cargo_peak_slots": 2,
+      "cargo_capacity_errors": 0,
+      "tools_or_kit_failures": 1,
+      "action_errors": [
+        "RELAY_OFFLINE"
+      ],
+      "relay_state": "OFFLINE",
+      "sample_state": "SEALED",
+      "survivor_state": "STABILIZED",
+      "crew_alive": true,
+      "objective_coverage": "2/4",
+      "action_rows": 14
+    },
+    "F03_remote_leg_without_one_use_charge": {
+      "finish_tick": 19,
+      "terminal_reason": "VEHICLE_STRANDED",
+      "success": false,
+      "location": "E",
+      "battery_remaining": 1,
+      "battery_consumed": 13,
+      "oxygen_remaining": 5,
+      "oxygen_consumed": 13,
+      "charge_cells_used": 0,
+      "charge_cells_remaining": 1,
+      "cargo_peak_slots": 2,
+      "cargo_capacity_errors": 0,
+      "tools_or_kit_failures": 0,
+      "action_errors": [],
+      "relay_state": "ONLINE",
+      "sample_state": "SEALED",
+      "survivor_state": "UNSUPPORTED",
+      "crew_alive": true,
+      "objective_coverage": "3/4",
+      "action_rows": 11
+    }
+  },
+  "boundaries": {
+    "charge_first": {
+      "battery": 14,
+      "cells": 0,
+      "tick_cost": 2
+    },
+    "charge_second": "CHARGER_EMPTY_NO_COST",
+    "cargo_overflow": "CARGO_CAPACITY_EXCEEDED_NO_MUTATION",
+    "minimum_energy_E_to_B": 2,
+    "E_battery_1": "VEHICLE_STRANDED",
+    "E_battery_2_exact_return": {
+      "node": "B",
+      "battery": 0,
+      "oxygen": 3
+    },
+    "oxygen_zero": "CREW_OXYGEN_DEPLETED"
+  },
+  "oracle_rows": 18,
+  "oracle_sha256": "991B3D812D887E6079DC8A0DA053F15690FBC6FB66A193D8933FDB65339E2634"
+}

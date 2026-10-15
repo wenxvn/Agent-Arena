@@ -1,0 +1,26 @@
+id: MAP-09
+design_evidence:
+  source_initial_budget: {battery: 5, pump_strokes: 2, transmit_reservation: 3}
+  energy_balance_preserve: {initial: 5, two_pump_strokes: -2, packet: -3, final: 0}
+  energy_balance_sacrifice: {initial: 5, pump_strokes: 0, packet: -3, final: 2}
+  hand_checked_completion_tick: {preserve_and_pump: 13, sacrifice_P: 9}
+  automated_model_check_run: false
+rules:
+  hydraulic:
+    ep_leak_order: before_pump_effect_each_elapsed_tick
+    threshold: {safe_at: 4, short_if_gt: 4}
+    preserve_mode: close_leak_keep_P_reachable
+    sacrifice_mode: close_leak_mark_P_unrecoverable
+  electrical:
+    pump_pulse: {water_removed_max: 2, battery_cost: 1}
+    packet: {battery_cost: 3, duration_ticks: 2, failed_power_check_ticks: 1, failed_power_check_deducts_battery: false, battery_not_recharged_by_generator: true}
+    repaired_generator: powers_oxygen_but_does_not_recharge_battery
+  oxygen_and_comms:
+    reserve_loss_when_off: 1_per_tick
+    oxygen_failure_at_zero: true
+    transmit_requires_two_stable_ticks_before_start: true
+    stable_support_required_through_both_transmission_ticks: true
+  knowledge_boundary:
+    - water_battery_oxygen_and_line_states_are_public
+    - no_future_event_or_hidden_randomness
+    - p_sacrifice_is_an_explicit_agent_choice

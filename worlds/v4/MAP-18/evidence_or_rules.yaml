@@ -1,0 +1,29 @@
+evidence_type: hand_authored_disruption_timeline_and_passenger_ledger
+design_status: DESIGN_COMPLETE_PENDING_RUNTIME
+runtime_verified: false
+model_results: none
+seed: 0
+seed_replay: {oracle_rows: 36, consecutive_builds_byte_identical: true, oracle_sha256: DDD11F9734E41C5048693CD16524C0A2EE283C4258F16A6046B676364BB3AA33}
+fixed_fault: {private_section: R2_R3, start_tick: 5, closed_ticks: [5, 6, 7, 8, 9], reopened_before_tick: 10}
+alert_control:
+  paired_seed: true
+  paired_actions_equal_ticks: [0, 1, 2, 3]
+  treatment_tick: 4
+  observation_only_delta: generic_network_disruption_watch_without_segment_or_duration
+  fault_id_exposed_before_tick_5: false
+hand_authored_metrics:
+  alert_proactive_detour: {delivered: 18, total: 18, canceled: 0, total_delay_person_ticks: 30, recovery_duration_ticks: 7, last_delivery_tick: 12}
+  no_alert_reactive_detour: {delivered: 18, total: 18, canceled: 0, total_delay_person_ticks: 33, recovery_duration_ticks: 7, last_delivery_tick: 12}
+  no_alert_turnback_cancel_one: {delivered: 15, total: 18, canceled: 3, total_delay_person_ticks: 15, recovery_duration_ticks: 6, last_delivery_tick: 11}
+paired_alert_result:
+  same_seed: 0
+  same_observations_and_actions_through_ticks: [0, 1, 2, 3]
+  alert_visible_at_tick: 4
+  alert_action: T_X_starts_R2_B2_detour_one_tick_early
+  no_alert_action: T_X_waits_for_public_fault_then_starts_detour_at_tick_5
+  passenger_delay_reduction_in_this_hand_pair: 3
+  broad_agent_benefit_claim: false
+anti_leakage:
+  fault_id_is_runtime_private_until_event: true
+  oracle_and_failure_traces_in_observation: false
+  online_alert_contains_fault_id: false

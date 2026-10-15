@@ -1,0 +1,38 @@
+{
+  "map_id": "MAP-17",
+  "seed": 0,
+  "authorship": "The network, five OD groups, four starts, seat limits, and both twelve-row schedules are hand-authored. The replay auditor validates these schedules; it does not generate timetables or alter demand.",
+  "demand": {"A_to_C": 2, "B_to_E": 2, "C_to_F": 2, "D_to_B": 2, "F_to_A": 2},
+  "trains": {
+    "T_A": {"start": "A", "seats": 3},
+    "T_C": {"start": "C", "seats": 3},
+    "T_D": {"start": "D", "seats": 3},
+    "T_F": {"start": "F", "seats": 3}
+  },
+  "plans": {
+    "time_priority": {
+      "operations": [
+        {"tick": 0, "T_A": {"op": "stop", "board": {"A_to_C": 2}}, "T_C": {"op": "stop", "board": {"C_to_F": 2}}, "T_D": {"op": "stop", "board": {"D_to_B": 2}}, "T_F": {"op": "stop", "board": {"F_to_A": 2}}},
+        {"tick": 1, "T_A": {"op": "release", "to": "B"}, "T_C": {"op": "release", "to": "B"}, "T_D": {"op": "release", "to": "C"}, "T_F": {"op": "release", "to": "E"}},
+        {"tick": 2, "T_A": {"op": "release", "to": "C"}, "T_C": {"op": "switch_line", "line": "branch", "board": {"B_to_E": 1}}, "T_D": {"op": "delay"}, "T_F": {"op": "release", "to": "B"}},
+        {"tick": 3, "T_C": {"op": "release", "to": "E"}, "T_D": {"op": "release", "to": "B"}, "T_F": {"op": "release", "to": "A"}},
+        {"tick": 4, "T_C": {"op": "release", "to": "F"}, "T_D": {"op": "switch_line", "line": "branch", "board": {"B_to_E": 1}}},
+        {"tick": 5, "T_D": {"op": "release", "to": "E"}},
+        {"tick": 6}, {"tick": 7}, {"tick": 8}, {"tick": 9}, {"tick": 10}, {"tick": 11}
+      ],
+      "expected": {"delivered": 10, "service_rate": 1.0, "passenger_wait_person_ticks": 16, "energy": 11, "last_delivery_tick": 6, "transfers": 0, "success": true}
+    },
+    "energy_priority": {
+      "operations": [
+        {"tick": 0, "T_A": {"op": "stop", "board": {"A_to_C": 2}}, "T_C": {"op": "stop", "board": {"C_to_F": 2}}, "T_D": {"op": "stop", "board": {"D_to_B": 2}}},
+        {"tick": 1, "T_A": {"op": "release", "to": "B"}, "T_C": {"op": "release", "to": "B"}, "T_D": {"op": "release", "to": "C"}},
+        {"tick": 2, "T_A": {"op": "release", "to": "C"}, "T_C": {"op": "switch_line", "line": "branch", "board": {"B_to_E": 1}}, "T_D": {"op": "delay"}},
+        {"tick": 3, "T_C": {"op": "release", "to": "E"}, "T_D": {"op": "release", "to": "B"}},
+        {"tick": 4, "T_C": {"op": "release", "to": "F"}, "T_D": {"op": "switch_line", "line": "branch", "board": {"B_to_E": 1}}},
+        {"tick": 5, "T_D": {"op": "release", "to": "E"}},
+        {"tick": 6}, {"tick": 7}, {"tick": 8}, {"tick": 9}, {"tick": 10}, {"tick": 11}
+      ],
+      "expected": {"delivered": 8, "service_rate": 0.8, "passenger_wait_person_ticks": 38, "energy": 8, "last_delivery_tick": 6, "transfers": 0, "success": true}
+    }
+  }
+}

@@ -1,0 +1,89 @@
+id: MAP-21
+title: 喷发倒计时
+world: volcano
+capability_primary: risk_conditioned_stopping
+capability_secondary: [single_shot_bayesian_measurement, graded_sample_salvage, evacuation_route_tradeoff]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: deterministic_rng_first_uniform_selects_hidden_tick_by_prior_and_second_uniform_is_used_on_measurement
+time_unit: elapsed_ticks_from_zero
+topology:
+  nodes: [O, R, W, S, E]
+  role: {O: 观测站, R: 研究室, W: 仓库, S: 避难所, E: 撤离点}
+  bidirectional_edges:
+    O_R: {from: O, to: R, travel_ticks: 1}
+    R_W: {from: R, to: W, travel_ticks: 2}
+    W_S: {from: W, to: S, travel_ticks: 2}
+    S_E: {from: S, to: E, travel_ticks: 2}
+    O_E_remote: {from: O, to: E, travel_ticks: 6}
+  movement_rule: one_adjacent_edge_per_move_full_cost; reversal_allowed_after_arrival; reverse_travel_cost_equals_forward
+hidden_state:
+  eruption_tick_values: [12, 16, 20]
+  prior_probabilities: [0.2, 0.5, 0.3]
+  eruption_tick_private: true
+  no_public_countdown: true
+initial_state:
+  elapsed_tick: 0
+  location: O
+  measurement_used: false
+  reinforced_sample_case_used: false
+  carried_sample: none
+  safety_points: 100
+  research_points: 0
+measurement:
+  location: O
+  uses_per_run: 1
+  duration_ticks: 2
+  outcomes: [EARLY_WARNING, LATE_WARNING]
+  likelihood_by_true_eruption_tick:
+    "12": {EARLY_WARNING: 0.8, LATE_WARNING: 0.2}
+    "16": {EARLY_WARNING: 0.3, LATE_WARNING: 0.7}
+    "20": {EARLY_WARNING: 0.1, LATE_WARNING: 0.9}
+  posterior_update: bayes_rule_using_only_prior_and_returned_signal
+  report_does_not_identify_exact_eruption_tick: true
+samples:
+  carry_limit_per_run: 1
+  locations:
+    - {id: R_SURFACE_ASH, node: R, tier: low, collection_ticks: 1, unreinforced_points: 5, reinforced_points: 5}
+    - {id: W_LAYERED_CORE, node: W, tier: medium, collection_ticks: 5, unreinforced_points: 12, reinforced_points: 20}
+    - {id: S_DEEP_ISOTOPE, node: S, tier: high, collection_ticks: 6, unreinforced_points: 40, reinforced_points: 50}
+  reinforcement:
+    uses_per_run: 1
+    locations: [W, S]
+    duration_ticks: 1
+    must_precede_collection: true
+    effect: stabilize_fragile_pack_and_preserve_reinforced_points
+    does_not_change_eruption_or_travel_time: true
+scoring:
+  safe_evacuation_points: 100
+  measurement_data_points_if_carried_to_E: 2
+  sample_points_awarded_only_if_sample_reaches_E: true
+  fatal_eruption_total_score: 0
+  expected_utility: prior_weighted_total_terminal_score_over_all_hidden_times_and_sensor_outcomes
+actions:
+  - {name: move, cost: edge_travel_ticks, effect: traverse_only_named_adjacent_edge, when_destination_E: resolves_as_evacuation}
+  - {name: measure, cost: 2, location: O, uses: 1, effect: return_one_likelihood_draw_then_update_posterior}
+  - {name: reinforce_sample_case, cost: 1, location: [W, S], uses: 1, effect: preserve_that_site_sample_reinforced_points}
+  - {name: collect_and_carry_sample, cost: sample_collection_ticks, uses: 1, effect: carry_selected_local_sample_until_E_or_loss}
+event_order:
+  - advance_time_one_tick_at_a_time_during_every_timed_action
+  - complete_edge_arrival_before_same_tick_eruption_check
+  - if_hidden_eruption_tick_reached_and_location_not_E_then_immediate_FATAL_ERUPTION
+  - if_hidden_eruption_tick_reached_on_tick_E_is_entered_then_E_arrival_wins_and_run_succeeds
+  - if_E_reached_earlier_finish_without_revealing_remaining_eruption_time
+observation_fields: [elapsed_tick, current_node_or_in_transit_edge, available_adjacent_edges, measurement_available, returned_measurement_if_any, posterior_over_eruption_ticks, visible_local_sample_tier, reinforcement_kit_available, carried_sample_tier, terminal, terminal_reason, terminal_score]
+private_fields: [eruption_tick, measurement_random_draw, scoring_reference, unrevealed_measurement_outcomes]
+terminal_success: [player_enters_E_at_or_before_hidden_eruption_tick]
+terminal_failure: [hidden_eruption_tick_reached_while_player_is_not_at_E]
+reason_codes: [EVACUATED_BEFORE_ERUPTION, FATAL_ERUPTION]
+metrics:
+  primary: [survival_probability, expected_terminal_score, expected_research_points, measurement_information_gain_nats, evacuation_arrival_tick]
+  evaluation_domain: exact_enumeration_of_all_three_eruption_ticks_and_all_sensor_outcomes
+manual_scenarios_path: planning/hand_traces.json
+failure_cases_path: failure_traces/cases.yaml
+decision_reference_path: planning/decision_reference.json
+private_seed_reference_path: planning/private_seed_reference.yaml
+oracle_path: oracle_trace.jsonl
+runtime_verified: false
+model_results: none

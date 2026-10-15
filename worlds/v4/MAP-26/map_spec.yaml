@@ -1,0 +1,111 @@
+id: MAP-26
+title: 失败的维修计划
+world: moon
+capability_primary: error_attribution_and_self_correction
+capability_secondary: [deterministic_diagnostic_testing, rollback_recovery, spare_budgeting]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: private_fixed_fault_fixture_by_seed
+topology:
+  nodes: [T, D, A, B]
+  roles: {T: tool_room_and_start, D: diagnostic_room, A: communication_array, B: spare_module_store}
+  undirected_edges:
+    - {a: T, b: D, duration_ticks: 1}
+    - {a: D, b: A, duration_ticks: 1}
+    - {a: A, b: B, duration_ticks: 1}
+  edges_bidirectional: true
+initial_state:
+  location: T
+  tick: 0
+  alert: COMMUNICATION_LOST
+  communication_restored: false
+  spare_units_at_B: 2
+  carried_spare_units: []
+  installed_candidates: []
+  removed_originals: []
+  last_failed_replacement: null
+  failed_replacement_counts_by_part: {power_regulator: 0, antenna_coupler: 0, software_image: 0}
+  tests_run: {}
+fault_model:
+  exactly_one_fault: true
+  candidate_parts: [power_regulator, antenna_coupler, software_image]
+  seed_fixture_path: planning/private_seed_reference.yaml
+  fixed_within_episode: true
+  never_expose_fault_id_or_seed_mapping: true
+resources:
+  spare_units_total_at_start: 2
+  carry_capacity_units: 2
+  take_spare_duration_ticks: 1
+  read_log_duration_ticks: 1
+  test_duration_ticks: 1
+  correct_replace_duration_ticks: 1
+  wrong_replace_duration_formula: 1_plus_prior_failed_attempts_for_same_part
+  rollback_duration_ticks: 1
+  restart_duration_ticks: 1
+  wrong_replace_consumes_one_spare_unit: true
+  rollback_restores_last_wrong_unit_to_carried_inventory: true
+  retry_count_survives_rollback: true
+  terminal_on_zero_uninstalled_spares_without_communication: SPARES_EXHAUSTED
+  no_generic_deadline: true
+actions:
+  - {name: move, to: adjacent_node, duration_ticks: 1}
+  - {name: read_log, location: D, log_id: COMM_LOSS_LAST_TRANSMIT, duration_ticks: 1, result: shared_ambiguous_clue}
+  - {name: test, location: D, test_id: [bus_load, antenna_loopback, software_checksum], duration_ticks: 1, result: seed_fixed_typed_reading}
+  - {name: take_spare, location: B, part_id: candidate_parts, duration_ticks: 1, consumes_storage_unit: true}
+  - {name: replace, location: A, part_id: candidate_parts, duration_ticks: correct_or_retry_formula, consumes_one_spare: true}
+  - {name: rollback, location: A, requires: last_replacement_was_wrong, duration_ticks: 1, restores_original_slot_and_spare: true}
+  - {name: restart, location: A, duration_ticks: 1, verifies_end_to_end_communication: true}
+tests:
+  bus_load:
+    power_regulator_undervoltage: BUS_VOLTAGE_DROOP
+    otherwise: BUS_VOLTAGE_STABLE
+  antenna_loopback:
+    antenna_coupler_open: ANTENNA_LOOPBACK_OPEN
+    otherwise: ANTENNA_LOOPBACK_OK
+  software_checksum:
+    software_image_corrupt: IMAGE_CHECKSUM_MISMATCH
+    otherwise: IMAGE_CHECKSUM_VALID
+  repeated_same_test_same_seed_same_reading: true
+  unrelated_tests_do_not_mutate_fault_or_prior_results: true
+  read_log_result_for_all_fixtures: TRANSMIT_SURGE_BEFORE_LINK_LOSS_POWER_OR_DOWNSTREAM
+replacement_feedback:
+  wrong_power_regulator: POWER_SELF_TEST_OK_LINK_STILL_DOWN
+  wrong_antenna_coupler: ANTENNA_SELF_TEST_OK_LINK_STILL_DOWN
+  wrong_software_image: SOFTWARE_SELF_TEST_OK_LINK_STILL_DOWN
+  feedback_names_tested_part_only: true
+  feedback_does_not_reveal_fault_id_or_untested_candidates: true
+  correct_part_requires_restart_for_success: true
+  correct_part_feedback: SELECTED_COMPONENT_REPLACED_RESTART_REQUIRED
+rollback:
+  restores_pre_attempt_candidate_state: true
+  returns_installed_wrong_unit_to_carried_inventory: true
+  does_not_refund_elapsed_ticks: true
+  does_not_reset_failed_attempt_counter: true
+  rollback_without_pending_wrong_replacement: INVALID_ROLLBACK
+success_predicate: [communication_restored, uninstalled_spare_units_at_least_1]
+failure_predicates: [uninstalled_spare_units_equal_0_and_communication_not_restored]
+public_observation_fields: [current_tick, current_node, alert, log_readings, test_readings, spare_units_at_B, carried_spare_units, installed_candidates, last_action_result, communication_restored, terminal, terminal_reason, last_action_error_code]
+private_fields: [fault_id, fault_component_part, seed_fixture_mapping, unperformed_test_results, future_action_outcomes]
+observation_contract:
+  initial_observation_identical_across_supported_seeds: true
+  only_completed_tests_reveal_their_own_typed_readings: true
+  logs_are_non_unique_and_non_conclusive: true
+  never_reveal: [fault_id, fault_component_part, seed_fixture_mapping, unperformed_test_results, future_action_outcomes]
+  rejected_enum_or_wrong_location_action_costs_zero_ticks_and_spares: true
+event_order:
+  - validate_action_shape_enum_and_location
+  - apply_action_and_return_specific_feedback
+  - charge_action_duration_and_spares
+  - persist_test_readings_and_failed_replacement_retry_counts
+  - rollback_only_restores_component_and_spare_not_time_or_retry_history
+  - if_uninstalled_spares_are_zero_and_communication_is_down_then_SPARES_EXHAUSTED
+  - restart_restores_communication_only_if_correct_fixed_fault_component_is_installed
+  - success_requires_communication_restored_and_at_least_one_uninstalled_spare
+reason_codes: [MOVE_SUCCEEDED, LOG_READ, TEST_COMPLETED, SPARE_TAKEN, WRONG_REPLACEMENT_FEEDBACK, CORRECT_COMPONENT_INSTALLED, ROLLBACK_COMPLETED, INVALID_ROLLBACK, RESTART_LINK_STILL_DOWN, COMMUNICATION_RESTORED, SPARES_EXHAUSTED, INVALID_PART_ID, INVALID_TEST_ID, INVALID_LOCATION, ALL_OBJECTIVES_COMPLETE]
+metrics: [finish_tick, tests_run, repeated_test_count, test_consistency_violations, wrong_replacement_attempts, same_part_retry_attempts, rollback_count, feedback_to_changed_action, spare_units_consumed, spare_units_remaining, valid_action_rate]
+manual_scenarios_path: planning/hand_traces.json
+failure_cases_path: failure_traces/cases.yaml
+boundary_cases_path: failure_traces/cases.yaml
+private_seed_reference_path: planning/private_seed_reference.yaml
+oracle_path: oracle_trace.jsonl

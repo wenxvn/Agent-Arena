@@ -1,0 +1,49 @@
+map_id: MAP-21
+classification: PRIVATE_FIXED_ERUPTION_PRIOR_AND_HAND_DERIVED_BAYES_RULES
+seed: 0
+hidden_eruption_ticks: [12, 16, 20]
+prior: {12: 0.2, 16: 0.5, 20: 0.3}
+measurement:
+  location: O
+  use_count: 1
+  duration_ticks: 2
+  outcome_ids: [EARLY_WARNING, LATE_WARNING]
+  likelihood_early:
+    12: 0.8
+    16: 0.3
+    20: 0.1
+  likelihood_late_is_complement: true
+  marginal_outcome_probability: {EARLY_WARNING: 0.34, LATE_WARNING: 0.66}
+  posterior_if_early:
+    exact_fraction: ['8/17', '15/34', '3/34']
+    decimal: [0.4705882353, 0.4411764706, 0.0882352941]
+  posterior_if_late:
+    exact_fraction: ['2/33', '35/66', '9/22']
+    decimal: [0.0606060606, 0.5303030303, 0.4090909091]
+  information:
+    prior_entropy_nats: 1.02965
+    expected_posterior_entropy_nats: 0.89166
+    expected_information_gain_nats: 0.13800
+    gain_per_measurement_tick_nats: 0.06900
+event_resolution:
+  tick_advance: every_timed_action_advances_one_tick_at_a_time
+  edge_arrival_at_hidden_eruption_tick: E_arrival_resolves_before_eruption
+  eruption_while_not_at_E: FATAL_ERUPTION_and_score_0
+  eruption_tick_not_public: true
+  no_future_measurement_outcomes_in_observation: true
+hand_computed_strategies:
+  direct_evacuation: {arrival_tick: 6, expected_score: 100, survival_probability: 1.0}
+  unreinforced_medium_sample: {arrival_tick: 12, expected_score: 112, survival_probability: 1.0}
+  reinforced_medium_sample: {arrival_tick: 13, score_if_hidden_tick_12: 0}
+  reinforced_high_sample: {arrival_tick: 14, score_if_hidden_tick_12: 0}
+  measure_then_branch:
+    expected_score: 112.02
+    survival_probability: 0.96
+    expected_research_points: 16.02
+    late_signal_hidden_tick_12_failure_probability: 0.04
+truth_and_leakage_rules:
+  public_signal_is_a_noisy_observation_not_exact_eruption_time: true
+  only_seeded_uniform_draws_select_hidden_tick_and_signal: true
+  seed0_truth_and_rng_draws_are_in_private_seed_reference: true
+  future_hidden_tick_never_changes_oracle_text_before_reveal: true
+runtime_verified: false

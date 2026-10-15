@@ -1,0 +1,64 @@
+map_id: MAP-19
+authorship: 手写按实际阀门生效队列和负荷方程逐步推算；高温区结果不是批量扰动或随机换皮。
+cases:
+  - id: F01
+    name: 过热后才下达冷却命令
+    operations:
+      - {tick: 0, read_zone: A, set_loads: [2, 1, 1], forecast_next: [8, 6, 5], wait: 1}
+      - {tick: 1, read_zone: A, set_cooling: [2, 1, 1], forecast_next: [10, 7, 6], wait: 1}
+      - {tick: 2, read_zone: A, forecast_next: [12, 8, 7], wait: 1}
+    expected:
+      terminal_reason: THERMAL_RUNAWAY
+      failure_tick: 2
+      overheated_zones: [A]
+      resulting_temperatures: [12, 8, 7]
+      pending_vector_effective_tick: 3
+
+  - id: F02
+    name: A区阀量少一单位无法抵消满负荷
+    operations:
+      - {tick: 0, read_zone: A, set_cooling: [1, 1, 1], set_loads: [2, 1, 1], forecast_next: [8, 6, 5], wait: 1}
+      - {tick: 1, read_zone: A, forecast_next: [10, 7, 6], wait: 1}
+      - {tick: 2, read_zone: A, forecast_next: [11, 7, 6], wait: 1}
+    expected:
+      terminal_reason: THERMAL_RUNAWAY
+      failure_tick: 2
+      overheated_zones: [A]
+      resulting_temperatures: [11, 7, 6]
+      cooling_active_from_tick: 2
+
+  - id: F03
+    name: 阀门分配正确却让B区维持满负荷
+    operations:
+      - {tick: 0, read_zone: A, set_cooling: [2, 1, 1], set_loads: [2, 2, 2], forecast_next: [8, 7, 6], wait: 1}
+      - {tick: 1, read_zone: B, forecast_next: [10, 9, 8], wait: 1}
+      - {tick: 2, read_zone: B, forecast_next: [10, 10, 9], wait: 1}
+      - {tick: 3, read_zone: B, forecast_next: [10, 11, 10], wait: 1}
+    expected:
+      terminal_reason: THERMAL_RUNAWAY
+      failure_tick: 3
+      overheated_zones: [B]
+      resulting_temperatures: [10, 11, 10]
+      cooling_vector_is_within_budget: true
+
+boundary_cases:
+  - id: B01
+    name: 熔断温度严格大于10
+    tick: 1
+    resulting_temperature_A: 10
+    expected: safe
+    next_tick_with_effective_A_cooling: 2
+  - id: B02
+    name: 产能恰好20
+    hand_plan: exact_production_boundary
+    resulting_production_at_tick_12: 20
+    expected: success
+  - id: B03
+    name: 冷却预算原子拒绝
+    command_at_tick: 0
+    cooling_vector: [2, 1, 2]
+    expected: {reason: VALVE_BUDGET_EXCEEDED, no_pending_command: true, no_tick_advance: true}
+
+seed_replay:
+  seed: 0
+  expected: Two consecutive hand-oracle builds have byte-identical public state and forecast rows.

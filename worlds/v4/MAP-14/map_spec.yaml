@@ -1,0 +1,80 @@
+id: MAP-14
+title: 说谎的祭司
+world: pyramid
+capability_primary: truth_logic
+capability_secondary: [fixed_statement_reasoning, adaptive_querying, evidence_consistency]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+nodes: [P, A, O, J]
+edges:
+  - {id: P_A, from: P, to: A, directed: false, cost_ticks: 1}
+  - {id: A_O, from: A, to: O, directed: false, cost_ticks: 1}
+  - {id: O_J, from: O, to: J, directed: false, cost_ticks: 1}
+closed_edges: [{from: P, to: J}]
+configurations: [A_sun_wheel, B_crescent, C_star_well]
+truth_rule: {exactly_one_truthful_priest: true, every_other_priest_inverts_the_claim_truth_value_on_every_answer: true}
+constants: {question_budget: 4, one_question_per_claim_id: true, wrong_configuration_submission_limit: 2, ticks_per_move_read_question_compare_submit: 1}
+priests:
+  - {id: A_priest, name: 甲, truth_teller_candidate: true, fixed_claims: [A1, A2]}
+  - {id: B_priest, name: 乙, truth_teller_candidate: true, fixed_claims: [B1, B2]}
+  - {id: C_priest, name: 丙, truth_teller_candidate: true, fixed_claims: [C1, C2]}
+claims:
+  A1: {speaker: A_priest, text: "当前锁型是日轮锁A吗？", true_for_configs: [A_sun_wheel]}
+  A2: {speaker: A_priest, text: "当前锁型是月牙锁B吗？", true_for_configs: [B_crescent]}
+  B1: {speaker: B_priest, text: "当前锁型不是星井锁C吗？", true_for_configs: [A_sun_wheel, B_crescent]}
+  B2: {speaker: B_priest, text: "当前锁型不是月牙锁B吗？", true_for_configs: [A_sun_wheel, C_star_well]}
+  C1: {speaker: C_priest, text: "当前锁型是星井锁C吗？", true_for_configs: [C_star_well]}
+  C2: {speaker: C_priest, text: "当前锁型不是日轮锁A吗？", true_for_configs: [B_crescent, C_star_well]}
+archive:
+  id: ARCHIVE_NOT_C
+  location: A
+  text: "星井锁C从未安装在当前审判门上。"
+  effect_on_candidates: [remove_configuration_C]
+initial_state:
+  seed: 0
+  tick: 0
+  location: P
+  archive_read: false
+  asked_claim_ids: []
+  question_answers: []
+  questions_used: 0
+  comparison_record: null
+  wrong_submissions: 0
+  gate_open: false
+  terminal: false
+private_state:
+  actual_configuration: B_crescent
+  truthful_priest: B_priest
+  truth_table: planning/truth_table_audit.json
+  scoring_implementation: private
+public_observation_fields: [current_tick, location, visible_neighbors, public_statement_cards, archive_record_if_read, question_answers, questions_used, questions_remaining, comparison_record, wrong_submissions, wrong_submissions_remaining, gate_open, terminal, terminal_reason]
+actions:
+  - {name: move, parameters: [edge_id, from_node, to_node], allowed_edges: [P_A, A_O, O_J], cost_ticks: 1, requires: [edge_endpoints_match, from_node_equals_location]}
+  - {name: read_archive, parameters: [], location: A, cost_ticks: 1, max_once: true, effect: reveal_ARCHIVE_NOT_C_only}
+  - {name: ask, parameters: [claim_id], location: P, cost_ticks: 1, question_budget: 4, max_once_per_claim_id: true, answer_rule: truthful_priest_returns_claim_truth_other_two_return_its_inverse}
+  - {name: compare_evidence, parameters: [configuration_candidate, truthful_priest_candidate, support_evidence_ids], location: O, cost_ticks: 1, requires: [support_ids_were_observed], effect: store_player_hypothesis_and_return_receipt_without_validating_correctness}
+  - {name: submit_configuration, parameters: [configuration], location: J, cost_ticks: 1, effect: correct_configuration_opens_gate; wrong_configuration_increments_wrong_submissions}
+event_order:
+  action: [validate_location_and_budget, charge_one_tick, apply_move_archive_or_question_effect, store_comparison_without_judgment, on_submit_compare_configuration, terminate_if_correct_or_wrong_submissions_gte_2]
+transitions:
+  - {when: asked_claim_at_P_by_truthful_priest, effect: answer_claim_truth_value_for_actual_configuration}
+  - {when: asked_claim_at_P_by_other_priest, effect: answer_inverse_of_claim_truth_value_for_actual_configuration}
+  - {when: read_archive_at_A, effect: expose_only_ARCHIVE_NOT_C}
+  - {when: question_claim_already_asked_or_questions_used_gte_4, effect: reject_without_tick_or_budget_change}
+  - {when: archive_already_read, effect: reject_without_tick_or_archive_state_change}
+  - {when: compare_at_O, effect: append_player_hypothesis_and_evidence_references_without_right_or_wrong_feedback}
+  - {when: submit_configuration_matches_actual, effect: gate_open_true_and_terminal_success}
+  - {when: submit_configuration_differs, effect: wrong_submissions_plus_1_and_generic_gate_closed_response}
+  - {when: wrong_submissions_gte_2, effect: terminal_failure_WRONG_SUBMISSION_LIMIT}
+terminal_success: [gate_open]
+terminal_failure: [wrong_submissions_gte_2]
+reason_codes: [GATE_OPENED, WRONG_SUBMISSION_LIMIT, INVALID_LOCATION, INVALID_EDGE, INVALID_CLAIM, QUESTION_BUDGET_EXHAUSTED, DUPLICATE_QUESTION, ARCHIVE_ALREADY_READ, INVALID_EVIDENCE_REFERENCE]
+scoring:
+  primary: [configuration_correct, truth_teller_hypothesis_correct, unique_solution_consistency]
+  auxiliary: [questions_used, total_ticks, archive_used, evidence_support_count, wrong_submissions]
+question_limit: 4
+wrong_submission_limit: 2
+seed_policy: deterministic_fixed_seed_0_no_randomness
+truth_table_audit_path: planning/truth_table_audit.json
+oracle_path: oracle_trace.jsonl

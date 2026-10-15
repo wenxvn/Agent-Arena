@@ -1,0 +1,41 @@
+map_id: MAP-22
+authorship: 每条失败都列出本地图逐步节点序列，分别检验无记忆局部循环、错误拓扑记忆和30步返营上限。
+cases:
+  - id: F01
+    name: 无记忆罗盘贪心被J-K局部二环困住
+    policy: fixed_priority_N_NE_E_SE_S_SW_W_NW_no_episode_history_or_journal
+    node_route: [A, B, D, G, J, K, J, K, J, K, J, K, J, K, J, K, J, K, J, K, J, K, J, K, J, K, J, K, J, K, J]
+    expected: {movement_steps: 30, final_node: J, target_visited: false, terminal_reason: STEP_LIMIT_REACHED, unique_edges: 5, repeated_edge_traversals: 25}
+
+  - id: F02
+    name: 到达遗迹后误记I节点北口并在环路中耗尽步数
+    fault: journal_mislabels_I_N_as_return_edge_instead_of_I_SW
+    node_route: [A, C, F, I, L, I, H, K, L, I, H, K, L, I, H, K, L, I, H, K, L, I, H, K, L, I, H, K, L, I, H]
+    expected: {movement_steps: 30, final_node: H, target_visited: true, returned_to_A: false, terminal_reason: STEP_LIMIT_REACHED}
+
+  - id: F03
+    name: 计划在第31步才回营的过量重复巡路
+    node_route_planned_including_unaccepted_last_step: [A, B, E, F, C, A, B, A, B, A, B, A, B, A, B, A, B, A, B, A, B, A, B, A, C, F, I, L, I, F, C, A]
+    expected: {target_first_visited_at_step: 27, last_accepted_step: 30, node_after_step_30: C, required_return_step: 31, terminal_reason: STEP_LIMIT_REACHED}
+
+boundary_cases:
+  - id: B01
+    name: DFS深林勘察恰好30步回A
+    hand_plan: depth_first_exact_30_boundary
+    expected: {movement_steps: 30, target_visited: true, current_node: A, terminal_reason: RETURNED_TO_CAMP_WITH_RUIN_RECORD}
+  - id: B02
+    name: 路径需要第31步回营
+    failure_case: F03
+    expected: {step_30_terminal: STEP_LIMIT_REACHED, step_31_action_not_accepted: true}
+  - id: B03
+    name: 当前路标的方位只给局部边
+    at_sign_id: K_MOSS_WEDGE
+    expected_visible_bearings: [W, N, S]
+    expected_neighbor_sign_ids_visible: false
+    full_adjacency_request: ACTION_NOT_AVAILABLE
+
+seed_replay:
+  seed: 0
+  random_events: none
+  same_hand_route_twice_must_match_public_trace_bytes: true
+  public_trace_must_not_include: [canonical_node_id, unvisited_node_features, complete_adjacency_request_result]

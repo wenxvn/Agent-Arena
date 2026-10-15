@@ -1,0 +1,49 @@
+evidence_type: offline_design_planning_and_manual_review
+runtime_verified: false
+model_results: none
+scope:
+  map: MAP-12
+  planner: planning/policy_search.py
+  planner_output: planning/planner_search.json
+  oracle: oracle_trace.jsonl
+  hand_review: [DESIGN.md, map_spec.yaml, failure_traces/cases.yaml, acceptance.md]
+planner_contract:
+  purpose: Find one feasible calendar under MAP-12's day-slot, repair-deadline, consecutive-research, resource-transfer, heat, and food rules.
+  does_not_generate: [map_topology, map_mechanics, narrative, observation_contract, failure_cases, alternate_hand_authored_strategy]
+  fixed_by_human: [topology, starting_inventory, four_maintenance_days, one_three_day_greenhouse_batch, twelve_day_research_block]
+  searched_variables: [research_block_start_day, dates_and_order_of_eight_two_part_edge_transfers, dates_and_order_of_two_five_food_edge_transfers]
+  objective: Find the first feasible candidate under day-ordered depth-first traversal; no global optimality claim is made.
+  search_boundary: The search requires one crop harvest delivered to H by day 8 as a bounded candidate-policy condition. Harvest delivery is not an additional universal victory predicate; the initial 30 H food alone covers 30 daily rations if none is diverted.
+manual_accounting:
+  research_priority:
+    heat_fuel: 30
+    greenhouse_fuel: 3
+    fuel_end: 7
+    food_start: 30
+    food_harvest_delivered: 5
+    food_rations: 30
+    food_end_H: 5
+    parts_start_S: 8
+    repair_parts: 8
+    research_points: 12
+    shortage_days: {heat: 0, food: 0}
+  safety_buffer:
+    heat_fuel: 30
+    greenhouse_fuel: 6
+    fuel_end: 4
+    food_start: 30
+    food_harvest_delivered: 10
+    food_rations: 30
+    food_end_H: 10
+    repair_parts: 8
+    research_points: 12
+    shortage_days: {heat: 0, food: 0}
+hand_checks:
+  - every commodity edge transfer conserves inventory
+  - all 8 repair parts arrive at E before their corresponding day-start wear
+  - no calendar day uses more than two labor actions
+  - greenhouse requires exactly three powered settlements for each five-food harvest
+  - research scores only complete consecutive groups of three
+  - food from H is distributed after that day's scheduled transfers
+  - heat uses 30 fuel regardless of greenhouse plan
+  - no runtime, provider, or agent performance evidence is claimed

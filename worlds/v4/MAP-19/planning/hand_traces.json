@@ -1,0 +1,63 @@
+{
+  "map_id": "MAP-19",
+  "seed": 0,
+  "authorship": "All three schedules are hand-calculated from the three fixed initial temperatures, 2-tick valve queue, integer load levels, and strict >10 trip point. The replay checks these choices; it does not search for controls.",
+  "zone_order": ["A", "B", "C"],
+  "initial_temperatures_private_until_read": [6, 5, 4],
+  "plans": {
+    "pre_cool_hot_zone": {
+      "strategy": "Schedule asymmetric cooling before the first thermal transition; maintain productive loads while the valve is in flight.",
+      "operations": [
+        {"tick":0,"read_zone":"A","expected_reading":{"temperature":6,"previous_delta":null},"set_cooling":[2,1,1],"set_loads":[2,1,1],"forecast_next":[8,6,5]},
+        {"tick":1,"read_zone":"B","expected_reading":{"temperature":6,"previous_delta":1},"forecast_next":[10,7,6]},
+        {"tick":2,"read_zone":"A","expected_reading":{"temperature":10,"previous_delta":2},"forecast_next":[10,7,6]},
+        {"tick":3,"read_zone":"C","expected_reading":{"temperature":6,"previous_delta":0},"forecast_next":[10,7,6]},
+        {"tick":4,"read_zone":"A","expected_reading":{"temperature":10,"previous_delta":0},"forecast_next":[10,7,6]},
+        {"tick":5,"read_zone":"B","expected_reading":{"temperature":7,"previous_delta":0},"forecast_next":[10,7,6]},
+        {"tick":6,"read_zone":"C","expected_reading":{"temperature":6,"previous_delta":0},"forecast_next":[10,7,6]},
+        {"tick":7,"read_zone":"A","expected_reading":{"temperature":10,"previous_delta":0},"forecast_next":[10,7,6]},
+        {"tick":8,"read_zone":"B","expected_reading":{"temperature":7,"previous_delta":0},"forecast_next":[10,7,6]},
+        {"tick":9,"read_zone":"C","expected_reading":{"temperature":6,"previous_delta":0},"forecast_next":[10,7,6]},
+        {"tick":10,"read_zone":"A","expected_reading":{"temperature":10,"previous_delta":0},"forecast_next":[10,7,6]},
+        {"tick":11,"read_zone":"B","expected_reading":{"temperature":7,"previous_delta":0},"forecast_next":[10,7,6]}
+      ],
+      "expected":{"safe_ticks":12,"production_points":48,"overheat_events":0,"maximum_temperature":10,"final_temperatures":[10,7,6],"mean_absolute_prediction_error":0.0,"success":true}
+    },
+    "curtail_during_valve_lag": {
+      "strategy": "Keep every zone idle for the two-tick actuator lag, then run all zones at reduced load against the smaller balanced cooling vector.",
+      "operations": [
+        {"tick":0,"read_zone":"A","expected_reading":{"temperature":6,"previous_delta":null},"set_cooling":[1,1,1],"set_loads":[0,0,0],"forecast_next":[6,5,4]},
+        {"tick":1,"read_zone":"B","expected_reading":{"temperature":5,"previous_delta":0},"forecast_next":[6,5,4]},
+        {"tick":2,"read_zone":"C","expected_reading":{"temperature":4,"previous_delta":0},"set_loads":[1,1,1],"forecast_next":[6,5,4]},
+        {"tick":3,"read_zone":"A","expected_reading":{"temperature":6,"previous_delta":0},"forecast_next":[6,5,4]},
+        {"tick":4,"read_zone":"B","expected_reading":{"temperature":5,"previous_delta":0},"forecast_next":[6,5,4]},
+        {"tick":5,"read_zone":"C","expected_reading":{"temperature":4,"previous_delta":0},"forecast_next":[6,5,4]},
+        {"tick":6,"read_zone":"A","expected_reading":{"temperature":6,"previous_delta":0},"forecast_next":[6,5,4]},
+        {"tick":7,"read_zone":"B","expected_reading":{"temperature":5,"previous_delta":0},"forecast_next":[6,5,4]},
+        {"tick":8,"read_zone":"C","expected_reading":{"temperature":4,"previous_delta":0},"forecast_next":[6,5,4]},
+        {"tick":9,"read_zone":"A","expected_reading":{"temperature":6,"previous_delta":0},"forecast_next":[6,5,4]},
+        {"tick":10,"read_zone":"B","expected_reading":{"temperature":5,"previous_delta":0},"forecast_next":[6,5,4]},
+        {"tick":11,"read_zone":"C","expected_reading":{"temperature":4,"previous_delta":0},"forecast_next":[6,5,4]}
+      ],
+      "expected":{"safe_ticks":12,"production_points":30,"overheat_events":0,"maximum_temperature":6,"final_temperatures":[6,5,4],"mean_absolute_prediction_error":0.0,"success":true}
+    },
+    "exact_production_boundary": {
+      "strategy": "Use only the hot zone at full load for exactly ten productive ticks; pre-cool it before it reaches the strict safety ceiling, then stop producing at exactly 20 points.",
+      "operations": [
+        {"tick":0,"read_zone":"A","expected_reading":{"temperature":6,"previous_delta":null},"set_cooling":[2,0,0],"set_loads":[2,0,0],"forecast_next":[8,5,4]},
+        {"tick":1,"read_zone":"A","expected_reading":{"temperature":8,"previous_delta":2},"forecast_next":[10,5,4]},
+        {"tick":2,"read_zone":"A","expected_reading":{"temperature":10,"previous_delta":2},"forecast_next":[10,5,4]},
+        {"tick":3,"read_zone":"A","expected_reading":{"temperature":10,"previous_delta":0},"forecast_next":[10,5,4]},
+        {"tick":4,"read_zone":"A","expected_reading":{"temperature":10,"previous_delta":0},"forecast_next":[10,5,4]},
+        {"tick":5,"read_zone":"A","expected_reading":{"temperature":10,"previous_delta":0},"forecast_next":[10,5,4]},
+        {"tick":6,"read_zone":"A","expected_reading":{"temperature":10,"previous_delta":0},"forecast_next":[10,5,4]},
+        {"tick":7,"read_zone":"A","expected_reading":{"temperature":10,"previous_delta":0},"forecast_next":[10,5,4]},
+        {"tick":8,"read_zone":"A","expected_reading":{"temperature":10,"previous_delta":0},"forecast_next":[10,5,4]},
+        {"tick":9,"read_zone":"A","expected_reading":{"temperature":10,"previous_delta":0},"forecast_next":[10,5,4]},
+        {"tick":10,"read_zone":"A","expected_reading":{"temperature":10,"previous_delta":0},"set_loads":[0,0,0],"forecast_next":[8,5,4]},
+        {"tick":11,"read_zone":"A","expected_reading":{"temperature":8,"previous_delta":-2},"forecast_next":[6,5,4]}
+      ],
+      "expected":{"safe_ticks":12,"production_points":20,"overheat_events":0,"maximum_temperature":10,"final_temperatures":[6,5,4],"mean_absolute_prediction_error":0.0,"success":true}
+    }
+  }
+}

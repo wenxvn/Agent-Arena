@@ -1,0 +1,51 @@
+map_id: MAP-12
+trace_semantics: hand_authored_action_calendar_with_day_end_states
+failure_traces:
+  - id: F01_heat_turned_off_twice
+    initial: {seed: 0, fuel_E: 40, heater_on: true, day: 0}
+    actions:
+      - {day: 1, order: 1, action: {tool: set_heating, on: false}}
+      - {day: 2, order: 1, action: {tool: set_heating, on: false}}
+    expected_daily_states:
+      - {day: 1, fuel_E: 40, heater_on: false, heat_shortage_streak: 1, terminal: false}
+      - {day: 2, fuel_E: 40, heater_on: false, heat_shortage_streak: 2, terminal: true, reason: HEAT_SHORTAGE_STREAK}
+    explanation: Fuel remains available; this isolates the two-day heating continuity rule from fuel exhaustion.
+
+  - id: F02_food_diverted_away_from_H
+    initial: {seed: 0, food_H: 30, food_S: 0, day: 0}
+    repeated_action: {day_range_inclusive: [1, 15], per_day: [{tool: transfer, commodity: food, edge_id: H_S, quantity: 1}]}
+    expected_checkpoints:
+      - {day: 1, food_H_before_export: 30, food_H_before_ration: 29, food_H_after_ration: 28, food_shortage_streak: 0}
+      - {day: 15, food_H_before_export: 2, food_H_before_ration: 1, food_H_after_ration: 0, food_shortage_streak: 0}
+      - {day: 16, no_food_export: true, food_H_before_ration: 0, food_shortage_streak: 1, terminal: false}
+      - {day: 17, no_food_export: true, food_H_before_ration: 0, food_shortage_streak: 2, terminal: true, reason: FOOD_SHORTAGE_STREAK}
+    explanation: Each of days 1–15 exports one food then consumes one ration, so H reaches zero exactly after the fifteenth served ration. The invalid day-16 transfer consumes no action-side inventory, and two subsequent ration failures terminate on day 17.
+
+  - id: F03_research_never_reaches_three_consecutive_days
+    initial: {seed: 0, day: 0, parts_S: 8, parts_G: 0, parts_E: 0, research_points: 0, controller_online: true}
+    repair_days: [7, 14, 21, 28]
+    part_transfer_calendar:
+      - {day: 2, order: 2, action: {tool: transfer, commodity: parts, edge_id: G_S, from_node: S, to_node: G, quantity: 2}}
+      - {day: 3, order: 1, action: {tool: transfer, commodity: parts, edge_id: E_G, from_node: G, to_node: E, quantity: 2}}
+      - {day: 4, order: 2, action: {tool: transfer, commodity: parts, edge_id: G_S, from_node: S, to_node: G, quantity: 2}}
+      - {day: 5, order: 2, action: {tool: transfer, commodity: parts, edge_id: E_G, from_node: G, to_node: E, quantity: 2}}
+      - {day: 8, order: 2, action: {tool: transfer, commodity: parts, edge_id: G_S, from_node: S, to_node: G, quantity: 2}}
+      - {day: 9, order: 2, action: {tool: transfer, commodity: parts, edge_id: E_G, from_node: G, to_node: E, quantity: 2}}
+      - {day: 15, order: 2, action: {tool: transfer, commodity: parts, edge_id: G_S, from_node: S, to_node: G, quantity: 2}}
+      - {day: 16, order: 2, action: {tool: transfer, commodity: parts, edge_id: E_G, from_node: G, to_node: E, quantity: 2}}
+    research_days: [1, 2, 4, 5, 8, 9, 11, 12, 15, 16, 18, 19, 22, 23, 25, 26]
+    repair_actions:
+      - {day: 7, order: 1, action: {tool: repair_controller, parts: 2}}
+      - {day: 14, order: 1, action: {tool: repair_controller, parts: 2}}
+      - {day: 21, order: 1, action: {tool: repair_controller, parts: 2}}
+      - {day: 28, order: 1, action: {tool: repair_controller, parts: 2}}
+    expected_checkpoints:
+      - {day: 2, research_streak: 2, research_points: 0}
+      - {day: 3, research_streak: 0, research_points: 0}
+      - {day: 5, research_streak: 2, research_points: 0}
+      - {day: 7, controller_online_after_repair: true, research_streak: 0, research_points: 0}
+      - {day: 14, controller_online_after_repair: true, research_streak: 0, research_points: 0}
+      - {day: 21, controller_online_after_repair: true, research_streak: 0, research_points: 0}
+      - {day: 28, controller_online_after_repair: true, research_streak: 0, research_points: 0}
+      - {day: 30, research_points: 0, terminal: true, reason: RESEARCH_TARGET_MISSED}
+    explanation: Each research pair is broken by at least one day without research. Part logistics fit in the second daily action slot; all scheduled repairs succeed, isolating the three-day research streak requirement.

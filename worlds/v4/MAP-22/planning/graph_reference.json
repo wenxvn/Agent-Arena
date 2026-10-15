@@ -1,0 +1,177 @@
+{
+  "map_id": "MAP-22",
+  "kind": "offline_topology_and_memory_policy_comparison",
+  "fixed_graph_internal_reference_only": {
+    "nodes": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H",
+      "I",
+      "J",
+      "K",
+      "L"
+    ],
+    "edges": [
+      "A-B",
+      "A-C",
+      "B-D",
+      "B-E",
+      "C-F",
+      "D-G",
+      "E-F",
+      "E-H",
+      "F-I",
+      "G-J",
+      "H-I",
+      "H-K",
+      "I-L",
+      "J-K",
+      "K-L"
+    ],
+    "bearings": {
+      "A": {
+        "NE": "B",
+        "SE": "C"
+      },
+      "B": {
+        "SW": "A",
+        "NE": "D",
+        "E": "E"
+      },
+      "C": {
+        "NW": "A",
+        "E": "F"
+      },
+      "D": {
+        "SW": "B",
+        "E": "G"
+      },
+      "E": {
+        "W": "B",
+        "S": "F",
+        "E": "H"
+      },
+      "F": {
+        "W": "C",
+        "N": "E",
+        "NE": "I"
+      },
+      "G": {
+        "W": "D",
+        "E": "J"
+      },
+      "H": {
+        "W": "E",
+        "S": "I",
+        "E": "K"
+      },
+      "I": {
+        "SW": "F",
+        "N": "H",
+        "E": "L"
+      },
+      "J": {
+        "W": "G",
+        "S": "K"
+      },
+      "K": {
+        "W": "H",
+        "N": "J",
+        "S": "L"
+      },
+      "L": {
+        "W": "I",
+        "N": "K"
+      }
+    }
+  },
+  "fixed_graph": {
+    "nodes": 12,
+    "edges": 15,
+    "cycle_rank": 4
+  },
+  "path_redundancy": {
+    "unique_shortest_A_to_L": [
+      "A",
+      "C",
+      "F",
+      "I",
+      "L"
+    ],
+    "distance": 4,
+    "shortest_path_count": 1,
+    "internally_vertex_disjoint_paths": 2,
+    "alternate_path": [
+      "A",
+      "B",
+      "E",
+      "H",
+      "K",
+      "L"
+    ],
+    "alternate_length": 5
+  },
+  "no_memory_local_priority": {
+    "steps": 30,
+    "final": "J",
+    "nodes": 6,
+    "unique_edges": 5,
+    "repeated_edges": 25,
+    "success": false
+  },
+  "external_graph_memory": {
+    "steps": 18,
+    "target_first_step": 12,
+    "unique_nodes": 12,
+    "unique_edges": 15,
+    "repeat_node_visits": 7,
+    "repeated_edges": [
+      "B-E",
+      "F-I",
+      "H-K"
+    ],
+    "memory_facts": 27,
+    "success": true
+  },
+  "complete_map_upper_bound": {
+    "steps": 8,
+    "route_is_unique_shortest": true
+  },
+  "depth_first_boundary": {
+    "steps": 30,
+    "target_first_step": 6,
+    "unique_nodes": 12,
+    "unique_edges": 15,
+    "success": true
+  },
+  "failures": {
+    "F01": {
+      "steps": 30,
+      "end": "J",
+      "target_visited": false
+    },
+    "F02": {
+      "steps": 30,
+      "end": "H",
+      "target_visited": true
+    },
+    "F03": {
+      "accepted_steps": 30,
+      "end": "C",
+      "planned_return_step": 31
+    }
+  },
+  "oracle_memory_facts_by_return": {
+    "node_pages": 12,
+    "edge_pages": 15,
+    "total": 27
+  },
+  "public_oracle_rows": 18,
+  "runtime_verified": false,
+  "no_memory_result_is_a_fixed_reactive_baseline_not_a_universal_lower_bound": true
+}

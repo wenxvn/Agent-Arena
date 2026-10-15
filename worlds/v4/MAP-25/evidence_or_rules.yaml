@@ -1,0 +1,30 @@
+map_id: MAP-25
+evidence_class: hand_authored_offline_design_rules
+runtime_verified: false
+private_fixture: planning/private_seed_reference.yaml
+rules:
+  topology: [H-T, T-A, A-S]
+  airlock:
+    starts_pressurized: true
+    eva_requires: [eva_suit_worn, safety_tether_attached, airlock_depressurized]
+    unsuited_or_untethered_exit: immediate_failure
+  equipment:
+    available_in_T: [eva_suit, diagnostic_unit, wrench]
+    safety_anchor_in_A: safety_tether
+    diagnosis_before_repair: required
+    repair: {target_id: array_fuse_B, tool_ids: [diagnostic_unit, wrench], diagnosis_code: FUSE_BANK_B_OPEN}
+  oxygen:
+    initial: 12
+    successful_eva_cost: {eva_exit: 1, inspect_array: 1, diagnose: 1, repair: 2, return_to_A: 1}
+    successful_route_remaining: 6
+    executed_wrong_tool_attempt_cost: 2
+    minimum_oxygen_before_two_tick_repair: 3
+    return_action_minimum: 1
+  typed_tool_calls:
+    successful_flow: {attempts: 6, valid: 6, validity_rate: 1.0}
+    repeated_error_flow: {attempts: 9, valid: 5, executed_errors: 4}
+  outcome:
+    repair_and_return_to_H: required
+    invalid_tool_enum: rejected_before_execution
+    known_wrong_tool: specific_feedback_and_outside_oxygen_cost
+limitation: Design traces and offline replay are not environment, agent, or model validation.

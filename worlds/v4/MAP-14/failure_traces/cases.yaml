@@ -1,0 +1,50 @@
+map_id: MAP-14
+actual_hidden_state_seed_0: {configuration: B_crescent, truthful_priest: B_priest}
+failure_threshold: second_wrong_configuration_submission
+failure_traces:
+  - id: F01_takes_liar_yes_as_lock_confirmation
+    initial: {tick: 0, location: P, questions_used: 0, wrong_submissions: 0, archive_read: false}
+    actions:
+      - {tick: 1, action: {tool: ask, claim_id: A1}, response: yes, questions_used: 1}
+      - {tick: 2, action: {tool: ask, claim_id: A2}, response: no, questions_used: 2}
+      - {tick: 3, action: {tool: ask, claim_id: B1}, response: yes, questions_used: 3}
+      - {tick: 4, action: {tool: ask, claim_id: B2}, response: no, questions_used: 4}
+      - {tick: 5, action: {tool: move, edge_id: P_A, from_node: P, to_node: A}}
+      - {tick: 6, action: {tool: move, edge_id: A_O, from_node: A, to_node: O}}
+      - {tick: 7, action: {tool: compare_evidence, configuration_candidate: A_sun_wheel, truthful_priest_candidate: A_priest, support_evidence_ids: [ANSWER_A1, ANSWER_A2, ANSWER_B1, ANSWER_B2]}, response: sealed_without_judgment}
+      - {tick: 8, action: {tool: move, edge_id: O_J, from_node: O, to_node: J}}
+      - {tick: 9, action: {tool: submit_configuration, configuration: A_sun_wheel}, outcome: gate_closed, wrong_submissions: 1, terminal: false}
+      - {tick: 10, action: {tool: submit_configuration, configuration: C_star_well}, outcome: terminal_failure, wrong_submissions: 2, reason: WRONG_SUBMISSION_LIMIT}
+    explanation: 甲实际说谎；玩家把甲的反报读成正话，即便问满四条并登记所有答复，仍未检查九态真值表的一致性。
+
+  - id: F02_ignores_archive_exclusion
+    initial: {tick: 0, location: P, questions_used: 0, wrong_submissions: 0, archive_read: false}
+    actions:
+      - {tick: 1, action: {tool: move, edge_id: P_A, from_node: P, to_node: A}}
+      - {tick: 2, action: {tool: read_archive}, response: ARCHIVE_NOT_C, archive_read: true}
+      - {tick: 3, action: {tool: move, edge_id: P_A, from_node: A, to_node: P}}
+      - {tick: 4, action: {tool: ask, claim_id: A1}, response: yes, questions_used: 1}
+      - {tick: 5, action: {tool: ask, claim_id: B1}, response: yes, questions_used: 2}
+      - {tick: 6, action: {tool: ask, claim_id: B2}, response: no, questions_used: 3}
+      - {tick: 7, action: {tool: move, edge_id: P_A, from_node: P, to_node: A}}
+      - {tick: 8, action: {tool: move, edge_id: A_O, from_node: A, to_node: O}}
+      - {tick: 9, action: {tool: compare_evidence, configuration_candidate: C_star_well, truthful_priest_candidate: C_priest, support_evidence_ids: [ARCHIVE_NOT_C, ANSWER_A1, ANSWER_B1, ANSWER_B2]}, response: sealed_without_judgment}
+      - {tick: 10, action: {tool: move, edge_id: O_J, from_node: O, to_node: J}}
+      - {tick: 11, action: {tool: submit_configuration, configuration: C_star_well}, outcome: gate_closed, wrong_submissions: 1, terminal: false}
+      - {tick: 12, action: {tool: submit_configuration, configuration: A_sun_wheel}, outcome: terminal_failure, wrong_submissions: 2, reason: WRONG_SUBMISSION_LIMIT}
+    explanation: 三条问答在档案候选集中唯一支持B/乙，但比对记录与自己刚读到的“C未安装”相冲突；提交未核对证据的C后再提交A。
+
+  - id: F03_copies_answers_without_cross_priest_consistency
+    initial: {tick: 0, location: P, questions_used: 0, wrong_submissions: 0, archive_read: false}
+    actions:
+      - {tick: 1, action: {tool: ask, claim_id: A1}, response: yes, questions_used: 1}
+      - {tick: 2, action: {tool: ask, claim_id: A2}, response: no, questions_used: 2}
+      - {tick: 3, action: {tool: ask, claim_id: C1}, response: yes, questions_used: 3}
+      - {tick: 4, action: {tool: ask, claim_id: B2}, response: no, questions_used: 4}
+      - {tick: 5, action: {tool: move, edge_id: P_A, from_node: P, to_node: A}}
+      - {tick: 6, action: {tool: move, edge_id: A_O, from_node: A, to_node: O}}
+      - {tick: 7, action: {tool: compare_evidence, configuration_candidate: A_sun_wheel, truthful_priest_candidate: A_priest, support_evidence_ids: [ANSWER_A1, ANSWER_A2, ANSWER_B2, ANSWER_C1]}, response: sealed_without_judgment}
+      - {tick: 8, action: {tool: move, edge_id: O_J, from_node: O, to_node: J}}
+      - {tick: 9, action: {tool: submit_configuration, configuration: A_sun_wheel}, outcome: gate_closed, wrong_submissions: 1, terminal: false}
+      - {tick: 10, action: {tool: submit_configuration, configuration: C_star_well}, outcome: terminal_failure, wrong_submissions: 2, reason: WRONG_SUBMISSION_LIMIT}
+    explanation: 这四条问答既与真实 B/乙一致，也与 A/甲一致；玩家把仍有歧义的候选 A/甲误当唯一解，没有换用能区分两态的问法，随后提交错误锁型。

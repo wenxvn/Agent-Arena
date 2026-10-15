@@ -1,0 +1,87 @@
+{
+  "map_id": "MAP-23",
+  "authorship": "每条路线都按MAP23的实际节点、入口调查成本、侦察分区、回程与一次性营地补给逐步手算；隐藏变体只用于离线完整枚举。",
+  "starting_supply": 14,
+  "variant_prior": {"X_TRUE": 0.3333333333333333, "Y_TRUE": 0.3333333333333333, "Z_TRUE": 0.3333333333333333},
+  "policies": {
+    "ridge_exact_scout": {
+      "description": "先走到H付费取得唯一入口线索，回A后补满，再只调查报告指向的入口。",
+      "variant_paths": {
+        "X_TRUE": [
+          {"action": "move", "to": "H", "supply_cost": 2}, {"action": "scout", "location": "H", "supply_cost": 2},
+          {"action": "move", "to": "A", "supply_cost": 2}, {"action": "resupply"}, {"action": "mark", "entrance": "X"},
+          {"action": "move", "to": "N", "supply_cost": 1}, {"action": "move", "to": "X", "supply_cost": 1}, {"action": "investigate", "entrance": "X", "supply_cost": 3}
+        ],
+        "Y_TRUE": [
+          {"action": "move", "to": "H", "supply_cost": 2}, {"action": "scout", "location": "H", "supply_cost": 2},
+          {"action": "move", "to": "A", "supply_cost": 2}, {"action": "resupply"}, {"action": "mark", "entrance": "Y"},
+          {"action": "move", "to": "N", "supply_cost": 1}, {"action": "move", "to": "Y", "supply_cost": 2}, {"action": "investigate", "entrance": "Y", "supply_cost": 2}
+        ],
+        "Z_TRUE": [
+          {"action": "move", "to": "H", "supply_cost": 2}, {"action": "scout", "location": "H", "supply_cost": 2},
+          {"action": "move", "to": "A", "supply_cost": 2}, {"action": "resupply"}, {"action": "mark", "entrance": "Z"},
+          {"action": "move", "to": "R", "supply_cost": 2}, {"action": "move", "to": "Z", "supply_cost": 2}, {"action": "investigate", "entrance": "Z", "supply_cost": 3}
+        ]
+      },
+      "expected": {"success_by_variant": {"X_TRUE": true, "Y_TRUE": true, "Z_TRUE": true}, "remaining_supply_by_variant": {"X_TRUE": 9, "Y_TRUE": 9, "Z_TRUE": 7}, "mean_remaining_supply": 8.333333333333334, "mean_entrance_probes": 1.0}
+    },
+    "north_stone_partition": {
+      "description": "N石刻把X/Y与Z分开；X/Y组按调查成本先试X，错后再回到分叉找Y。",
+      "variant_paths": {
+        "X_TRUE": [
+          {"action": "move", "to": "N", "supply_cost": 1}, {"action": "scout", "location": "N", "supply_cost": 2}, {"action": "mark", "entrance": "X"},
+          {"action": "move", "to": "X", "supply_cost": 1}, {"action": "investigate", "entrance": "X", "supply_cost": 3}
+        ],
+        "Y_TRUE": [
+          {"action": "move", "to": "N", "supply_cost": 1}, {"action": "scout", "location": "N", "supply_cost": 2}, {"action": "mark", "entrance": "X"},
+          {"action": "move", "to": "X", "supply_cost": 1}, {"action": "investigate", "entrance": "X", "supply_cost": 3},
+          {"action": "move", "to": "N", "supply_cost": 1}, {"action": "mark", "entrance": "Y"}, {"action": "move", "to": "Y", "supply_cost": 2}, {"action": "investigate", "entrance": "Y", "supply_cost": 2}
+        ],
+        "Z_TRUE": [
+          {"action": "move", "to": "N", "supply_cost": 1}, {"action": "scout", "location": "N", "supply_cost": 2}, {"action": "mark", "entrance": "Z"},
+          {"action": "move", "to": "A", "supply_cost": 1}, {"action": "move", "to": "R", "supply_cost": 2}, {"action": "move", "to": "Z", "supply_cost": 2}, {"action": "investigate", "entrance": "Z", "supply_cost": 3}
+        ]
+      },
+      "expected": {"success_by_variant": {"X_TRUE": true, "Y_TRUE": true, "Z_TRUE": true}, "remaining_supply_by_variant": {"X_TRUE": 7, "Y_TRUE": 2, "Z_TRUE": 3}, "mean_remaining_supply": 4.0, "mean_entrance_probes": 1.3333333333333333}
+    },
+    "river_water_partition": {
+      "description": "R水纹先排除X或排除X以外两项；遇到Y/Z双纹时先试较近的Y，再按结果转Z。",
+      "variant_paths": {
+        "X_TRUE": [
+          {"action": "move", "to": "R", "supply_cost": 2}, {"action": "scout", "location": "R", "supply_cost": 2},
+          {"action": "move", "to": "A", "supply_cost": 2}, {"action": "resupply"}, {"action": "mark", "entrance": "X"},
+          {"action": "move", "to": "N", "supply_cost": 1}, {"action": "move", "to": "X", "supply_cost": 1}, {"action": "investigate", "entrance": "X", "supply_cost": 3}
+        ],
+        "Y_TRUE": [
+          {"action": "move", "to": "R", "supply_cost": 2}, {"action": "scout", "location": "R", "supply_cost": 2}, {"action": "mark", "entrance": "Y"},
+          {"action": "move", "to": "Y", "supply_cost": 1}, {"action": "investigate", "entrance": "Y", "supply_cost": 2}
+        ],
+        "Z_TRUE": [
+          {"action": "move", "to": "R", "supply_cost": 2}, {"action": "scout", "location": "R", "supply_cost": 2}, {"action": "mark", "entrance": "Y"},
+          {"action": "move", "to": "Y", "supply_cost": 1}, {"action": "investigate", "entrance": "Y", "supply_cost": 2},
+          {"action": "move", "to": "R", "supply_cost": 1}, {"action": "mark", "entrance": "Z"}, {"action": "move", "to": "Z", "supply_cost": 2}, {"action": "investigate", "entrance": "Z", "supply_cost": 3}
+        ]
+      },
+      "expected": {"success_by_variant": {"X_TRUE": true, "Y_TRUE": true, "Z_TRUE": true}, "remaining_supply_by_variant": {"X_TRUE": 9, "Y_TRUE": 7, "Z_TRUE": 1}, "mean_remaining_supply": 5.666666666666667, "mean_entrance_probes": 1.3333333333333333}
+    },
+    "low_cost_direct_probe": {
+      "description": "不花2補給侦察，直接试较廉价入口X，再试Y；连续两假才回A用一次补给箱后调查Z。",
+      "variant_paths": {
+        "X_TRUE": [
+          {"action": "move", "to": "N", "supply_cost": 1}, {"action": "mark", "entrance": "X"}, {"action": "move", "to": "X", "supply_cost": 1}, {"action": "investigate", "entrance": "X", "supply_cost": 3}
+        ],
+        "Y_TRUE": [
+          {"action": "move", "to": "N", "supply_cost": 1}, {"action": "mark", "entrance": "X"}, {"action": "move", "to": "X", "supply_cost": 1}, {"action": "investigate", "entrance": "X", "supply_cost": 3},
+          {"action": "move", "to": "N", "supply_cost": 1}, {"action": "mark", "entrance": "Y"}, {"action": "move", "to": "Y", "supply_cost": 2}, {"action": "investigate", "entrance": "Y", "supply_cost": 2}
+        ],
+        "Z_TRUE": [
+          {"action": "move", "to": "N", "supply_cost": 1}, {"action": "mark", "entrance": "X"}, {"action": "move", "to": "X", "supply_cost": 1}, {"action": "investigate", "entrance": "X", "supply_cost": 3},
+          {"action": "move", "to": "N", "supply_cost": 1}, {"action": "mark", "entrance": "Y"}, {"action": "move", "to": "Y", "supply_cost": 2}, {"action": "investigate", "entrance": "Y", "supply_cost": 2},
+          {"action": "move", "to": "R", "supply_cost": 1}, {"action": "move", "to": "A", "supply_cost": 2}, {"action": "resupply"},
+          {"action": "move", "to": "R", "supply_cost": 2}, {"action": "mark", "entrance": "Z"}, {"action": "move", "to": "Z", "supply_cost": 2}, {"action": "investigate", "entrance": "Z", "supply_cost": 3}
+        ]
+      },
+      "expected": {"success_by_variant": {"X_TRUE": true, "Y_TRUE": true, "Z_TRUE": true}, "remaining_supply_by_variant": {"X_TRUE": 9, "Y_TRUE": 4, "Z_TRUE": 7}, "mean_remaining_supply": 6.666666666666667, "mean_entrance_probes": 2.0}
+    }
+  }
+}

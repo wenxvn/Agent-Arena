@@ -1,0 +1,64 @@
+{
+  "map_id": "MAP-18",
+  "seed": 0,
+  "authorship": "Each route and tick decision is hand-authored for the disruption geometry, two R2 berths, B3 crossover occupancy, five-tick closure, and opposite-direction recovery pair. Replay audits these choices; it does not synthesize routes.",
+  "initial_trains": {"T_R1":"R1","T_R2":"R2","T_R3":"R3","T_B":"B1","T_G":"G1","T_X":"R2"},
+  "tasks": {
+    "TASK_R1_R2": {"train":"T_R1","from":"R1","to":"R2","passengers":3,"planned_arrival_tick":6},
+    "TASK_R2_R3": {"train":"T_R2","from":"R2","to":"R3","passengers":3,"planned_arrival_tick":6},
+    "TASK_R3_R2": {"train":"T_R3","from":"R3","to":"R2","passengers":3,"planned_arrival_tick":7},
+    "TASK_B1_B3": {"train":"T_B","from":"B1","to":"B3","passengers":3,"planned_arrival_tick":2},
+    "TASK_G1_G3": {"train":"T_G","from":"G1","to":"G3","passengers":3,"planned_arrival_tick":2},
+    "TASK_R2_G2": {"train":"T_X","from":"R2","to":"G2","passengers":3,"planned_arrival_tick":7}
+  },
+  "plans": {
+    "alert_proactive_detour": {
+      "alert_mode":"enabled",
+      "paired_with":"no_alert_reactive_detour",
+      "operations":[
+        {"tick":0,"T_B":{"op":"release","to":"B2"},"T_G":{"op":"release","to":"G2"}},
+        {"tick":1,"T_B":{"op":"release","to":"B3"},"T_G":{"op":"release","to":"G3"}},
+        {"tick":2},{"tick":3},
+        {"tick":4,"T_X":{"op":"detour","to":"B2"}},
+        {"tick":5,"T_R1":{"op":"release","to":"R2"},"T_X":{"op":"release","to":"B3"}},
+        {"tick":6,"T_X":{"op":"release","to":"G2"}},
+        {"tick":7},{"tick":8},{"tick":9},
+        {"tick":10,"T_R2":{"op":"release","to":"R3"}},
+        {"tick":11,"T_R3":{"op":"release","to":"R2"}}
+      ],
+      "expected":{"delivered":18,"service_rate":1.0,"canceled_passengers":0,"total_passenger_delay_ticks":30,"recovery_duration_ticks":7,"last_delivery_tick":12,"success":true}
+    },
+    "no_alert_reactive_detour": {
+      "alert_mode":"disabled",
+      "paired_with":"alert_proactive_detour",
+      "operations":[
+        {"tick":0,"T_B":{"op":"release","to":"B2"},"T_G":{"op":"release","to":"G2"}},
+        {"tick":1,"T_B":{"op":"release","to":"B3"},"T_G":{"op":"release","to":"G3"}},
+        {"tick":2},{"tick":3},{"tick":4},
+        {"tick":5,"T_R1":{"op":"release","to":"R2"},"T_X":{"op":"detour","to":"B2"}},
+        {"tick":6,"T_X":{"op":"release","to":"B3"}},
+        {"tick":7,"T_X":{"op":"release","to":"G2"}},
+        {"tick":8},{"tick":9},
+        {"tick":10,"T_R2":{"op":"release","to":"R3"}},
+        {"tick":11,"T_R3":{"op":"release","to":"R2"}}
+      ],
+      "expected":{"delivered":18,"service_rate":1.0,"canceled_passengers":0,"total_passenger_delay_ticks":33,"recovery_duration_ticks":7,"last_delivery_tick":12,"success":true}
+    },
+    "no_alert_turnback_cancel_one": {
+      "alert_mode":"disabled",
+      "operations":[
+        {"tick":0,"T_B":{"op":"release","to":"B2"},"T_G":{"op":"release","to":"G2"}},
+        {"tick":1,"T_B":{"op":"release","to":"B3"},"T_G":{"op":"release","to":"G3"}},
+        {"tick":2},{"tick":3},{"tick":4},
+        {"tick":5,"T_R1":{"op":"release","to":"R2"},"T_X":{"op":"detour","to":"B2"},"T_R2":{"op":"cancel_service","task_id":"TASK_R2_R3"}},
+        {"tick":6,"T_R2":{"op":"turnback","reverse_toward":"R1","duration_ticks":2},"T_X":{"op":"release","to":"B3"}},
+        {"tick":7,"T_X":{"op":"release","to":"G2"}},
+        {"tick":8,"T_R2":{"op":"release","to":"R1"}},
+        {"tick":9},
+        {"tick":10,"T_R3":{"op":"release","to":"R2"}},
+        {"tick":11}
+      ],
+      "expected":{"delivered":15,"service_rate":0.8333333333333334,"canceled_passengers":3,"total_passenger_delay_ticks":15,"recovery_duration_ticks":6,"last_delivery_tick":11,"success":true}
+    }
+  }
+}

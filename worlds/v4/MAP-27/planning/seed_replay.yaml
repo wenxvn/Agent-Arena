@@ -1,0 +1,18 @@
+map_id: MAP-27
+seed: 0
+purpose: fixed_resource_and_route_oracle_replay
+seeded_state:
+  battery: 14
+  oxygen: 18
+  charger_cells: 1
+  medical_kits: 1
+  relay_repair_kits: 1
+  sample_containers: 1
+  relay_state: OFFLINE
+expected_same_seed_invariants:
+  road_costs_unchanged: true
+  supply_counts_unchanged: true
+  first_route_tick: 25
+  second_route_tick: 20
+  oracle_generated_twice_is_byte_identical: true
+  runtime_verified: false

@@ -1,0 +1,87 @@
+id: MAP-11
+title: 失联的小队
+world: polar
+capability_primary: risk_strategy
+capability_secondary: [noisy_forecast_value, loaded_return_planning, rescue_deadline]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+nodes: [B, P, S, D, Q]
+edges:
+  - {id: B_P_SHORT, from: B, to: P, directed: false, route: short_risky, cost_ticks: 1, return_loaded_extra_ticks: 1, supply_cost_each_traversal: 2, storm_exposure: true}
+  - {id: P_S_SHORT, from: P, to: S, directed: false, route: short_risky, cost_ticks: 1, return_loaded_extra_ticks: 1, supply_cost_each_traversal: 2, storm_exposure: true}
+  - {id: B_D_LONG, from: B, to: D, directed: false, route: long_sheltered, cost_ticks: 3, return_loaded_extra_ticks: 1, supply_cost_each_traversal: 1, storm_exposure: false}
+  - {id: D_Q_LONG, from: D, to: Q, directed: false, route: long_sheltered, cost_ticks: 3, return_loaded_extra_ticks: 1, supply_cost_each_traversal: 1, storm_exposure: false}
+  - {id: Q_S_LONG, from: Q, to: S, directed: false, route: long_sheltered, cost_ticks: 3, return_loaded_extra_ticks: 1, supply_cost_each_traversal: 1, storm_exposure: false}
+initial_state:
+  seed: 0
+  location: B
+  tick: 0
+  supply_depot_B: 8
+  carried_supply: 0
+  carried_supply_capacity: 8
+  agent_heat: 10
+  teammate_heat: 10
+  teammate_life_remaining: 15
+  teammate_rescued: false
+  current_storm: clear
+  forecast_storm_probability_per_short_crossing: 0.35
+  posterior_unstable_probability: 0.5
+  short_crossings_resolved: 0
+  last_scout_signal: null
+  terminal: false
+probability_model:
+  hidden_regime:
+    quiet: 0.5
+    unstable: 0.5
+  storm_per_short_crossing_given_regime:
+    quiet: 0.1
+    unstable: 0.6
+  scout_signal_likelihood:
+    P_rising_given_quiet: 0.2
+    P_rising_given_unstable: 0.8
+    P_falling_given_quiet: 0.8
+    P_falling_given_unstable: 0.2
+  posterior_update_after_crossing:
+    storm: "u_next = 0.6*u / (0.6*u + 0.1*(1-u))"
+    clear: "u_next = 0.4*u / (0.4*u + 0.9*(1-u))"
+    next_crossing_forecast: "0.1 + 0.5*u_next"
+  posterior_forecast:
+    rising_probability: 0.5
+    falling_probability: 0.2
+  short_route_success_rule: four_crossings_and_no_more_than_one_storm_hit
+public_observation_fields: [location, visible_neighbors, current_tick, supply_depot_B, carried_supply, agent_heat, teammate_heat_if_at_same_node_or_rescued, teammate_life_remaining, teammate_rescued, current_storm, posterior_unstable_probability_belief, forecast_storm_probability_per_short_crossing, last_scout_signal]
+private_state: [hidden_regime, future_short_storm_mask, oracle_trace_labels, scoring_implementation]
+actions:
+  - {name: move, parameters: [edge_id, loaded_return=false], cost_ticks: edge_cost_plus_loaded_extra_if_applicable, supply_cost: edge_defined_per_traversal}
+  - {name: scout, parameters: [], allowed_locations: [B], cost_ticks: 2, output: noisy_signal_and_updated_probability_only}
+  - {name: resupply, parameters: [quantity], allowed_locations: [B], cost_ticks: 1, effect: transfer_from_depot_to_carried, constraints: [quantity_gt_0, carried_plus_quantity_lte_8, quantity_lte_depot]}
+  - {name: rest, parameters: [], allowed_locations: [B, D, Q], cost_ticks: 1, supply_cost: 1, heat_recovery: 2, maximum_heat: 10}
+  - {name: rescue, parameters: [], location: S, cost_ticks: 1, rescue_commits_after_life_tick_update: true}
+transitions:
+  - {when: each_elapsed_tick_and_teammate_not_rescued, effect: teammate_life_remaining_minus_1_then_fail_if_lte_0_before_rescue_commit}
+  - {when: each_short_edge_traversal, effect: carried_supply_minus_2_then_one_seeded_storm_draw_at_edge_arrival}
+  - {when: short_edge_arrival, effect: update_current_storm_and_regime_posterior_by_observed_clear_or_storm_then_recompute_forecast_0_1_plus_0_5_times_posterior; traveler_heat_minus_1_and_if_storm_add_minus_5_to_people_present_at_exposed_edge_or_receiving_S}
+  - {when: each_long_edge_traversal, effect: carried_supply_minus_1_at_start_and_arriving_traveler_heat_minus_1_no_storm_draw}
+  - {when: loaded_return_edge, effect: add_1_elapsed_tick_without_extra_supply_cost}
+  - {when: scout_at_B, effect: spend_2_ticks_then_update_forecast_using_noisy_signal_posterior_without_revealing_future_storm_mask}
+  - {when: scout_signal_rising, effect: posterior_unstable_probability_0_8_and_next_crossing_forecast_0_5}
+  - {when: scout_signal_falling, effect: posterior_unstable_probability_0_2_and_next_crossing_forecast_0_2}
+  - {when: resupply_at_B, effect: transfer_quantity_without_changing_total_supply}
+  - {when: rest_at_B_D_or_Q, effect: carried_supply_minus_1_then_present_people_heat_plus_2_capped_at_10}
+  - {when: rescue_at_S_and_life_remaining_gt_0_after_elapsed_tick, effect: teammate_rescued_true_and_life_timer_stops}
+  - {when: agent_heat_lte_0_or_teammate_heat_lte_0, effect: terminal_failure_BODY_HEAT_DEPLETED}
+  - {when: teammate_life_remaining_lte_0_before_rescue_commit, effect: terminal_failure_TEAM_LIFE_EXPIRED}
+  - {when: required_supply_unavailable_for_move_or_rest, effect: one_tick_failed_action_then_terminal_SUPPLY_SHORTAGE_without_resource_deduction_or_movement}
+  - {when: location_B_and_teammate_rescued_and_both_heats_gt_0, effect: terminal_success_full_safe_return}
+terminal_success: [location_B, teammate_rescued, agent_heat_gt_0, teammate_heat_gt_0]
+terminal_failure: [agent_heat_lte_0, teammate_heat_lte_0, teammate_life_remaining_lte_0_before_rescue, required_supply_unavailable_for_move_or_rest]
+reason_codes: [BODY_HEAT_DEPLETED, TEAM_LIFE_EXPIRED, SUPPLY_SHORTAGE, INVALID_LOCATION, INVALID_EDGE, CARRY_CAPACITY_EXCEEDED]
+scoring:
+  primary: [full_safe_return, rescue_probability, risk_adjusted_utility]
+  risk_adjusted_utility_per_seed: "100*I(full_safe_return) - 2*rescue_or_terminal_tick - supply_spent"
+  utility_tick_definition: rescue_tick_if_rescued_else_terminal_tick
+  auxiliary: [rescue_tick, teammate_life_remaining_at_rescue, supply_spent, supply_remaining, minimum_agent_heat, minimum_teammate_heat, storm_hits, forecast_signal]
+seed_policy: uniform_hidden_regime_and_seeded_crossing_outcomes; fixed_audit_fixture_0_to_9
+seed_fixture_path: weather_seed_fixture.yaml
+oracle_path: oracle_trace.jsonl

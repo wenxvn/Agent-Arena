@@ -1,0 +1,26 @@
+evidence_type: hand_authored_network_and_discrete_schedule_audit
+runtime_verified: false
+model_results: none
+network:
+  hand_authored_topology: A-X-M-Y-B_with_siding_M-D
+  train_a: {start: A, goal: B}
+  train_b: {start: B, goal: A}
+  segment_capacity: 1
+  station_capacities: {M_main: 1, D_siding: 1}
+  same_tick_opposite_swap: forbidden
+  atomic_vacate_and_enter_different_segments: allowed
+manual_schedules:
+  a_yields_siding:
+    ticks: 6
+    route_intents: [[a: AX, b: BY], [a: XM], [a: MD, b: YM], [a: DM, b: MX], [a: MY, b: XA], [a: YB]]
+    final_positions: {a: B, b: A}
+  b_yields_siding:
+    ticks: 6
+    route_intents: [[a: AX, b: BY], [b: YM], [a: XM, b: MD], [a: MY, b: DM], [a: YB, b: MX], [b: XA]]
+    final_positions: {a: B, b: A}
+  optimal_lower_bound_reason: A_train_using_siding_must_traverse_six_segments; finite_state_BFS_checks_global_shortest_schedule
+  deadlocks_reachable_without_a_collision: [{a: A, b: X}, {a: Y, b: B}]
+  deadlock_failure_trace: F04_clear_tracks_but_block_both_endpoints
+anti_leakage:
+  hidden_state: none
+  oracle_and_failure_cases_in_observation: false

@@ -1,0 +1,65 @@
+id: MAP-06
+title: 暴风眼
+world: lighthouse
+capability_primary: value_of_information_and_risk_decision
+capability_secondary: [expected_utility, risk_budget_control]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+nodes:
+  - {id: M, description: 主楼与安全撤离点}
+  - {id: Q, description: 气象台与预报设备}
+  - {id: G, description: 备用机房与加固设备}
+  - {id: P, description: 灯塔维修平台}
+edges:
+  - {id: M_Q, from: M, to: Q, directed: false, cost_ticks: 1, exposure: sheltered}
+  - {id: Q_P, from: Q, to: P, directed: false, cost_ticks: 1, exposure: exposed}
+  - {id: M_G, from: M, to: G, directed: false, cost_ticks: 2, exposure: sheltered}
+  - {id: G_P, from: G, to: P, directed: false, cost_ticks: 2, exposure: exposed}
+initial_state:
+  location: Q
+  tick: 0
+  prior_short_storm: 0.5
+  forecast_accuracy: 0.8
+  forecast_reading: null
+  storm_type: private_seed_state
+  risk_points: 0
+  risk_budget: 4
+  storm_shield: false
+  lamp_restored: false
+  restoration_deadline_tick: 14
+seed_policy:
+  deterministic: true
+  base_cohort: 10_equal_weight_seeds
+  joint_outcomes:
+    - {count: 4, storm: short, forecast: short}
+    - {count: 1, storm: short, forecast: long}
+    - {count: 4, storm: long, forecast: long}
+    - {count: 1, storm: long, forecast: short}
+public_observation_fields: [location, visible_neighbors, current_tick, risk_points, risk_budget, lamp_restored, known_prior, known_forecast_accuracy, forecast_reading_after_inspection]
+private_state: [storm_type, seed_joint_outcome_table, oracle_trace, scoring_implementation]
+actions:
+  - {name: move, parameters: [edge_id], cost_ticks: edge_defined_cost, one_edge_per_action: true}
+  - {name: inspect, parameters: [target_id], cost_ticks: 2, valid_target: forecast, location_required: Q, repeated_result: unchanged}
+  - {name: interact, parameters: [target_id, operation], operations: [harden, repair_lighthouse, evacuate], costs: {harden: 3, repair_lighthouse: 2, evacuate: 1}}
+  - {name: wait, parameters: [ticks=1], cost_ticks: 1}
+transitions:
+  - {when: exposed_travel_tick_in_long_storm, effect: risk_points_plus_1}
+  - {when: exposed_travel_tick_in_short_storm, effect: risk_points_unchanged}
+  - {when: unshielded_repair_tick_in_long_storm, effect: risk_points_plus_3}
+  - {when: unshielded_repair_tick_in_short_storm, effect: risk_points_unchanged}
+  - {when: repair_tick_with_storm_shield, effect: risk_points_unchanged}
+  - {when: harden_at_G, effect: storm_shield_true}
+  - {when: repair_completes_at_P, effect: lamp_restored_true_and_consume_storm_shield_if_used}
+  - {when: risk_points_exceed_4_during_action, effect: terminal_failure_RISK_BUDGET_EXCEEDED}
+  - {when: repair_completes_at_or_before_tick_14_and_risk_at_most_4, effect: terminal_success_before_deadline_check}
+  - {when: tick_reaches_14_and_lamp_not_restored, effect: terminal_failure_LIGHTHOUSE_REPAIR_DEADLINE}
+  - {when: evacuate_at_M_or_Q_before_repair, effect: terminal_failure_SAFE_ABORT_BEFORE_REPAIR}
+terminal_success: [lamp_restored, tick_lte_14, risk_points_lte_4]
+terminal_failure: [risk_points_gt_4, tick_eq_14_and_not_restored, safe_abort_before_repair]
+scoring:
+  primary: expected_utility_over_fixed_seed_cohort
+  utility: "100*success - 7.2*terminal_tick - 1.0*risk_points"
+  report_raw: [per_seed_success, terminal_tick, risk_points, forecast_joint_outcome, mean_expected_utility]
+  hard_constraints: [weather_fixed_within_episode, risk_points_lte_4_for_success, no_hidden_weather_in_observation]
+oracle_path: oracle_trace.jsonl

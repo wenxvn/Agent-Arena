@@ -1,0 +1,21 @@
+{
+  "map_id": "MAP-20",
+  "kind": "linear_energy_balance_relaxation",
+  "source_water_upper_tenths_over_horizon": 600,
+  "initial_temperature_headroom_tenths": [
+    30,
+    40,
+    50
+  ],
+  "total_headroom_tenths": 120,
+  "production_upper_tenths": 720,
+  "production_upper_points": 72.0,
+  "hand_authored_safe_witnesses": {
+    "prioritize_A_through_two_bypasses": 56,
+    "dynamic_priority_rotation": 59,
+    "exact_production_boundary": 15
+  },
+  "global_integer_optimum_proven": false,
+  "success_target": 15,
+  "target_feasible_in_hand_witnesses": true
+}

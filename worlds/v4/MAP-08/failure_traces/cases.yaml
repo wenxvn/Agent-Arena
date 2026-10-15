@@ -1,0 +1,23 @@
+id: MAP-08
+cases:
+  - id: F01_GUESS_BEFORE_TEST
+    precondition: [seed_id=4, actual_leak=D, tick=0, location=A, sealant_count=1, core_water=1.0]
+    actions: ["move(A_B)", "interact(B,repair_leak)"]
+    tick_sequence: [1, 5]
+    core_water_sequence: [1.5, 3.5]
+    expected_terminal: {status: scenario_failure, reason: SEALANT_MISUSED, sealant_count: 0}
+    diagnosis: 初始证据对 B/D/F 完全等价；未设计实验便把唯一密封剂用在错误舱 D 的局部猜测 B 上。
+  - id: F02_MISREAD_X_PARTITION
+    precondition: [seed_id=8, actual_leak=F, tick=0, location=A, sealant_count=1]
+    actions: ["move(X_A)", "pressure_test_X", "move(X_A)", "move(A_B)", "interact(B,repair_leak)"]
+    tick_sequence: [1, 3, 4, 5, 9]
+    core_water_sequence: [1.5, 2.5, 3.0, 3.5, 5.5]
+    expected_terminal: {status: scenario_failure, reason: SEALANT_MISUSED, sealant_count: 0}
+    diagnosis: X 返回 pulse_slate 表示 D 或 F，Agent 却误读为 B 并耗尽密封剂。
+  - id: F03_REDUNDANT_X_TESTS_CROSS_PRESSURE_LIMIT
+    precondition: [seed_id=8, actual_leak=F, tick=0, location=A, core_water=1.0]
+    actions: ["move(X_A)", "pressure_test_X", "pressure_test_X", "pressure_test_X", "pressure_test_X", "pressure_test_X", "move(X_A)", "move(F_A)"]
+    tick_sequence: [1, 3, 5, 7, 9, 11, 12, 13]
+    core_water_sequence: [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.0, 7.5]
+    expected_terminal: {status: scenario_failure, reason: CORE_WATER_LIMIT_EXCEEDED, tick: 13, core_water: 7.5}
+    diagnosis: 已知 X 的同一读数不会因重复试验改变；四次额外测试耗尽了到 F 的安全时间余量。

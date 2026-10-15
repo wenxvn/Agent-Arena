@@ -1,0 +1,16 @@
+id: MAP-11
+fixture_type: hand_stratified_deterministic_audit_seeds
+seed_weights: uniform_over_0_to_9
+mask_bit_order: [outbound_B_P, outbound_P_S, return_S_P, return_P_B]
+seed_is_hidden_from_agent: true
+rows:
+  - {seed: 0, regime: quiet, scout_signal: falling, short_storm_mask: "0000"}
+  - {seed: 1, regime: quiet, scout_signal: falling, short_storm_mask: "1000"}
+  - {seed: 2, regime: quiet, scout_signal: rising, short_storm_mask: "0000"}
+  - {seed: 3, regime: quiet, scout_signal: falling, short_storm_mask: "0000"}
+  - {seed: 4, regime: quiet, scout_signal: falling, short_storm_mask: "0100"}
+  - {seed: 5, regime: unstable, scout_signal: rising, short_storm_mask: "1100"}
+  - {seed: 6, regime: unstable, scout_signal: rising, short_storm_mask: "1010"}
+  - {seed: 7, regime: unstable, scout_signal: rising, short_storm_mask: "1110"}
+  - {seed: 8, regime: unstable, scout_signal: falling, short_storm_mask: "1001"}
+  - {seed: 9, regime: unstable, scout_signal: rising, short_storm_mask: "0111"}

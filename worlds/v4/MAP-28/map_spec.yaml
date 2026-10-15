@@ -1,0 +1,98 @@
+id: MAP-28
+title: 消失的王冠
+world: castle
+capability_primary: cross_source_evidence_integration
+capability_secondary: [timeline_reconstruction, unreliable_witness_correction, evidence_provenance]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: deterministic_seed0_court_case_fixture
+topology:
+  nodes: [H, V, G, K, S, A]
+  roles: {H: banquet_hall_and_case_submission, V: vault, G: guard_room, K: kitchen, S: concealed_passage, A: archive}
+  undirected_edges:
+    - {a: H, b: V, duration_ticks: 1, route_label: banquet_threshold}
+    - {a: V, b: G, duration_ticks: 1, route_label: guard_threshold}
+    - {a: G, b: K, duration_ticks: 1, route_label: service_corridor}
+    - {a: K, b: S, duration_ticks: 1, route_label: concealed_corridor}
+    - {a: S, b: V, duration_ticks: 1, route_label: secret_passage_threshold}
+    - {a: A, b: G, duration_ticks: 1, route_label: archive_door}
+  edges_bidirectional: true
+initial_state:
+  location: H
+  tick: 0
+  public_alert: CROWN_MISSING
+  case_submitted: false
+  observed_evidence_ids: []
+  recorded_evidence_ids: []
+  suspects: [ADA, BASIL, CELINE]
+  terminal: false
+truth_fixture_path: planning/private_truth_table.yaml
+evidence_contract:
+  evidence_ids_are_typed_and_stable: true
+  source_classes: [instrument_log, physical_trace, documentary_register, testimony]
+  each_claim_needs_at_least_2_distinct_source_classes: true
+  one_source_class_cannot_be_counted_twice: true
+  evidence_must_be_observed_and_recorded_before_submission: true
+  unsupported_or_false_final_submission_is_terminal: true
+  rejection_feedback_is_truth_neutral: CASE_REJECTED
+claims:
+  suspect_id: [ADA, BASIL, CELINE]
+  entry_path_id: [BANQUET_H_V, GUARD_G_V, SECRET_S_V]
+  entry_time_format: HH_MM
+  exit_time_format: HH_MM
+  exact_fixed_truth_is_private: true
+actions:
+  - {name: move, to: adjacent_node, duration_ticks: 1}
+  - {name: investigate, target_id: [vault_lock_events, footprint_trail], location_specific: true, duration_ticks: 1}
+  - {name: read_record, record_id: key_registry, location: A, duration_ticks: 1}
+  - {name: interview, witness_id: kitchen_cook, location: K, duration_ticks: 1}
+  - {name: record, evidence_id: previously_observed_exact_id, duration_ticks: 1}
+  - {name: submit, claims: [suspect_id, entry_path_id, entry_time, exit_time], citations_by_claim: typed_evidence_ids, location: H, duration_ticks: 1, attempts_per_episode: 1}
+evidence_sources:
+  vault_lock_events:
+    location: V
+    returns: [LOCK_ENTRY_K3_2106, LOCK_EXIT_S_2114]
+    class: instrument_log
+  footprint_trail:
+    location: S
+    returns: [PRINT_C7_ROUTE_SV]
+    class: physical_trace
+  key_registry:
+    location: A
+    returns: [KEY_REGISTER_K3_CELINE]
+    class: documentary_register
+  kitchen_cook:
+    location: K
+    returns: [WITNESS_BASIL_S_WINDOW]
+    class: testimony
+claim_adjudication:
+  person_claim_support: [lock_key_joined_to_registry, physical_tread_match]
+  path_claim_support: [lock_side_sensor, directional_footprint_route]
+  entry_time_claim_support: [exact_lock_event, independent_physical_time_window]
+  exit_time_claim_support: [exact_lock_event, independent_physical_time_window]
+  sufficient_citation_classes_per_claim: 2
+  exactly_one_truth_tuple: true
+public_observation_fields: [current_tick, current_node, local_neighbors, public_alert, observed_evidence, recorded_evidence_ids, last_action_result, terminal, terminal_reason]
+private_fields: [culprit_id, true_entry_path, exact_entry_exit_times, unobserved_evidence_payloads, alternative_final_claim_results]
+observation_contract:
+  no_free_global_evidence_list: true
+  no_truth_or_future_actions_before_submission: true
+  testimony_is_labeled_as_testimony_not_fact: true
+  physical_and_documentary_evidence_keep_provenance: true
+  final_rejection_does_not_reveal_correct_truth: true
+event_order:
+  - validate_typed_action_location_and_known_evidence_id
+  - reveal_only_completed_source_result
+  - record_only_previously_observed_evidence
+  - on_final_submit_validate_citations_and_distinct_source_classes_per_each_claim
+  - adjudicate_full_person_path_entry_exit_tuple_against_private_truth
+  - terminalize_any_final_submission_without_returning_truth_or_retry
+reason_codes: [MOVE_SUCCEEDED, LOCK_EVIDENCE_FOUND, FOOTPRINT_EVIDENCE_FOUND, REGISTER_READ, WITNESS_INTERVIEWED, EVIDENCE_RECORDED, EVIDENCE_NOT_OBSERVED, INVALID_EVIDENCE_ID, INVALID_LOCATION, EVIDENCE_SUPPORT_INSUFFICIENT, CLAIM_CONTRADICTS_RECORDED_EVIDENCE, CASE_REJECTED, ALL_CLAIMS_SUPPORTED_AND_CORRECT]
+metrics: [finish_tick, factual_accuracy, evidence_coverage, supported_claim_count, unsupported_claim_count, independent_source_classes_by_claim, witness_identity_revised_after_physical_evidence, evidence_ids_recorded, invalid_actions]
+manual_scenarios_path: planning/hand_traces.json
+failure_cases_path: failure_traces/cases.yaml
+boundary_cases_path: failure_traces/cases.yaml
+private_truth_table_path: planning/private_truth_table.yaml
+seed_replay_path: planning/seed_replay.yaml
+oracle_path: oracle_trace.jsonl

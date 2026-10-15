@@ -1,0 +1,74 @@
+map_id: MAP-30
+classification: PRIVATE_FIXED_THREE_EVENT_CHAIN_AND_CONDITIONAL_WITNESS_RULES
+seed: 0
+true_person: MARA_VENN
+private_duty_code_index: {M4: MARA_VENN}
+truth:
+  EVENT_1_HANDOFF: {time: '23:10', location: B, duty_code: M4, action: MASTER_KEY_K7_HANDED_OFF}
+  EVENT_2_WAX: {time: '23:22', location: K, duty_code: M4, action: MASTER_KEY_K7_USED_TO_HEAT_WAX_PLATE}
+  EVENT_3_SIGNAL: {time: '23:40', location: T, duty_code: M4, action: BELL_CHAIN_ACTIVATED}
+required_order: [EVENT_1_HANDOFF, EVENT_2_WAX, EVENT_3_SIGNAL]
+required_time_order: ['23:10', '23:22', '23:40']
+evidence_catalog:
+  Q4_ARCHIVE_DOCKET:
+    location: A
+    source_class: sealed_archive_envelope
+    fact: {document_id: Q4, requires_archive_clerk_interview: true}
+    answer_text: '书架后的封套标为Q4，封口要求档案员当面核验。'
+  Q4_CODE_INDEX:
+    location: A
+    source_class: signed_duty_archive
+    fact: {document_id: Q4, M4: MARA_VENN}
+    answer_text: 'Q4的值勤暗码索引写明：M-4对应档案员玛拉·维恩。'
+  B_KEY_STUB_2310:
+    location: B
+    source_class: physical_receipt
+    fact: {time: '23:10', location: B, object: K7, signed_code: M4}
+    answer_text: '宴会厅钥匙回执记载：23:10，K7由M-4签收。'
+  B_WITNESS_HANDOFF:
+    location: B
+    source_class: witness_confirmation
+    fact: {time: '23:10', location: B, object: K7, signed_code: M4}
+    answer_text: '宴会管事核对回执后确认，23:10是M-4本人取走K7。'
+  K_WAX_PLATE_2322:
+    location: K
+    source_class: physical_trace
+    fact: {time: '23:22', location: K, object: wax_plate, duty_code: M4}
+    answer_text: '炉边蜡板的余温刻度停在23:22，压痕旁留有M-4记号。'
+  K_WITNESS_WAX_ROUTE:
+    location: K
+    source_class: witness_confirmation
+    fact: {time: '23:22', location: K, action: heated_wax_plate, duty_code: M4}
+    answer_text: '厨师想起：看到上一段K7交接记录后，他认出M-4在23:22用蜡板加热封蜡。'
+  T_CHAIN_REGISTER_2340:
+    location: T
+    source_class: mechanical_register
+    fact: {time: '23:40', location: T, mechanism: bell_chain, duty_code: M4}
+    answer_text: '塔楼链轮计数器在23:40推进一格，操作牌刻着M-4。'
+  T_WITNESS_SIGNAL_ROUTE:
+    location: T
+    source_class: witness_confirmation
+    fact: {time: '23:40', location: T, route: K_T_secret_passage, duty_code: M4}
+    answer_text: '守塔人看到出示厨房封蜡记录后，才想起M-4于23:40从K-T密道侧进入并拉动铃链。'
+npc_answer_tables:
+  ARCHIVE_CLERK:
+    Q4_without_docket: {answer_id: ARCHIVE_Q4_UNLOCATED, evidence_ids: [], rendered_text: '没有封套编号，我无法确认你要查哪份值勤表。'}
+    Q4_with_docket: {answer_id: ARCHIVE_Q4_INDEX_CONFIRMED, evidence_ids: [Q4_CODE_INDEX], rendered_text: 'Q4的值勤暗码索引写明：M-4对应档案员玛拉·维恩。'}
+  BANQUET_CLERK:
+    HANDOFF_without_stub: {answer_id: B_GENERIC_HANDOFF_MEMORY, evidence_ids: [], rendered_text: '我记得钥匙离开过宴会厅，但没有回执就想不起具体时刻和签领人。'}
+    HANDOFF_with_stub: {answer_id: B_WITNESS_HANDOFF, evidence_ids: [B_WITNESS_HANDOFF], rendered_text: '核对回执后，我确认23:10是M-4本人取走K7。'}
+  KITCHEN_COOK:
+    WAX_without_event_1: {answer_id: K_GENERIC_OVEN_MEMORY, evidence_ids: [], rendered_text: '那晚炉子开过；我想不起是哪一段工作之后。'}
+    WAX_with_event_1: {answer_id: K_WITNESS_WAX_ROUTE, evidence_ids: [K_WITNESS_WAX_ROUTE], rendered_text: '看到上一段K7交接记录后，我认出M-4在23:22用蜡板加热封蜡。'}
+  TOWER_WATCH:
+    SIGNAL_without_event_2: {answer_id: T_GENERIC_NIGHT_MEMORY, evidence_ids: [], rendered_text: '午夜前有人经过塔楼，但我记不清是哪一次巡更。'}
+    SIGNAL_with_event_2: {answer_id: T_WITNESS_SIGNAL_ROUTE, evidence_ids: [T_WITNESS_SIGNAL_ROUTE], rendered_text: '看到厨房封蜡记录后，我想起M-4于23:40从K-T密道侧进入并拉动铃链。'}
+truth_and_action_rules:
+  early_Q4_is_mandatory_to_resolve_M4: true
+  NPC_response_changes_only_when_required_public_evidence_is_shown: true
+  same_seed_and_same_public_evidence_state_returns_same_answer: true
+  clues_are_fixed_not_generated_or_reworded_by_llm: true
+  clue_text_does_not_change_private_truth: true
+  order_is_strictly_event_1_then_2_then_3: true
+  required_casebook_capacity_is_exactly_four_entries: true
+  one_unsustained_formal_accusation_is_recoverable: true

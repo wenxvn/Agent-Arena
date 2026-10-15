@@ -1,0 +1,30 @@
+{
+  "map_id": "MAP-14",
+  "authorship": "Two manually authored routes; the truth-table enumerator verifies deductions but does not compose map content or action routes.",
+  "actual_state_for_seed_0": {"configuration": "B_crescent", "truthful_priest": "B_priest"},
+  "plans": {
+    "archive_then_ask": [
+      {"tool": "move", "edge_id": "P_A", "from_node": "P", "to_node": "A"},
+      {"tool": "read_archive"},
+      {"tool": "move", "edge_id": "P_A", "from_node": "A", "to_node": "P"},
+      {"tool": "ask", "claim_id": "A1"},
+      {"tool": "ask", "claim_id": "B1"},
+      {"tool": "ask", "claim_id": "B2"},
+      {"tool": "move", "edge_id": "P_A", "from_node": "P", "to_node": "A"},
+      {"tool": "move", "edge_id": "A_O", "from_node": "A", "to_node": "O"},
+      {"tool": "compare_evidence", "configuration_candidate": "B_crescent", "truthful_priest_candidate": "B_priest", "support_evidence_ids": ["ARCHIVE_NOT_C", "ANSWER_A1", "ANSWER_B1", "ANSWER_B2"]},
+      {"tool": "move", "edge_id": "O_J", "from_node": "O", "to_node": "J"},
+      {"tool": "submit_configuration", "configuration": "B_crescent"}
+    ],
+    "adaptive_without_archive": [
+      {"tool": "ask", "claim_id": "A1"},
+      {"tool": "ask", "claim_id": "A2"},
+      {"tool": "ask", "claim_id": "B1"},
+      {"tool": "move", "edge_id": "P_A", "from_node": "P", "to_node": "A"},
+      {"tool": "move", "edge_id": "A_O", "from_node": "A", "to_node": "O"},
+      {"tool": "compare_evidence", "configuration_candidate": "B_crescent", "truthful_priest_candidate": "B_priest", "support_evidence_ids": ["ANSWER_A1", "ANSWER_A2", "ANSWER_B1"]},
+      {"tool": "move", "edge_id": "O_J", "from_node": "O", "to_node": "J"},
+      {"tool": "submit_configuration", "configuration": "B_crescent"}
+    ]
+  }
+}

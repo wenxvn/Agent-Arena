@@ -1,0 +1,20 @@
+id: MAP-05
+cases:
+  - id: F01_RED_WINDOW_LOST_AFTER_REMOTE_PREP
+    precondition: [tick=14, location=R, power_target=R, calibration_R=2, transmitted_R=false]
+    actions: ["wait(1)", "wait(1)", "wait(1)", "wait(1)"]
+    tick_sequence: [15, 16, 17, 18]
+    expected_terminal: {status: scenario_failure, reason: SIGNAL_WINDOW_MISSED, failed_station: R}
+    diagnosis: R 仍接电且已校准，但 Agent 把整个含端点的发射窗口花在等待上。
+  - id: F02_SWITCHED_AWAY_BEFORE_RED_SEND
+    precondition: [tick=5, location=R, power_target=R, calibration_R=2, transmitted_R=false]
+    actions: ["move(R_C)", "switch_power(B)", "move(C_B)", "interact(B,calibrate_align)", "interact(B,calibrate_phase_lock)", "wait(1)", "wait(1)", "wait(1)", "wait(1)", "wait(1)", "wait(1)", "wait(1)"]
+    terminal_at: tick=18_after_wait
+    expected_terminal: {status: scenario_failure, reason: SIGNAL_WINDOW_MISSED, failed_station: R}
+    diagnosis: R 的校准虽会保留，但 Agent 在发射前离开并切至 B；继续准备 B 无法挽回 R 的截止时间。
+  - id: F03_BLUE_STATUS_INSPECTION_OVERRUN
+    precondition: [tick=21, location=B, power_target=B, calibration_B=2, transmitted_R=true, transmitted_B=false]
+    actions: ["inspect(receiver_status)", "inspect(receiver_status)", "inspect(receiver_status)", "inspect(receiver_status)"]
+    tick_sequence: [22, 23, 24, 25]
+    expected_terminal: {status: scenario_failure, reason: SIGNAL_WINDOW_MISSED, failed_station: B}
+    diagnosis: 四次重复查看状态耗尽 B 的整个含端点发射窗口，窗口结束前没有发出信号。

@@ -1,0 +1,134 @@
+{
+  "map_id": "MAP-29",
+  "result": "MAP29_DETERMINISTIC_QUERY_SELECTION_AND_SOURCE_COMPARISON_REPLAYED",
+  "runtime_verified": false,
+  "routes": {
+    "broad_then_narrow": {
+      "finish_tick": 19,
+      "terminal_reason": "ALL_OBJECTIVES_COMPLETE",
+      "private_judge_reason": "ACCEPTED",
+      "success": true,
+      "questions_used": 7,
+      "questions_remaining": 1,
+      "repeated_question_count": 0,
+      "unique_answer_count": 7,
+      "useful_information_gain": 10,
+      "supported_event_fields": "2/2",
+      "unreliable_witness_proven": true,
+      "question_efficiency": "3/7",
+      "wasted_or_redundant_question_rate": 0.0,
+      "comparison_results": {
+        "A": "TIME_CLAIM_CONTRADICTED_AND_EXPLAINED"
+      },
+      "physical_evidence_seen": [
+        "STUDY_CLOCK_STOPPED_0000",
+        "YARD_BELL_MARK_2340"
+      ],
+      "conclusion_accuracy": "2/2",
+      "action_rows": 19
+    },
+    "high_information_first": {
+      "finish_tick": 13,
+      "terminal_reason": "ALL_OBJECTIVES_COMPLETE",
+      "private_judge_reason": "ACCEPTED",
+      "success": true,
+      "questions_used": 3,
+      "questions_remaining": 5,
+      "repeated_question_count": 0,
+      "unique_answer_count": 3,
+      "useful_information_gain": 6,
+      "supported_event_fields": "2/2",
+      "unreliable_witness_proven": true,
+      "question_efficiency": "3/3",
+      "wasted_or_redundant_question_rate": 0.0,
+      "comparison_results": {
+        "A": "TIME_CLAIM_CONTRADICTED_AND_EXPLAINED"
+      },
+      "physical_evidence_seen": [
+        "STUDY_CLOCK_STOPPED_0000",
+        "YARD_BELL_MARK_2340"
+      ],
+      "conclusion_accuracy": "2/2",
+      "action_rows": 13
+    }
+  },
+  "failures": {
+    "F01_anchor_on_stopped_clock": {
+      "finish_tick": 6,
+      "terminal_reason": "CASE_REJECTED",
+      "private_judge_reason": "WRONG_EVENT_TIME",
+      "success": false,
+      "questions_used": 2,
+      "questions_remaining": 6,
+      "repeated_question_count": 0,
+      "unique_answer_count": 2,
+      "useful_information_gain": 4,
+      "supported_event_fields": "1/2",
+      "unreliable_witness_proven": false,
+      "question_efficiency": "1/2",
+      "wasted_or_redundant_question_rate": 0.0,
+      "comparison_results": {},
+      "physical_evidence_seen": [
+        "STUDY_CLOCK_STOPPED_0000"
+      ],
+      "conclusion_accuracy": "1/2",
+      "action_rows": 6
+    },
+    "F02_repeat_kitchen_location_lie": {
+      "finish_tick": 11,
+      "terminal_reason": "CASE_REJECTED",
+      "private_judge_reason": "WRONG_EVENT_LOCATION",
+      "success": false,
+      "questions_used": 2,
+      "questions_remaining": 6,
+      "repeated_question_count": 0,
+      "unique_answer_count": 2,
+      "useful_information_gain": 4,
+      "supported_event_fields": "1/2",
+      "unreliable_witness_proven": true,
+      "question_efficiency": "2/2",
+      "wasted_or_redundant_question_rate": 0.0,
+      "comparison_results": {
+        "B": "LOCATION_CLAIM_CONTRADICTED"
+      },
+      "physical_evidence_seen": [
+        "YARD_BELL_MARK_2340"
+      ],
+      "conclusion_accuracy": "1/2",
+      "action_rows": 11
+    },
+    "F03_treat_sound_limit_as_lie": {
+      "finish_tick": 4,
+      "terminal_reason": "CASE_REJECTED",
+      "private_judge_reason": "NO_PROVEN_UNRELIABLE_WITNESS",
+      "success": false,
+      "questions_used": 1,
+      "questions_remaining": 7,
+      "repeated_question_count": 0,
+      "unique_answer_count": 1,
+      "useful_information_gain": 1,
+      "supported_event_fields": "2/2",
+      "unreliable_witness_proven": false,
+      "question_efficiency": "2/1",
+      "wasted_or_redundant_question_rate": 0.0,
+      "comparison_results": {},
+      "physical_evidence_seen": [],
+      "conclusion_accuracy": "2/2",
+      "action_rows": 4
+    }
+  },
+  "question_budget_boundary": {
+    "valid_eighth": 8,
+    "remaining_after_eighth": 0,
+    "ninth": "QUESTION_BUDGET_EXHAUSTED_NO_COST"
+  },
+  "repeated_same_question": {
+    "calls": 8,
+    "unique_answer_ids": 1,
+    "repeated_question_count": 7,
+    "all_payloads_fixed": true
+  },
+  "physical_record_unchanged_after_B_claim": "YARD_BELL_MARK_2340",
+  "oracle_rows": 14,
+  "oracle_sha256": "8D0B3CD1CFB19E1BD6BFC5F7F172E3B5ED8613C74B20F800A9DED14BDA02C931"
+}

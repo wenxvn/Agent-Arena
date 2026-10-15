@@ -1,0 +1,99 @@
+id: MAP-18
+title: 故障传播
+world: metro
+capability_primary: online_disruption_recovery
+capability_secondary: [service_recovery_scheduling, detour_planning, cancellation_tradeoff, alert_value]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: deterministic_seed_0
+time_horizon_ticks: 12
+service_threshold: {minimum_delivered: 13, total_demand: 18, rate: 0.70}
+topology:
+  red_nodes: [R1, R2, R3]
+  red_segments: [R1_R2, R2_R3]
+  blue_nodes: [B1, B2, B3]
+  blue_segments: [B1_B2, B2_B3]
+  green_nodes: [G1, G2, G3]
+  green_segments: [G1_G2, G2_G3]
+  interchange_segments: [R2_B2, B3_G2]
+  segment_capacity_per_tick: 1
+  bidirectional_capacity_shared: true
+  station_train_berth_capacity: 2
+initial_trains:
+  T_R1: {station: R1, task_id: TASK_R1_R2, passengers: 3}
+  T_R2: {station: R2, task_id: TASK_R2_R3, passengers: 3}
+  T_R3: {station: R3, task_id: TASK_R3_R2, passengers: 3}
+  T_B: {station: B1, task_id: TASK_B1_B3, passengers: 3}
+  T_G: {station: G1, task_id: TASK_G1_G3, passengers: 3}
+  T_X: {station: R2, task_id: TASK_R2_G2, passengers: 3}
+passenger_tasks:
+  TASK_R1_R2: {origin: R1, destination: R2, passengers: 3, planned_arrival_tick: 6}
+  TASK_R2_R3: {origin: R2, destination: R3, passengers: 3, planned_arrival_tick: 6}
+  TASK_R3_R2: {origin: R3, destination: R2, passengers: 3, planned_arrival_tick: 7}
+  TASK_B1_B3: {origin: B1, destination: B3, passengers: 3, planned_arrival_tick: 2}
+  TASK_G1_G3: {origin: G1, destination: G3, passengers: 3, planned_arrival_tick: 2}
+  TASK_R2_G2: {origin: R2, destination: G2, passengers: 3, planned_arrival_tick: 7}
+published_dispatch_windows:
+  TASK_R1_R2: {release_tick: 5, arrival_tick: 6}
+  TASK_R2_R3: {release_tick: 5, arrival_tick: 6}
+  TASK_R3_R2: {release_tick: 6, arrival_tick: 7}
+  TASK_B1_B3: {release_ticks: [0, 1], arrival_tick: 2}
+  TASK_G1_G3: {release_ticks: [0, 1], arrival_tick: 2}
+  TASK_R2_G2: {detour_release_tick: 4, arrival_tick: 7}
+initial_headings:
+  T_R1: R2
+  T_R2: R3
+  T_R3: R2
+  T_B: B2
+  T_G: G2
+  T_X: B2
+incident:
+  private_fault_id: FAULT_R2_R3
+  private_section: R2_R3
+  starts_before_operations_at_tick: 5
+  duration_ticks: 5
+  closed_ticks_inclusive: [5, 9]
+  reopened_before_operations_at_tick: 10
+  blocked_release_effect: {result: TRACK_CLOSED, tick_advances: true, train_moves: false}
+alert:
+  enabled_only_at_tick: 4
+  public_message_id: NETWORK_DISRUPTION_WATCH
+  content: A mainline section may close next tick; the segment and duration are unspecified.
+  reveals_fault_id: false
+actions:
+  - {name: set_timetable, parameters: [current_tick, six_train_joint_operations], frequency: one_row_per_tick, tick_cost: 1, effect: validate_and_execute_simultaneously}
+  - {name: release, parameters: [train_id, next_adjacent_station], duration_ticks: 1, effect: traverse_one_open_segment}
+  - {name: temporary_stop, parameters: [train_id], duration_ticks: 1, effect: remain_at_station}
+  - {name: detour, parameters: [train_id, next_connected_interchange_station], duration_ticks: 1, effect: reroute_and_traverse_one_link}
+  - {name: turnback, parameters: [train_id, reverse_toward], duration_ticks: 2, effect: lock_only_that_train_for_two_full_global_ticks_then_reverse_heading}
+  - {name: cancel_service, parameters: [task_id], duration_ticks: 0, effect: cancel_task_and_count_all_passengers_as_service_loss}
+initial_state:
+  tick: 0
+  train_positions: {T_R1: R1, T_R2: R2, T_R3: R3, T_B: B1, T_G: G1, T_X: R2}
+  task_passengers: 18
+  alert_mode: {enabled: true, visible_at_observation_tick: 4, exact_section: null}
+  closed_segments: []
+  terminal: false
+public_observation_fields: [tick, ticks_remaining, topology, train_positions, station_berths, task_passenger_counts, published_dispatch_windows, delivered_tasks, canceled_tasks, delivered_passengers, canceled_passengers, closed_segments, current_train_locks, alert_message_if_any, recovery_status, terminal, terminal_reason]
+private_state: [fault_id_until_tick_5, expected_oracle_routes, scoring_reference]
+event_order:
+  time_semantics: action_row_tick_t_executes_during_interval_t_to_t_plus_1_and_arrival_is_recorded_at_t_plus_1
+  each_tick: [emit_generic_alert_at_observation_tick_4_if_enabled, at_tick_5_apply_fault_before_operations, at_tick_10_repair_before_operations, validate_routes_and_turnback_locks, mark_individual_closed_releases_TRACK_CLOSED_without_movement, check_segment_conflicts_among_remaining_moves, check_station_berths_on_atomic_post_positions, move_all_legal_trains_atomically, resolve_task_delivery_and_cancellation_at_tick_plus_1, advance_train_local_turnback_locks, increment_tick, at_tick_12_evaluate_service_threshold]
+  collision: [terminal_HEAD_ON_COLLISION, no_train_moves, no_tick_advance]
+  closed_release: [affected_train_returns_TRACK_CLOSED_and_holds, unrelated_legal_train_moves_may_commit, tick_advances]
+  turnback: [only_selected_train_is_locked_for_current_and_next_global_tick, heading_reverses_after_second_full_tick, other_trains_continue]
+  service_resolution: [cancel_keeps_passengers_in_denominator, canceled_train_remains_empty_at_station, canceled_train_may_turnback_for_repositioning]
+terminal_success: [no_collision, delivered_passengers_gte_13_by_tick_12]
+terminal_failure: [HEAD_ON_COLLISION, station_capacity_overflow, delivered_passengers_lt_13_at_tick_12]
+reason_codes: [SERVICE_COMPLETE, HEAD_ON_COLLISION, TRACK_CLOSED, STATION_CAPACITY_OVERFLOW, DEADLINE_SERVICE_BELOW_70]
+metrics:
+  primary: [recovery_duration_ticks, canceled_passengers, total_passenger_delay_ticks, service_rate]
+  total_passenger_delay_definition: sum(task_passengers_times_max_actual_arrival_minus_planned_arrival_zero)
+  recovery_duration_definition: last_resolution_tick_of_TASK_R2_R3_or_TASK_R3_R2_minus_fault_start_tick; cancel_tick_counts_as_resolution
+  planned_arrival_basis: published_collision_free_dispatch_windows_in_map_spec
+manual_schedules_path: planning/hand_traces.json
+failure_cases_path: failure_traces/cases.yaml
+oracle_path: oracle_trace.jsonl
+runtime_verified: false
+model_results: none

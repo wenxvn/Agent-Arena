@@ -1,0 +1,25 @@
+id: MAP-07
+design_evidence:
+  source_initial_levels: {A: 6, B: 2, C: 4, D: 0}
+  source_transfer_order: [v1, v2, v3, v4]
+  interpretation: ordered_mutable_state_transfer_then_pump
+  automated_simulator_run: false
+  hand_checked_success_ticks: {downstream_first: 6, upstream_staged: 8}
+rules:
+  mass_transfer:
+    mutable_ordered_state: true
+    cascade_within_same_tick: true
+    pump_after_v4: true
+    pump_drain_cap: 2
+    v4_direction: C_to_A_only
+    overflow_check: after_all_valves_and_pump
+    overflow_boundary: level_8_is_safe_level_9_fails
+    success_stability: two_consecutive_post_flow_ticks
+  manual_strategy_metrics:
+    downstream_first: {completion_tick: 6, pump_energy: 12, peak_C: 4}
+    upstream_staged: {completion_tick: 8, pump_energy: 10, peak_C: 6}
+  knowledge_boundary:
+    - actual_water_gauges_are_public_after_each_transition
+    - pipe_topology_and_transfer_limits_are_known
+    - prediction_error_is_judge_side_only
+    - no_randomness_and_no_future_state_leak

@@ -1,0 +1,69 @@
+map_id: MAP-30
+seed: 0
+cases:
+  F01_two_unsupported_formal_charges:
+    description: 尚无证据便进入J正式指控Orin，再改指控Pell；不调查而连投两次，第二次耗尽一次错误额度。
+    actions:
+      - {name: move, to: J}
+      - {name: formal_accuse, person_id: ORIN_VALE, event_claims: [], cited_entry_ids: []}
+      - {name: formal_accuse, person_id: PELL_ROOK, event_claims: [], cited_entry_ids: []}
+    expected: {terminal_reason: ACCUSATION_LIMIT_EXCEEDED, finish_tick: 3, unsupported_formal_accusations: 2, success: false}
+  F02_omit_early_Q4_code_index:
+    description: 正确取得三事件记录与条件证词，却从未到A保留Q4；M-4无法解码，连续两次完整指控均未获支持。
+    actions:
+      - {name: move, to: B}
+      - {name: inspect, evidence_id: B_KEY_STUB_2310}
+      - {name: interview, npc_id: BANQUET_CLERK, topic_id: HANDOFF, shown_evidence_ids: [B_KEY_STUB_2310]}
+      - {name: record, entry_id: EVENT_1_HANDOFF, evidence_ids: [B_KEY_STUB_2310, B_WITNESS_HANDOFF]}
+      - {name: move, to: K}
+      - {name: inspect, evidence_id: K_WAX_PLATE_2322}
+      - {name: interview, npc_id: KITCHEN_COOK, topic_id: WAX_ROUTE, shown_casebook_entry_ids: [EVENT_1_HANDOFF]}
+      - {name: record, entry_id: EVENT_2_WAX, evidence_ids: [K_WAX_PLATE_2322, K_WITNESS_WAX_ROUTE]}
+      - {name: move, to: T}
+      - {name: inspect, evidence_id: T_CHAIN_REGISTER_2340}
+      - {name: interview, npc_id: TOWER_WATCH, topic_id: SIGNAL_ROUTE, shown_casebook_entry_ids: [EVENT_2_WAX]}
+      - {name: record, entry_id: EVENT_3_SIGNAL, evidence_ids: [T_CHAIN_REGISTER_2340, T_WITNESS_SIGNAL_ROUTE]}
+      - {name: compare_records, entry_ids: [EVENT_1_HANDOFF, EVENT_2_WAX, EVENT_3_SIGNAL]}
+      - {name: move, to: K}
+      - {name: move, to: B}
+      - {name: move, to: H}
+      - {name: move, to: J}
+      - {name: formal_accuse, person_id: MARA_VENN, event_claims: [{event_id: EVENT_1_HANDOFF, time: '23:10', location: B, duty_code: M4}, {event_id: EVENT_2_WAX, time: '23:22', location: K, duty_code: M4}, {event_id: EVENT_3_SIGNAL, time: '23:40', location: T, duty_code: M4}], cited_entry_ids: [EVENT_1_HANDOFF, EVENT_2_WAX, EVENT_3_SIGNAL]}
+      - {name: formal_accuse, person_id: MARA_VENN, event_claims: [{event_id: EVENT_1_HANDOFF, time: '23:10', location: B, duty_code: M4}, {event_id: EVENT_2_WAX, time: '23:22', location: K, duty_code: M4}, {event_id: EVENT_3_SIGNAL, time: '23:40', location: T, duty_code: M4}], cited_entry_ids: [EVENT_1_HANDOFF, EVENT_2_WAX, EVENT_3_SIGNAL]}
+    expected: {terminal_reason: ACCUSATION_LIMIT_EXCEEDED, finish_tick: 19, unsupported_formal_accusations: 2, success: false, q4_recorded: false}
+  F03_swap_K_and_T_times_at_trial:
+    description: 完整调查并在案卷比对中确认23:10→23:22→23:40，正式提交却把厨房与塔楼时间对调；被中性拒绝后仍重复同一错误陈述。
+    actions:
+      - {name: move, to: L}
+      - {name: move, to: A}
+      - {name: inspect, evidence_id: Q4_ARCHIVE_DOCKET}
+      - {name: interview, npc_id: ARCHIVE_CLERK, topic_id: Q4_INDEX, shown_evidence_ids: [Q4_ARCHIVE_DOCKET]}
+      - {name: record, entry_id: Q4_CODEBOOK, evidence_ids: [Q4_CODE_INDEX]}
+      - {name: move, to: L}
+      - {name: move, to: H}
+      - {name: move, to: B}
+      - {name: inspect, evidence_id: B_KEY_STUB_2310}
+      - {name: interview, npc_id: BANQUET_CLERK, topic_id: HANDOFF, shown_evidence_ids: [B_KEY_STUB_2310]}
+      - {name: record, entry_id: EVENT_1_HANDOFF, evidence_ids: [B_KEY_STUB_2310, B_WITNESS_HANDOFF]}
+      - {name: move, to: K}
+      - {name: inspect, evidence_id: K_WAX_PLATE_2322}
+      - {name: interview, npc_id: KITCHEN_COOK, topic_id: WAX_ROUTE, shown_casebook_entry_ids: [EVENT_1_HANDOFF]}
+      - {name: record, entry_id: EVENT_2_WAX, evidence_ids: [K_WAX_PLATE_2322, K_WITNESS_WAX_ROUTE]}
+      - {name: move, to: T}
+      - {name: inspect, evidence_id: T_CHAIN_REGISTER_2340}
+      - {name: interview, npc_id: TOWER_WATCH, topic_id: SIGNAL_ROUTE, shown_casebook_entry_ids: [EVENT_2_WAX]}
+      - {name: record, entry_id: EVENT_3_SIGNAL, evidence_ids: [T_CHAIN_REGISTER_2340, T_WITNESS_SIGNAL_ROUTE]}
+      - {name: compare_records, entry_ids: [Q4_CODEBOOK, EVENT_1_HANDOFF, EVENT_2_WAX, EVENT_3_SIGNAL]}
+      - {name: move, to: K}
+      - {name: move, to: B}
+      - {name: move, to: H}
+      - {name: move, to: J}
+      - {name: formal_accuse, person_id: MARA_VENN, event_claims: [{event_id: EVENT_1_HANDOFF, time: '23:10', location: B, duty_code: M4}, {event_id: EVENT_2_WAX, time: '23:40', location: T, duty_code: M4}, {event_id: EVENT_3_SIGNAL, time: '23:22', location: K, duty_code: M4}], cited_entry_ids: [Q4_CODEBOOK, EVENT_1_HANDOFF, EVENT_2_WAX, EVENT_3_SIGNAL]}
+      - {name: formal_accuse, person_id: MARA_VENN, event_claims: [{event_id: EVENT_1_HANDOFF, time: '23:10', location: B, duty_code: M4}, {event_id: EVENT_2_WAX, time: '23:40', location: T, duty_code: M4}, {event_id: EVENT_3_SIGNAL, time: '23:22', location: K, duty_code: M4}], cited_entry_ids: [Q4_CODEBOOK, EVENT_1_HANDOFF, EVENT_2_WAX, EVENT_3_SIGNAL]}
+    expected: {terminal_reason: ACCUSATION_LIMIT_EXCEEDED, finish_tick: 26, unsupported_formal_accusations: 2, success: false, event_claim_accuracy: '1/3', timeline_consistent: false}
+boundaries:
+  B01_one_failed_filing_can_recover: {fixture_route: event_by_event_archive_first, wrong_first_target: ORIN_VALE, then_target: MARA_VENN, expected_final_tick: 26, expected_result: ALL_THREE_EVENTS_ACCOUNTED_FOR_AND_MARA_VENN_PROVEN}
+  B02_Q4_survives_recent_window_only_if_recorded: {entry_id: Q4_CODEBOOK, recent_window: 5, must_remain_in_casebook: true}
+  B03_successful_final_action_at_tick_40: {prepared_fixture_node: J, prepared_fixture_tick: 39, action: correct_formal_accusation, expected_finish_tick: 40, expected_terminal_reason: ALL_THREE_EVENTS_ACCOUNTED_FOR_AND_MARA_VENN_PROVEN}
+  B04_evidence_conditioned_NPC_memory: {npc_id: KITCHEN_COOK, topic_id: WAX_ROUTE, prerequisite_entry_id: EVENT_1_HANDOFF, before_answer: K_GENERIC_OVEN_MEMORY, after_answer: K_WITNESS_WAX_ROUTE}
+  B05_seed0_oracle_replay: {expected_byte_identical_public_oracle: true, runtime_verified: false}

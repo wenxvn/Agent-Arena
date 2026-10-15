@@ -1,0 +1,29 @@
+design_status: DESIGN_COMPLETE_PENDING_RUNTIME
+evidence_type: hand_authored_delayed_cooling_thermal_ledgers
+runtime_verified: false
+model_results: none
+seed: 0
+seed_replay: {oracle_rows: 36, consecutive_builds_byte_identical: true, oracle_sha256: 2BDD37D98F62A5FF8D8EC02C72B0E1FD9B3E3AF7355E66F6F40A8B9EE8EB4D6E}
+fixed_initial_truth: {temperature_A: 6, temperature_B: 5, temperature_C: 4, initial_loads: [2, 2, 2], initial_active_cooling: [0, 0, 0]}
+public_temperature_bands: {A: WARM, B: WARM, C: COOL}
+transition:
+  equation: max(0, current_temperature + current_load_level - active_cooling)
+  command_delay_ticks: 2
+  trip_rule: strictly_greater_than_10
+  critical_equality_safe: true
+  failed_interval_production_credit: 0
+hand_authored_results:
+  pre_cool_hot_zone: {safe_ticks: 12, production: 48, maximum_temperature: 10, final_temperatures: [10, 7, 6], prediction_MAE: 0}
+  curtail_during_valve_lag: {safe_ticks: 12, production: 30, maximum_temperature: 6, final_temperatures: [6, 5, 4], prediction_MAE: 0}
+  exact_production_boundary: {safe_ticks: 12, production: 20, maximum_temperature: 10, final_temperatures: [6, 5, 4], prediction_MAE: 0}
+failure_results:
+  F01: {reason: THERMAL_RUNAWAY, at_action_tick: 2, temperature_A: 12, command_effective_tick: 3}
+  F02: {reason: THERMAL_RUNAWAY, at_action_tick: 2, temperature_A: 11, cooling_active_since_tick: 2}
+  F03: {reason: THERMAL_RUNAWAY, at_action_tick: 3, temperature_B: 11, cooling_vector_budget_valid: true}
+boundaries: {B01: temperature_10_safe, B02: production_20_success, B03: cooling_sum_5_atomic_rejection}
+prediction_control:
+  compare_same_seed_initial_state: true
+  F01_changes_only_command_issue_tick_from_tick_0_to_tick_1: true
+  no_same_tick_cooling_credit: true
+  future_temperature_not_in_observation: true
+  read_sensor_returns_current_temperature_and_previous_delta_only: true

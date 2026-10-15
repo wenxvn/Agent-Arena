@@ -1,0 +1,21 @@
+id: MAP-06
+cases:
+  - id: F01_UNPROTECTED_LONG_STORM
+    precondition: [seed_id=5, actual_weather=long, tick=0, location=Q, risk_points=0]
+    actions: ["move(Q_P)", "interact(P,repair_lighthouse)"]
+    terminal_at: tick=3_during_second_repair_tick
+    expected_terminal: {status: scenario_failure, reason: RISK_BUDGET_EXCEEDED, risk_points: 7}
+    diagnosis: 不查预报也不加固，在长暴风中直接维修，维修风险使预算从 4 越界。
+  - id: F02_FALSE_SHORT_FORECAST
+    precondition: [seed_id=9, actual_weather=long, forecast=short, tick=0, location=Q]
+    actions: ["inspect(forecast)", "move(Q_P)", "interact(P,repair_lighthouse)"]
+    terminal_at: tick=5_during_second_repair_tick
+    expected_terminal: {status: scenario_failure, reason: RISK_BUDGET_EXCEEDED, risk_points: 7}
+    diagnosis: 80% 预报存在 20% 误报；将单次短暴风读数当作确定真值，未保留加固或安全撤离方案。
+  - id: F03_QUERY_LOOP_MISSES_DEADLINE
+    precondition: [seed_id=5, actual_weather=long, forecast=long, tick=0, location=Q]
+    actions: ["inspect(forecast)", "inspect(forecast)", "inspect(forecast)", "inspect(forecast)", "move(M_Q)", "move(M_G)", "interact(G,harden)"]
+    tick_sequence: [2, 4, 6, 8, 9, 11, 14]
+    terminal_at: tick=14_after_harden_before_repair
+    expected_terminal: {status: scenario_failure, reason: LIGHTHOUSE_REPAIR_DEADLINE}
+    diagnosis: 重复查验不会增加信息；额外查询耗尽了原本可用于加固和维修的时间。

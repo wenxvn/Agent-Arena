@@ -1,0 +1,73 @@
+id: MAP-19
+title: 温度临界点
+world: volcano
+capability_primary: delayed_thermal_prediction
+capability_secondary: [predictive_cooling, load_curtailment, threshold_control]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: deterministic_seed_0
+time_horizon_ticks: 12
+production_threshold: 20
+thermal_failure_predicate: any_zone_temperature_strictly_greater_than_10
+topology:
+  control_console: C_CTRL
+  heat_exchanger_zones: [HX_A, HX_B, HX_C]
+  cooling_station: P
+  control_links: [C_CTRL_HX_A, C_CTRL_HX_B, C_CTRL_HX_C]
+  cooling_links: [P_HX_A, P_HX_B, P_HX_C]
+  thermal_zones_independent: true
+initial_state:
+  tick: 0
+  private_exact_temperatures: {A: 6, B: 5, C: 4}
+  public_temperature_bands: {A: WARM, B: WARM, C: COOL}
+  current_load_levels: {A: 2, B: 2, C: 2}
+  active_cooling: {A: 0, B: 0, C: 0}
+  pending_cooling_commands: []
+  production_points: 0
+thermal_model:
+  temperature_transition: max_zero_current_temperature_plus_load_level_minus_active_cooling
+  load_levels: {idle: 0, reduced: 1, full: 2}
+  production_per_safe_tick: sum_of_three_current_load_levels
+  cooling_per_zone_min: 0
+  cooling_per_zone_max: 2
+  cooling_budget_per_command: 4
+  cooling_budget_per_active_tick: 4
+  cooling_command_effective_tick: command_tick_plus_2
+  cooling_command_persists_until_later_command_matures: true
+  transition_uses_only_cooling_active_at_start_of_tick: true
+  critical_temperature: 10
+  equality_at_critical_temperature_is_safe: true
+  overheat_check: after_simultaneous_temperature_transition_before_production_credit
+  overheat_tick_credit: failed_interval_awards_no_production
+  lower_temperature_clamp: zero
+temperature_bands:
+  COOL: [0, 4]
+  WARM: [5, 7]
+  RISING: [8, 8]
+  NEAR_LIMIT: [9, 10]
+  OVERHEAT: [11, 99]
+actions:
+  - {name: read_temperature, parameters: [zone], tick_cost: 0, frequency: at_most_one_zone_per_decision_tick, effect: return_exact_current_temperature_and_previous_tick_delta_only}
+  - {name: set_cooling, parameters: [cooling_vector_A_B_C], tick_cost: 0, frequency: at_most_one_full_vector_per_decision_tick, precondition: each_value_0_to_2_and_sum_lte_4, effect: enqueue_vector_for_tick_plus_2}
+  - {name: adjust_loads, parameters: [load_vector_A_B_C], tick_cost: 0, frequency: at_most_one_full_vector_per_decision_tick, precondition: each_value_in_0_1_2, effect: apply_loads_to_current_tick}
+  - {name: forecast_next, parameters: [temperature_vector_A_B_C], tick_cost: 0, frequency: exactly_one_vector_before_each_wait, effect: score_against_post_wait_temperature_without_exposing_it}
+  - {name: wait, parameters: [], tick_cost: 1, effect: apply_current_load_and_cooling_then_advance_one_tick}
+public_observation_fields: [tick, ticks_remaining, temperature_bands, active_cooling, current_load_levels, pending_cooling_commands, production_points, production_target, terminal, terminal_reason]
+private_state: [exact_temperatures_except_returned_sensor_reading, expected_forecasts, scoring_reference]
+event_order:
+  decision_frame: [mature_commands_due_at_current_tick, expose_current_bands_and_actuators, optional_single_zone_exact_read, enqueue_new_cooling_for_tick_plus_2, apply_load_vector_immediately, record_agent_forecast, wait]
+  wait_tick: [compute_all_three_next_temperatures_simultaneously_using_current_active_cooling, record_current_sensor_delta, if_any_next_temperature_gt_10_fail_without_production_credit, otherwise_add_sum_of_loads_to_production, increment_tick, at_tick_12_require_production_gte_20]
+  invalid_cooling_vector: [reject_entire_vector, do_not_enqueue_any_zone, do_not_advance_tick]
+terminal_success: [12_safe_thermal_transitions, production_points_gte_20]
+terminal_failure: [any_temperature_gt_10, production_points_lt_20_at_tick_12]
+reason_codes: [THERMAL_RUNAWAY, VALVE_BUDGET_EXCEEDED, INVALID_LOAD_LEVEL, INVALID_COOLING_VECTOR, MISSING_FORECAST, PRODUCTION_BELOW_20, PRODUCTION_TARGET_MET]
+metrics:
+  primary: [overheat_events, total_production_points, mean_absolute_one_tick_prediction_error]
+  prediction_error_definition: mean_absolute_error_over_each_zone_and_each_submitted_one_tick_forecast
+  runtime_verified: false
+manual_schedules_path: planning/hand_traces.json
+failure_cases_path: failure_traces/cases.yaml
+oracle_path: oracle_trace.jsonl
+runtime_verified: false
+model_results: none

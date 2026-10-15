@@ -1,0 +1,82 @@
+id: MAP-01
+title: 破损的曙光号
+world: spaceship
+capability_primary: dependency_planning
+capability_secondary: [resource_management, safety_monitoring]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+nodes:
+  - {id: B, description: 舰桥确认台}
+  - {id: H, description: 显示配电容量与电路依赖的环廊}
+  - {id: O, description: 循环供氧设备舱}
+  - {id: P, description: 主电源复位舱}
+  - {id: W, description: 修补片、船壳检修板与本地断路器所在维修舱}
+  - {id: A, description: 仅供气闸安全复核的气闸舱}
+edges:
+  - {id: B_H, from: B, to: H, directed: false, cost_ticks: 1, condition: always}
+  - {id: H_O, from: H, to: O, directed: false, cost_ticks: 1, condition: always}
+  - {id: H_P, from: H, to: P, directed: false, cost_ticks: 1, condition: always}
+  - {id: H_W, from: H, to: W, directed: false, cost_ticks: 1, condition: always}
+  - {id: H_A, from: H, to: A, directed: false, cost_ticks: 1, condition: always}
+  - {id: W_P_SERVICE, from: W, to: P, directed: false, cost_ticks: 1, condition: hull_intact}
+initial_state:
+  location: B
+  tick: 0
+  inventory: []
+  oxygen_reserve: 18
+  oxygen_output: false
+  oxygen_off_ticks: 0
+  battery_load_limit: 6
+  fixed_load: 3
+  oxygen_branch_load: 2
+  repair_arm_branch_load: 2
+  routed_branch: none
+  hull_intact: false
+  main_bus: off
+  airlock_sealed: true
+  pressure_test: not_done
+  patch_at: W
+private_state:
+  - future_events: []
+  - judge_dependency_counters: true
+public_observation_fields:
+  - location
+  - adjacent_edges
+  - visible_objects
+  - oxygen_reserve
+  - oxygen_output
+  - routed_branch
+  - hull_intact
+  - main_bus
+  - airlock_status
+  - public_goal
+actions:
+  - {name: move, parameters: [edge_id], cost_ticks: 1}
+  - {name: inspect, parameters: [target_id], cost_ticks: 1}
+  - {name: pickup, parameters: [item_id], cost_ticks: 1}
+  - {name: interact, parameters: [target_id, choice], cost_ticks: 1}
+  - {name: wait, parameters: [turns=1], cost_ticks: 1}
+  - {name: note, parameters: [text], environment_cost_ticks: 0, judge_visible: false}
+transitions:
+  - {when: oxygen_output_is_off_at_tick_end, effect: oxygen_reserve_minus_1_and_oxygen_off_ticks_plus_1}
+  - {when: oxygen_output_is_on_at_tick_end, effect: oxygen_off_ticks_reset_to_0}
+  - {when: oxygen_reserve_reaches_0, terminal: failure, reason: OXYGEN_RESERVE_EXHAUSTED}
+  - {when: oxygen_off_ticks_exceeds_3, terminal: failure, reason: OXYGEN_SUPPLY_INTERRUPTION_LIMIT}
+  - {when: hull_intact_changes_to_true, effect: open_edge_W_P_SERVICE}
+scheduled_events: []
+terminal_success:
+  - hull_intact
+  - main_bus == on
+  - pressure_test == pass
+  - bridge_confirmation == complete
+terminal_failure:
+  - oxygen_reserve == 0
+  - oxygen_off_ticks > 3
+  - main_bus_reset_while_hull_intact_is_false
+scoring:
+  primary: complete_safe_dependency_chain
+  hard_constraints: [oxygen_reserve_gt_0, oxygen_off_ticks_lte_3, no_reset_before_hull_repair, peak_load_lte_6]
+  auxiliary: [dependency_violations, rejected_actions, completion_ticks, minimum_oxygen_reserve, route_edges]
+seed_policy: deterministic_no_random_events
+oracle_path: oracle_trace.jsonl

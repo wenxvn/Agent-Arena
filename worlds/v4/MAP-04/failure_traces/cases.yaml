@@ -1,0 +1,19 @@
+id: MAP-04
+cases:
+  - id: F01_NO_PROGRESS
+    precondition: [tick=0, location=T, lamp_lit=false]
+    actions: ["wait(1) × 18；每步结算一次，tick=18 即终止"]
+    expected_terminal: {status: scenario_failure, reason: RESCUE_SIGNAL_WINDOW_EXPIRED}
+    diagnosis: 虽然可以持续跟踪潮相，但始终不离开灯塔取灯芯，最终错过救援时限。
+  - id: F02_DETOUR_OVERRUN
+    precondition: [tick=0, location=T, tide_phase=2]
+    actions: ["move(T_B1)", "move(B1_B2)", "move(B2_B3)", "move(B3_B4)", "move(B4_D)", "move(G_D)", "pickup(wick)", "move(G_D)", "move(B4_D)", "move(B3_B4)", "move(B2_B3)", "move(B1_B2)", "move(T_B1)", "interact(lamp,fit_wick)", "wait(1)", "wait(1)", "wait(1)", "wait(1)"]
+    expected_terminal: {status: scenario_failure, reason: RESCUE_SIGNAL_WINDOW_EXPIRED}
+    terminal_at: tick=18_after_fourth_wait
+    diagnosis: 五边绕行直到装入灯芯已用 14 个动作；随后四次等待耗尽截止时间，尚未点灯。
+  - id: F03_MISSED_RETURN_WINDOW
+    precondition: [tick=6, location=G, tide_phase=2, inventory_has_wick=true]
+    actions: ["inspect(tide_gauge)", "inspect(tide_gauge)", "inspect(tide_gauge)", "inspect(tide_gauge)", "inspect(tide_gauge)", "inspect(tide_gauge)", "move(G_S)", "wait(1)", "wait(1)", "wait(1)", "move(G_S)", "move(S_T)"]
+    expected_terminal: {status: scenario_failure, reason: RESCUE_SIGNAL_WINDOW_EXPIRED}
+    terminal_at: tick=18_during_move_S_T
+    diagnosis: 六次潮位查询耗尽了剩余窗口；第一次返程尝试被拒，之后虽回到 S 并开始 S→T，但该动作在截止 tick 结算失败，未能安装或点燃灯芯。

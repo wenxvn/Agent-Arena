@@ -1,0 +1,82 @@
+id: MAP-24
+title: 消失的道路
+world: ruins
+capability_primary: map_update
+capability_secondary: [dynamic_route_replanning, phase_gated_crossing, route_memory]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+seed_policy: deterministic_private_bridge_event_and_tide_phase
+topology:
+  nodes: [A, B, C, D, E, F]
+  roles: {A: camp_and_delivery, B: suspension_bridge, C: ruin_and_relic, D: riverbank_and_relic, E: old_supply_depot_and_tide_approach, F: mountain_bypass}
+  undirected_edges:
+    - {a: A, b: B, duration_ticks: 1, gate: bridge_B}
+    - {a: B, b: C, duration_ticks: 1, gate: bridge_B}
+    - {a: C, b: D, duration_ticks: 1, gate: always_open}
+    - {a: D, b: E, duration_ticks: 1, gate: tide_window}
+    - {a: E, b: A, duration_ticks: 1, gate: always_open}
+    - {a: A, b: F, duration_ticks: 2, gate: always_open}
+    - {a: F, b: C, duration_ticks: 2, gate: always_open}
+  edges_bidirectional: true
+  bridge_collapse:
+    private_event_tick: 8
+    affected_edges: [[A, B], [B, C]]
+    permanent: true
+    event_resolution: after_actions_arriving_at_tick_8
+    bridge_node_remains_but_becomes_isolated: true
+  tide:
+    edge: [D, E]
+    public_period_ticks: 4
+    public_open_duration_ticks: 2
+    open_predicate: (departure_tick_plus_private_phase_offset_mod_4) in [0, 1]
+    private_phase_offsets: [0, 1, 2, 3]
+    closed_edge_attempt_cost_ticks: 1
+    observation_phase: private_until_measured_locally
+  hidden_items:
+    required_for_success: [relic_C, supply_case_D]
+    locations: {relic_C: C, supply_case_D: D}
+    take_duration_ticks: 1
+    carrying_capacity: both_items
+resources:
+  deadline_tick_inclusive: 24
+  failed_move_duration_ticks: 1
+  invalid_non_neighbor_action_costs_no_time: true
+actions:
+  - {name: move, parameter: currently_adjacent_node, duration: edge_duration_or_one_tick_on_closed_gate, effect: traverse_if_edge_open_else_remain_and_report_failure}
+  - {name: probe_bridge, location: B, duration_ticks: 2, uses_per_run: 1, effect: report_current_bridge_condition_without_forecasting_collapse}
+  - {name: measure_tide, location: [D, E], duration_ticks: 1, uses_per_run: unlimited, effect: report_local_tide_state_at_result_tick}
+  - {name: record_route, location: any_current_node, duration_ticks: 1, effect: save_only_current_local_adjacency_snapshot_with_source_tick}
+  - {name: take, location: [C, D], duration_ticks: 1, effect: pick_up_the_present_required_item}
+  - {name: wait, location: any, duration_ticks: 1, effect: advance_time_and_process_events}
+public_observation_fields: [current_tick, current_node, locally_visible_connections_and_durations, visible_item_here, carried_items, latest_local_tide_reading, bridge_probe_result_if_obtained, agent_route_notes, terminal, terminal_reason]
+private_fields: [bridge_collapse_tick, tide_phase_offset, unseen_local_tide_phase, future_event_log]
+observation_contract:
+  topology_visibility: current_node_and_direct_connections_only
+  bridge_change_visibility: affected_edge_shows_collapsed_only_when_locally_observed
+  tide_visibility: no_free_phase_reading; measure_tide_returns_only_the_local_reading_at_action_completion
+  never_reveal: [bridge_collapse_tick, tide_phase_offset, future_tide_windows, globally_updated_map]
+  route_note_scope: copied_local_connections_only; notes_do_not_auto_update
+  source_oracle_and_private_seed_never_enter_agent_observation: true
+event_order:
+  - validate_action_against_current_local_observation
+  - resolve_move_at_departure_tick_using_current_edge_gate
+  - advance_one_tick_at_a_time_for_action_duration
+  - apply_permanent_bridge_collapse_on_arrival_at_tick_8
+  - preserve_agent_location_during_event; if_location_is_B_then_no_passable_exit_remains
+  - refresh_only_the_current_local_connections_in_the_result_observation
+  - if_both_items_are_carried_and_current_node_is_A_at_tick_le_24_then_success
+  - if_current_tick_exceeds_24_then_DEADLINE_EXCEEDED
+  - if_bridge_collapse_leaves_agent_at_B_then_STRANDED_ON_BRIDGE
+success_predicate: [carried_items_contains_relic_C_and_supply_case_D, current_node_is_A, current_tick_le_24]
+failure_predicates: [deadline_exceeded_before_delivery, stranded_at_B_after_bridge_collapse]
+reason_codes: [MOVE_SUCCEEDED, MOVE_FAILED_EDGE_CLOSED, BRIDGE_COLLAPSED, ITEM_COLLECTED, TIDE_MEASURED, BRIDGE_PROBED, ROUTE_RECORDED, ALL_ITEMS_DELIVERED, DEADLINE_EXCEEDED, STRANDED_ON_BRIDGE, INVALID_ACTION]
+metrics: [finish_tick, stale_route_attempts, route_change_delay_after_observed_collapse, tide_measurements, repeated_nodes, failed_moves, delivered_items]
+manual_scenarios_path: planning/hand_traces.json
+failure_cases_path: failure_traces/cases.yaml
+boundary_cases_path: failure_traces/cases.yaml
+private_seed_reference_path: planning/private_seed_reference.yaml
+private_tide_phase_reference_path: planning/private_tide_phase_reference.yaml
+oracle_path: oracle_trace.jsonl
+runtime_verified: false
+model_results: none

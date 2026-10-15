@@ -1,0 +1,214 @@
+{
+  "map_id": "MAP-21",
+  "kind": "offline_exact_hidden_time_and_signal_enumeration",
+  "enumerated_hidden_eruption_ticks": [
+    12,
+    16,
+    20
+  ],
+  "prior": [
+    0.2,
+    0.5,
+    0.3
+  ],
+  "measurement_outcome_marginals": {
+    "EARLY_WARNING": 0.3400000000000001,
+    "LATE_WARNING": 0.6599999999999999
+  },
+  "posterior_after_early": [
+    0.47058823529411764,
+    0.44117647058823517,
+    0.08823529411764704
+  ],
+  "posterior_after_late": [
+    0.0606060606060606,
+    0.5303030303030304,
+    0.40909090909090917
+  ],
+  "prior_entropy_nats": 1.0296530140645737,
+  "expected_posterior_entropy_nats": 0.8916550639359366,
+  "measurement_information_gain_nats": 0.13799795012863703,
+  "measurement_information_gain_nats_per_tick": 0.06899897506431851,
+  "strategy_results": {
+    "blind_fast_evacuation": {
+      "per_hidden_tick": {
+        "12": {
+          "score": 100,
+          "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+          "elapsed_or_failure_tick": 6
+        },
+        "16": {
+          "score": 100,
+          "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+          "elapsed_or_failure_tick": 6
+        },
+        "20": {
+          "score": 100,
+          "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+          "elapsed_or_failure_tick": 6
+        }
+      },
+      "expected_score": 100.0,
+      "survival_probability": 1.0,
+      "expected_research_points": 0.0
+    },
+    "quick_surface_sample_then_leave": {
+      "per_hidden_tick": {
+        "12": {
+          "score": 105,
+          "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+          "elapsed_or_failure_tick": 8
+        },
+        "16": {
+          "score": 105,
+          "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+          "elapsed_or_failure_tick": 8
+        },
+        "20": {
+          "score": 105,
+          "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+          "elapsed_or_failure_tick": 8
+        }
+      },
+      "expected_score": 105.0,
+      "survival_probability": 1.0,
+      "expected_research_points": 5.0
+    },
+    "unreinforced_medium_sample_exact_boundary": {
+      "per_hidden_tick": {
+        "12": {
+          "score": 112,
+          "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+          "elapsed_or_failure_tick": 12
+        },
+        "16": {
+          "score": 112,
+          "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+          "elapsed_or_failure_tick": 12
+        },
+        "20": {
+          "score": 112,
+          "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+          "elapsed_or_failure_tick": 12
+        }
+      },
+      "expected_score": 112.0,
+      "survival_probability": 1.0,
+      "expected_research_points": 12.0
+    },
+    "reinforced_medium_sample_misses_eruption_edge": {
+      "per_hidden_tick": {
+        "12": {
+          "score": 0,
+          "terminal_reason": "FATAL_ERUPTION",
+          "elapsed_or_failure_tick": 12
+        },
+        "16": {
+          "score": 120,
+          "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+          "elapsed_or_failure_tick": 13
+        },
+        "20": {
+          "score": 120,
+          "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+          "elapsed_or_failure_tick": 13
+        }
+      },
+      "expected_score": 96.0,
+      "survival_probability": 0.8,
+      "expected_research_points": 16.0
+    },
+    "reinforced_high_value_sample_risk": {
+      "per_hidden_tick": {
+        "12": {
+          "score": 0,
+          "terminal_reason": "FATAL_ERUPTION",
+          "elapsed_or_failure_tick": 12
+        },
+        "16": {
+          "score": 150,
+          "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+          "elapsed_or_failure_tick": 14
+        },
+        "20": {
+          "score": 150,
+          "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+          "elapsed_or_failure_tick": 14
+        }
+      },
+      "expected_score": 120.0,
+      "survival_probability": 0.8,
+      "expected_research_points": 40.0
+    }
+  },
+  "measure_then_branch": {
+    "per_hidden_tick_expected_score": {
+      "12": 85.60000000000001,
+      "16": 117.5,
+      "20": 120.5
+    },
+    "expected_score": 112.02000000000001,
+    "survival_probability": 0.9600000000000001,
+    "expected_research_points": 16.02,
+    "joint_branches": {
+      "T12_EARLY_WARNING": {
+        "joint_probability": 0.16000000000000003,
+        "score": 107,
+        "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+        "failure_tick": null
+      },
+      "T12_LATE_WARNING": {
+        "joint_probability": 0.039999999999999994,
+        "score": 0,
+        "terminal_reason": "FATAL_ERUPTION",
+        "failure_tick": 12
+      },
+      "T16_EARLY_WARNING": {
+        "joint_probability": 0.15,
+        "score": 107,
+        "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+        "failure_tick": null
+      },
+      "T16_LATE_WARNING": {
+        "joint_probability": 0.35,
+        "score": 122,
+        "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+        "failure_tick": null
+      },
+      "T20_EARLY_WARNING": {
+        "joint_probability": 0.03,
+        "score": 107,
+        "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+        "failure_tick": null
+      },
+      "T20_LATE_WARNING": {
+        "joint_probability": 0.27,
+        "score": 122,
+        "terminal_reason": "EVACUATED_BEFORE_ERUPTION",
+        "failure_tick": null
+      }
+    }
+  },
+  "failure_replays": {
+    "F01": {
+      "failure_tick": 12,
+      "terminal_reason": "FATAL_ERUPTION",
+      "location": "S"
+    },
+    "F02": {
+      "failure_tick": 12,
+      "terminal_reason": "FATAL_ERUPTION",
+      "location": "IN_TRANSIT_W_S"
+    },
+    "F03": {
+      "failure_tick": 12,
+      "terminal_reason": "FATAL_ERUPTION",
+      "location": "S"
+    }
+  },
+  "same_tick_e_arrival_precedes_eruption": true,
+  "integer_or_global_optimum_claimed": false,
+  "seed0_public_signal": "LATE_WARNING",
+  "seed0_public_oracle_rows": 15,
+  "runtime_verified": false
+}

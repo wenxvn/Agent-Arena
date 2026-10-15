@@ -1,0 +1,37 @@
+id: MAP-03
+model: deterministic_five_phase_precedence
+milestones:
+  P1: restore_aux_power_at_D1
+  P2: read_K7_once_then_stabilize_sample_at_U1
+  P3: repair_antenna_at_V_and_return
+  P4: transmit_at_U3_after_P3
+  P5: submit_exact_K7_at_U2_after_P2_and_P4
+precedence: [[P1, P2], [P1, P3], [P2, P3], [P3, P4], [P2, P5], [P4, P5]]
+sample:
+  label: K7
+  readable_once: true
+  thermal_window_actions: 4
+  expiry_reason: SAMPLE_COLD_WINDOW_EXPIRED
+eva:
+  initial_supply_units: 3
+  minimum_to_begin_sortie: 3
+  consume_on: [move_D3_to_V, one_repair_action_at_V, move_V_to_D3]
+  successful_route_cost: 3
+  failure_reason: EVA_OXYGEN_EXHAUSTED
+route_window:
+  start_tick: 0
+  expires_at: 36
+  primary_oracle_completion_tick: 30
+  alternate_oracle_completion_tick: 31
+  failure_reason: RETURN_WINDOW_EXPIRED
+answer:
+  allowed_submission_count: 1
+  exact_value: K7
+  incorrect_feedback: ROUTE_KEY_REJECTED
+  feedback_must_not_expose: [character_position, prefix_match, answer_length]
+memory_controls:
+  - {id: full_history, change: none}
+  - {id: short_history, change: retain_last_5_environment_actions}
+  - {id: structured_memory, change: retain_agent_authored_milestone_and_K7_notes}
+held_constant: [graph, action_schema, tick_budget, observation_fields, task_state]
+forbidden_observation: [route_tag_before_U1_read, route_tag_after_first_read, oracle_steps, future_events]

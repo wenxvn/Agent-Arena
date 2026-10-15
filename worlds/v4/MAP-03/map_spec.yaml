@@ -1,0 +1,75 @@
+id: MAP-03
+title: 最后的百步
+world: spaceship
+capability_primary: long_horizon_goal_maintenance
+capability_secondary: [memory_recall, phase_tracking, resource_management]
+version: 4.0.0-design
+action_contract: scenario_v4
+status: DESIGN_COMPLETE_PENDING_RUNTIME
+nodes:
+  - {id: D1, description: 下层能源舱与辅助电源控制器}
+  - {id: D2, description: 下层仓库与 EVA 清单}
+  - {id: D3, description: 下层维修舱与外部舱门}
+  - {id: XD, description: 下层升降机端}
+  - {id: XU, description: 上层升降机端}
+  - {id: U1, description: 上层实验室、一次性标签与低温柜}
+  - {id: U2, description: 舰桥与最终航线控制台}
+  - {id: U3, description: 通信舱与遥测台}
+  - {id: V, description: 外部天线维修平台}
+edges:
+  - {id: D1_D2, from: D1, to: D2, directed: false, cost_ticks: 1, condition: always}
+  - {id: D2_D3, from: D2, to: D3, directed: false, cost_ticks: 1, condition: always}
+  - {id: D3_XD, from: D3, to: XD, directed: false, cost_ticks: 1, condition: always}
+  - {id: XD_XU, from: XD, to: XU, directed: false, cost_ticks: 1, condition: always}
+  - {id: XU_U3, from: XU, to: U3, directed: false, cost_ticks: 1, condition: always}
+  - {id: U3_U2, from: U3, to: U2, directed: false, cost_ticks: 1, condition: always}
+  - {id: U2_U1, from: U2, to: U1, directed: false, cost_ticks: 1, condition: always}
+  - {id: D3_V, from: D3, to: V, directed: false, cost_ticks: 1, condition: eva_supply_gte_3}
+initial_state:
+  location: U2
+  tick: 0
+  inventory: [eva_supply_3]
+  eva_supply: 3
+  aux_power: off
+  sample_cold: false
+  antenna: damaged
+  telemetry: not_sent
+  route_calibrated: false
+  route_tag_read: false
+  sample_thermal_ticks: null
+  sample_lost: false
+  route_window_end_tick: 36
+  milestones_completed: 0
+private_state:
+  route_tag_value: K7
+  route_tag_revealed_once: false
+  judge_oracle: oracle_trace
+  evaluation_labels: memory_control_arm
+public_observation_fields: [location, adjacent_edges, visible_objects, public_goal, milestone_bits, eva_supply, route_window_remaining, sample_status_after_read]
+actions:
+  - {name: move, parameters: [edge_id], cost_ticks: 1}
+  - {name: inspect, parameters: [target_id], cost_ticks: 1}
+  - {name: interact, parameters: [target_id, choice], cost_ticks: 1}
+  - {name: submit, parameters: [target_id, answer], cost_ticks: 1, attempts: 1}
+  - {name: wait, parameters: [turns=1], cost_ticks: 1}
+  - {name: note, parameters: [text], environment_action: false, judge_visible: false}
+transitions:
+  - {when: restore_power_at_D1, effect: complete_P1_and_enable_cryo_and_comms}
+  - {when: first_read_tag_at_U1, effect: reveal_K7_once_then_start_four_following_action_window}
+  - {when: fourth_following_environment_action_ends_without_sample_cold, terminal: failure, reason: SAMPLE_COLD_WINDOW_EXPIRED}
+  - {when: enter_V_or_act_in_V_or_return_to_D3, effect: eva_supply_minus_1}
+  - {when: eva_supply_eq_0_while_location_V, terminal: failure, reason: EVA_OXYGEN_EXHAUSTED}
+  - {when: repair_antenna_at_V_after_sample_cold, effect: complete_P3}
+  - {when: transmit_at_U3_after_P3, effect: complete_P4}
+  - {when: submit_K7_at_U2_after_P1_to_P4, effect: route_calibrated_true_then_complete_P5_and_success}
+  - {when: submit_wrong_key, terminal: failure, reason: ROUTE_KEY_REJECTED}
+  - {when: tick_reaches_36_before_P5, terminal: failure, reason: RETURN_WINDOW_EXPIRED}
+scheduled_events: []
+terminal_success: [P1, P2, P3, P4, P5, route_submission_is_K7, tick_lt_36]
+terminal_failure: [SAMPLE_COLD_WINDOW_EXPIRED, EVA_OXYGEN_EXHAUSTED, ROUTE_KEY_REJECTED, RETURN_WINDOW_EXPIRED]
+scoring:
+  primary: all_milestones_and_correct_single_submission
+  hard_constraints: [sample_window_lte_4, eva_supply_nonnegative, return_window_tick_lt_36]
+  auxiliary: [milestone_omissions, K7_recall, action_span_K7_to_submit, wasted_eva_supply, phase_regressions]
+seed_policy: deterministic_no_random_events
+oracle_path: oracle_trace.jsonl

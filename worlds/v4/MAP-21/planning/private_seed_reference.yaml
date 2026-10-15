@@ -1,0 +1,8 @@
+# 离线审计夹具；绝不能进入Observation或公共Oracle。
+seed: 0
+hidden_time_uniform_draw: 0.42
+hidden_eruption_tick: 16
+measurement_uniform_draw: 0.42
+hidden_tick_rule: first_uniform_in_[0_0.2)_selects_12;_[0.2_0.7)_selects_16;_[0.7_1)_selects_20
+measurement_rule: early_if_second_uniform_draw_less_than_early_likelihood_else_late
+expected_measurement: LATE_WARNING

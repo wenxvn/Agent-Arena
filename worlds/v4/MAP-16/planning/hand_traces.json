@@ -1,0 +1,23 @@
+{
+  "map_id": "MAP-16",
+  "authorship": "The A-X-M-Y-B line, M-D siding, train direction, and both tick schedules are hand-authored. The finite-state enumerator checks safety and optimality; it does not generate the network or traces.",
+  "seed": 0,
+  "plans": {
+    "a_yields_siding": [
+      {"tick_before": 0, "route_intents": {"a": "X", "b": "Y"}, "positions_before": {"a": "A", "b": "B"}, "positions_after": {"a": "X", "b": "Y"}},
+      {"tick_before": 1, "route_intents": {"a": "M"}, "positions_before": {"a": "X", "b": "Y"}, "positions_after": {"a": "M", "b": "Y"}},
+      {"tick_before": 2, "route_intents": {"a": "D", "b": "M"}, "positions_before": {"a": "M", "b": "Y"}, "positions_after": {"a": "D", "b": "M"}},
+      {"tick_before": 3, "route_intents": {"a": "M", "b": "X"}, "positions_before": {"a": "D", "b": "M"}, "positions_after": {"a": "M", "b": "X"}},
+      {"tick_before": 4, "route_intents": {"a": "Y", "b": "A"}, "positions_before": {"a": "M", "b": "X"}, "positions_after": {"a": "Y", "b": "A"}},
+      {"tick_before": 5, "route_intents": {"a": "B"}, "positions_before": {"a": "Y", "b": "A"}, "positions_after": {"a": "B", "b": "A"}}
+    ],
+    "b_yields_siding": [
+      {"tick_before": 0, "route_intents": {"a": "X", "b": "Y"}, "positions_before": {"a": "A", "b": "B"}, "positions_after": {"a": "X", "b": "Y"}},
+      {"tick_before": 1, "route_intents": {"b": "M"}, "positions_before": {"a": "X", "b": "Y"}, "positions_after": {"a": "X", "b": "M"}},
+      {"tick_before": 2, "route_intents": {"a": "M", "b": "D"}, "positions_before": {"a": "X", "b": "M"}, "positions_after": {"a": "M", "b": "D"}},
+      {"tick_before": 3, "route_intents": {"a": "Y", "b": "M"}, "positions_before": {"a": "M", "b": "D"}, "positions_after": {"a": "Y", "b": "M"}},
+      {"tick_before": 4, "route_intents": {"a": "B", "b": "X"}, "positions_before": {"a": "Y", "b": "M"}, "positions_after": {"a": "B", "b": "X"}},
+      {"tick_before": 5, "route_intents": {"b": "A"}, "positions_before": {"a": "B", "b": "X"}, "positions_after": {"a": "B", "b": "A"}}
+    ]
+  }
+}
