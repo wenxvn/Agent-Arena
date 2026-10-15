@@ -27,7 +27,7 @@
 | 16 | 七个新世界：十世界三十图 | Research Core | done |
 | 17 | 任务结构 pilot：分支/并行/反转 + seeded（flex 引擎） | Research Core | done |
 | 18 | 旧三世界重制图：去换皮，新 10×3 矩阵 | Research Core | done |
-| 19 | V3 主题世界：10 家族 × 3 难度 × 30 手工关卡 | Research Core | in progress |
+| 19 | V3 主题世界：10 家族 × 3 难度 × 30 手工关卡 | Research Core | done |
 
 ## Foundation
 
@@ -129,6 +129,8 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 
 ## 当前研究与交付清单
 
+A 至 E 保留早期交付清单与当时待办；当前阶段以本文 V2 门禁总览、V3 状态及“当前下一步”为准，不据此直接启动旧实验建议。
+
 下面的清单把“已经能通关”与“还没有证明”的问题分开。`planner_assisted` 的成功只能证明真实本地模型能在公开规划建议下执行一条合法路线，不能代表模型已经具备纯自主规划能力。
 
 ### A. 原计划尚未完成
@@ -137,7 +139,7 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
   - 验收：UI 明确显示 Agent 类型和辅助来源；不能把 `planner_assisted` 标成纯 ReactAgent/MemoryAgent；失败、超步数和非法输出都有可见状态。
 - [x] **PlanningAgent v1**：实现高层子目标规划和事件触发阶段切换，规划本身不直接调用环境、不绕过 Action schema。
   - 工程验收：规划版本、阶段变化和实际 Action 可复盘；Fake provider 5 seeds smoke benchmark 已通过。
-  - 研究验收待办：真实模型需与基线在相同 seed、预算和模型下进行对照。
+  - 研究对照已完成：qwen 与 Muse 基线均为 0/5；工程完成不代表研究有效，见 spec 0006 与 V1 失败分析。
 - [ ] **ReflectionAgent**：只在明确触发条件下根据失败或循环进行反思和重规划。
   - 验收：反思触发次数、输入摘要和后续动作可追踪；证明它减少失败或重复动作，而不是只增加 token。
 - [ ] **多世界、多模型对照**：至少加入第二个 world version 和第二种模型规模，避免结论只适用于单一地图和 `qwen2.5:7b`。
@@ -145,7 +147,7 @@ Done when: 一条命令可以运行多局实验，输出 JSON 和 CSV，并比�
 
 ### B. 纯模型自主通关验收（2026-10-11 已通过，Muse 45/45）
 
-这项任务必须证明模型在不依赖 Spaceship Escape 谜题攻略式提示、不使用 `planner_assisted` 或 `guarded` 引导的情况下，仅根据公开 Observation、历史和环境反馈完成任务。当前 ReactAgent、MemoryAgent 和 PlanningAgent 均有实现与 Fake provider 对照测试；真实 Ollama 对照已覆盖 React、Memory、Planning，但尚未取得可重复的纯模型成功。
+这项任务必须证明模型在不依赖 Spaceship Escape 谜题攻略式提示、不使用 `planner_assisted` 或 `guarded` 引导的情况下，仅根据公开 Observation、历史和环境反馈完成任务。当前 ReactAgent、MemoryAgent 和 PlanningAgent 均有实现与 Fake provider 对照测试；真实 Ollama 对照已覆盖 React、Memory、Planning，当时未取得可重复的纯模型成功；后续 Muse 自主组合结果见本节后续记录及 §H、§I。
 
 - [x] ReactAgent + Ollama `qwen2.5:7b`，使用通用 prompt，不使用 planner feedback 或 `guarded` 公开规则保护。
 - [x] MemoryAgent + Ollama `qwen2.5:7b`，保持与 ReactAgent 相同的模型、seed、预算和通用 prompt，只增加结构化记忆。
@@ -318,6 +320,7 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 ## 当前下一步
 
 十世界三十图矩阵及 9 张重制图已完成；flex pilot 与 seeded 共 45 局成功，详见 §K、§L 和 `docs/research/v1/08-cross-task-and-e1.md`。只读 Streamlit 研究回放 MVP 已提供，完整交互式实验界面仍属 Release 3。
+V3 30 个 Scenario 的离线实现与验收已完成，见第 19 项；真实模型对照仍须独立设计和登记。
 当前研究缺口：seeded v3 的 90/30 布局全集和程序性 dev/test holdout 已冻结，两个运行时 selector 与 120 个实例 hash 全匹配；模型行为评估待 S2 matched-pilot Gate，通过前不能启动在线矩阵。
 
 ## V1 研究提纲执行状态（2026-10-11，S0–S1 完成，S2–S6 部分）
@@ -367,7 +370,7 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 - [~] S2 Memory v3：M1 空间边、frontier、公开事件记忆的可选 v3 实现与离线验证已完成；默认 v2 保持。新增规范化 `memory_digest`，并对落盘后重新读取的完整 10 步公开 Trace 做双次回放，digest、frontier 和因果事件顺序一致。trace statistics 经两轮容量/字段复核，已覆盖 v3 房间、初始/新增事实、失败动作、问题、揭示物品、出口、成功边、事件，以及 current-room/inventory/里程碑/question/event 更新；v2 `visited_locations` 不重复计数。此前提交 a336bd6 时，Python 3.13.3 全量 pytest 350 passed、Ruff/mypy 通过；提交 `a336bd68768f32a35e5c6a906b60045571b63669` 的 [Actions run #74](https://github.com/wenxvn/Agent-Arena/actions/runs/38379921434) 通过。该环境没有 `uv` 命令，未执行 `uv lock --check`，依赖文件未改动。fail-closed provider budget guard 与 world identity 稳定性修复已验证；三次隔离尝试均在 v2 首个 episode 中因 provider error fail closed：BUDGET-01 为 2 次（1,509 usage + 22,577 reservation = 24,086 本地记账 tokens，unknown-spend），BUDGET-02 为 10 次（15,374 usage + 25,478 reservation = 40,852 本地记账 tokens，timeout），BUDGET-03 为 7 次（10,043 usage + 25,156 reservation = 35,199 本地记账 tokens，provider_error）。合计 19/500 requests、26,926 confirmed usage + 73,211 reservation = 100,137/4,000,000 本地记账 tokens；三笔 reservation 的 provider 实际扣费未知。三份 ledger 与 partial 输出保留，当前登记矩阵不再发送 API 请求，v2 为 0/2 完成且 v3 未启动。S2 Gate 未完成，不推进 S3。详见 [V2-03](../research/v2/03-memory-v3.md)、[运行登记表](../research/v2/00-run-registry.md)、spec [0014](../specs/0014-memory-v3-spatial-event/index.md) 与 [0015](../specs/0015-v2-provider-budget-guard/index.md)。
 - [x] S2 末轮只读失败诊断：逐条核对三份 ledger 的计数、状态、错误分类与本地耗时；BUDGET-03 的 120 秒环境覆盖已通过配置前缀和 adapter 传参核实，失败事件约 10 秒且为无 HTTP status 的 `provider_error`。现有安全记录无法区分无输出响应与未分类 SDK/网关异常；BUDGET-01 约 30 秒但 schema 1 无类别，不能追溯定性。没有额外 provider 请求或 GPU 运行，不创建 BUDGET-04、不推进 S3。详见 [V2-03 末轮诊断](../research/v2/03-memory-v3.md) 与[运行登记表](../research/v2/00-run-registry.md)。
 
-## V3 主题世界设计与实现（2026-10-14）
+## 19. V3 主题世界设计与实现 · done（2026-10-14）
 
 V3 按 [spec 0017](../specs/0017-world-redesign-v3/index.md) 推进，内容来源为仓库根目录 `研究提纲/V3世界设计提纲.md`。新增独立 Scenario Action/Observation 与 selector，分十家族逐关实现，不改 Legacy 世界或冻结的 V2 seeded 定义。当前只做离线工程，不复用 V2 provider ledger、holdout 或真实模型预算。
 

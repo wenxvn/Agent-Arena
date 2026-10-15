@@ -63,50 +63,20 @@ Skateboard。先交付一个真正可运行的最小闭环：确定性环境、�
 6. `docs/architecture.md`：稳定模块边界和数据流。
 7. 代码和测试：实际运行行为。
 
-### 任务结束时写回状态
+## 工作流入口
 
-- 交付进度写入 `docs/scope/`，由 `/scope`、`/develop`、`/test` 或 `/sync` 按各自职责更新。
-- 技术决策写入 `docs/specs/`，由 `/architect` 创建或更新。
-- 稳定模块边界和数据流变化写入 `docs/architecture.md`，不记录易变的实现细节。
-- 全局约定写入本文件，由 `/audit` 或 `/sync` 维护。
-- 重要工程事件追加到 `docs/engineering-log.md`，由执行该事件的 workflow 负责填写。
-- 每次完成后运行适用的验证和 `/sync`，再提交和推送预期文件。新对话只依赖这些持久文件，不依赖聊天记录。
+操作流程与文件维护分工统一见 [docs/workflow.md](docs/workflow.md)，9 个项目 Skill 的入口见 [skills/README.md](skills/README.md)。按任务选用，不为文档或小修复机械执行全部阶段。
 
-## 9 个 Skill 的调用规则
+完成顺序：实现 → 适用验证 → `/sync` → 重要事件记录 → 提交并推送预期文件。验证失败时记录阻塞，不标记完成。只提交本次任务文件，保留用户已有修改。
 
-| 情况 | 调用 | 读取范围 | 产物或结果 |
-|---|---|---|---|
-| 规划产品、下个里程碑或调整优先级 | `/scope` | 本文件、scope、相关需求 | 创建或协调 `docs/scope/scope.md` |
-| 技术栈、模型客户端、环境规则、数据模型或其他关键决策未定 | `/architect <功能>` | 本文件、架构摘要、目标 scope 和相关需求 | 在 `docs/specs/` 创建或更新决策 spec |
-| 缺少项目约定或新增一个有独立规则的代码区域 | `/audit` 或 `/audit <区域>` | 全仓库或指定区域 | 创建或补全 `AGENTS.md` 上下文 |
-| 已有批准设计，或任务没有未决关键设计 | `/develop <功能>` | 目标 spec、架构摘要、受影响目录和测试 | 实现功能并推进构建状态 |
-| 行为异常、验证失败或测试失败原因不明确 | `/debug <问题>` | 错误路径、相关测试和最小调用链 | 复现、定位、最小修复和验证 |
-| 为未提交代码补充行为测试 | `/test <功能>` | 当前 diff、目标 spec、受影响代码 | 写入回归、边界和错误处理测试 |
-| 证明功能在真实运行环境满足验收条件 | `/check verify <功能>` | spec 验收条件、运行入口和受影响路径 | 验证功能行为 |
-| 重要提交或 PR 前进行独立代码审查 | `/check review` | 当前 diff、相关 spec 和局部调用链 | 输出按优先级排序的审查发现 |
-| 需要 PR、changelog、release note 或复盘文档 | `/document <类型>` | 真实 commit、diff 和已有结果 | 输出面向人的变更文档 |
-| 功能完成、合并后或持久文档可能落后于代码时 | `/sync` | 当前 diff、相关 scope、spec 和 AGENTS | 协调 scope、spec 状态和工程上下文 |
-
-## 默认流程
-
-新功能：`/scope` → 有关键决策时 `/architect` → `/develop` → `/test` → `/check verify` → 重要改动运行 `/check review` → `/sync` → commit 和 push。
-
-缺陷：`/debug` → `/test` → `/check verify` → `/sync`。只写变更说明时，在已有 commit 或 diff 后运行 `/document`。
-
-### 重要事件记录流程
-
-不是每次小改动都要写日志。满足以下任一条件时追加一条记录：阶段开始或完成、架构决策确认或修改、重要验证通过或失败、阻塞及解决、开发优先级调整。
-
-记录应简短回答六个问题：发生了什么、为什么做、改了什么、如何验证、下一步是什么、关联哪个 commit。代码细节和完整测试输出留在 Git、测试结果或 trace 中，不复制到日志。
-
-完成顺序是：实现 → 测试和验证 → `/sync` → 追加工程事件记录 → commit 和 push。若验证失败，记录失败和当前阻塞，不把功能写成已完成。
+真实模型实验必须另外满足研究登记、预算与停止条件。V2 S2 Gate 仍未通过；不得重试已关闭账本、创建 BUDGET-04 或推进后续模型评估。普通工程维护不构成实验启动授权。
 
 ## 项目约束
 
 - Agent 只能接收 `Observation`，不得接收完整 `WorldState`。
 - Environment、agents、模型客户端、evaluation 和 UI 必须保持独立边界。
 - 环境必须确定且先有规则测试，随后 benchmark 才可信。
-- 全项目只保留一种 Action schema，所有 LLM 输出在执行前必须校验。
+- 每个运行版本只使用一种 Action contract，所有 LLM 输出在执行前必须校验；Legacy 使用 `legacy_v1`，V3 使用 spec 0017 的 `scenario_v3`，不得混用。
 - 每局运行保存一个 JSON Episode Trace，trace 中不能包含密钥或完整思维链。
 - 首个 MVP 不引入 LangChain、向量数据库、多 Agent 编排、RAG、数据库存储或复杂 UI。
 - `runs/` 和 `results/` 是本地生成物，默认不纳入 Git，除非未来 scope 明确改变该规则。

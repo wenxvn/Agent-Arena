@@ -27,6 +27,8 @@ uv run agent-arena run \
 
 另外提供独立的 `planner_assisted` 实验模式：规划器只根据公开信息给出阶段和下一动作建议，模型仍需返回并执行合法的 JSON Action。它用于研究“公开辅助能否提高通关可靠性”，不能当作纯模型自主规划结果。
 
+项目维护入口见 [工作流](docs/workflow.md)，9 个 Skill 的职责见 [Skill 索引](skills/README.md)。
+
 ## 快速开始
 
 安装依赖并运行默认的确定性演示：

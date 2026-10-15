@@ -1,8 +1,17 @@
-# 当前问题记录
+# 当前问题与历史诊断
 
-> 2026-10-11 更新：自主通关验收已通过——Muse 自主组合在 9 配置 × 5 seeds 获 45/45 成功，见 [开发进度](scope/scope.md) §H–§I 与 [工程记录](engineering-log.md)。下文保留 qwen 时代与早期 Muse 基线的失败过程记录，不再代表当前结论。
+更新时间：2026-10-15（文档审核，未调用模型服务）
 
-更新时间：2026-09-10
+## 当前问题入口
+
+- V2 S2 matched-pilot 未通过，三份预算账本已关闭。停止边界与恢复条件以 [运行登记表](research/v2/00-run-registry.md) 和 [Memory v3 报告](research/v2/03-memory-v3.md) 为准。
+- V3 30 关离线工程已交付，尚无真实模型行为对照，见 [验收报告](world-design-v3/oracle-acceptance.md)。
+- 完整交互实验界面和 Reflection 仍未交付，见 [Scope](scope/scope.md)。只读 UI 已实现。
+- Muse 自主组合的 45/45 是配置覆盖结果，原始尝试为 46/51，不能推广为首次尝试成功率或跨模型结论。
+
+## 历史诊断（2026-09-10，含 2026-10-10 补记）
+
+以下保留原实验问题与验证快照。“当前”“最新”和本机模型可用性均指当时条件，不代表今天的服务状态；测试数也是历史记录。日常执行使用 [工作流](workflow.md)，进度使用 Scope。
 
 ## 结论摘要
 
@@ -10,7 +19,7 @@
 
 简单说：程序能正常启动、调用 Ollama、校验模型输出、执行动作、在终端显示每一步并保存 trace；问题出在模型的多步决策能力，模型经常忘记已经得到的信息，重复走相同路线，最后达到 30 步上限。PlanningAgent 已能记录子目标和重规划，但真实固定 5 seeds 与 Evaluation v2 重跑均为 0/5，主要行为是持续执行合法但无进展的 `look`。
 
-## 最新状态（2026-09-10，2026-10-10 补记 Muse 基线）
+## 当时状态（2026-09-10，2026-10-10 补记 Muse 基线）
 
 - 2026-10-10 起真实实验 provider 从 Mac 本地 Ollama 切换为 Windows 下 OpenCode Zen 网关的 `muse-spark-1.3-contributor`（OpenAI Responses 兼容，`OPENAI_BASE_URL=https://opencode.ai/zen/go/v1`）。密钥只保存在本机 `.env`，绝不提交。
 - Muse React 自主 5 seeds（`--autonomous`，30 步）：0/5 成功，0 次非法输出，平均重复动作比例约 83%、唯一公开房间 2 个；5 局全部卡在控制室/走廊循环，从未进入储藏室。严格 schema 消除了协议失败，但任务分解仍不足。

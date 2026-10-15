@@ -114,7 +114,7 @@ python scripts/summarize_v2_distributions.py
 
 ### Spec 最短公开路径参考比值
 
-原始提纲 S1.3 要求在 oracle 与地图版本匹配时计算 `actual actions / reference shortest actions`。接受的 [spec 0011](../specs/0011-seven-worlds/index.md)、[spec 0012](../specs/0012-flex-pilots/index.md)、[spec 0013](../specs/0013-redesign-old-worlds/index.md) 为 42 个固定地图 selector 记录了最短公开路径步数。新增脚本以当前 `create_environment(...).identity` 生成地图 identity，再按 Trace 的 `world_version`、`world_definition_id`、`world_definition_hash` 三元组做精确匹配；只有成功 outcome 才计算比值和多用动作数：
+原始提纲 S1.3 要求在 oracle 与地图版本匹配时计算 `actual actions / reference shortest actions`。接受的 [spec 0011](../../specs/0011-seven-worlds/index.md)、[spec 0012](../../specs/0012-flex-pilots/index.md)、[spec 0013](../../specs/0013-redesign-old-worlds/index.md) 为 42 个固定地图 selector 记录了最短公开路径步数。新增脚本以当前 `create_environment(...).identity` 生成地图 identity，再按 Trace 的 `world_version`、`world_definition_id`、`world_definition_hash` 三元组做精确匹配；只有成功 outcome 才计算比值和多用动作数：
 
 ```powershell
 python scripts/audit_v2_oracle_ratios.py

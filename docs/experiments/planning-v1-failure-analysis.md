@@ -106,9 +106,11 @@ Evaluation v2 不使用 LLM Judge，因此没有自动声称这些步骤一定�
 
 ## 产物与可复现命令
 
-- [failure_analysis.json](../../results/planning-v1-eval-v2/failure_analysis.json)
-- [failure_analysis.csv](../../results/planning-v1-eval-v2/failure_analysis.csv)
-- [benchmark JSON](../../results/planning-v1-eval-v2/benchmark_20260910T015109Z_planning_5-seeds_5-episodes_1d45909a.json)
+以下为历史产物路径，默认不纳入 Git。2026-10-15 审计时本机未找到这三份文件，本次没有重建或重跑实验。
+
+- `results/planning-v1-eval-v2/failure_analysis.json`
+- `results/planning-v1-eval-v2/failure_analysis.csv`
+- `results/planning-v1-eval-v2/benchmark_20260910T015109Z_planning_5-seeds_5-episodes_1d45909a.json`
 
 ```bash
 uv run agent-arena analyze-traces \
