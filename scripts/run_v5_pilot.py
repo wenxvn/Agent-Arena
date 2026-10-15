@@ -632,6 +632,7 @@ def execute_paid(args: argparse.Namespace) -> int:
                 "episode_timeout",
                 "global_provider_timeout",
                 "incomplete",
+                "invalid_action_schema_limit",
             }:
                 if not ledger.closed:
                     ledger.close("STAGE_B_SMOKE_INCOMPLETE", episode_id=spec.episode_id)

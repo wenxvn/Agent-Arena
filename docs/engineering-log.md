@@ -1137,3 +1137,17 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 下一步：交付提交推送后，任何 V3 模型行为比较另行设计并登记，不从离线 Oracle 推断模型通关能力。
 
 关联提交：`63a06f1`。
+
+## 2026-10-16 V5 MiMo smoke 系统性 schema 失败
+
+事件：在冻结离线门禁通过后启动唯一登记的 `mimo-v2.6-flash` Stage B smoke；按研究提纲的接口失败停止条件终止运行，没有启动 Stage C。
+
+原因：MAP-08/no_hypothesis_table/seed 0 的 70 次已结算决策全部被运行时记录为 `INVALID_ACTION_SCHEMA`，未产生合法 Action。第 71 次请求已预留但进程中断时没有 usage 回执；V5 ledger 审计因此写入 `UNKNOWN_SPEND_AFTER_INTERRUPTED_REQUEST` 并 fail-closed。实际 schema 失败类别无法从现有 trace 进一步细分，因为原始模型文本不落盘。
+
+证据与费用：run `d3f3d7be-c928-4433-b6aa-9a269d97f593`；冻结 commit `e440cc1b599a5de4a57650f418d78b03c4746399`，gate hash `664e2d1210f77c30a5fe486ac8d80808f4c0f71a10a2b35311b7f866dabe6813`。71 次 reservation、70 次 settlement、1 次 unknown；已报告 usage 为 input 38,976、output 2,936、cached input 34,176 tokens（部分 settled 请求未提供缓存字段）。70 次已报告 usage 计算费用 ¥0.01135552；总 reservation ¥0.72704，含未知的第 71 次完整 reservation ¥0.01024；单币种上限 ¥37.50。episode 完成 0/39，smoke gate 未通过，Stage C 0/33。
+
+验证：冻结脚本在运行 commit 上全绿：scoped Ruff、mypy、全量 pytest、V4 Oracle replay、独立 solver、Fake API dry-run、git diff check 均通过；`uv lock --check` 因宿主无 `uv` 未运行。关闭后加固通过全量 pytest 513 passed、V5 定向测试 26 passed、Ruff 和 mypy；没有重连 MiMo，故真实运行结果不属于离线验证结论。
+
+下一步：继续只做离线协议审计。MiMo JSON mode 要求显式完整定义字段层级和类型；付费运行所用 prompt 顶层示意包含省略号，现已补全；连续三次 schema 拒绝现在会 fail-closed。精确根因与修复效果仍未由 MiMo 复测确认。原 V5 ledger 已关闭，不恢复或新建 successor ledger；本轮数据不构成模型能力结论。
+
+关联提交：运行实现 `e440cc1`；本记录待提交。

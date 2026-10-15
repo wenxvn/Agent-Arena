@@ -95,6 +95,21 @@ def test_all_registered_system_prompts_exclude_private_answer_and_source_materia
             )
 
 
+def test_system_prompt_defines_complete_top_level_json_fields_without_placeholders() -> None:
+    prompt = system_prompt("MAP-08", "no_hypothesis_table")
+
+    assert '"decision_reason"' in prompt
+    assert '"action"' in prompt
+    assert '"agent_hypothesis_table"' in prompt
+    assert "顶层只含这 3 个键" in prompt
+    assert "不要输出 Markdown、代码围栏、占位符、省略号" in prompt
+    assert "..." not in prompt
+
+    hypothesis_prompt = system_prompt("MAP-08", "hypothesis_table")
+    assert "belief_B/belief_D/belief_F" in hypothesis_prompt
+    assert 'next_test（"X"/"Y"/"repair"）' in hypothesis_prompt
+
+
 def test_map18_actual_provider_inputs_do_not_publish_future_fault_details(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -562,6 +577,46 @@ class _Map08FakeProvider:
             output_tokens=30,
             cached_input_tokens=0,
         )
+
+
+class _InvalidSchemaProvider:
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def decide(self, request: DecisionRequest) -> ProviderResponse:
+        self.calls += 1
+        return ProviderResponse(candidate={"unexpected": "shape"}, input_tokens=10, output_tokens=5)
+
+
+def test_v5_runner_closes_after_three_consecutive_invalid_action_schemas(
+    tmp_path: Path,
+) -> None:
+    ledger = V5BudgetLedger(
+        tmp_path / "invalid-schema-ledger.jsonl",
+        currency="CNY",
+        model="mimo-v2.6-flash",
+        source_hashes={"MAP-08": source_hash("MAP-08")},
+    )
+    provider = _InvalidSchemaProvider()
+    runner = V5PilotRunner(
+        provider=provider,
+        settings=_fake_v5_settings(tmp_path),
+        ledger=ledger,
+        output_dir=tmp_path / "invalid-schema-run",
+        decision_limit=10,
+    )
+
+    result = runner.run(
+        V5EpisodeSpec("MAP-08", "no_hypothesis_table", 0, "independent_seeded_instance")
+    )
+
+    events = ledger.read_events()
+    close_event = next(event for event in events if event["event"] == "pilot_closed")
+    assert result["outcome"] == "invalid_action_schema_limit"
+    assert provider.calls == 3
+    assert close_event["reason"] == "SYSTEMATIC_INVALID_ACTION_SCHEMA"
+    assert close_event["consecutive_invalid_outputs"] == 3
+    assert not any(event["event"] == "episode_completed" for event in events)
 
 
 def _fake_v5_settings(tmp_path: Path, *, provider: str = "fake") -> RuntimeSettings:

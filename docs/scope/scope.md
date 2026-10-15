@@ -395,7 +395,9 @@ V3 按 [spec 0017](../specs/0017-world-redesign-v3/index.md) 推进，内容来�
   - [x] 实现隔离的 V4 契约、六图运行时、公开视图与裁判状态，覆盖 AC-1 至 AC-5
   - [x] 实现 V5 episode、配对条件、Trace、指标、manifest 与恢复点，覆盖 AC-2、AC-7、AC-10
   - [x] 完成 Oracle 回放、失败机制、独立求解、泄漏和全项目回归，覆盖 AC-4 至 AC-6；此前实现和 39 局扩展矩阵均经第二模型只读复核为 Approve
-  - [ ] 实现 fail-closed MiMo pilot、账本与最终研究报告，覆盖 AC-7 至 AC-12
+  - [x] 实现 fail-closed MiMo pilot、预算账本与运行报告，覆盖 AC-7 至 AC-12
 - [ ] Verify it: `/check verify V5 六图运行时与能力测量`
 - [ ] Test it: `/test V5 六图运行时与能力测量`
 Spec [0018](../specs/0018-v5-six-map-measurement.md)
+
+真实模型阶段记录（2026-10-16）：冻结 offline gate 在 `e440cc1b599a5de4a57650f418d78b03c4746399` 通过。MiMo smoke 的 MAP-08 首局 70 次决策均为 `INVALID_ACTION_SCHEMA`，依研究提纲的系统接口失败停止；第 71 个请求 reservation 未结算，唯一 V5 ledger 因 unknown spend 关闭。0/39 episode 完成，六局 smoke gate 未通过，Stage C 未启动。停止后补全 prompt JSON 字段说明，并加入连续 3 次 schema 拒绝即 fail-closed 的离线保护；全量 513 项测试通过，但无 MiMo 复测。V5 功能仍为 in-progress；精确失败根因待离线审计，不能把该结果解释为地图能力或通关率。

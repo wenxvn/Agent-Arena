@@ -49,6 +49,7 @@ _REVERSE_BEARING = {
     "NW": "SE",
 }
 _MAP22_PREFIX_MOVES = 12
+MAX_CONSECUTIVE_INVALID_ACTION_SCHEMAS = 3
 
 
 @dataclass(frozen=True)
@@ -863,8 +864,18 @@ class V5PilotRunner:
         recovery_pending = self._pending_recovery_retry(episode_id)
         retry_used = self._episode_retry_used(episode_id)
         outcome = "running"
+        prior_decisions = [row for row in decision_rows if row.get("event") == "decision"]
+        invalid_schema_streak = 0
+        for prior_row in reversed(prior_decisions):
+            if prior_row.get("invalid_output_reason") != "schema_error":
+                break
+            invalid_schema_streak += 1
 
-        while environment.status.value == "running" and decision_count < self.decision_limit:
+        while (
+            outcome == "running"
+            and environment.status.value == "running"
+            and decision_count < self.decision_limit
+        ):
             elapsed = max(
                 time.time() - episode_start_epoch, time.monotonic() - episode_start_monotonic
             )
@@ -1052,6 +1063,22 @@ class V5PilotRunner:
                     "output_tokens": response.output_tokens,
                 }
             )
+            if row["invalid_output_reason"] == "schema_error":
+                invalid_schema_streak += 1
+            else:
+                invalid_schema_streak = 0
+            if row["invalid_output_reason"] == "schema_error" and (
+                invalid_schema_streak >= MAX_CONSECUTIVE_INVALID_ACTION_SCHEMAS
+                or environment.status.value != "running"
+            ):
+                self.ledger.close(
+                    "SYSTEMATIC_INVALID_ACTION_SCHEMA",
+                    episode_id=episode_id,
+                    decision_index=decision_count,
+                    consecutive_invalid_outputs=invalid_schema_streak,
+                )
+                outcome = "invalid_action_schema_limit"
+                break
             if environment.status.value != "running":
                 break
 

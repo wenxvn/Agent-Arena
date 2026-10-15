@@ -114,16 +114,24 @@ def system_prompt(map_id: str, condition_id: str) -> str:
     }.get(condition_id)
     if condition is None:
         raise ValueError(f"Unregistered V5 condition: {map_id}/{condition_id}")
+    hypothesis_contract = (
+        '假设表必须恰好含 belief_B/belief_D/belief_F（number，和为 1）、'
+        'test_X_result（"pulse_amber"/"pulse_slate"/null）、test_Y_result（"pulse_cobalt"/"pulse_slate"/null）'
+        '和 next_test（"X"/"Y"/"repair"）。'
+        if map_id == "MAP-08" and condition_id == "hypothesis_table"
+        else "其他条件的 agent_hypothesis_table 必须为 null。"
+    )
     return "\n".join(
         [
             f"你正在运行 Agent Arena {map_id}。",
             _MAP_TASKS[map_id],
             _ACTION_CONTRACTS[map_id],
             condition,
-            '只输出 JSON 对象：{"decision_reason":"短状态","action":{...},'
-            '"agent_hypothesis_table":...}。',
-            "decision_reason 最多 280 字符；仅 MAP-08 hypothesis_table 条件填写假设表，"
-            "其余情况该字段为 null。",
+            "只输出合法 JSON 对象，且顶层只含这 3 个键：",
+            '"decision_reason"：string，最多 280 字符；'
+            '"action"：object，严格符合本图 Action contract；',
+            '"agent_hypothesis_table"：object 或 null。' + hypothesis_contract,
+            "不要输出 Markdown、代码围栏、占位符、省略号或 JSON 以外的文字。",
             "Observation 是唯一环境状态来源；不得假设未提供的裁判真值。",
             "只返回 schema 要求的 JSON。decision_reason 仅写一句简短状态，不输出详细推理过程。",
         ]
