@@ -1150,4 +1150,4 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 
 下一步：继续只做离线协议审计。MiMo JSON mode 要求显式完整定义字段层级和类型；付费运行所用 prompt 顶层示意包含省略号，现已补全；连续三次 schema 拒绝现在会 fail-closed。精确根因与修复效果仍未由 MiMo 复测确认。原 V5 ledger 已关闭，不恢复或新建 successor ledger；本轮数据不构成模型能力结论。
 
-关联提交：运行实现 `e440cc1`；本记录待提交。
+关联提交：运行实现 `e440cc1`；停止记录与离线加固 `474fbe8`。
