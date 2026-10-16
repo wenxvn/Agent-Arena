@@ -53,6 +53,38 @@
 - **潜在泄漏**：案卷仍只展开已记录 evidence 的公开 fact/text；未解锁证据不进入任何公开字段。
 - **回归测试**：`validate_v4_runtime.py` MAP-30 3 条 oracle、`tests/test_v5_pilot_controls.py` 的 MAP-30 历史条件测试。
 
+## DCR-007：非执行性可选字段不再作废整条决策
+
+- **原证据**：真实 smoke（实验 `e479755e…`）中模型在未启用假设表的条件里把 `agent_hypothesis_table` 填成自由草稿（list），`decision_reason` 超过 280 字符，或把该字段嵌进 `action`；V4 的 `_clean_candidate` 因此返回 `action=null`，连续触发 `INVALID_ACTION_SCHEMA` 并 fail-closed。
+- **V6 修订**：新增 `_v6_clean_candidate`：只严格校验可执行 Action（严格 schema + 每图字段形状 allowlist），把 `decision_reason` 视为自由文本、允许 `agent_hypothesis_table` 为空/草稿/嵌套并从 `action` 中剥离。
+- **影响范围**：仅 V6 runner；V5 `_clean_candidate` 与 V4 契约不变。
+- **潜在泄漏**：无。
+- **回归测试**：`tests/test_v6_instances.py::test_v6_clean_candidate_is_lenient_about_optional_fields`。
+
+## DCR-008：MAP-08 提示恢复交互语义
+
+- **原证据**：真实 smoke 中模型反复提交 `interact{target_id:"B"|"D", operation:"pressure_test_B"}` 得到 `INVALID_TEST_LOCATION`/`INVALID_OPERATION`，从未完成测试。
+- **V6 修订**：MAP-08 任务与动作契约写明只有 `pressure_test_X`/`pressure_test_Y`，`target_id` 必须是同名测试站，`repair_leak` 的 `target_id` 才是候选漏点。
+- **影响范围**：仅 V6 提示。
+- **潜在泄漏**：公开编码说明，不泄漏真值。
+- **回归测试**：`scripts/validate_v6_leakage.py`（提示不得含 oracle 动作）。
+
+## DCR-009：MAP-26 合法 ID 清单与公开循环提醒
+
+- **原证据**：真实 smoke 中模型臆造 `log_1` 并在同一无效动作上循环 62 步，触发 provider 超时（`unknown_provider_spend`）。
+- **V6 修订**：MAP-26 提示恢复合法日志/测试/部件 ID；V6 runner 新增只由自身公开结果派生的“最近 3 次动作都被拒”提醒（`runtime_feedback`）。
+- **影响范围**：仅 V6 提示与 runner；提醒不含裁判信息。
+- **潜在泄漏**：无（内容来自 Agent 自己的公开 action/result）。
+- **回归测试**：`tests/test_v6_instances.py::test_public_repeat_reminder_only_fires_on_stuck_refusals`。
+
+## DCR-010：MAP-30 公开案卷条目顺序；MAP-22 按实例最短路
+
+- **原证据**：真实矩阵中 MAP-30 完整调查 0 案卷条目——合法 `entry_id` 在公开 Observation 中不可见（V5 靠固定前缀掩盖）；MAP-22 非 L3 实例的 `shortest_route_gap` 误用默认最优 8，导致 l1 出现负 gap。
+- **V6 修订**：MAP-30 提示公开**案卷条目 id 顺序**（不含证据内容/真凶）；`Map22Scene.env_kwargs` 注入按实例 BFS 计算的 `optimal_moves`。
+- **影响范围**：V6 提示与 scene 参数；公开信息仅结构性标签。
+- **潜在泄漏**：无（不揭示哪条证据满足哪个条目，也不揭示真凶）。
+- **回归测试**：`tests/test_v6_instances.py`、`scripts/validate_v6_instances.py` 的 MAP-22 最优核对。
+
 ## 不予变更（明确记录）
 
 - 不修改任何 `worlds/v4/MAP-*/map_spec.yaml`、`oracle_trace.jsonl`、`planning/hand_traces.json`。
