@@ -14,13 +14,16 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Any, cast
 
+from pydantic import ValidationError
+
 from agent_arena.config import RuntimeSettings
 from agent_arena.llm.bailian import DecisionProviderError
 from agent_arena.llm.protocol import DecisionProvider, DecisionRequest
 from agent_arena.v5.runner import (
+    _MAP_ACTION_SHAPES,
     _append_jsonl,
-    _clean_candidate,
     _json_bytes,
+    _normalize_action_discriminator,
     _request_input_upper_bound_bytes,
     _sha256,
     _write_json_atomic,
@@ -39,6 +42,7 @@ from agent_arena.v6.prompts import (
     v6_system_prompt,
 )
 from agent_arena.worlds.scenario_v4 import ScenarioV4Action
+from agent_arena.worlds.scenario_v4.models import V4HypothesisTable
 
 REPOSITORY_ROOT: Any = None  # replaced by _repository_root(); kept for import symmetry
 MAX_CONSECUTIVE_INVALID_ACTION_SCHEMAS = 3
@@ -260,6 +264,51 @@ def _repository_root() -> Any:
 
 
 
+def _v6_clean_candidate(
+    candidate: object, *, map_id: str, condition_id: str
+) -> tuple[ScenarioV4Action | None, dict[str, Any] | None, str | None]:
+    """Validate the Action strictly while tolerating a scratchpad belief field.
+
+    Models often fill ``agent_hypothesis_table`` with free-form notes even when
+    the condition disables it. The V4 helper rejected the whole decision in that
+    case; V6 keeps the Action instead, because only the Action is executable and
+    the optional table is an Agent-owned channel for one registered condition.
+    """
+
+    if (
+        not isinstance(candidate, dict)
+        or set(candidate) != {"decision_reason", "action", "agent_hypothesis_table"}
+        or not isinstance(candidate.get("decision_reason"), str)
+        or len(candidate["decision_reason"]) > 280
+        or not isinstance(candidate.get("action"), dict)
+    ):
+        return None, None, None
+    payload, recovered = _normalize_action_discriminator(dict(candidate["action"]))
+    if payload.get("tool") == "set_timetable" and isinstance(payload.get("operations"), dict):
+        payload["operations"] = {
+            train: operation
+            for train, operation in payload["operations"].items()
+            if operation is not None
+        }
+    try:
+        action = ScenarioV4Action.model_validate(payload, strict=True)
+    except (ValidationError, TypeError, ValueError):
+        return None, None, None
+    allowed_shapes = _MAP_ACTION_SHAPES.get(map_id, {}).get(action.tool, set())
+    if frozenset(action.model_fields_set) not in allowed_shapes:
+        return None, None, None
+    table: dict[str, Any] | None = None
+    raw_table = candidate["agent_hypothesis_table"]
+    if condition_id == "hypothesis_table" and isinstance(raw_table, dict):
+        try:
+            table = V4HypothesisTable.model_validate(raw_table, strict=True).model_dump(
+                mode="json"
+            )
+        except (ValidationError, TypeError, ValueError):
+            table = None
+    return action, table, recovered
+
+
 def _validate_hypothesis_update(
     table: dict[str, Any] | None, observation: Any, condition_id: str
 ) -> tuple[dict[str, Any] | None, str]:
@@ -277,7 +326,9 @@ def _validate_hypothesis_update(
 def _runtime_decision_payload(
     candidate: object, *, decision_index: int, observation: Any, condition_id: str
 ) -> dict[str, Any]:
-    action, raw_table, recovered = _clean_candidate(candidate, map_id=observation.map_id)
+    action, raw_table, recovered = _v6_clean_candidate(
+        candidate, map_id=observation.map_id, condition_id=condition_id
+    )
     table, status = _validate_hypothesis_update(raw_table, observation, condition_id)
     return {
         "decision_index": decision_index,

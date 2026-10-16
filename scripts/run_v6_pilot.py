@@ -441,8 +441,21 @@ def execute_paid(args: argparse.Namespace) -> int:
             raise ValueError("Resume settings differ from the registered V6 run.")
         started_at = prior["started_at"]
     else:
-        if read_pilot_registry() is not None:
-            raise ValueError("A V6 paid pilot is already registered; do not create another ledger.")
+        existing = read_pilot_registry()
+        if existing is not None:
+            if args.reregister and existing.get("status") in {"stopped", "aborted"}:
+                archive_dir = ROOT / "runs" / "v6" / "archived"
+                archive_dir.mkdir(parents=True, exist_ok=True)
+                archive_path = archive_dir / (
+                    f"pilot_registry.{existing.get('status')}_"
+                    f"{existing.get('experiment_id')}.json"
+                )
+                os.replace(PILOT_REGISTRY_PATH, archive_path)
+                print(f"Archived stopped V6 registry to {archive_path.relative_to(ROOT)}.")
+            else:
+                raise ValueError(
+                    "A V6 paid pilot is already registered; do not create another ledger."
+                )
         if run_dir is not None or ledger_path is not None:
             raise ValueError("Custom --run-dir/--ledger paths are reserved for --resume only.")
         token = uuid4().hex
@@ -629,6 +642,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--billing-currency", choices=("CNY", "USD"))
     parser.add_argument("--offline-gate", default=str(GATE_PATH))
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument(
+        "--reregister",
+        action="store_true",
+        help="Archive a stopped V6 registry and start one fresh ledger.",
+    )
     parser.add_argument("--run-dir")
     parser.add_argument("--ledger")
     args = parser.parse_args()
@@ -636,6 +654,8 @@ def parse_args() -> argparse.Namespace:
         parser.error("--dry-run and --execute-paid cannot be combined.")
     if args.resume and not args.execute_paid:
         parser.error("--resume is only valid with --execute-paid.")
+    if args.reregister and not args.execute_paid:
+        parser.error("--reregister is only valid with --execute-paid.")
     return args
 
 

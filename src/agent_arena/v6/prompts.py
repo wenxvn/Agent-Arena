@@ -42,7 +42,10 @@ _MAP_TASKS = {
 _ACTION_CONTRACTS = {
     "MAP-08": (
         'action 只可为 move{edge_id}、inspect{target_id:"ordinary_sensor"}、'
-        'interact{target_id,operation:"pressure_test_<站>"|"repair_leak"}、wait{turns:1}。'
+        'interact{target_id,operation}、wait{turns:1}。'
+        'interact 做测试时 operation 必须是 pressure_test_X 或 pressure_test_Y，'
+        '且 target_id 必须是同名的测试站 X 或 Y（不是候选漏点）；'
+        'repair_leak 的 target_id 才是候选漏点 B/D/F。'
     ),
     "MAP-16": (
         'action 只可为 inspect_network{}、set_route{train_id,next_node}、'
@@ -111,6 +114,16 @@ def v6_system_prompt(map_id: str, condition_id: str) -> str:
         raise ValueError(f"Unregistered V6 condition: {map_id}/{condition_id}")
     if map_id == "MAP-22" and condition_id not in _MAP22_MEMORY_CONDITIONS:
         condition = condition + " 本条件禁用 write_memory；不要尝试写入图记忆。"
+    table_rule = (
+        "agent_hypothesis_table 只有在本条件明确启用时才填结构化假设表；否则必须为 null，"
+        "不要用它记录自由文本或任何计划草稿。"
+    )
+    if map_id == "MAP-08" and condition_id == "hypothesis_table":
+        table_rule = (
+            "agent_hypothesis_table 必须恰好含 belief_B/belief_D/belief_F（number，和为 1）、"
+            'test_X_result（"pulse_amber"/"pulse_slate"/null）、'
+            'test_Y_result（"pulse_cobalt"/"pulse_slate"/null）和 next_test（"X"/"Y"/"repair"）。'
+        )
     return "\n".join(
         [
             f"你正在运行 Agent Arena V6 {map_id}。",
@@ -119,6 +132,7 @@ def v6_system_prompt(map_id: str, condition_id: str) -> str:
             '"action" 须含 "tool"（动作名）；参数严格按动作契约。',
             condition,
             "只输出合法 JSON 对象，顶层只含 decision_reason、action、agent_hypothesis_table。",
+            table_rule,
             "Observation 是唯一环境状态来源；不得假设未提供的裁判真值。",
         ]
     )
