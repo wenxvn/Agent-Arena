@@ -1,5 +1,29 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-16 V6 能力测量效度修复与泛化验证（离线段）
+
+事件：按用户任务书《V6 能力测量修复与泛化验证》执行 Batch 0–7 的离线段：审计 V5 失败、参数化 V4 引擎、建立 V6 独立实例/求解器/泄漏检查，并给出可选 API 提案。全程离线，未调用任何收费 API。
+
+原因：V5 39 局显示 MAP-16/18/22 几乎无成功，且 MAP-22 失败被怀疑是能力下限；用户要求先提升测量效度而不是通过率。
+
+改动：
+- `docs/specs/0019-v6-measurement-validity.md`、`docs/v6/*`（审计、DCR、矩阵、验收、API 提案、门槛）。
+- `scripts/audit_v5_failures.py`（只读审计本机 V5 trace）、`scripts/validate_v6_instances.py`、`scripts/validate_v6_leakage.py`。
+- `src/agent_arena/v6/`（scenes/catalog/solvers/prompts/leakage）、`tests/test_v6_instances.py`、`tests/test_v6_leakage.py`。
+- `src/agent_arena/worlds/scenario_v4/map{08,16,18,22,26,30}.py`：向后兼容的实例参数化（DCR-002…006），默认行为不变。
+
+关键发现：读原始 trace 确认 **MAP-22 history5 的 0/3 是接口缺陷支配**（非记忆条件仍宣传 `write_memory`，环境返回 `ACTION_NOT_AVAILABLE` 共 173 次；`return_to_camp` 只设目标不移动）。该缺陷已在 V6 契约层修复（DCR-001），V4 默认行为与 V5 结果未改。
+
+结果：24 个独立 V6 实例（MAP-08/16/18/22 各 4、MAP-26 5、MAP-30 3）；40/40 实例-seed Oracle 在真实环境回放成功；MAP-16/22 由 BFS 证明最优；泄漏检查 0 命中。
+
+验证：`pytest -q` 552 passed；`ruff`、`mypy` 通过；`validate_v4_runtime.py`、`validate_v5_solvers.py` 输出与基线一致；`validate_v6_instances.py`、`validate_v6_leakage.py` 通过。
+
+限制：所有 V6 实例 `pending_human_review`；MAP-18 无最优性证明且闭塞载荷依赖发车时点；未接真实模型；其余 24 图维持 `HOLD`。
+
+下一步：请用户完成人工审阅并决定是否批准小规模 smoke 预算；未批准前不执行付费实验、不扩展 24 图。
+
+关联提交：本批提交（V6 代码、文档与测试）。
+
 ## 2026-10-16 V5 正式 39 局矩阵完成（第二次 pilot）
 
 事件：用户明确授权后，归档已关闭 registry、在当前提交 HEAD 重新冻结 offline gate，并新建一次登记的 MiMo pilot，完成 V5 提纲的全部 39 局矩阵（每图 3 个 seed 标签的全部登记条件）。

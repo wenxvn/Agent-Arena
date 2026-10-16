@@ -134,6 +134,17 @@ A 至 E 保留早期交付清单与当时待办；当前阶段以本文 V2 门�
 
 下面的清单把“已经能通关”与“还没有证明”的问题分开。`planner_assisted` 的成功只能证明真实本地模型能在公开规划建议下执行一条合法路线，不能代表模型已经具备纯自主规划能力。
 
+### 0. V6 能力测量效度（离线段已完成）
+
+- [x] V5 六图失败审计（基于本机原始 trace）：定位 MAP-22 的接口契约缺陷（非记忆条件仍宣传 `write_memory`，173 次 `ACTION_NOT_AVAILABLE`；`return_to_camp` 只设目标）。
+- [x] 参数化 V4 引擎（向后兼容，默认行为不变，DCR-002…006）并建立 24 个独立 V6 实例与三层难度。
+- [x] 独立求解器 + Oracle 回放 40/40 成功；MAP-16/22 由 BFS 证明最优；泄漏检查 0 命中。
+- [x] 可选真实 API 复测方案（`docs/v6/api-experiment-proposal.md`）与 24 图门槛（`docs/v6/next-24-gate.md`，结论 `HOLD`）。
+- [ ] 人工审阅 V6 实例（`review_status` 待填）。
+- [ ] 用户批准预算后执行小规模 smoke；未批准前不跑付费实验、不扩展 24 图。
+
+细节见 `docs/specs/0019-v6-measurement-validity.md` 与 `docs/v6/`。
+
 ### A. 原计划尚未完成
 
 - [ ] **Streamlit 实验界面**：选择 provider、模型、Agent、world 和 seed，启动单局或 benchmark，并查看逐步 Observation、Action、ToolResult、trace 和聚合指标。

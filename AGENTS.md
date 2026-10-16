@@ -12,6 +12,7 @@
 - `研究总纲.md` 是新对话和日常 workflow 的研究摘要；完整产品与研究参考保留在 `总纲.md`，需要追溯细节时再阅读。
 - 当前模块结构见 `docs/architecture.md`，交付顺序和进度见 `docs/scope/scope.md`。
 - 重要阶段、决策、验证和阻塞记录在 `docs/engineering-log.md`，它不替代 scope、spec 或 Git 历史。
+- V6 能力测量效度离线段已完成：审计 V5 失败并定位 MAP-22 接口契约缺陷；参数化 V4 引擎（默认行为不变）并建立 24 个独立 V6 实例、三层难度、独立求解器与泄漏检查（Oracle 回放 40/40、泄漏 0 命中）；可选真实 API 复测方案与 24 图门槛（`HOLD`）见 spec 0019 与 `docs/v6/`。所有 V6 实例 `pending_human_review`，未获批准不跑付费实验。
 
 ## 技术与模型配置
 
