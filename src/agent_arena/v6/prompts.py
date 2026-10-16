@@ -41,34 +41,48 @@ _MAP_TASKS = {
 
 _ACTION_CONTRACTS = {
     "MAP-08": (
-        'action 只可为 move{edge_id}、inspect{target_id:"ordinary_sensor"}、'
-        'interact{target_id,operation}、wait{turns:1}。'
-        'interact 做测试时 operation 必须是 pressure_test_X 或 pressure_test_Y，'
-        '且 target_id 必须是同名的测试站 X 或 Y（不是候选漏点）；'
-        'repair_leak 的 target_id 才是候选漏点 B/D/F。'
+        'action 只可为 move{edge_id:string}、inspect{target_id:"ordinary_sensor"}、'
+        'interact{target_id:string,operation:string}、wait{turns:1}。'
+        'edges 编码：Observation 的 visible_edges 每条为 "edge_id:相邻节点"；move 时 edge_id 必须填'
+        '冒号前的边标识，而不是节点名。interact 做测试时 operation 必须是 pressure_test_X 或'
+        'pressure_test_Y，且 target_id 必须是同名的测试站 X 或 Y；repair_leak 的 target_id 才是'
+        '候选漏点。'
     ),
     "MAP-16": (
-        'action 只可为 inspect_network{}、set_route{train_id,next_node}、'
-        'occupy_siding{train_id,next_node}、release_section{train_id,section_id}、move_train{}。'
+        'action 只可为 inspect_network{}、set_route{train_id:"a"|"b",next_node:string}、'
+        'occupy_siding{train_id:"a"|"b",next_node:string}、'
+        'release_section{train_id:"a"|"b",section_id:string}、move_train{}。'
+        '每个工具对象只能含上面列出的字段；train_id 取当前 Observation 里的列车键。'
     ),
     "MAP-18": (
-        'action 只可为 set_timetable{tick,operations}；operations 值为 '
-        'release{op,to}、detour{op,to}、temporary_stop{op}、'
-        'turnback{op,reverse_toward,duration_ticks}、cancel_service{op,task_id}。'
+        'action 只可为 set_timetable{tick:integer,operations:object}。'
+        'operations 必须是以列车 ID（如 T_R1/T_R2/T_R3/T_B/T_G/T_X）为键的 JSON 对象，'
+        '不是数组；每个值只能是 release{op:"release",to:string}、detour{op:"detour",to:string}、'
+        'temporary_stop{op:"temporary_stop"}、'
+        'turnback{op:"turnback",reverse_toward:string,duration_ticks:1|2}、'
+        'cancel_service{op:"cancel_service",task_id:string} 之一。'
+        '不要提交没有操作的列车；tick 必须等于当前 Observation 的 tick。'
     ),
     "MAP-22": (
-        'action 只可为 observe_signpost{}、move{bearing}、check_goal{}、return_to_camp{}'
-        '（记忆条件额外允许 write_memory{facts}）。'
+        'action 只可为 observe_signpost{}、move{bearing:string}、check_goal{}、return_to_camp{}'
+        '（仅记忆条件额外允许 write_memory{facts:array}）。'
+        'node_page fact 字段为 fact_type:"node_page",sign_id,exit_bearings；'
+        'traversed_edge_page fact 字段为 fact_type:"traversed_edge_page",from_sign_id,'
+        'departure_bearing,to_sign_id,arrival_reverse_bearing。'
     ),
     "MAP-26": (
-        'action 只可为 move{to}、read_log{log_id}、test{test_id}、take_spare{part_id}、'
-        'replace{part_id}、rollback{}、restart{}。'
+        'action 只可为 move{to:string}、read_log{log_id:string}、test{test_id:string}、'
+        'take_spare{part_id:string}、replace{part_id:string}、rollback{}、restart{}；'
+        '每个工具对象只能含列出的字段。'
     ),
     "MAP-30": (
-        'action 只可为 move{to}、inspect{evidence_id}、'
-        'interview{npc_id,topic_id,shown_evidence_ids,shown_casebook_entry_ids}、'
-        'record{entry_id,evidence_ids}、submit_intermediate_hypothesis{...}、'
-        'compare_records{entry_ids}、formal_accuse{person_id,event_claims,cited_entry_ids}。'
+        'action 只可为 move{to:string}、inspect{evidence_id:string}、'
+        'interview{npc_id:string,topic_id:string,shown_evidence_ids:array,shown_casebook_entry_ids:array}、'
+        'record{entry_id:string,evidence_ids:array}、'
+        'submit_intermediate_hypothesis{candidate_person:string,confidence:"low"|"tentative",event_ids_known:array}、'
+        'compare_records{entry_ids:array}、'
+        'formal_accuse{person_id:string,event_claims:array,cited_entry_ids:array}。'
+        'event_claims 每项仅含 event_id,time,location,duty_code。'
     ),
 }
 
@@ -102,8 +116,8 @@ def v6_action_contract(map_id: str, condition_id: str) -> str:
     if map_id == "MAP-22" and condition_id not in _MAP22_MEMORY_CONDITIONS:
         # The non-memory condition must not advertise an unavailable action.
         contract = (
-            'action 只可为 observe_signpost{}、move{bearing}、check_goal{}、return_to_camp{}。'
-            "本条件不提供 write_memory。"
+            "action 只可为 observe_signpost{}、move{bearing:string}、check_goal{}、"
+            "return_to_camp{}。本条件不提供 write_memory。"
         )
     return contract
 
@@ -130,6 +144,7 @@ def v6_system_prompt(map_id: str, condition_id: str) -> str:
             _MAP_TASKS[map_id],
             v6_action_contract(map_id, condition_id),
             '"action" 须含 "tool"（动作名）；参数严格按动作契约。',
+            "action 对象的键必须恰好是契约列出的键；不要嵌套到 parameters/arguments/input 之下。",
             condition,
             "只输出合法 JSON 对象，顶层只含 decision_reason、action、agent_hypothesis_table。",
             table_rule,

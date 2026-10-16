@@ -13,7 +13,7 @@ def test_no_leakage_findings_across_all_instances() -> None:
 
 def test_map22_conditions_exclude_unavailable_memory_action() -> None:
     assert "write_memory{" not in v6_action_contract("MAP-22", "history5")
-    assert "write_memory{facts}" in v6_action_contract("MAP-22", "history5_graph_memory")
+    assert "write_memory{" in v6_action_contract("MAP-22", "history5_graph_memory")
     assert "不会自动移动" in v6_system_prompt("MAP-22", "history5")
 
 

@@ -267,23 +267,21 @@ def _repository_root() -> Any:
 def _v6_clean_candidate(
     candidate: object, *, map_id: str, condition_id: str
 ) -> tuple[ScenarioV4Action | None, dict[str, Any] | None, str | None]:
-    """Validate the Action strictly while tolerating a scratchpad belief field.
+    """Validate the Action strictly while tolerating optional-field quirks.
 
-    Models often fill ``agent_hypothesis_table`` with free-form notes even when
-    the condition disables it. The V4 helper rejected the whole decision in that
-    case; V6 keeps the Action instead, because only the Action is executable and
-    the optional table is an Agent-owned channel for one registered condition.
+    V6 keeps the executable Action contract strict but treats the optional,
+    Agent-owned belief channel and the free-text ``decision_reason`` as
+    non-executable: models sometimes exceed the 280-character reason or nest
+    ``agent_hypothesis_table`` inside ``action``, and V4's helper rejected the
+    whole decision in those cases. Only the Action's legality decides validity.
     """
 
-    if (
-        not isinstance(candidate, dict)
-        or set(candidate) != {"decision_reason", "action", "agent_hypothesis_table"}
-        or not isinstance(candidate.get("decision_reason"), str)
-        or len(candidate["decision_reason"]) > 280
-        or not isinstance(candidate.get("action"), dict)
-    ):
+    if not isinstance(candidate, dict) or not isinstance(candidate.get("action"), dict):
         return None, None, None
-    payload, recovered = _normalize_action_discriminator(dict(candidate["action"]))
+    raw_action = dict(candidate["action"])
+    nested_table = raw_action.pop("agent_hypothesis_table", None)
+    raw_table = candidate.get("agent_hypothesis_table", nested_table)
+    payload, recovered = _normalize_action_discriminator(raw_action)
     if payload.get("tool") == "set_timetable" and isinstance(payload.get("operations"), dict):
         payload["operations"] = {
             train: operation
@@ -298,7 +296,6 @@ def _v6_clean_candidate(
     if frozenset(action.model_fields_set) not in allowed_shapes:
         return None, None, None
     table: dict[str, Any] | None = None
-    raw_table = candidate["agent_hypothesis_table"]
     if condition_id == "hypothesis_table" and isinstance(raw_table, dict):
         try:
             table = V4HypothesisTable.model_validate(raw_table, strict=True).model_dump(

@@ -109,3 +109,39 @@ def test_manifest_has_no_placeholder_values() -> None:
 def test_scenario_hash_is_stable(instance_id: str) -> None:
     scene = get_scene(instance_id)
     assert instance_manifest(scene)["scenario_hash"] == instance_manifest(scene)["scenario_hash"]
+
+
+def test_v6_clean_candidate_is_lenient_about_optional_fields() -> None:
+    from agent_arena.v6.runner import _v6_clean_candidate
+
+    long_reason = "很长的公开理由" * 60
+    candidate = {
+        "decision_reason": long_reason,
+        "action": {
+            "tool": "set_timetable",
+            "tick": 0,
+            "operations": {"T_B": {"op": "release", "to": "B2"}},
+        },
+        "agent_hypothesis_table": ["自由草稿"],
+    }
+    action, table, _ = _v6_clean_candidate(candidate, map_id="MAP-18", condition_id="alert_on")
+    assert action is not None and action.tool == "set_timetable"
+    assert table is None
+
+    nested = {
+        "decision_reason": "简短",
+        "action": {
+            "tool": "set_route",
+            "train_id": "a",
+            "next_node": "X",
+            "agent_hypothesis_table": None,
+        },
+    }
+    action2, _, _ = _v6_clean_candidate(nested, map_id="MAP-16", condition_id="react")
+    assert action2 is not None and action2.tool == "set_route"
+
+    # The executable Action itself stays strictly validated.
+    bad = {"decision_reason": "x", "action": {"tool": "not_a_tool"}}
+    assert _v6_clean_candidate(bad, map_id="MAP-16", condition_id="react")[0] is None
+    wrong_shape = {"decision_reason": "x", "action": {"tool": "move_train", "next_node": "X"}}
+    assert _v6_clean_candidate(wrong_shape, map_id="MAP-16", condition_id="react")[0] is None
