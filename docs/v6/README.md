@@ -9,9 +9,9 @@
 | [`v5-failure-audit.md`](v5-failure-audit.md) | 基于本机真实 trace 的 V5 六图失败分类与数据质量审计 |
 | [`design-change-requests.md`](design-change-requests.md) | V6 对既有资产的变更申请（DCR），含证据、影响与回归 |
 | [`measurement-matrix.md`](measurement-matrix.md) | V6 实例矩阵：instance × condition × level × 指标 |
-| [`pilot-report.md`](pilot-report.md) | **真实 API 复测结果**（MiMo `mimo-v2.6-flash`，24 局，CNY ¥0.17891580）与效度判读 |
+| [`pilot-report.md`](pilot-report.md) | **真实 API 复测结果**（MiMo `mimo-v2.6-flash`，47 局，CNY ¥0.29230284，17/47）与效度判读 |
 | `validation-report.md` | 离线验收与独立求解结果（含真实 API 运行证据） |
-| `api-experiment-proposal.md` | 真实 API 复测协议与预算门禁（已执行一次；再次执行需重新登记） |
+| `api-experiment-proposal.md` | 真实 API 复测协议与预算门禁（已执行；再次执行需重新登记） |
 | `next-24-gate.md` | 是否扩展到其余 24 图的建议门槛与当前结论（`HOLD`） |
 
 ## 代码与命令

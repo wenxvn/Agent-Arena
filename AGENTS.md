@@ -12,7 +12,7 @@
 - `研究总纲.md` 是新对话和日常 workflow 的研究摘要；完整产品与研究参考保留在 `总纲.md`，需要追溯细节时再阅读。
 - 当前模块结构见 `docs/architecture.md`，交付顺序和进度见 `docs/scope/scope.md`。
 - 重要阶段、决策、验证和阻塞记录在 `docs/engineering-log.md`，它不替代 scope、spec 或 Git 历史。
-- V6 能力测量效度：离线段已完成（审计 V5 失败并定位 MAP-22 接口契约缺陷；参数化 V4 引擎并建立 24 个独立 V6 实例、独立求解器与泄漏检查）。真实 API 复测已执行一次（MiMo，24 局，CNY ¥0.17891580，13/24 成功）：**MAP-22 的 V5 0/6 确认为接口假象，修复后 4/4**；MAP-08/22/26-free 天花板、MAP-18/26-recovery/30 地板，按规则维持 `HOLD`。详见 `docs/v6/pilot-report.md` 与 spec 0019。所有 V6 实例仍 `pending_human_review`。
+- V6 能力测量效度：离线层已完成（审计 V5 失败并定位 MAP-22 接口契约缺陷；参数化 V4 引擎并建立 **29 个独立 V6 实例**、三个闭塞段、三个恢复失败前缀、纯召回变体、独立求解器与泄漏检查）。真实 API 复测已完成（MiMo，**47 局，CNY ¥0.29230284，17/47**）：MAP-22 的 V5 0/6 确认为接口假象；**MAP-22 L3 记忆消融与 MAP-30 纯召回出现条件差异**；MAP-08/L1-MAP-16/MAP-26-free 天花板、MAP-18/MAP-26-recovery/MAP-30 完整调查地板，维持 `HOLD`。详见 `docs/v6/pilot-report.md` 与 spec 0019。所有 V6 实例仍 `pending_human_review`。
 
 ## 技术与模型配置
 

@@ -1,5 +1,22 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-16 V6 47 局真实 API 矩阵（MiMo）
+
+事件：在用户授权下补齐任务书点名的缺口（MAP-18 第二个/第三个闭塞段、MAP-26 三个不同失败前缀、MAP-30 固定前缀纯召回变体、每实例 3 条边界动作），并跑完扩大后的 **47 局**真实矩阵（实验 `729f50b7-2d0a-4023-9687-c175a75d45c2`）。
+
+结果：47/47 局完成，**17/47 成功**；492 次请求；报告费用 **CNY ¥0.29230284**；provider 墙钟 2169.045 秒。逐图：MAP-08 6/6、MAP-16 2/6、MAP-18 0/10、MAP-22 5/6、MAP-26 3/13、MAP-30 1/6。
+
+关键新增信号：
+- **MAP-22 L3 记忆消融出现条件差异**：`history5` 30 步截尾失败，`history5_graph_memory` 11 步成功（同实例配对）。
+- **MAP-30 纯召回出现条件差异**：`history5_casebook` 一步 3/3 正确，`history5` 与 `history_full` 均 deadline 失败。
+- 其余：MAP-08/L1-MAP-16/MAP-26-free 天花板，MAP-18/MAP-26-recovery/MAP-30 完整调查地板。
+
+离线段改动：实例数 24 → 29；`validate_v6_instances.py` 边界检查 1 → 3 条/实例，回放 40/40 → 45/45；MAP-26 恢复前缀可生成（非仅注册前缀）；MAP-30 增加召回变体；MAP-22 `optimal_moves` 按实例最短路。
+
+验证：`pytest -q` 559 passed；`ruff`、`mypy`、V4 oracle、V5 solvers、V6 instances、V6 leakage、V6 fake dry-run 全绿；门禁在提交 `04ac659` 冻结。
+
+下一步：`docs/v6/next-24-gate.md` 维持 `HOLD`；人工审阅后对已出现差异的配对增加重复次数，再决定是否新增预算。
+
 ## 2026-10-16 V6 真实 API 复测（MiMo，24 局）
 
 事件：用户授权使用 MiMo API 后，在冻结离线门禁下完成 V6 的 24 局真实矩阵（实验 `a4c916d8-b48e-4043-9122-bbb76754eceb`）。

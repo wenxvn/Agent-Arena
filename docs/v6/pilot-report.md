@@ -1,104 +1,85 @@
 # V6 真实 API 复测报告（MiMo `mimo-v2.6-flash`）
 
 - 日期：2026-10-16
-- 实验：`runs/v6/experiments/pilot_20261016T035353Z_5bd53a36aca0436f81a75bb19768c09a`
-- 实验 ID：`a4c916d8-b48e-4043-9122-bbb76754eceb`
-- 离线门禁：`2dfa63eda78ad5e89af662841012d893e561af52b2068b80d64c5082148a8f36`
-- 条件：24 局全部完成；`temperature=0`、reasoning 关闭、`json_object` + 本地严格 Action 校验、每局最多 100 决策。
-- 计费（CNY，报告 usage）：**¥0.17891580**；请求尝试 281；provider 墙钟 1510.348 秒；账本未关闭。
-- 说明：这是**单次运行**的描述性结果，不是模型排名，也不构成泛化结论。所有 V6 实例仍为 `pending_human_review`。
+- 主实验：`runs/v6/experiments/pilot_20261016T043238Z_6971b08563ca491593af6ba13c04cf8b`（ID `729f50b7-2d0a-4023-9687-c175a75d45c2`）
+- 离线门禁：`07b0abdce86e34f86301624063dccc516a66918e8b7066855e06d8ccf1cd8bd0`
+- 规模：**47/47 局完成，17/47 成功**；492 次请求；报告费用 **CNY ¥0.29230284**；provider 墙钟 2169.045 秒；账本未关闭。
+- 条件：`temperature=0`、reasoning 关闭、`json_object` + 本地严格 Action 校验、每局最多 100 决策。
+- 说明：这是**单次运行、每条件 1 局**的描述性结果，不做显著性断言，不构成模型排名或泛化结论。所有 V6 实例仍为 `pending_human_review`。
 
-> 本报告的口径：V6 的目标是**测量效度**，不是通过率。下面按“能力是否被有效测量”判读，而不是按胜负排名。
+> 前一次 24 局矩阵（CNY ¥0.17891580）见工程记录；本报告为补齐实例后的 47 局矩阵，覆盖三个闭塞段、三个恢复失败前缀、纯召回变体与 L2 层。
 
-## 1. 逐局结果
+## 1. 逐图汇总
 
-| 实例 / 条件 | 状态 | 决策 | 专属指标 |
-|---|---|---|---|
-| map08_l1_two_candidate / hypothesis_table | success | 6 | sealed，tests=1，peak=4.0 |
-| map08_l1_two_candidate / no_hypothesis_table | success | 11 | sealed，tests=1，peak=6.0 |
-| map08_l3_original / hypothesis_table | success | 6 | sealed，tests=1，peak=4.0 |
-| map08_l3_original / no_hypothesis_table | success | 5 | sealed，tests=1，peak=4.0 |
-| map16_l1_single_train / constraint_table | success | 7 | makespan=3，gap=0 |
-| map16_l1_single_train / react | success | 6 | makespan=3，gap=0 |
-| map16_l3_original / constraint_table | failure | 8 | makespan=2，NODE_CAPACITY_CONFLICT |
-| map16_l3_original / react | failure | 10 | makespan=2，NODE_CAPACITY_CONFLICT |
-| map18_l1_no_fault / alert_off | failure | 3 | rate=0.33，STATION_CAPACITY_EXCEEDED |
-| map18_l1_no_fault / alert_on | failure | 1 | rate=0.0，HEAD_ON_COLLISION |
-| map18_l3_original / alert_off | censored | 12 | rate=0.33，ACTION_LIMIT_REACHED |
-| map18_l3_original / alert_on | failure | 1 | rate=0.0，STATION_CAPACITY_EXCEEDED |
-| map22_l1_short_return / history5 | success | 11 | moves=8 |
-| map22_l1_short_return / history5_graph_memory | success | 7 | moves=6 |
-| map22_l3_original / history5 | success | 18 | moves=14，gap=6 |
-| map22_l3_original / history5_graph_memory | success | 25 | moves=12，gap=4 |
-| map26_l1_antenna_fault / free_diagnosis | success | 14 | restored，wrong=0，spare=1 |
-| map26_l2_power_fault / free_diagnosis | success | 11 | restored，wrong=0，spare=1 |
-| map26_l3_software_fault / free_diagnosis | success | 11 | restored，wrong=0，spare=1 |
-| map26_recovery_antenna / recovery_full | failure | 7 | SPARES_EXHAUSTED |
-| map26_recovery_antenna / recovery_hidden | failure | 5 | SPARES_EXHAUSTED |
-| map26_recovery_antenna / recovery_structured | failure | 4 | SPARES_EXHAUSTED |
-| map30_l1_two_event_case / history5_casebook | failure | 39 | entries=0，DEADLINE_REACHED |
-| map30_l3_original / history5_casebook | failure | 53 | entries=0，DEADLINE_REACHED |
-
-合计 13/24 成功。
-
-## 2. 效度判读（逐图）
-
-### MAP-22：**V5 的 0/6 确认为接口假象**
-
-V6 修复契约后（DCR-001），MAP-22 **4/4 成功**，包括 V5 全部失败的原 12 节点场景。这是本轮最重要的结论：V5 把接口缺陷误读成了空间记忆下限。附带信号：L3 上 `history5_graph_memory` 用 12 步返回，`history5` 用 14 步（gap 4 vs 6），方向支持“合法图记忆减少返程步数”，但两者都成功，需更多实例才能谈增益。
-
-### MAP-08：**天花板效应**
-
-4/4 成功，且两条件无差异（含 L1 与 L3）。有表/无表条件在当前 3 候选场景下不可区分，属于天花板。V5 曾观察到无表 1/3，V6 因提示修复后无表也全过——说明该场景对当前模型过易，需加大诊断规模或提高成本才能恢复区分度。
-
-### MAP-16：**干净的难度梯度，但条件无差异**
-
-L1（单列车）2/2、makespan=3=最优；L3（同步双车）0/2，均因 `NODE_CAPACITY_CONFLICT` 失败。react 与 constraint_table 结果完全一致，**结构化约束表未产生可观测差异**。梯度方向正确，对照机制需重新设计。
-
-### MAP-18：**地板效应，且预警无法分离**
-
-4/4 失败，服务率 0–0.33，含**无故障的 L1 也失败**（0/2）。alert_on/off 失败模式不同但都失败，无法分离预警效果。失败以 `STATION_CAPACITY_EXCEEDED`、`HEAD_ON_COLLISION`、`INVALID_LINK`、`COMPLETED_TRAIN_MOVED` 为主，是真实的联合调度策略失败（非 schema 问题）。当前 6 车 / 12 tick 联合时刻表对 MiMo 属地板。
-
-### MAP-26：**自由诊断天花板 vs 恢复地板**
-
-free_diagnosis 3/3（三个不同故障，均 restored、0 错换、余 1 备件）；恢复轨道 0/3（均 `SPARES_EXHAUSTED`）。自由诊断对当前模型过易，恢复轨道过难且三条件无差异——`recovery_full` 与 `recovery_hidden` 表现相同，未能体现信息剥夺。
-
-### MAP-30：**地板，且暴露一个可玩性缺陷**
-
-0/2，两局都在 39/53 决策内**从未成功记录任何案卷条目**。定位：V6 无固定前缀，模型必须自己 `record`；而合法 `entry_id`（`Q4_CODEBOOK`/`EVENT_1_HANDOFF`/…）在 V5/V6 公开 Observation 中**不可见**，模型只能臆造 `E001` 等 → `INVALID_CASEBOOK_ENTRY`。V5 因使用固定前缀（由环境代填案卷）掩盖了该缺陷。
-
-- 本轮矩阵用的是**修复前**提示；矩阵完成后已加入“公开案卷条目顺序”披露并在诊断中验证：披露后模型改用合法 `entry_id`，但仍在 `interview`/NPC 与地理导航上失败（`NPC_NOT_HERE` 与 H↔J 往返），因此 MAP-30 的残余失败属策略/可玩性，需要人工重新设计取证流程，而不是继续加提示。
-
-## 3. 天花板 / 地板汇总（触发暂停规则）
-
-| 类型 | 图 | 证据 |
+| 图 | 成功 | 关键观察 |
 |---|---|---|
-| 天花板 | MAP-08、MAP-22、MAP-26（free）、MAP-16 L1 | 全部或近乎全部成功，条件无差异 |
-| 地板 | MAP-18、MAP-26（recovery）、MAP-30 | 全部失败，条件无差异 |
+| MAP-08 | 6/6 | 三个实例、两条件全过 → **天花板**，条件无差异 |
+| MAP-16 | 2/6 | L1 2/2（makespan=3=最优）；L2a 与 L3 各 0/2（NODE_CAPACITY_CONFLICT）→ **梯度清晰**，条件无差异 |
+| MAP-18 | 0/10 | 服务率 0–0.33；含无故障 L1、三个闭塞段、预警开/关 → **地板**，预警无法分离 |
+| MAP-22 | 5/6 | L3 出现**条件差异**（见下） |
+| MAP-26 | 3/13 | free 3/4（software 故障失败）；recovery 0/9（全 SPARES_EXHAUSTED）→ 自由诊断近天花板，恢复地板 |
+| MAP-30 | 1/6 | 完整调查 0/3（0 案卷条目）；**纯召回 1/3**（见下） |
 
-按提纲规则，**暂停扩大矩阵**，先修正测量设计。当前 24 局可用于效度判读，但不足以支持任何模型能力排名或泛化结论。
+## 2. 有区分度的两个信号
 
-## 4. 本轮新增的接口修复（DCR-007…010）
+### MAP-22 L3 记忆消融（L3 原 12 节点场景）
 
-1. **DCR-007**：非启用条件下的 `agent_hypothesis_table` 草稿不再作废整条决策；`decision_reason` 长度与嵌套表位置不再影响 Action 合法性（可执行 Action 仍严格校验）。
-2. **DCR-008**：MAP-08 提示恢复 `interact` 测试站语义（`target_id` 必须是站 X/Y，不存在 `pressure_test_B/D/F`）。
-3. **DCR-009**：MAP-26 恢复合法日志/测试/部件 ID 清单；新增“连续 3 次动作被拒”公开提醒以打断循环。
-4. **DCR-010**：MAP-30 公开案卷条目顺序；MAP-22 非 L3 实例的 `optimal_moves` 指标按实例最短路计算（此前误用默认 8，导致 l1 出现负 gap）。
+| 条件 | 状态 | 决策 | moves | 记忆事实 |
+|---|---|---|---|---|
+| history5 | **failure（step-limit 截尾）** | 52 | 30 | 0 |
+| history5_graph_memory | **success** | 15 | 11 | 9 |
 
-## 5. 与 V5 的对照
+短历史条件在 30 步移动预算内未能返回（截尾），合法图记忆条件 11 步返回。这是**同实例配对下首次观察到明确的条件差异**，方向与“合法外部图记忆帮助返程”一致。注意单局证据，且 L1/L2 上记忆条件步数并未更优（l1：4 vs 6），因此只应表述为“该实例上出现方向性差异”。
 
-| 图 | V5（39 局矩阵） | V6（24 局，修复后） | 判读 |
-|---|---|---|---|
-| MAP-22 | 0/6，全部 step-limit 截尾 | 4/4 成功 | 接口修复后不再有下限假象 |
-| MAP-08 | 有表 3/3、无表 1/3 | 4/4，两条件无差异 | 对当前模型过易 |
-| MAP-16 | react 0/3、约束表 1/3 | L1 2/2、L3 0/2 | 梯度更清晰 |
-| MAP-18 | 0/6 | 0/4（含无故障 L1） | 仍为地板 |
-| MAP-26 | free 2/3、恢复 2/3 | free 3/3、恢复 0/3 | 恢复轨道更暴露困难 |
-| MAP-30 | 案卷/完整历史 3/3（固定前缀） | 0/2（无前缀） | 固定前缀掩盖了可玩性缺陷 |
+### MAP-30 纯召回条件（固定 V4 调查前缀 + 一步提交）
+
+| 条件 | 状态 | 决策 | 案卷条目 | Q4 召回 | 事实准确率 |
+|---|---|---|---|---|---|
+| history5_casebook | **success** | 1 | 4 | True | 3/3 |
+| history5 | failure（deadline） | 17 | 4 | None | 0/3 |
+| history_full | failure（deadline） | 17 | 4 | None | 0/3 |
+
+结构化案卷条件一步正确提交；短历史失败（与 V5 方向一致）。`history_full` 本次失败，与 V5 的 3/3 不一致，属单局噪声，需要更多重复才能判断。
+
+## 3. 天花板 / 地板（触发暂停规则）
+
+| 类型 | 图 / 条件 |
+|---|---|
+| 天花板 | MAP-08（全部）、MAP-16 L1、MAP-26 free |
+| 地板 | MAP-18（全部 10 局）、MAP-26 recovery（9 局）、MAP-30 完整调查（3 局） |
+| 有区分度 | MAP-22 L3 记忆消融、MAP-30 召回条件 |
+
+按提纲规则，**暂停扩大矩阵**；下一步应针对天花板加难度、针对地板降复杂度或补充公开结构信息。
+
+## 4. 失败归因（区分接口 / 策略 / 可玩性 / 预算）
+
+- **MAP-18**：全部为规则结果失败（`STATION_CAPACITY_EXCEEDED`、`HEAD_ON_COLLISION`、`COMPLETED_TRAIN_MOVED`）或 action-limit 截尾；无 schema 失败 → 属**联合调度策略**地板。
+- **MAP-26 recovery**：全部 `SPARES_EXHAUSTED`；模型在前缀后未先 rollback 就继续试错 → **策略/流程**失败（前缀本身已被求解器证明可修复）。
+- **MAP-30 完整调查**：0 案卷条目，模型在 `record` 之外的导航/访谈上耗尽 40–50 步 → **可玩性/流程**问题（已公开条目顺序，但 NPC 使用与地理导航仍难）。
+- **MAP-22 L3 history5**：30 步移动预算内截尾 → 记忆不足导致的**策略**失败。
+- 本次无 schema/接口失败（前几轮已通过 DCR-007…010 修复）。
+
+## 5. 接口修复（DCR-007…010，前几轮 smoke 暴露并修复）
+
+1. 非启用条件的 `agent_hypothesis_table` 自由草稿、`decision_reason` 超长、字段嵌套不再作废整条决策（可执行 Action 仍严格校验）。
+2. MAP-08 `interact` 测试站语义。
+3. MAP-26 合法日志/测试/部件 ID 清单 + “连续被拒”公开提醒。
+4. MAP-30 公开案卷条目顺序；MAP-22 按实例最短路计算 `optimal_moves`。
 
 ## 6. 限制
 
-- 单次运行、每条件 1 局，不做显著性断言。
-- MAP-16/18/22 的 seed 0 是固定场景；MAP-08 的 V4 原实例覆盖 B/D/F 三个漏点。
-- 无固定前缀的 MAP-26 恢复与 MAP-30 是“困难且未校准”的实例，不代表能力上限。
-- 未测 MAP-18 的 L2（短闭塞）与 MAP-16 的 L2 变体、MAP-22 的 L2、MAP-26 的 `spare_rich`：本轮为控制预算只选取了 L1/L3 与三个故障。
+- 单次运行、每条件 1 局；MAP-22 L3 与 MAP-30 召回的条件差异需重复验证。
+- 固定场景 seed 0 不是独立实例；MAP-08 的 V4 实例覆盖 B/D/F 三个漏点。
+- MAP-18 无精确最优求解器（构造解达最优服务率 18/18 时记为最优）。
+- 未测 MAP-16 l2b、MAP-22 l2_dead_end、MAP-30 l2/l3 的其余条件，以控制预算。
+
+## 7. 与 V5 的对照
+
+| 图 | V5（39 局） | V6（47 局） | 判读 |
+|---|---|---|---|
+| MAP-22 | 0/6（全截尾） | 5/6，L3 出现记忆条件差异 | 接口修复后不再有下限假象，且方向性信号出现 |
+| MAP-08 | 有表 3/3、无表 1/3 | 6/6 | 对当前模型过易 |
+| MAP-16 | react 0/3、约束表 1/3 | L1 2/6→2/2、L2/L3 0/4 | 梯度更清晰，条件仍无差异 |
+| MAP-18 | 0/6 | 0/10（含无故障 L1） | 仍为地板 |
+| MAP-26 | free 2/3、恢复 2/3 | free 3/4、恢复 0/9 | 恢复轨道更暴露困难 |
+| MAP-30 | 案卷/完整历史 3/3（固定前缀） | 召回 casebook 1/3；完整调查 0/3 | 固定前缀下仍有召回差异；完整调查是地板 |
