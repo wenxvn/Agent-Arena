@@ -45,6 +45,8 @@ _ACTION_CONTRACTS = {
         'interact{target_id:string,operation:"pressure_test_X"|"pressure_test_Y"|"repair_leak"}、'
         'wait{turns:1}。interact 测试时 target_id 必须是对应 X/Y；'
         'repair_leak 的 target_id 是 B/D/F。'
+        'Observation 的 visible_edges 每条为 "edge_id:相邻节点"；move 时 edge_id 必须填冒号前的'
+        '边标识，而不是相邻节点名。'
     ),
     "MAP-16": (
         'action 只可为 inspect_network{}、set_route{train_id:"a"|"b",next_node:string}、'

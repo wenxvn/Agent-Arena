@@ -1,5 +1,21 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-16 V5 MiMo 实时复测与 MAP-08 编码澄清
+
+事件：按用户明确指令，在 schema 修复提交 `eca264d` 后对 MAP-08/no_hypothesis_table/seed 0 做封账后实时复测，并为公开 Observation 编码补充提示词说明。
+
+原因：原 pilot 因系统性 `INVALID_ACTION_SCHEMA` 停止；需在真实 MiMo 上验证提示词约束与同义动作键折叠是否解除该阻塞。复测不续跑 pilot、不改动 registry/ledger、不计入 39 局矩阵。
+
+改动：`src/agent_arena/v5/prompts.py` 的 MAP-08 动作契约补充 `visible_edges` 每条为 `"edge_id:相邻节点"`、`move.edge_id` 取冒号前标识；`tests/test_v5_pilot_controls.py` 增加对应 prompt 回归用例。该说明只澄清公开编码，不改拓扑、胜负谓词或 Oracle。
+
+发现：复测 A（3 个首步请求）3/3 schema 合法并规范使用 `tool`，费用 ¥0.00090248，表明 schema 阻塞已消除、同义键折叠未被触发。复测 B1（澄清前 8 步有界 episode）8/8 schema 合法但模型把相邻节点当 `edge_id`，连续 `INVALID_EDGE`。复测 B2（补充编码说明后同条件）MAP-08 seed 0 在 5 步内 `LEAK_SEALED`（tick 6），0 非法 Action，费用 ¥0.00287236。三组合计费用约 ¥0.00377，均为封账后用户授权诊断，摘要存于 ignored `runs/v5/diagnostics/`。
+
+验证：全量 `pytest -q` 518 passed；`ruff check src scripts tests`、`mypy src`、`git diff --check` 通过。未恢复或新建 V5 ledger，未改动 `pilot_registry.json`；未保存原始模型文本或密钥。
+
+下一步：正式 39 局矩阵续跑仍须在提交 HEAD 重新冻结 offline gate、重新登记预算并完成独立审查；单局成功不得解释为模型能力、smoke gate 通过或矩阵续跑。
+
+关联提交：本次提交（提示词、回归测试与记录同一提交）。
+
 ## 2026-10-16 V5 provider 同义动作键折叠
 
 事件：针对 V5 MiMo smoke 系统性 `INVALID_ACTION_SCHEMA`（封账后诊断确认为 Action 缺少 `tool`、改用 `verb`），在 V5 Runner 的 provider 边界增加同义动作键折叠，作为提示词约束之外的离线兜底。

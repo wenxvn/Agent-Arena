@@ -54,7 +54,7 @@
 
 该响应顶层三个键符合约定，但 `action` 校验发现缺少 `tool` 且包含额外字段 `verb`，因此没有产生可执行 Action。Usage 为 input 510、output 48、cached input 0 tokens；按 [MiMo 官方价格](https://mimo.mi.com/models/zh-CN/mimo-v2.6-flash)计算为 ¥0.000606，低于单次最坏预留 ¥0.01024。完整模型回复未保存；去标识化的调用与校验摘要保存在 ignored 文件 `runs/v5/diagnostics/authorized_map08_probe_20261016T004942Z.json`。
 
-原 70 次 Trace 未保存模型原文，故不能断言它们都由同一 `verb`/`tool` 错配造成。一次探针把问题定位到提示词与 Action 字段契约的边界；现有证据不支持 MAP-08 转移规则缺陷。探针后提示词已明确要求 Action 使用 `tool` 字段并禁止改写成 `verb`。作为提示词之外的离线兜底，runner 之后也会把 Action 中唯一已知的同义判别键（`verb` 等）折叠为 `tool` 再走严格 V4 校验，并在 trace 记录 `recovered_action_discriminator`；歧义或未知别名仍按非法处理（见 [运行契约](runtime-contract.md)）。这两项改动后 V5 定向测试 30 项、全量 pytest 517 项通过；仍未再次调用 MiMo 验证。正式 pilot 仍为 0/39 局完成、Stage C 未启动，原 ledger 仍封闭。
+原 70 次 Trace 未保存模型原文，故不能断言它们都由同一 `verb`/`tool` 错配造成。一次探针把问题定位到提示词与 Action 字段契约的边界；现有证据不支持 MAP-08 转移规则缺陷。探针后提示词已明确要求 Action 使用 `tool` 字段并禁止改写成 `verb`。作为提示词之外的离线兜底，runner 之后也会把 Action 中唯一已知的同义判别键（`verb` 等）折叠为 `tool` 再走严格 V4 校验，并在 trace 记录 `recovered_action_discriminator`；歧义或未知别名仍按非法处理（见 [运行契约](runtime-contract.md)）。这两项改动后 V5 定向测试通过；随后按用户授权做了实时复测，见下节。正式 pilot 仍为 0/39 局完成、Stage C 未启动，原 ledger 仍封闭。
 
 - Run/experiment ID：`d3f3d7be-c928-4433-b6aa-9a269d97f593`。
 - Run manifest：`runs/v5/experiments/pilot_20261015T231840Z_82ab580089c94bd3887b9dc56569d213/run_manifest.json`；V5 ledger：`runs/v5/ledgers/pilot_20261015T231840Z_82ab580089c94bd3887b9dc56569d213.jsonl`。
@@ -65,3 +65,13 @@
 - 停止原因：70 次连续决策都记录为 `INVALID_ACTION_SCHEMA`。依提纲“若出现系统性接口失败，立即停机修复”停止；中断中的第 71 次请求由 ledger 审计记为 `UNKNOWN_SPEND_AFTER_INTERRUPTED_REQUEST`，pilot 已 fail-closed。不得恢复或新建 successor ledger。
 
 Trace 未保存原始模型文本，因此目前不能区分是响应字段形状、Action 参数还是输出格式导致校验失败。MiMo JSON mode 文档要求完整定义字段层级与数据类型，并建议提供示例；运行时使用的旧 prompt 顶层示意含 `...`，已在运行后离线修正为明确字段约束，但这只是待验证的审计线索，不是已确认根因（[MiMo Structured Output 文档](https://mimo.mi.com/docs/en-US/quick-start/usage-guide/text-generation/structured-output)）。报告保留固定场景重复 seed 的解释边界；本次数据不构成能力比较或通关结论。
+
+### 用户授权实时复测（2026-10-16，不计入 39 局）
+
+在 schema 修复提交 `eca264d` 后，按用户明确指令对同一 MAP-08/no_hypothesis_table/seed 0 做实时复测。两组诊断均不续跑 pilot、不读取或改写 `pilot_registry.json` 与 V5 ledger、不计入预登记矩阵；请求经 `OpenAIDecisionProvider`（`openai`/`mimo-v2.6-flash`、temperature 0、reasoning `none`、`json_object`、SDK 重试 0）发出。
+
+- 复测 A（3 个首步请求）：3/3 返回顶层三键正确、`action` 使用规范 `tool` 的合法 Action；无 `verb`，`recovered_action_discriminator` 均为 null，逐响应校验错误为 0。Usage 分别 526/46、526/49、526/69 tokens；合计费用 ¥0.00090248，低于 3 次最坏预留 ¥0.03072。摘要：`runs/v5/diagnostics/authorized_map08_probe_20261016T012415Z.json`。
+- 复测 B1（8 步有界 episode，澄清前提示词）：8/8 响应 schema 合法、0 非法 Action，但模型把 `visible_edges` 的相邻节点当成 `edge_id`（提交 `move{edge_id:"X"}`），环境连续返回 `INVALID_EDGE` 而未能推进。该结果表明 schema 失败已消除，剩余问题转为公开 Observation 编码未被说明。
+- 复测 B2（补充 Observation 编码说明后的同条件有界 episode）：MAP-08 提示词补充 `visible_edges` 每条为 `"edge_id:相邻节点"` 后，5 步通关：`move X_A` → `pressure_test_X`(amber) → `move X_C` → `move B_C` → `repair_leak B`，tick 6 得到 `LEAK_SEALED`；0 非法 Action、0 同义键折叠。Usage 合计 3,119 输入 / 253 输出 tokens；费用 ¥0.00287236，低于 8 次最坏预留 ¥0.08192。摘要：`runs/v5/diagnostics/authorized_map08_bounded_probe_20261016T012608Z.json`。
+
+说明与边界：以上为封账后用户授权诊断，不构成 39 局矩阵续跑、smoke gate 通过或模型能力排名；固定场景单 episode 成功只说明当前 prompt 与运行时闭环可被该模型使用。复测 B2 使用补充说明后的提示词，其 `prompt_sha256` 与提交 `eca264d` 不同，正式收费矩阵续跑前必须重新冻结 offline gate 并另行登记。所有诊断文件位于 ignored `runs/v5/`，未保存原始模型文本或密钥。

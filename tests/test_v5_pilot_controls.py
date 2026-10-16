@@ -117,6 +117,12 @@ def test_all_v5_action_contracts_name_the_required_tool_discriminator() -> None:
         assert '禁止用 "verb"' in prompt
 
 
+def test_map08_prompt_documents_public_edge_encoding() -> None:
+    prompt = system_prompt("MAP-08", "no_hypothesis_table")
+    assert '"edge_id:相邻节点"' in prompt
+    assert "边标识" in prompt
+
+
 def test_map18_actual_provider_inputs_do_not_publish_future_fault_details(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
