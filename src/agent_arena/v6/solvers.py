@@ -331,13 +331,20 @@ def solve_map18(instance_id: str) -> SolverResult:
             if following == task["destination"]:
                 delivered.add(train)
         actions.append({"tool": "set_timetable", "tick": tick, "operations": operations})
-    return SolverResult(
-        instance_id,
-        tuple(actions),
-        None,
-        None,
-        f"greedy scheduler delivers {len(delivered)} trains (threshold {scene.success_threshold})",
-    )
+    total_demand = sum(int(task["passengers"]) for task in task_map.values())
+    delivered_passengers = sum(int(task_map[t]["passengers"]) for t in delivered)
+    # The greedy plan delivers every passenger whenever it reaches the total
+    # demand, which is a provable optimum for the service-rate objective. Other
+    # plans report the achieved passenger count as a lower bound.
+    if delivered_passengers == total_demand:
+        optimum: int | None = total_demand
+        lower_bound: int | None = total_demand
+        note = f"delivers all {total_demand} passengers (optimal service rate)"
+    else:
+        optimum = None
+        lower_bound = delivered_passengers
+        note = f"delivers {delivered_passengers}/{total_demand} passengers (lower bound)"
+    return SolverResult(instance_id, tuple(actions), optimum, lower_bound, note)
 
 
 # --------------------------------------------------------------------------- #
@@ -462,23 +469,42 @@ def solve_map30(instance_id: str) -> SolverResult:
     )
 
 
+def map26_recovery_prefix(instance_id: str) -> list[dict[str, Any]]:
+    """Return the legal failure prefix that precedes a MAP-26 recovery episode."""
+    scene = get_scene(instance_id)
+    if scene.use_registered_prefix:
+        route_path = (
+            Path(__file__).resolve().parents[3]
+            / "worlds" / "v4" / "MAP-26" / "planning" / "hand_traces.json"
+        )
+        data = json.loads(route_path.read_text(encoding="utf-8"))
+        route = next(item for item in data["routes"] if item["id"] == "feedback_then_correct")
+        prefix: list[dict[str, Any]] = []
+        for action in route["actions"][:7]:
+            payload = {"tool": action["name"]}
+            payload.update({key: value for key, value in action.items() if key != "name"})
+            prefix.append(payload)
+        return prefix
+    wrong = scene.recovery_wrong_part
+    if wrong is None:
+        raise ValueError(f"{instance_id} has no recovery prefix source.")
+    return [
+        {"tool": "move", "to": "D"},
+        {"tool": "move", "to": "A"},
+        {"tool": "move", "to": "B"},
+        {"tool": "take_spare", "part_id": wrong},
+        {"tool": "move", "to": "A"},
+        {"tool": "replace", "part_id": wrong},
+    ]
+
+
 def solve_map26_recovery(instance_id: str, feedback_mode: str = "full") -> SolverResult:
-    """Replay the registered failure prefix, then search a legal repair tail."""
+    """Replay a legal failure prefix, then search a legal repair tail."""
     from agent_arena.v6.catalog import build_environment
     from agent_arena.worlds.scenario_v4 import ScenarioV4Action
 
     scene = get_scene(instance_id)
-    route_path = (
-        Path(__file__).resolve().parents[3]
-        / "worlds" / "v4" / "MAP-26" / "planning" / "hand_traces.json"
-    )
-    data = json.loads(route_path.read_text(encoding="utf-8"))
-    route = next(item for item in data["routes"] if item["id"] == "feedback_then_correct")
-    prefix: list[dict[str, Any]] = []
-    for action in route["actions"][:7]:
-        payload = {"tool": action["name"]}
-        payload.update({key: value for key, value in action.items() if key != "name"})
-        prefix.append(payload)
+    prefix = map26_recovery_prefix(instance_id)
 
     parts = ("power_regulator", "antenna_coupler", "software_image")
 
@@ -531,7 +557,46 @@ def solve_map26_recovery(instance_id: str, feedback_mode: str = "full") -> Solve
         tuple([*prefix, *solution]),
         len(prefix) + len(solution),
         len(prefix) + len(solution),
-        f"{feedback_mode}: registered prefix plus a {len(solution)}-action repair tail",
+        f"{feedback_mode}: legal prefix plus a {len(solution)}-action repair tail",
+    )
+
+
+def map30_recall_actions() -> list[dict[str, Any]]:
+    """Return the reviewed V4 investigation prefix (excluding the final accusation)."""
+    route_path = (
+        Path(__file__).resolve().parents[3]
+        / "worlds" / "v4" / "MAP-30" / "planning" / "hand_traces.json"
+    )
+    data = json.loads(route_path.read_text(encoding="utf-8"))
+    route = next(item for item in data["routes"] if item["id"] == "event_by_event_archive_first")
+    actions: list[dict[str, Any]] = []
+    for action in route["actions"][:-1]:
+        payload = {"tool": action["name"]}
+        payload.update({key: value for key, value in action.items() if key != "name"})
+        if action["name"] == "interview":
+            payload.setdefault("shown_evidence_ids", [])
+            payload.setdefault("shown_casebook_entry_ids", [])
+        actions.append(payload)
+    return actions
+
+
+def solve_map30_recall(instance_id: str) -> SolverResult:
+    from agent_arena.worlds.scenario_v4.map30 import DEFAULT_CASE
+
+    prefix = map30_recall_actions()
+    accuse = {
+        "tool": "formal_accuse",
+        "person_id": DEFAULT_CASE.culprit,
+        "event_claims": [claim.model_dump() for claim in DEFAULT_CASE.claims],
+        "cited_entry_ids": list(DEFAULT_CASE.entry_order),
+    }
+    actions = [*prefix, accuse]
+    return SolverResult(
+        instance_id,
+        tuple(actions),
+        len(actions),
+        len(actions),
+        "recall: reviewed investigation prefix plus the formal accusation",
     )
 
 
@@ -544,11 +609,13 @@ def solve(instance_id: str, *, seed: int = 0) -> SolverResult:
     if scene.map_id == "MAP-08":
         return solve_map08(instance_id, seed)
     if scene.map_id == "MAP-26":
-        if instance_id.endswith("_recovery_antenna"):
+        if "recovery" in instance_id:
             return solve_map26_recovery(instance_id, "recovery_full")
         return solve_map26(instance_id, seed)
     if scene.map_id == "MAP-18":
         return solve_map18(instance_id)
     if scene.map_id == "MAP-30":
+        if getattr(scene, "use_recall_prefix", False):
+            return solve_map30_recall(instance_id)
         return solve_map30(instance_id)
     raise ValueError(f"Unsupported V6 map: {scene.map_id}")

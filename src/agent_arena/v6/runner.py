@@ -50,24 +50,45 @@ MAX_CONSECUTIVE_INVALID_ACTION_SCHEMAS = 3
 _MAP22_MEMORY_CONDITIONS = frozenset({"history5_graph_memory"})
 _PAIRED = {
     "map08_l1_two_candidate": ("no_hypothesis_table", "hypothesis_table"),
+    "map08_l2_alt_coverage": ("no_hypothesis_table", "hypothesis_table"),
     "map08_l3_original": ("no_hypothesis_table", "hypothesis_table"),
     "map16_l1_single_train": ("react", "constraint_table"),
+    "map16_l2_siding_variant_a": ("react", "constraint_table"),
     "map16_l3_original": ("react", "constraint_table"),
     "map18_l1_no_fault": ("alert_off", "alert_on"),
+    "map18_l2_short_closure": ("alert_off", "alert_on"),
+    "map18_l2_alt_segment_r2b2": ("alert_off", "alert_on"),
+    "map18_l3_alt_segment_b3g2": ("alert_off", "alert_on"),
     "map18_l3_original": ("alert_off", "alert_on"),
     "map22_l1_short_return": ("history5", "history5_graph_memory"),
+    "map22_l2_branch_loop": ("history5", "history5_graph_memory"),
     "map22_l3_original": ("history5", "history5_graph_memory"),
 }
-_MAP26_FREE = ("map26_l1_antenna_fault", "map26_l2_power_fault", "map26_l3_software_fault")
+_MAP26_FREE = (
+    "map26_l1_antenna_fault",
+    "map26_l2_power_fault",
+    "map26_l2_spare_rich",
+    "map26_l3_software_fault",
+)
 _MAP26_RECOVERY = ("recovery_full", "recovery_structured", "recovery_hidden")
-_MAP30_CASES = ("map30_l1_two_event_case", "map30_l3_original")
+_MAP26_RECOVERY_INSTANCES = (
+    "map26_recovery_antenna",
+    "map26_recovery_power",
+    "map26_recovery_software",
+)
+_MAP30_CASES = (
+    "map30_l1_two_event_case",
+    "map30_l2_three_event_alt",
+    "map30_l3_original",
+)
+MAP30_RECALL_CONDITIONS = ("history_full", "history5", "history5_casebook")
 SMOKE = (
     ("map08_l1_two_candidate", "no_hypothesis_table", 0),
     ("map16_l1_single_train", "react", 0),
-    ("map18_l1_no_fault", "alert_off", 0),
+    ("map18_l2_alt_segment_r2b2", "alert_off", 0),
     ("map22_l1_short_return", "history5", 0),
-    ("map26_l1_antenna_fault", "free_diagnosis", 0),
-    ("map30_l1_two_event_case", "history5_casebook", 0),
+    ("map26_recovery_power", "recovery_full", 0),
+    ("map30_recall_original", "history5_casebook", 0),
 )
 
 
@@ -92,10 +113,16 @@ def registered_v6_matrix() -> list[V6EpisodeSpec]:
         episodes.extend(V6EpisodeSpec(instance_id, condition, 0) for condition in conditions)
     episodes.extend(V6EpisodeSpec(instance_id, "free_diagnosis", 0) for instance_id in _MAP26_FREE)
     episodes.extend(
-        V6EpisodeSpec("map26_recovery_antenna", condition, 0) for condition in _MAP26_RECOVERY
+        V6EpisodeSpec(instance_id, condition, 0)
+        for instance_id in _MAP26_RECOVERY_INSTANCES
+        for condition in _MAP26_RECOVERY
     )
     episodes.extend(
         V6EpisodeSpec(instance_id, "history5_casebook", 0) for instance_id in _MAP30_CASES
+    )
+    episodes.extend(
+        V6EpisodeSpec("map30_recall_original", condition, 0)
+        for condition in MAP30_RECALL_CONDITIONS
     )
     if len(episodes) != len({item.episode_id for item in episodes}):
         raise AssertionError("The V6 matrix must contain unique episodes.")
@@ -270,22 +297,18 @@ def _prepare_prefix(environment: Any, spec: V6EpisodeSpec) -> list[dict[str, Any
             raise AssertionError("MAP-22 shared prefix must end at the target.")
         return rows
     if scene.map_id == "MAP-26" and spec.condition_id.startswith("recovery_"):
-        route_path = (
-            _repository_root()
-            / "worlds"
-            / "v4"
-            / "MAP-26"
-            / "planning"
-            / "hand_traces.json"
-        )
-        data = json.loads(route_path.read_text(encoding="utf-8"))
-        route = next(item for item in data["routes"] if item["id"] == "feedback_then_correct")
-        rows = []
-        for action in route["actions"][:7]:
-            payload = {"tool": action["name"]}
-            payload.update({key: value for key, value in action.items() if key != "name"})
-            rows.append(_apply_prefix_action(environment, payload))
-        return rows
+        from agent_arena.v6.solvers import map26_recovery_prefix
+
+        return [
+            _apply_prefix_action(environment, payload)
+            for payload in map26_recovery_prefix(spec.instance_id)
+        ]
+    if scene.map_id == "MAP-30" and getattr(scene, "use_recall_prefix", False):
+        from agent_arena.v6.solvers import map30_recall_actions
+
+        return [
+            _apply_prefix_action(environment, payload) for payload in map30_recall_actions()
+        ]
     return []
 
 

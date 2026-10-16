@@ -9,12 +9,12 @@
 
 | 命令 | 结果 |
 |---|---|
-| `python -m pytest -q` | **554 passed**（含离线 V6 测试；另含付费层单测） |
+| `python -m pytest -q` | **559 passed** |
 | `python -m ruff check src scripts tests` | All checks passed |
 | `python -m mypy src` | Success: no issues found in 85 source files |
 | `python scripts/validate_v4_runtime.py` | V4 oracle replay passed：08:4、16:2、18:3、22:1、26:2、30:3 |
 | `python scripts/validate_v5_solvers.py` | V5 independent solver checks passed（六图指标不变） |
-| `python scripts/validate_v6_instances.py` | **V6 instance validation passed: 40 instance/seed oracle replays verified** |
+| `python scripts/validate_v6_instances.py` | **V6 instance validation passed: 45 instance/seed oracle replays verified**（每实例另含 3 条边界动作） |
 | `python scripts/validate_v6_leakage.py` | V6 leakage checks passed |
 | `python scripts/audit_v5_failures.py --summary` | 输出 39 局逐条件分类（见 `v5-failure-audit.md`） |
 
@@ -26,13 +26,13 @@
 |---|---|---|
 | AC-1 隔离；V4 默认行为不变 | 通过 | `validate_v4_runtime.py` 六图全绿；全量 pytest；DCR-002 |
 | AC-2 实例/运行/seed 单位 | 通过 | manifest 字段与 `measurement-matrix.md`；MAP-08 seed 为不同候选而非重复 |
-| AC-3 可解与最优 | 通过 | 40/40 Oracle 回放成功；MAP-16/22 由 BFS 证明最优并核对 makespan/movement |
+| AC-3 可解与最优 | 通过 | 45/45 Oracle 回放成功；MAP-16/22 由 BFS 证明最优并核对 makespan/movement；MAP-18 构造解达最优服务率 |
 | AC-4 分层 | 通过 | MAP-16/18/22 各含 L1/L2/L3，见矩阵 |
-| AC-5 非换皮独立实例 | 通过 | MAP-08 四实例、MAP-26 四故障+一恢复、MAP-30 三案情 |
+| AC-5 非换皮独立实例 | 通过 | 29 个实例；MAP-08 四实例、MAP-18 三闭塞段、MAP-26 四故障+三失败前缀、MAP-30 三案情+纯召回变体 |
 | AC-6 公平配对 | 通过 | `test_paired_conditions_share_rule_outcomes`；MAP-22 仅记忆日志可差异 |
 | AC-7 无泄漏 | 通过 | `validate_v6_leakage.py`：无私有真值/Oracle 路线/未解锁证据泄漏 |
-| AC-8 边界与终止不变 | 通过 | 每实例一条非法动作被拒且 judge state 不变；终止后再次 step 状态不变 |
-| AC-9 无付费 | 通过 | 全流程离线；不触碰账本 |
+| AC-8 边界与终止不变 | 通过 | 每实例子 3 条非法/边界动作被拒且 judge state 不变；终止后再次 step 状态不变 |
+| AC-9 无付费（离线门禁） | 通过 | 离线门禁与实例生成不调用收费 API；授权内的付费复测另见 `pilot-report.md` |
 | AC-10 报告诚实 | 通过 | 人工审阅字段保持 `pending_human_review` |
 
 ## 3. 关键验证细节

@@ -16,18 +16,18 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-MAX_EPISODES = 24
+MAX_EPISODES = 47
 MAX_DECISIONS_PER_EPISODE = 100
 MAX_RETRIES_PER_EPISODE = 1
 MAX_REQUESTS_PER_EPISODE = MAX_DECISIONS_PER_EPISODE + MAX_RETRIES_PER_EPISODE
-MAX_REQUESTS_GLOBAL = 780
+MAX_REQUESTS_GLOBAL = 1_000
 MAX_INPUT_TOKENS_PER_REQUEST = 8_192
 MAX_OUTPUT_TOKENS_PER_REQUEST = 1_024
 MAX_RESERVED_TOKENS_GLOBAL = MAX_REQUESTS_GLOBAL * (
     MAX_INPUT_TOKENS_PER_REQUEST + MAX_OUTPUT_TOKENS_PER_REQUEST
 )
 MAX_EPISODE_SECONDS = 12 * 60
-MAX_PROVIDER_SECONDS_GLOBAL = 120 * 60
+MAX_PROVIDER_SECONDS_GLOBAL = 180 * 60
 PRICE_URL = "https://mimo.mi.com/models/zh-CN/mimo-v2.6-flash"
 
 
@@ -61,14 +61,14 @@ PRICE_SHEETS = {
         input_uncached_per_million=Decimal("1"),
         input_cached_per_million=Decimal("0.02"),
         output_per_million=Decimal("2"),
-        max_cost=Decimal("8.00"),
+        max_cost=Decimal("11.00"),
     ),
     "USD": PriceSheet(
         "USD",
         input_uncached_per_million=Decimal("0.14"),
         input_cached_per_million=Decimal("0.0028"),
         output_per_million=Decimal("0.28"),
-        max_cost=Decimal("1.12"),
+        max_cost=Decimal("1.44"),
     ),
 }
 

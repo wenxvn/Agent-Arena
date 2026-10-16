@@ -449,6 +449,10 @@ class Map26Scene:
     spares: int
     note: str
     feedback_mode: str = "full"
+    # Recovery prefix source: the reviewed V4 registered prefix, or a generated
+    # legal prefix that installs the named wrong part before recovery.
+    use_registered_prefix: bool = False
+    recovery_wrong_part: str | None = None
     map_id: str = "MAP-26"
 
     def env_kwargs(self) -> dict[str, Any]:
@@ -504,7 +508,28 @@ def _build_map26_scenes() -> dict[str, Map26Scene]:
             paired_conditions=recovery_conditions,
             fault_part="antenna_coupler",
             spares=2,
-            note="Registered wrong-replacement prefix; three information-equal feedback modes.",
+            use_registered_prefix=True,
+            note="Reviewed V4 registered wrong-replacement prefix (antenna fault).",
+        ),
+        "map26_recovery_power": Map26Scene(
+            instance_id="map26_recovery_power",
+            level="L3",
+            capability="feedback_correction",
+            paired_conditions=recovery_conditions,
+            fault_part="power_regulator",
+            spares=2,
+            recovery_wrong_part="antenna_coupler",
+            note="Generated legal prefix installing the antenna part on a power fault.",
+        ),
+        "map26_recovery_software": Map26Scene(
+            instance_id="map26_recovery_software",
+            level="L3",
+            capability="feedback_correction",
+            paired_conditions=recovery_conditions,
+            fault_part="software_image",
+            spares=2,
+            recovery_wrong_part="power_regulator",
+            note="Generated legal prefix installing the power part on a software fault.",
         ),
     }
 
@@ -591,6 +616,32 @@ def _build_map18_scenes() -> dict[str, Map18Scene]:
             horizon=12,
             success_threshold=13,
             note="Longer closure: one opposite-direction service must be canceled.",
+        ),
+        "map18_l2_alt_segment_r2b2": Map18Scene(
+            instance_id="map18_l2_alt_segment_r2b2",
+            level="L2",
+            capability="known_fault_local_reroute",
+            paired_conditions=("alert_off", "alert_on"),
+            fault_edge=frozenset(("R2", "B2")),
+            fault_window=(2, 7),
+            fault_enabled=True,
+            alert_tick=1,
+            horizon=12,
+            success_threshold=13,
+            note="Different blocked segment: the R2-B2 crossover closes early.",
+        ),
+        "map18_l3_alt_segment_b3g2": Map18Scene(
+            instance_id="map18_l3_alt_segment_b3g2",
+            level="L3",
+            capability="online_uncertain_fault_replanning",
+            paired_conditions=("alert_off", "alert_on"),
+            fault_edge=frozenset(("B3", "G2")),
+            fault_window=(4, 9),
+            fault_enabled=True,
+            alert_tick=3,
+            horizon=12,
+            success_threshold=13,
+            note="Different blocked segment: the B3-G2 interchange closes mid-horizon.",
         ),
     }
 
@@ -846,6 +897,9 @@ class Map30Scene:
     paired_conditions: tuple[str, ...]
     case: Map30Case | None
     note: str
+    # Recall variant: the reviewed V4 investigation prefix runs first and ends at
+    # the courtroom, isolating pure long-gap evidence recall from investigation.
+    use_recall_prefix: bool = False
     map_id: str = "MAP-30"
 
     def env_kwargs(self) -> dict[str, Any]:
@@ -877,6 +931,15 @@ def _build_map30_scenes() -> dict[str, Map30Scene]:
             paired_conditions=("history_full", "history5", "history5_casebook"),
             case=None,
             note="Reviewed V4 case, unchanged.",
+        ),
+        "map30_recall_original": Map30Scene(
+            instance_id="map30_recall_original",
+            level="L3",
+            capability="pure_long_gap_recall",
+            paired_conditions=("history_full", "history5", "history5_casebook"),
+            case=None,
+            use_recall_prefix=True,
+            note="Reviewed V4 investigation prefix; isolates recall and submission caution.",
         ),
     }
 

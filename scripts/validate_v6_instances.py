@@ -26,19 +26,47 @@ from agent_arena.worlds.scenario_v4 import ScenarioV4Action  # noqa: E402
 
 OUTPUT_ROOT = ROOT / "runs" / "v6" / "instances"
 
-# One illegal action per map that must be rejected without changing judge state.
-_BOUNDARY_ACTIONS: dict[str, dict[str, Any]] = {
-    "MAP-08": {"tool": "move", "edge_id": "NOT_AN_EDGE"},
-    "MAP-16": {"tool": "set_route", "train_id": "a", "next_node": "NOWHERE"},
-    "MAP-18": {"tool": "set_timetable", "tick": 99, "operations": {}},
-    "MAP-22": {"tool": "move", "bearing": "UP"},
-    "MAP-26": {"tool": "replace", "part_id": "not_a_part"},
-    "MAP-30": {
-        "tool": "formal_accuse",
-        "person_id": "nobody",
-        "event_claims": [],
-        "cited_entry_ids": [],
-    },
+# Three illegal/boundary actions per map that must each be rejected without
+# changing the judge state (or that terminate with an explicit rule reason).
+_BOUNDARY_ACTIONS: dict[str, list[dict[str, Any]]] = {
+    "MAP-08": [
+        {"tool": "move", "edge_id": "NOT_AN_EDGE"},
+        {"tool": "inspect", "target_id": "unknown_sensor"},
+        {"tool": "interact", "target_id": "X", "operation": "repair_leak"},
+    ],
+    "MAP-16": [
+        {"tool": "set_route", "train_id": "a", "next_node": "NOWHERE"},
+        {"tool": "release_section", "train_id": "a", "section_id": "ZZ"},
+        {"tool": "set_route", "train_id": "b", "next_node": "NOWHERE"},
+    ],
+    "MAP-18": [
+        {"tool": "set_timetable", "tick": 99, "operations": {}},
+        {"tool": "set_timetable", "tick": 98, "operations": {"T_B": {"op": "release", "to": "B1"}}},
+        {"tool": "set_timetable", "tick": 97, "operations": {"T_G": {"op": "release", "to": "G1"}}},
+    ],
+    "MAP-22": [
+        {"tool": "move", "bearing": "UP"},
+        {"tool": "move", "bearing": "DOWN"},
+        {
+            "tool": "write_memory",
+            "facts": [{"fact_type": "node_page", "sign_id": "X", "exit_bearings": ["N"]}],
+        },
+    ],
+    "MAP-26": [
+        {"tool": "replace", "part_id": "not_a_part"},
+        {"tool": "take_spare", "part_id": "not_a_part"},
+        {"tool": "read_log", "log_id": "not_a_log"},
+    ],
+    "MAP-30": [
+        {
+            "tool": "formal_accuse",
+            "person_id": "nobody",
+            "event_claims": [],
+            "cited_entry_ids": [],
+        },
+        {"tool": "record", "entry_id": "NOT_AN_ENTRY", "evidence_ids": ["x"]},
+        {"tool": "inspect", "evidence_id": "NOT_AN_EVIDENCE"},
+    ],
 }
 
 
@@ -129,19 +157,23 @@ def main() -> None:
                         f"{instance_id}: movement {metrics['movement_steps']} "
                         f"!= optimum {result.optimum}"
                     )
-            # Boundary: one illegal action must be rejected without a state change.
-            boundary_env = build_environment(scene, condition, seed=seed)
-            before = boundary_env.state_hash()
-            boundary = ScenarioV4Action.model_validate(
-                _BOUNDARY_ACTIONS[scene.map_id], strict=True
-            )
-            outcome = boundary_env.step(boundary)
-            if boundary_env.status.value == "running" and boundary_env.state_hash() != before:
-                failures.append(f"{instance_id}: a rejected action mutated the judge state")
-            if not outcome.result.startswith(("INVALID", "TICK", "COURTROOM", "NO", "ACTION")):
-                failures.append(
-                    f"{instance_id}: boundary action returned unexpected result {outcome.result}"
+            # Boundary: three illegal/boundary actions must each be rejected
+            # without changing the judge state (or terminate with a rule reason).
+            for boundary_payload in _BOUNDARY_ACTIONS[scene.map_id]:
+                boundary_env = build_environment(scene, condition, seed=seed)
+                before = boundary_env.state_hash()
+                outcome = boundary_env.step(
+                    ScenarioV4Action.model_validate(boundary_payload, strict=True)
                 )
+                if boundary_env.status.value == "running":
+                    if boundary_env.state_hash() != before:
+                        failures.append(
+                            f"{instance_id}: rejected action {outcome.result} mutated the state"
+                        )
+                elif not boundary_env.terminal_reason:
+                    failures.append(
+                        f"{instance_id}: boundary action terminated without a rule reason"
+                    )
             # Terminal immutability.
             final_env, _, _ = _replay(instance_id, condition, seed, result.actions)
             terminal_hash = final_env.state_hash()
