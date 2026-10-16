@@ -8,6 +8,9 @@ in the V5 audit (DCR-001).
 
 from __future__ import annotations
 
+import json
+from typing import Any
+
 _MAP_TASKS = {
     "MAP-08": (
         "在公开候选点中识别唯一漏点并修复。只能使用一份密封剂；"
@@ -119,3 +122,56 @@ def v6_system_prompt(map_id: str, condition_id: str) -> str:
             "Observation 是唯一环境状态来源；不得假设未提供的裁判真值。",
         ]
     )
+
+
+def v6_condition_memory(
+    map_id: str,
+    condition_id: str,
+    observation: Any,
+    hypothesis_table: dict[str, Any] | None,
+) -> str | None:
+    """Return only registered, Agent-owned or public-derived context."""
+
+    if map_id == "MAP-08" and condition_id == "hypothesis_table":
+        return "当前 Agent-owned 假设表：" + json.dumps(
+            hypothesis_table,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+    if map_id == "MAP-16" and condition_id == "constraint_table":
+        table = {
+            "train_route_directions": observation.train_route_directions,
+            "segment_capacities": observation.segment_capacities,
+            "node_capacities": observation.node_capacities,
+            "pending_route_reservations": observation.pending_route_reservations,
+            "goals": observation.train_goals,
+        }
+        return "公开约束表：" + json.dumps(
+            table,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            default=lambda value: list(value) if isinstance(value, tuple) else str(value),
+        )
+    return None
+
+
+def v6_public_history(rows: list[dict[str, Any]], *, limit: int | None = 5) -> str | None:
+    if not rows:
+        return None
+    selected = rows if limit is None else rows[-limit:]
+    label = "完整公开轨迹：" if limit is None else "最近公开轨迹："
+    return label + json.dumps(selected, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def v6_initial_map08_hypothesis_table(candidate_sites: tuple[str, ...]) -> dict[str, Any]:
+    sites = tuple(candidate_sites)
+    table: dict[str, Any] = {}
+    for site in sites:
+        table[f"belief_{site}"] = 1.0 / len(sites)
+    table["test_X_result"] = None
+    table["test_Y_result"] = None
+    table["next_test"] = "X"
+    return table
+
