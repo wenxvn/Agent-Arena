@@ -1,6 +1,6 @@
 # V5 离线验收报告
 
-状态：39 局矩阵和 MAP-30 完整历史条件已实现并通过本机离线验证；扩展矩阵第二模型复核为 Approve，无未解决发现。冻结门禁在运行 commit `e440cc1b599a5de4a57650f418d78b03c4746399` 通过，之后启动 MiMo 真实 smoke；首局出现 70 次 `INVALID_ACTION_SCHEMA`，第 71 个请求被中断且 usage 未知，唯一 ledger 已关闭。Stage C 未启动。停止后修改了 prompt 约束和 runner fail-fast；513 项 pytest、Ruff 和 mypy 离线验证通过。随后经用户明确批准另做 1 次封账后诊断，并补充 `tool` 字段提示词约束；当前源码全量 pytest 514 项通过，最新提示词修正尚未用 MiMo 验证。冻结 hash 只对应真实运行时的旧 commit；本报告也保留离线加固状态，Oracle 与求解结果都属于离线环境证据。
+状态：39 局矩阵和 MAP-30 完整历史条件已实现并通过本机离线验证；扩展矩阵第二模型复核为 Approve，无未解决发现。冻结门禁在运行 commit `e440cc1b599a5de4a57650f418d78b03c4746399` 通过，之后启动 MiMo 真实 smoke；首局出现 70 次 `INVALID_ACTION_SCHEMA`，第 71 个请求被中断且 usage 未知，唯一 ledger 已关闭。Stage C 未启动。停止后修改了 prompt 约束和 runner fail-fast；513 项 pytest、Ruff 和 mypy 离线验证通过。随后经用户明确批准另做 1 次封账后诊断，并补充 `tool` 字段提示词约束与同义动作键折叠；当前源码全量 pytest 517 项通过，最新提示词和折叠逻辑尚未用 MiMo 验证。冻结 hash 只对应真实运行时的旧 commit；本报告也保留离线加固状态，Oracle 与求解结果都属于离线环境证据。
 
 ## 门禁范围
 
@@ -29,8 +29,9 @@ Gate 命令：
 - 冻结 offline gate 在 commit `e440cc1b599a5de4a57650f418d78b03c4746399` 通过，hash 为 `664e2d1210f77c30a5fe486ac8d80808f4c0f71a10a2b35311b7f866dabe6813`。当时 HEAD 与门禁 commit 一致；其后加入真实运行记录及离线 prompt/fail-fast 加固，当前源码不等于本次 MiMo 运行源码，任何未来 paid run 都必须先重新冻结并重新登记。
 - 唯一正式 V5 pilot `d3f3d7be-c928-4433-b6aa-9a269d97f593` 使用 `mimo-v2.6-flash`、CNY 预算。70 个 settled response 全部在运行时产出 `INVALID_ACTION_SCHEMA`；第 71 个 reservation 在进程中断时未结算，ledger 写入 `UNKNOWN_SPEND_AFTER_INTERRUPTED_REQUEST` 并关闭。0/39 episode 完成、六局 smoke gate 未通过、Stage C 未启动。真实请求与费用见 [`pilot-report.md`](pilot-report.md) 和 ignored run artifacts；不可恢复或创建 successor ledger。
 - 封账后诊断：用户明确批准的 1 次 MAP-08 seed 0 请求使用 510 input/48 output/0 cached tokens，费用 ¥0.000606；顶层 JSON 键正确，Action 缺少 `tool` 并额外包含 `verb`。安全摘要在 ignored `runs/v5/diagnostics/authorized_map08_probe_20261016T004942Z.json`，未保存模型原文，也未改动 registry/ledger。提示词后来补充 `tool` 字段约束；该改动后全量 pytest 514 项通过，未再次 live-test。
+- 同义动作键折叠（2026-10-16，离线）：`_clean_candidate` 在 Action 缺少 `tool` 而只含一个已知同义键（`verb`/`name`/`action_name`/`tool_name`/`command`）时，先把该唯一同义键折叠为 `tool`，再走严格 V4 Action 与逐图字段形状校验，并在 decision 行记录 `recovered_action_discriminator`；同义键多于一个、无已知同义键或折叠后仍非法的响应照旧记录 `action:null` 并调用地图 `reject_invalid_action()`。新增 3 项定向用例覆盖折叠、歧义/未知拒绝和 runner 离线恢复；全量 `pytest -q` 517 passed，`ruff check src scripts tests` 与 `mypy src` 通过。该改动只作用于 provider 边界解析，未改地图规则、胜负谓词、拓扑或 Observation；未再次调用 MiMo，也不构成已确认的 MiMo 修复。
 - 原 pilot 的 Trace 仅保存安全 Action 与校验结果，不保存原始模型文本；故 70 次正式请求的精确 schema 失败原因仍未知。MiMo Structured Output 文档要求完整定义字段层级和类型，并建议提供示例；运行时使用的旧 V5 system prompt 顶层对象示意使用省略号，已在运行后修正为明确字段约束，但尚未确认该处是根因（[官方文档](https://mimo.mi.com/docs/en-US/quick-start/usage-guide/text-generation/structured-output)）。
 - 一次离线输入测量另留下 ignored `runs/temporary-review-only.jsonl`；它仅含一条 `pilot_created`（model=`offline-fake-v5`），没有请求预留/结算或 episode，位于正式 `runs/v5/` registry 之外，不可作为真实 pilot ledger 恢复或复用。
 - 全仓 Ruff 仍有已知 baseline 问题：`ruff check . --statistics` 报 653 项（601 项 E501 等），集中于原有手写 MAP planning 参考材料；本任务不改写这些设计材料。冻结门禁只对 `src scripts tests` 运行 scoped Ruff，并运行完整 pytest。
 
-511 项和其余冻结门禁检查在模型运行前对 commit `e440cc1` 执行并通过；513 项和其余离线加固检查在 pilot 关闭后执行。正式 pilot 的请求、usage 和费用按唯一 V5 ledger 记录；另将封账后用户授权的一次诊断独立记于 ignored diagnostics 文件，没有并入 ledger。第 71 个正式请求的实际扣费仍未知。文档区分原 pilot、诊断探针和最新离线提示词，不把离线修复表述为已验证的模型能力结论。
+511 项和其余冻结门禁检查在模型运行前对 commit `e440cc1` 执行并通过；513 项和其余离线加固检查在 pilot 关闭后执行。正式 pilot 的请求、usage 和费用按唯一 V5 ledger 记录；另将封账后用户授权的一次诊断独立记于 ignored diagnostics 文件，没有并入 ledger。第 71 个正式请求的实际扣费仍未知。文档区分原 pilot、诊断探针和最新离线提示词/同义键折叠，不把离线修复表述为已验证的模型能力结论。

@@ -2,7 +2,7 @@
 
 ## 数据流
 
-`DecisionProvider` 每次只收到当前 allowlisted Observation、系统任务说明、最近五条公开动作历史，以及该条件允许的 Agent-owned 记忆。provider 没有 shell、文件、网页、环境真值或 Oracle 工具。响应先转成 V4 严格 Action，再通过当前地图的字段形状 allowlist 后调用 `step`。必填字段为空、Action 与地图契约不符、非法 JSON、缺字段和 schema 不匹配均记录 `action: null`，调用地图的 `reject_invalid_action()`，不拼造 Action；环境按自己的 tick 规则处理。MAP-18 在闭塞发生前只展示未定位且未给时长的公开预警；R2–R3 闭塞状态仅在 Observation 实际出现后提供。
+`DecisionProvider` 每次只收到当前 allowlisted Observation、系统任务说明、最近五条公开动作历史，以及该条件允许的 Agent-owned 记忆。provider 没有 shell、文件、网页、环境真值或 Oracle 工具。响应先转成 V4 严格 Action，再通过当前地图的字段形状 allowlist 后调用 `step`。若 `action` 缺少 `tool` 而只带一个已知同义键（已观察到 MiMo 返回 `verb`），运行时会先把这个唯一同义键折叠成 `tool` 再走严格 V4 Action 校验，并在该 decision 行记录 `recovered_action_discriminator`；同义键多于一个、没有已知同义键，或折叠后仍不合法时一律不拼造 Action。必填字段为空、Action 与地图契约不符、非法 JSON、缺字段和 schema 不匹配均记录 `action: null`，调用地图的 `reject_invalid_action()`；环境按自己的 tick 规则处理。MAP-18 在闭塞发生前只展示未定位且未给时长的公开预警；R2–R3 闭塞状态仅在 Observation 实际出现后提供。
 
 裁判状态只保存在环境实例与 `judge_metrics.json`。Agent-visible `agent_trace.jsonl` 只含 Trace header、合法固定前缀、决策 Action、前后公开观察、环境公开结果、token usage 和延迟。MAP-30 的合法问询一旦公开引用证据，就在同一答复中给所有条件提供相同的结构化公开 evidence fact 和 witness answer；未发现或未解锁的证据不会出现。`history5_casebook` 观察还会为案卷中已合法记录的证据 ID 展示这些事实与文本；未记录证据不会进入案卷视图。隐藏案卷条件不提供案卷快照。`history_full` 条件接收从调查开始至今的全部公开 Action/result 序列，以及去重后的公开证据/证词 payload；它不会把压缩后的历史裁剪成最近五步，仍受 8,192-byte 请求保护。MAP-30 的 `q4_recalled_after_gap` 在 gap 后、模型正式指控前为 `null`；只有最终主张同时引用正确身份和 Q4 案卷时才为真。裁判真值、完整 WorldState、密钥、模型原始响应和完整思维过程不进入模型输入或公开 Trace。
 

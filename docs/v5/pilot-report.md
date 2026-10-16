@@ -54,7 +54,7 @@
 
 该响应顶层三个键符合约定，但 `action` 校验发现缺少 `tool` 且包含额外字段 `verb`，因此没有产生可执行 Action。Usage 为 input 510、output 48、cached input 0 tokens；按 [MiMo 官方价格](https://mimo.mi.com/models/zh-CN/mimo-v2.6-flash)计算为 ¥0.000606，低于单次最坏预留 ¥0.01024。完整模型回复未保存；去标识化的调用与校验摘要保存在 ignored 文件 `runs/v5/diagnostics/authorized_map08_probe_20261016T004942Z.json`。
 
-原 70 次 Trace 未保存模型原文，故不能断言它们都由同一 `verb`/`tool` 错配造成。一次探针把问题定位到提示词与 Action 字段契约的边界；现有证据不支持 MAP-08 转移规则缺陷。探针后提示词已明确要求 Action 使用 `tool` 字段并禁止改写成 `verb`。定向离线回归 29 项通过；本次交付前全量 pytest 为 514 passed，scoped Ruff 和 diff check 通过。最新提示词尚未再次用 MiMo 验证。正式 pilot 仍为 0/39 局完成、Stage C 未启动，原 ledger 仍封闭。
+原 70 次 Trace 未保存模型原文，故不能断言它们都由同一 `verb`/`tool` 错配造成。一次探针把问题定位到提示词与 Action 字段契约的边界；现有证据不支持 MAP-08 转移规则缺陷。探针后提示词已明确要求 Action 使用 `tool` 字段并禁止改写成 `verb`。作为提示词之外的离线兜底，runner 之后也会把 Action 中唯一已知的同义判别键（`verb` 等）折叠为 `tool` 再走严格 V4 校验，并在 trace 记录 `recovered_action_discriminator`；歧义或未知别名仍按非法处理（见 [运行契约](runtime-contract.md)）。这两项改动后 V5 定向测试 30 项、全量 pytest 517 项通过；仍未再次调用 MiMo 验证。正式 pilot 仍为 0/39 局完成、Stage C 未启动，原 ledger 仍封闭。
 
 - Run/experiment ID：`d3f3d7be-c928-4433-b6aa-9a269d97f593`。
 - Run manifest：`runs/v5/experiments/pilot_20261015T231840Z_82ab580089c94bd3887b9dc56569d213/run_manifest.json`；V5 ledger：`runs/v5/ledgers/pilot_20261015T231840Z_82ab580089c94bd3887b9dc56569d213.jsonl`。

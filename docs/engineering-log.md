@@ -1,5 +1,19 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-16 V5 provider 同义动作键折叠
+
+事件：针对 V5 MiMo smoke 系统性 `INVALID_ACTION_SCHEMA`（封账后诊断确认为 Action 缺少 `tool`、改用 `verb`），在 V5 Runner 的 provider 边界增加同义动作键折叠，作为提示词约束之外的离线兜底。
+
+原因：prompt 已补充要求使用 `tool` 并禁用 `verb`，但提示词不保证模型遵循；原运行时只要判别键名不是 `tool` 就把整个可执行意图记为 schema 错误，导致同一局连续 70 次 schema 拒绝。折叠只作用于判别键名，不改变任何地图契约或动作语义。
+
+改动：`src/agent_arena/v5/runner.py` 新增 `_ACTION_DISCRIMINATOR_ALIASES` 与 `_normalize_action_discriminator`；`_clean_candidate` 在 Action 缺少 `tool` 且仅含一个已知同义键（`verb`/`name`/`action_name`/`tool_name`/`command`）时，先把该唯一同义键折叠为 `tool`，再走严格 V4 Action 校验与逐图字段形状 allowlist，并在 decision 行记录 `recovered_action_discriminator`。多个同义键、无已知同义键或折叠后仍非法的响应继续记录 `action:null` 并调用地图 `reject_invalid_action()`。未改地图规则、拓扑、胜负谓词、Observation、预算或账本逻辑。
+
+验证：新增 3 项定向用例（同义键折叠、歧义/未知别名拒绝、runner 无 schema 失败的离线恢复）；全量 `pytest -q` 517 passed，`ruff check src scripts tests` 与 `mypy src`（79 source files）通过。未再次调用 MiMo；原 V5 ledger 仍封闭，不新建 successor ledger。
+
+下一步：正式矩阵续跑仍须满足新的冻结、登记、预算与独立审查门禁；不得把本次离线修复当作已验证的 MiMo 结果。
+
+关联提交：本次提交（runner、V5 定向测试与文档同一提交）。
+
 ## 2026-10-16 V5 六图 39 局矩阵离线实现与复审
 
 事件：按用户提供的 V5 测量提纲建立获准六图的隔离运行时和完整能力对照矩阵。当前仅完成离线实现/复核，尚未发起真实模型请求。

@@ -50,6 +50,10 @@ _REVERSE_BEARING = {
 }
 _MAP22_PREFIX_MOVES = 12
 MAX_CONSECUTIVE_INVALID_ACTION_SCHEMAS = 3
+# MiMo's JSON-object transport has returned a non-canonical action discriminator
+# (observed: "verb"). Only a single unambiguous synonym is folded onto the
+# documented `tool` key; the strict V4 Action schema still decides legality.
+_ACTION_DISCRIMINATOR_ALIASES = ("verb", "name", "action_name", "tool_name", "command")
 
 
 @dataclass(frozen=True)
@@ -401,9 +405,31 @@ _MAP_ACTION_SHAPES: dict[str, dict[str, set[frozenset[str]]]] = {
 }
 
 
+def _normalize_action_discriminator(
+    payload: dict[str, Any],
+) -> tuple[dict[str, Any], str | None]:
+    """Fold one unambiguous action-discriminator synonym onto ``tool``.
+
+    MiMo's JSON-object mode may replace the documented ``tool`` key with a
+    synonym. Only a payload that omits ``tool`` and carries exactly one known
+    alias is renamed; every other shape is passed through unchanged so the
+    strict V4 Action schema and the per-map shape allowlist still reject it.
+    """
+
+    if "tool" in payload:
+        return payload, None
+    present = [alias for alias in _ACTION_DISCRIMINATOR_ALIASES if alias in payload]
+    if len(present) != 1:
+        return payload, None
+    alias = present[0]
+    normalized = dict(payload)
+    normalized["tool"] = normalized.pop(alias)
+    return normalized, alias
+
+
 def _clean_candidate(
     candidate: object, *, map_id: str
-) -> tuple[ScenarioV4Action | None, dict[str, Any] | None]:
+) -> tuple[ScenarioV4Action | None, dict[str, Any] | None, str | None]:
     if (
         not isinstance(candidate, dict)
         or set(candidate) != {"decision_reason", "action", "agent_hypothesis_table"}
@@ -411,8 +437,10 @@ def _clean_candidate(
         or len(candidate["decision_reason"]) > 280
         or not isinstance(candidate.get("action"), dict)
     ):
-        return None, None
-    payload = dict(candidate["action"])
+        return None, None, None
+    payload, recovered_discriminator = _normalize_action_discriminator(
+        dict(candidate["action"])
+    )
     if payload.get("tool") == "set_timetable" and isinstance(payload.get("operations"), dict):
         payload["operations"] = {
             train: operation
@@ -421,14 +449,14 @@ def _clean_candidate(
         }
     table_payload = candidate["agent_hypothesis_table"]
     if table_payload is not None and not isinstance(table_payload, dict):
-        return None, None
+        return None, None, None
     try:
         action = ScenarioV4Action.model_validate(payload, strict=True)
     except (ValidationError, TypeError, ValueError):
-        return None, None
+        return None, None, None
     allowed_shapes = _MAP_ACTION_SHAPES.get(map_id, {}).get(action.tool, set())
     if frozenset(action.model_fields_set) not in allowed_shapes:
-        return None, None
+        return None, None, None
     table: dict[str, Any] | None = None
     if isinstance(table_payload, dict):
         try:
@@ -437,7 +465,7 @@ def _clean_candidate(
             )
         except (ValidationError, TypeError, ValueError):
             table = None
-    return action, table
+    return action, table, recovered_discriminator
 
 
 def _validate_hypothesis_update(
@@ -461,7 +489,9 @@ def _runtime_decision_payload(
     observation: Any,
     condition_id: str,
 ) -> dict[str, Any]:
-    action, raw_table = _clean_candidate(candidate, map_id=observation.map_id)
+    action, raw_table, recovered_discriminator = _clean_candidate(
+        candidate, map_id=observation.map_id
+    )
     table, table_status = _validate_hypothesis_update(raw_table, observation, condition_id)
     return {
         "decision_index": decision_index,
@@ -469,6 +499,7 @@ def _runtime_decision_payload(
         "invalid_action": action is None,
         "agent_hypothesis_table": table,
         "hypothesis_table_status": table_status,
+        "recovered_action_discriminator": recovered_discriminator,
     }
 
 
@@ -501,6 +532,9 @@ def _append_decision(
         "request_id": request_id,
         "action": action_payload,
         "invalid_output_reason": "schema_error" if decision_payload["invalid_action"] else None,
+        "recovered_action_discriminator": decision_payload.get(
+            "recovered_action_discriminator"
+        ),
         "result": result.result,
         "status": result.status.value,
         "observation_before": before,

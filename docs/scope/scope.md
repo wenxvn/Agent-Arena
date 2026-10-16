@@ -400,4 +400,4 @@ V3 按 [spec 0017](../specs/0017-world-redesign-v3/index.md) 推进，内容来�
 - [ ] Test it: `/test V5 六图运行时与能力测量`
 Spec [0018](../specs/0018-v5-six-map-measurement.md)
 
-真实模型阶段记录（2026-10-16）：冻结 offline gate 在 `e440cc1b599a5de4a57650f418d78b03c4746399` 通过。MiMo smoke 的 MAP-08 首局 70 次决策均为 `INVALID_ACTION_SCHEMA`，依研究提纲的系统接口失败停止；第 71 个请求 reservation 未结算，唯一 V5 ledger 因 unknown spend 关闭。0/39 episode 完成，六局 smoke gate 未通过，Stage C 未启动。停止后补全 prompt JSON 字段说明，并加入连续 3 次 schema 拒绝即 fail-closed 的离线保护；全量 513 项测试通过，但无 MiMo 复测。V5 功能仍为 in-progress；精确失败根因待离线审计，不能把该结果解释为地图能力或通关率。
+真实模型阶段记录（2026-10-16）：冻结 offline gate 在 `e440cc1b599a5de4a57650f418d78b03c4746399` 通过。MiMo smoke 的 MAP-08 首局 70 次决策均为 `INVALID_ACTION_SCHEMA`，依研究提纲的系统接口失败停止；第 71 个请求 reservation 未结算，唯一 V5 ledger 因 unknown spend 关闭。0/39 episode 完成，六局 smoke gate 未通过，Stage C 未启动。停止后补全 prompt JSON 字段说明，加入连续 3 次 schema 拒绝即 fail-closed 的离线保护；封账后经用户授权的一次诊断显示 Action 缺少 `tool`、改用 `verb`。随后在 provider 边界加入同义动作键折叠（`verb` 等唯一同义键折叠为 `tool` 后再走严格校验，并在 trace 记录 `recovered_action_discriminator`），歧义/未知别名仍按非法处理；全量 517 项测试与 scoped Ruff/mypy 通过，但无 MiMo 复测。V5 功能仍为 in-progress；精确失败根因待离线审计，不能把该结果解释为地图能力或通关率。

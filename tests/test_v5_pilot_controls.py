@@ -426,11 +426,51 @@ def test_mimo_map18_null_train_slots_are_removed_before_strict_action_validation
         },
         "agent_hypothesis_table": None,
     }
-    action, hypothesis = _clean_candidate(candidate, map_id="MAP-18")
+    action, hypothesis, recovered_discriminator = _clean_candidate(candidate, map_id="MAP-18")
     assert action is not None
     assert action.operations is not None
     assert set(action.operations) == {"T_R1"}
     assert hypothesis is None
+    assert recovered_discriminator is None
+
+
+def test_mimo_synonym_action_discriminator_is_folded_to_canonical_tool_field() -> None:
+    candidate = {
+        "decision_reason": "使用同义动作字段执行移动",
+        "action": {"verb": "move", "edge_id": "X_A"},
+        "agent_hypothesis_table": None,
+    }
+    action, hypothesis, recovered_discriminator = _clean_candidate(candidate, map_id="MAP-08")
+    assert action is not None
+    assert action.tool == "move"
+    assert action.edge_id == "X_A"
+    assert hypothesis is None
+    assert recovered_discriminator == "verb"
+
+
+def test_ambiguous_or_unknown_action_discriminator_is_still_rejected() -> None:
+    ambiguous = {
+        "decision_reason": "同时给出两个同义动作字段",
+        "action": {"verb": "move", "name": "move", "edge_id": "X_A"},
+        "agent_hypothesis_table": None,
+    }
+    assert _clean_candidate(ambiguous, map_id="MAP-08") == (None, None, None)
+
+    unknown_tool = {
+        "decision_reason": "同义字段值不是合法动作",
+        "action": {"verb": "fly", "edge_id": "X_A"},
+        "agent_hypothesis_table": None,
+    }
+    assert _clean_candidate(unknown_tool, map_id="MAP-08") == (None, None, None)
+
+    canonical = {
+        "decision_reason": "规范 tool 字段",
+        "action": {"tool": "move", "edge_id": "X_A"},
+        "agent_hypothesis_table": None,
+    }
+    action, _, recovered_discriminator = _clean_candidate(canonical, map_id="MAP-08")
+    assert action is not None
+    assert recovered_discriminator is None
 
 
 def test_v5_action_validation_rejects_null_required_fields_and_cross_map_shapes() -> None:
@@ -458,7 +498,7 @@ def test_v5_action_validation_rejects_null_required_fields_and_cross_map_shapes(
             "action": action,
             "agent_hypothesis_table": None,
         }
-        assert _clean_candidate(candidate, map_id=map_id) == (None, None)
+        assert _clean_candidate(candidate, map_id=map_id) == (None, None, None)
         observation = create_environment(
             map_id, seed=0, condition_id=CONDITIONS[map_id][0]
         ).observe()
@@ -595,6 +635,25 @@ class _InvalidSchemaProvider:
         return ProviderResponse(candidate={"unexpected": "shape"}, input_tokens=10, output_tokens=5)
 
 
+class _VerbDiscriminatorProvider:
+    """Mimics MiMo returning ``verb`` instead of the documented ``tool`` key."""
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def decide(self, request: DecisionRequest) -> ProviderResponse:
+        self.calls += 1
+        return ProviderResponse(
+            candidate={
+                "decision_reason": "使用同义动作字段",
+                "action": {"verb": "wait", "turns": 1},
+                "agent_hypothesis_table": None,
+            },
+            input_tokens=10,
+            output_tokens=5,
+        )
+
+
 def test_v5_runner_closes_after_three_consecutive_invalid_action_schemas(
     tmp_path: Path,
 ) -> None:
@@ -624,6 +683,38 @@ def test_v5_runner_closes_after_three_consecutive_invalid_action_schemas(
     assert close_event["reason"] == "SYSTEMATIC_INVALID_ACTION_SCHEMA"
     assert close_event["consecutive_invalid_outputs"] == 3
     assert not any(event["event"] == "episode_completed" for event in events)
+
+
+def test_runner_recovers_synonym_discriminator_without_schema_failure(tmp_path: Path) -> None:
+    ledger = V5BudgetLedger(
+        tmp_path / "synonym-ledger.jsonl",
+        currency="CNY",
+        model="mimo-v2.6-flash",
+        source_hashes={"MAP-08": source_hash("MAP-08")},
+    )
+    provider = _VerbDiscriminatorProvider()
+    spec = V5EpisodeSpec("MAP-08", "no_hypothesis_table", 0, "independent_seeded_instance")
+    runner = V5PilotRunner(
+        provider=provider,
+        settings=_fake_v5_settings(tmp_path),
+        ledger=ledger,
+        output_dir=tmp_path / "synonym-run",
+        decision_limit=2,
+    )
+
+    result = runner.run(spec)
+
+    trace_path = (
+        tmp_path / "synonym-run" / "episodes" / spec.episode_id / "agent_trace.jsonl"
+    )
+    rows = [json.loads(line) for line in trace_path.read_text(encoding="utf-8").splitlines()]
+    decision_rows = [row for row in rows if row.get("event") == "decision"]
+    assert result["outcome"] == "decision_limit"
+    assert provider.calls == 2
+    assert [row["action"]["tool"] for row in decision_rows] == ["wait", "wait"]
+    assert all(row["invalid_output_reason"] is None for row in decision_rows)
+    assert all(row["recovered_action_discriminator"] == "verb" for row in decision_rows)
+    assert not any(event["event"] == "pilot_closed" for event in ledger.read_events())
 
 
 def _fake_v5_settings(tmp_path: Path, *, provider: str = "fake") -> RuntimeSettings:
