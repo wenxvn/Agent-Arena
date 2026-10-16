@@ -14,7 +14,9 @@ from typing import Any
 _MAP_TASKS = {
     "MAP-08": (
         "在公开候选点中识别唯一漏点并修复。只能使用一份密封剂；"
-        "核心水量不得超过上限；压力测试会消耗更多 tick。修复错误地点会失败。"
+        "全图只有两个压力测试站 X 和 Y，只存在 pressure_test_X 与 pressure_test_Y 两种测试"
+        "（不存在以候选点命名的测试）。核心水量不得超过上限；压力测试会消耗更多 tick。"
+        "修复错误地点会失败。"
     ),
     "MAP-16": (
         "把每列车从当前位置送到它的目标节点。每 tick 先预约路线，再调用 move_train "
@@ -22,7 +24,9 @@ _MAP_TASKS = {
     ),
     "MAP-18": (
         "在限定 tick 内安全交付达到阈值的乘客。按当前公开时刻表逐 tick 联合提交；"
-        "只依据当前公开 Observation 的线路状态和已出现告警调整计划，不得推断未公开未来故障。"
+        "operations 里每列车 release/detour 的 to 必须是该列车当前位置在 topology 里的相邻节点；"
+        "已交付的列车不得再移动。只依据当前公开 Observation 的线路状态和已出现告警调整计划，"
+        "不得推断未公开未来故障。"
     ),
     "MAP-22": (
         "在移动预算内找到目标路标并回到出发营地。只能使用当前位置的局部出口和已观察路标；"
@@ -31,7 +35,10 @@ _MAP_TASKS = {
     ),
     "MAP-26": (
         "设备从 T 出发，公开通道为 T-D-A-B；恢复通信并保留至少一个未消耗备件。"
-        "日志和诊断测试只能在 D 读取，备件在 B 领取，部件在 A 更换，正确部件更换后在 A restart。"
+        "日志和诊断测试只能在 D 读取，合法日志只有 COMM_LOSS_LAST_TRANSMIT，"
+        "合法测试只有 bus_load、antenna_loopback、software_checksum；"
+        "备件在 B 领取，合法部件只有 power_regulator、antenna_coupler、software_image，"
+        "部件在 A 更换，正确部件更换后在 A restart。"
     ),
     "MAP-30": (
         "限时调查公开证据与证词，按 entry_order 顺序完整记录案卷，"

@@ -105,6 +105,29 @@ def smoke_specs() -> list[V6EpisodeSpec]:
     return [V6EpisodeSpec(*item) for item in SMOKE]
 
 
+def _public_repeat_reminder(recent_results: list[str]) -> str | None:
+    """Public reminder when three consecutive decisions were refused.
+
+    The text is derived only from the Agent's own public action results, so it
+    adds no judge state. It breaks the "stuck on one invalid action" loop found
+    in the V6 smoke runs.
+    """
+    if len(recent_results) < 3:
+        return None
+    last_three = recent_results[-3:]
+    if len(set(last_three)) != 1:
+        return None
+    result = last_three[0]
+    if not result.startswith(
+        ("INVALID", "NO_", "TICK_MISMATCH", "CANCELED", "COMPLETED", "COURTROOM", "ALREADY")
+    ):
+        return None
+    return (
+        f"最近 3 次动作都返回 {result}，没有产生进展。"
+        "请重新阅读动作契约与当前 Observation，改用字段合法且能改变状态的 action。"
+    )
+
+
 def _utc_now() -> str:
     return datetime.now(UTC).isoformat()
 
@@ -463,6 +486,7 @@ class V6PilotRunner:
         outcome = "running"
         decision_count = 0
         decision_rows: list[dict[str, Any]] = []
+        recent_results: list[str] = []
         started_epoch = datetime.fromisoformat(_utc_now()).timestamp()
         started_monotonic = time.monotonic()
         invalid_streak = 0
@@ -490,6 +514,7 @@ class V6PilotRunner:
                 system_prompt=v6_system_prompt(scene.map_id, spec.condition_id),
                 correction=False,
                 memory_data=memory_data,
+                runtime_feedback=_public_repeat_reminder(recent_results),
                 recent_history=v6_public_history(history, limit=5),
                 max_output_tokens=1_024,
                 action_contract_version="scenario_v4",
@@ -580,6 +605,7 @@ class V6PilotRunner:
             )
             decision_rows.append(row)
             decision_count += 1
+            recent_results.append(str(row["result"]))
             history.append(
                 {
                     "action": row["action"],

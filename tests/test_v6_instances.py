@@ -145,3 +145,14 @@ def test_v6_clean_candidate_is_lenient_about_optional_fields() -> None:
     assert _v6_clean_candidate(bad, map_id="MAP-16", condition_id="react")[0] is None
     wrong_shape = {"decision_reason": "x", "action": {"tool": "move_train", "next_node": "X"}}
     assert _v6_clean_candidate(wrong_shape, map_id="MAP-16", condition_id="react")[0] is None
+
+
+def test_public_repeat_reminder_only_fires_on_stuck_refusals() -> None:
+    from agent_arena.v6.runner import _public_repeat_reminder
+
+    assert _public_repeat_reminder(["MOVE_SUCCEEDED"] * 3) is None
+    assert _public_repeat_reminder(
+        ["INVALID_LOCATION", "MOVE_SUCCEEDED", "INVALID_LOCATION"]
+    ) is None
+    reminder = _public_repeat_reminder(["INVALID_LOCATION"] * 3)
+    assert reminder is not None and "INVALID_LOCATION" in reminder
