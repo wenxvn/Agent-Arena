@@ -174,4 +174,3 @@ def v6_initial_map08_hypothesis_table(candidate_sites: tuple[str, ...]) -> dict[
     table["test_Y_result"] = None
     table["next_test"] = "X"
     return table
-
