@@ -48,6 +48,14 @@
 
 ## 账务与完成审计
 
+### Pilot 封账后的一次用户授权诊断（不计入 39 局）
+
+2026-10-16 在用户明确批准后，对 MAP-08/no_hypothesis_table/seed 0 发出 1 次诊断请求；此请求不续跑 pilot、不新建或修改 V5 ledger，也不计入预登记矩阵。请求使用当时已修正顶层 JSON 说明、`json_object`、reasoning `none`，输入上界 2,046 bytes、输出上限 1,024 tokens；SDK 重试为 0。
+
+该响应顶层三个键符合约定，但 `action` 校验发现缺少 `tool` 且包含额外字段 `verb`，因此没有产生可执行 Action。Usage 为 input 510、output 48、cached input 0 tokens；按 [MiMo 官方价格](https://mimo.mi.com/models/zh-CN/mimo-v2.6-flash)计算为 ¥0.000606，低于单次最坏预留 ¥0.01024。完整模型回复未保存；去标识化的调用与校验摘要保存在 ignored 文件 `runs/v5/diagnostics/authorized_map08_probe_20261016T004942Z.json`。
+
+原 70 次 Trace 未保存模型原文，故不能断言它们都由同一 `verb`/`tool` 错配造成。一次探针把问题定位到提示词与 Action 字段契约的边界；现有证据不支持 MAP-08 转移规则缺陷。探针后提示词已明确要求 Action 使用 `tool` 字段并禁止改写成 `verb`。定向离线回归 29 项通过；本次交付前全量 pytest 为 514 passed，scoped Ruff 和 diff check 通过。最新提示词尚未再次用 MiMo 验证。正式 pilot 仍为 0/39 局完成、Stage C 未启动，原 ledger 仍封闭。
+
 - Run/experiment ID：`d3f3d7be-c928-4433-b6aa-9a269d97f593`。
 - Run manifest：`runs/v5/experiments/pilot_20261015T231840Z_82ab580089c94bd3887b9dc56569d213/run_manifest.json`；V5 ledger：`runs/v5/ledgers/pilot_20261015T231840Z_82ab580089c94bd3887b9dc56569d213.jsonl`。
 - 完成 episode 数：0/39。

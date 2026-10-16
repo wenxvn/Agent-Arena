@@ -34,8 +34,8 @@ _MAP_TASKS = {
         "正确部件更换后在 A restart。"
     ),
     "MAP-30": (
-        "在时限内以证据链说明三段事件、人员和时间，并在 J 提交正式指控。先调查本地可见证据；"
-        "证人回忆依赖之前的公开回执/案卷。casebook 最多四格；只有完整记录且顺序一致才可正式结案。"
+        "限时调查可见公开证据与证词，在 J 用最多四格 casebook 完整、按序说明三段事件、"
+        "人员、时间并提交正式指控；证词依赖已公开回执/案卷。"
     ),
 }
 
@@ -126,6 +126,7 @@ def system_prompt(map_id: str, condition_id: str) -> str:
             f"你正在运行 Agent Arena {map_id}。",
             _MAP_TASKS[map_id],
             _ACTION_CONTRACTS[map_id],
+            '"action" 须含 "tool"（动作名）；参数严格按动作契约，禁止用 "verb"。',
             condition,
             "只输出合法 JSON 对象，且顶层只含这 3 个键：",
             '"decision_reason"：string，最多 280 字符；'
@@ -133,7 +134,7 @@ def system_prompt(map_id: str, condition_id: str) -> str:
             '"agent_hypothesis_table"：object 或 null。' + hypothesis_contract,
             "不要输出 Markdown、代码围栏、占位符、省略号或 JSON 以外的文字。",
             "Observation 是唯一环境状态来源；不得假设未提供的裁判真值。",
-            "只返回 schema 要求的 JSON。decision_reason 仅写一句简短状态，不输出详细推理过程。",
+            "decision_reason 仅写一句简短状态，不输出详细推理过程。",
         ]
     )
 

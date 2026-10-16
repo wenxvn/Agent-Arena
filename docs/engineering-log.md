@@ -1151,3 +1151,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 下一步：继续只做离线协议审计。MiMo JSON mode 要求显式完整定义字段层级和类型；付费运行所用 prompt 顶层示意包含省略号，现已补全；连续三次 schema 拒绝现在会 fail-closed。精确根因与修复效果仍未由 MiMo 复测确认。原 V5 ledger 已关闭，不恢复或新建 successor ledger；本轮数据不构成模型能力结论。
 
 关联提交：运行实现 `e440cc1`；停止记录与离线加固 `474fbe8`。
+
+## 2026-10-16 V5 pilot 封账后用户授权诊断
+
+事件：用户明确批准后，对 MAP-08/no_hypothesis_table/seed 0 执行一次 MiMo 诊断请求；正式 pilot ledger 保持封闭，不恢复或新建账本，该请求不计入 39 局矩阵。
+
+原因：用户要求重新调用，以区分 MAP-08 地图转移缺陷与 provider/prompt/Action 协议问题。遵照授权仅发出一次请求，未恢复正式实验。
+
+发现与证据：顶层 JSON 键符合约定，但 `action` 缺少必需的 `tool` 字段并多出不允许的 `verb`，未进入环境执行。Usage 为 510 input、48 output、0 cached tokens；按 MiMo 官方费率计算 ¥0.000606。未保存原始响应；去标识化摘要位于 ignored `runs/v5/diagnostics/authorized_map08_probe_20261016T004942Z.json`。原 pilot 的 70 个失败响应没有原文留存，因此不能据此推断它们全部同因。该探针未显示 MAP-08 状态转移缺陷，当前证据指向 prompt 与 Action 字段契约边界，但结论仅适用于此次请求。
+
+改动：V5 prompt 明确要求 Action 使用 `tool`、禁止 `verb`，并压缩 MAP-30 重复任务描述以满足完整历史输入上限；增加六图 prompt 契约回归测试。同步更新 V5 pilot 和离线验收报告，注明新 prompt 未再次用 MiMo 验证，正式 pilot 仍为 0/39 完成、Stage C 未启动。
+
+验证：提交前复核全量 `pytest -q` 为 514 passed；scoped Ruff 与 `git diff --check` 通过。提示词修正后此前另有 29 项 V5 pilot controls、MAP-08 测试和六图 Oracle replay 验证通过。没有再次调用 MiMo。既有 V5 ledger 继续封闭。
+
+下一步：提交并推送本次五个相关文件。任何正式矩阵续跑仍须满足新的冻结、登记、预算和独立审查门禁；本次单次诊断及离线回归不构成续跑授权。
+
+关联提交：本次提交（提示词、回归测试与记录同一提交）。

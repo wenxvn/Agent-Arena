@@ -110,6 +110,13 @@ def test_system_prompt_defines_complete_top_level_json_fields_without_placeholde
     assert 'next_test（"X"/"Y"/"repair"）' in hypothesis_prompt
 
 
+def test_all_v5_action_contracts_name_the_required_tool_discriminator() -> None:
+    for map_id, conditions in CONDITIONS.items():
+        prompt = system_prompt(map_id, conditions[0])
+        assert '"action" 须含 "tool"（动作名）' in prompt
+        assert '禁止用 "verb"' in prompt
+
+
 def test_map18_actual_provider_inputs_do_not_publish_future_fault_details(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
