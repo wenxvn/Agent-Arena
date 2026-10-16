@@ -443,7 +443,11 @@ def execute_paid(args: argparse.Namespace) -> int:
     else:
         existing = read_pilot_registry()
         if existing is not None:
-            if args.reregister and existing.get("status") in {"stopped", "aborted"}:
+            if args.reregister and existing.get("status") in {
+                "stopped",
+                "aborted",
+                "completed",
+            }:
                 archive_dir = ROOT / "runs" / "v6" / "archived"
                 archive_dir.mkdir(parents=True, exist_ok=True)
                 archive_path = archive_dir / (
