@@ -212,8 +212,30 @@ class Map22Scene:
             "start_node": self.start,
             "target_node": self.target,
             "move_budget": self.move_budget,
+            "optimal_moves": _round_trip_length(self.nodes, self.start, self.target),
         }
 
+
+def _round_trip_length(
+    nodes: dict[str, dict[str, Any]], start: str, target: str
+) -> int:
+    """Shortest walk that visits the target and returns to the start."""
+    from collections import deque
+
+    queue: deque[tuple[str, bool]] = deque([(start, False)])
+    distance: dict[tuple[str, bool], int] = {(start, False): 0}
+    goal = (start, True)
+    while queue:
+        node, visited = queue.popleft()
+        if (node, visited) == goal:
+            return distance[(node, visited)]
+        for bearing in sorted(nodes[node]["exits"]):
+            neighbor = nodes[node]["exits"][bearing]
+            state = (neighbor, visited or neighbor == target)
+            if state not in distance:
+                distance[state] = distance[(node, visited)] + 1
+                queue.append(state)
+    return 0
 
 def _build_map22_scenes() -> dict[str, Map22Scene]:
     scenes: dict[str, Map22Scene] = {}

@@ -3,12 +3,13 @@
 - 日期：2026-10-16
 - 范围：离线。**未调用任何收费 API**；V2/V5 账本与 registry 字节未改动。
 - 结论：全部离线门禁通过。
+- 补充（同日）：在用户授权下另跑了**一次** V6 真实 API 矩阵（24 局，MiMo `mimo-v2.6-flash`，CNY ¥0.17891580），结果与效度判读见 [`pilot-report.md`](pilot-report.md)；离线结论不变。
 
 ## 1. 实际命令与结果
 
 | 命令 | 结果 |
 |---|---|
-| `python -m pytest -q` | **552 passed**（含 V6 新增 34 项） |
+| `python -m pytest -q` | **554 passed**（含离线 V6 测试；另含付费层单测） |
 | `python -m ruff check src scripts tests` | All checks passed |
 | `python -m mypy src` | Success: no issues found in 85 source files |
 | `python scripts/validate_v4_runtime.py` | V4 oracle replay passed：08:4、16:2、18:3、22:1、26:2、30:3 |

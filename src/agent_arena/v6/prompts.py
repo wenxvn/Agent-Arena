@@ -129,7 +129,9 @@ def v6_action_contract(map_id: str, condition_id: str) -> str:
     return contract
 
 
-def v6_system_prompt(map_id: str, condition_id: str) -> str:
+def v6_system_prompt(
+    map_id: str, condition_id: str, *, structural: dict[str, Any] | None = None
+) -> str:
     condition = _CONDITIONS.get(condition_id)
     if condition is None:
         raise ValueError(f"Unregistered V6 condition: {map_id}/{condition_id}")
@@ -145,19 +147,27 @@ def v6_system_prompt(map_id: str, condition_id: str) -> str:
             'test_X_result（"pulse_amber"/"pulse_slate"/null）、'
             'test_Y_result（"pulse_cobalt"/"pulse_slate"/null）和 next_test（"X"/"Y"/"repair"）。'
         )
-    return "\n".join(
-        [
-            f"你正在运行 Agent Arena V6 {map_id}。",
-            _MAP_TASKS[map_id],
-            v6_action_contract(map_id, condition_id),
-            '"action" 须含 "tool"（动作名）；参数严格按动作契约。',
-            "action 对象的键必须恰好是契约列出的键；不要嵌套到 parameters/arguments/input 之下。",
-            condition,
-            "只输出合法 JSON 对象，顶层只含 decision_reason、action、agent_hypothesis_table。",
-            table_rule,
-            "Observation 是唯一环境状态来源；不得假设未提供的裁判真值。",
-        ]
-    )
+    lines = [
+        f"你正在运行 Agent Arena V6 {map_id}。",
+        _MAP_TASKS[map_id],
+        v6_action_contract(map_id, condition_id),
+        '"action" 须含 "tool"（动作名）；参数严格按动作契约。',
+        "action 对象的键必须恰好是契约列出的键；不要嵌套到 parameters/arguments/input 之下。",
+        condition,
+        "只输出合法 JSON 对象，顶层只含 decision_reason、action、agent_hypothesis_table。",
+        table_rule,
+        "Observation 是唯一环境状态来源；不得假设未提供的裁判真值。",
+    ]
+    if map_id == "MAP-30" and structural and structural.get("entry_order"):
+        order = " -> ".join(str(item) for item in structural["entry_order"])
+        lines.insert(
+            3,
+            "公开案卷条目 id（按顺序）："
+            + order
+            + "。record 的 entry_id 必须取自这些 id，且按该顺序记录；"
+            "evidence_ids 只能来自已 inspect 或 interview 得到的公开 evidence_id。",
+        )
+    return "\n".join(lines)
 
 
 def v6_condition_memory(

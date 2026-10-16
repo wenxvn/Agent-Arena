@@ -42,6 +42,7 @@ from agent_arena.v6.prompts import (
     v6_system_prompt,
 )
 from agent_arena.worlds.scenario_v4 import ScenarioV4Action
+from agent_arena.worlds.scenario_v4.map30 import DEFAULT_CASE
 from agent_arena.worlds.scenario_v4.models import V4HypothesisTable
 
 REPOSITORY_ROOT: Any = None  # replaced by _repository_root(); kept for import symmetry
@@ -134,6 +135,14 @@ def _utc_now() -> str:
 
 def _observation_dict(environment: Any) -> dict[str, Any]:
     return cast(dict[str, Any], environment.observe().model_dump(mode="json"))
+
+
+def _structural_for(scene: Any) -> dict[str, Any] | None:
+    """Public structural labels a task needs; never private truth or evidence."""
+    if scene.map_id == "MAP-30":
+        order = scene.case.entry_order if scene.case is not None else DEFAULT_CASE.entry_order
+        return {"entry_order": list(order)}
+    return None
 
 
 def _history_tick(observation_after: dict[str, Any]) -> Any:
@@ -511,7 +520,9 @@ class V6PilotRunner:
             )
             request = DecisionRequest(
                 observation=observation,
-                system_prompt=v6_system_prompt(scene.map_id, spec.condition_id),
+                system_prompt=v6_system_prompt(
+                    scene.map_id, spec.condition_id, structural=_structural_for(scene)
+                ),
                 correction=False,
                 memory_data=memory_data,
                 runtime_feedback=_public_repeat_reminder(recent_results),
@@ -797,7 +808,11 @@ class V6PilotRunner:
             "runtime_commit": self.runtime_commit,
             "runtime_tree_hash": self.runtime_tree_hash,
             "offline_gate_hash": self.offline_gate_hash,
-            "prompt_sha256": _sha256(v6_system_prompt(scene.map_id, spec.condition_id).encode()),
+            "prompt_sha256": _sha256(
+                v6_system_prompt(
+                    scene.map_id, spec.condition_id, structural=_structural_for(scene)
+                ).encode()
+            ),
             "status": status,
             "usage": judge["usage"] if judge else None,
             "trace_sha256": _sha256(trace_path.read_bytes()) if trace_path.is_file() else None,

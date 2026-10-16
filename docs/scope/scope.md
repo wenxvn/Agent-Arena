@@ -140,8 +140,9 @@ A 至 E 保留早期交付清单与当时待办；当前阶段以本文 V2 门�
 - [x] 参数化 V4 引擎（向后兼容，默认行为不变，DCR-002…006）并建立 24 个独立 V6 实例与三层难度。
 - [x] 独立求解器 + Oracle 回放 40/40 成功；MAP-16/22 由 BFS 证明最优；泄漏检查 0 命中。
 - [x] 可选真实 API 复测方案（`docs/v6/api-experiment-proposal.md`）与 24 图门槛（`docs/v6/next-24-gate.md`，结论 `HOLD`）。
+- [x] 真实 API 复测一次（MiMo，24 局，CNY ¥0.17891580）：MAP-22 的 V5 0/6 确认为接口假象，修复后 4/4；多图出现天花板/地板效应，见 `docs/v6/pilot-report.md`。
 - [ ] 人工审阅 V6 实例（`review_status` 待填）。
-- [ ] 用户批准预算后执行小规模 smoke；未批准前不跑付费实验、不扩展 24 图。
+- [ ] 按 pilot 结论重新定标实例（天花板加难度、地板降复杂度）；下一次付费矩阵需新预算登记。
 
 细节见 `docs/specs/0019-v6-measurement-validity.md` 与 `docs/v6/`。
 
