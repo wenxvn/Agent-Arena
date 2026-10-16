@@ -1,6 +1,6 @@
 # V5 六图能力测量 pilot
 
-此目录记录隔离 `scenario_v4` 运行时、离线验收、MiMo pilot、能力效度边界和其余 24 张地图的接入条件。目标是检验测量是否可重复、可归因，不把一次通关或 Oracle 回放当成能力结论。
+此目录记录隔离 `scenario_v4` 运行时、离线验收、MiMo pilot、能力效度边界和其余 24 张地图的接入条件。目标是检验测量是否可重复、可归因，不把一次通关或 Oracle 回放当成能力结论。2026-10-16 第二次登记 pilot 完成 39/39 局（15/39 成功，报告费用 ¥0.24287288，0 unknown spend）；逐图 3-seed 结果见 [pilot-report](pilot-report.md)。
 
 ## 范围与数据
 
@@ -39,7 +39,7 @@
   --ledger runs\v5\ledgers\<原 ledger 文件>
 ```
 
-每次调用都先校验 offline gate 与 Git HEAD；源文件、prompt、condition、map 设计材料、测试或 provider 适配发生变化时，必须重新完成冻结验证。`runs/v5/pilot_registry.json` 只允许一个 run/ledger；关闭、完成或 unknown spend 后都不能创建 successor ledger。不要额外运行模型验证请求；它不属于登记的 39 局。
+每次调用都先校验 offline gate 与 Git HEAD；源文件、prompt、condition、map 设计材料、测试或 provider 适配发生变化时，必须重新完成冻结验证。`runs/v5/pilot_registry.json` 只允许一个活跃 run/ledger；关闭、完成或 unknown spend 后不能续跑或新建 successor。若要再次运行，须经用户授权、归档旧 registry、在提交 HEAD 重新冻结 gate 并登记新的 pilot（2026-10-16 第二次登记即此流程）。用户授权的封账后诊断请求不计入登记的 39 局。
 
 ## 文件
 

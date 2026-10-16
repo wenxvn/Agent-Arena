@@ -1,5 +1,21 @@
 # Agent Arena 工程事件记录
 
+## 2026-10-16 V5 正式 39 局矩阵完成（第二次 pilot）
+
+事件：用户明确授权后，归档已关闭 registry、在当前提交 HEAD 重新冻结 offline gate，并新建一次登记的 MiMo pilot，完成 V5 提纲的全部 39 局矩阵（每图 3 个 seed 标签的全部登记条件）。
+
+原因：第一次 pilot 因系统性 `INVALID_ACTION_SCHEMA` fail-closed；用户要求继续执行提纲矩阵并逐图 3 seed 测试。已关闭账本按设计不可恢复或新建 successor，故本次作为新的登记 pilot 执行。
+
+改动/执行：`runs/v5/pilot_registry.json` 旧记录归档至 `runs/v5/archived/pilot_registry.closed_d3f3d7be-c928-4433-b6aa-9a269d97f593.json`；`freeze_v5_offline_gate.py` 在 HEAD `aae5088` 全绿（gate `f0619e8059c3…`）；`run_v5_pilot.py --execute-paid --billing-currency CNY` 新建 experiment `0d0685c8-792d-4b3d-91f5-174d845dde65`，先 6 局 smoke 再跑余下 33 局。未改动 V3/Legacy，也未改写旧 V2/V5 账本内容。
+
+结果：完成 39/39 episode，15/39 成功。逐图 3-seed：MAP-08 4/6（假设表 3/3、无表 1/3）、MAP-16 1/6、MAP-18 0/6、MAP-22 0/6（全部 step-limit 删失）、MAP-26 4/6、MAP-30 6/9（完整历史与案卷 3/3、最近 5 步 0/3）。689 次请求、0 provider error、0 unknown spend；provider 墙钟 3,017.406 秒；报告费用 ¥0.24287288，预留 ¥7.05536（CNY 硬上限 ¥37.50 未触发），ledger 未关闭。
+
+验证：运行 artifacts 与账本保存在 ignored `runs/v5/`；逐图结果同步到 V5 pilot 报告、离线验收报告与效度边界文档。冻结时离线质量门禁全绿（scoped Ruff、mypy、pytest 518、Oracle replay、独立求解器、Fake dry-run）。
+
+下一步：MAP-16/18/22 在当前条件下几乎无成功，须作为测量敏感性不足或任务过难候选，先修正测量设计再扩展；其余 24 图仍需独立立项与登记。不得把固定 scene 重复 seed 当作独立样本或模型排名。
+
+关联提交：本次提交（文档记录；运行数据在 ignored `runs/v5/`）。
+
 ## 2026-10-16 V5 MiMo 实时复测与 MAP-08 编码澄清
 
 事件：按用户明确指令，在 schema 修复提交 `eca264d` 后对 MAP-08/no_hypothesis_table/seed 0 做封账后实时复测，并为公开 Observation 编码补充提示词说明。

@@ -1,5 +1,38 @@
 # MiMo V5 六图 Pilot 报告
 
+本文件记录两次真实 MiMo pilot。第一次（运行代码绑定 commit `e440cc1`）在 Stage B 首局因系统性 `INVALID_ACTION_SCHEMA` 停止并被 fail-closed 关闭；第二次在用户授权修复后新建登记 pilot，并完成全部 39 局。
+
+## 正式 39 局矩阵结果（第二次 pilot，2026-10-16，已完成）
+
+- experiment_id `0d0685c8-792d-4b3d-91f5-174d845dde65`；run `runs/v5/experiments/pilot_20261016T013445Z_5de86f869aaa4990b236ca154c7020bf`；ledger `runs/v5/ledgers/pilot_20261016T013445Z_5de86f869aaa4990b236ca154c7020bf.jsonl`。
+- 运行 commit `aae508849476f77aaf96ab757d904ecf300a358b`；offline gate `f0619e8059c3e9653e243b265a51916aeec2ff0fc9b724c89ee5e3a91cdf5070`；账单币种 CNY。
+- 完成 **39/39 episode**；689 次请求尝试，0 provider error、0 unknown spend；provider 墙钟 3,017.406 秒；报告 usage 费用 **¥0.24287288**，预留 ¥7.05536（硬上限 ¥37.50 未触发），ledger 未关闭。
+- 登记说明：第一次 pilot 已按 unknown-spend fail-closed，既不能续跑也不能新建 successor。本次在用户明确授权后**归档旧 registry、在提交 HEAD 重新冻结 gate、新建一次登记 pilot**，属于新的登记运行，不是恢复旧账本。旧 registry 保留在 `runs/v5/archived/pilot_registry.closed_d3f3d7be-c928-4433-b6aa-9a269d97f593.json`。
+
+| 地图 | 条件（seed 标签） | 成功/局 | 结果要点 |
+|---|---|---:|---|
+| MAP-08 | no_hypothesis_table 0/4/8 | 1/3 | seed0 成功（1 次测试、tick6 修复）；seed4/8 未识别漏点，peak water 7.5 → `RESOURCE_EXHAUSTION` |
+| MAP-08 | hypothesis_table 0/4/8 | 3/3 | 均诊断正确，1–2 次测试，repair tick 6/10/10 |
+| MAP-16 | react 0/1/2 | 0/3 | 2 例站点容量冲突、1 例相向交换 |
+| MAP-16 | constraint_table 0/1/2 | 1/3 | seed2 成功；seed0/1 站点容量冲突 |
+| MAP-18 | alert_off 0/1/2 | 0/3 | service rate 0 / 0 / 0.33，未达 70% 阈值 |
+| MAP-18 | alert_on 0/1/2 | 0/3 | service rate 0，未达阈值 |
+| MAP-22 | history5 0/1/2 | 0/3 | 三个 seed 在共享 prefix 后未再成功移动，step limit 删失 |
+| MAP-22 | history5_graph_memory 0/1/2 | 0/3 | 同上，step limit 删失 |
+| MAP-26 | free_diagnosis 0/1/2 | 2/3 | seed0/1 成功；seed2 备件耗尽 |
+| MAP-26 | recovery_full 0 | 1/1 | 恢复成功 |
+| MAP-26 | recovery_hidden 0 | 0/1 | 信息剥夺条件下备件耗尽 |
+| MAP-26 | recovery_structured 0 | 1/1 | 恢复成功 |
+| MAP-30 | history_full 0/1/2 | 3/3 | 1 决策、tick25 提交，Q4 召回正确 |
+| MAP-30 | history5_casebook 0/1/2 | 3/3 | 1 决策、tick25 提交，Q4 召回正确 |
+| MAP-30 | history5 0/1/2 | 0/3 | 无案卷，tick40 `DEADLINE_REACHED`，Q4 未召回 |
+
+合计 **15/39** 成功。逐图 3-seed 汇总：MAP-08 4/6、MAP-16 1/6、MAP-18 0/6、MAP-22 0/6、MAP-26 4/6、MAP-30 6/9。
+
+配对观察（仅描述性差异，不作推断）：MAP-08 结构化假设表把 B/D/F 区分从 1/3 提到 3/3；MAP-30 完整历史与结构化案卷均 3/3，而最近 5 步无案卷 0/3；MAP-26 结构化恢复 1/1、隐藏反馈 0/1，符合信息剥夺预期。MAP-16/18/22 在当前提示与预算下几乎无成功，应视为测量敏感性不足或任务过难候选。所有结论限于固定 scene 重复，不作模型排名或泛化。
+
+## 第一次 pilot：Stage B 停止（2026-10-16）
+
 状态：**真实 API pilot 已在 Stage B 停止，Stage C 未启动**。冻结 offline gate 在运行 commit `e440cc1b599a5de4a57650f418d78b03c4746399` 通过后，MiMo smoke 首局连续出现系统性 `INVALID_ACTION_SCHEMA`。提纲要求系统接口失败时停止；随后中断时有一个已预留请求未返回 usage，唯一 V5 ledger 已按 unknown-spend 规则关闭。39 局矩阵没有完成。
 
 停止后的离线加固：prompt 现在明确列出顶层 JSON 键和假设表类型；runner 在连续 3 次 schema 拒绝时 fail-closed。全量 513 项测试和 26 项 V5 定向测试通过，Ruff/mypy 通过。这些改动发生在真实运行之后，没有再次连接 MiMo 验证；运行 artifacts 仍准确绑定原始 commit `e440cc1`。
