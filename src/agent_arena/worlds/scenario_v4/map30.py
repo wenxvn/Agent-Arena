@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from typing import Any
 
 from agent_arena.worlds.scenario_v4.base import ScenarioV4Environment
@@ -153,12 +154,131 @@ NPC_ANSWERS = {
 }
 
 
+@dataclass(frozen=True)
+class WitnessRule:
+    """One ordered witness answer rule; prerequisite-free rules act as fallback."""
+
+    answer_id: str
+    evidence_ids: tuple[str, ...]
+    text: str
+    requires_shown_evidence: str | None = None
+    requires_casebook_entry: str | None = None
+    condition_key: str | None = None
+
+
+def _default_witness_rules() -> dict[str, tuple[WitnessRule, ...]]:
+    return {
+        "ARCHIVE_CLERK": (
+            WitnessRule(
+                "ARCHIVE_Q4_INDEX_CONFIRMED",
+                ("Q4_CODE_INDEX",),
+                "Q4的值勤暗码索引写明：M-4对应档案员玛拉·维恩。",
+                requires_shown_evidence="Q4_ARCHIVE_DOCKET",
+                condition_key="Q4_with_docket",
+            ),
+            WitnessRule(
+                "ARCHIVE_Q4_UNLOCATED",
+                (),
+                "没有封套编号，我无法确认你要查哪份值勤表。",
+                condition_key="Q4_without_docket",
+            ),
+        ),
+        "BANQUET_CLERK": (
+            WitnessRule(
+                "B_WITNESS_HANDOFF",
+                ("B_WITNESS_HANDOFF",),
+                "核对回执后，我确认23:10是M-4本人取走K7。",
+                requires_shown_evidence="B_KEY_STUB_2310",
+                condition_key="HANDOFF_with_stub",
+            ),
+            WitnessRule(
+                "B_GENERIC_HANDOFF_MEMORY",
+                (),
+                "我记得钥匙离开过宴会厅，但没有回执就想不起具体时刻和签领人。",
+                condition_key="HANDOFF_without_stub",
+            ),
+        ),
+        "KITCHEN_COOK": (
+            WitnessRule(
+                "K_WITNESS_WAX_ROUTE",
+                ("K_WITNESS_WAX_ROUTE",),
+                "看到上一段K7交接记录后，我认出M-4在23:22用蜡板加热封蜡。",
+                requires_casebook_entry="EVENT_1_HANDOFF",
+                condition_key="WAX_with_event_1",
+            ),
+            WitnessRule(
+                "K_GENERIC_OVEN_MEMORY",
+                (),
+                "那晚炉子开过；我想不起是哪一段工作之后。",
+                condition_key="WAX_without_event_1",
+            ),
+        ),
+        "TOWER_WATCH": (
+            WitnessRule(
+                "T_WITNESS_SIGNAL_ROUTE",
+                ("T_WITNESS_SIGNAL_ROUTE",),
+                "看到厨房封蜡记录后，我想起M-4于23:40从K-T密道侧进入并拉动铃链。",
+                requires_casebook_entry="EVENT_2_WAX",
+                condition_key="SIGNAL_with_event_2",
+            ),
+            WitnessRule(
+                "T_GENERIC_NIGHT_MEMORY",
+                (),
+                "午夜前有人经过塔楼，但我记不清是哪一次巡更。",
+                condition_key="SIGNAL_without_event_2",
+            ),
+        ),
+    }
+
+
+@dataclass(frozen=True)
+class Map30Case:
+    """One courtroom case definition shared by the rule engine and V6 fixtures."""
+
+    nodes: frozenset[str] = frozenset(NODES)
+    edges: frozenset[frozenset[str]] = frozenset(EDGES)
+    node_evidence: dict[str, set[str]] = field(
+        default_factory=lambda: {k: set(v) for k, v in NODE_EVIDENCE.items()}
+    )
+    node_npcs: dict[str, str] = field(default_factory=lambda: dict(NODE_NPCS))
+    entry_allowed: dict[str, set[str]] = field(
+        default_factory=lambda: {k: set(v) for k, v in ENTRY_ALLOWED.items()}
+    )
+    entry_order: tuple[str, ...] = ENTRY_ORDER
+    claims: tuple[V4EventClaim, ...] = CLAIMS
+    evidence: dict[str, dict[str, Any]] = field(default_factory=lambda: dict(EVIDENCE))
+    witness_rules: dict[str, tuple[WitnessRule, ...]] = field(
+        default_factory=_default_witness_rules
+    )
+    culprit: str = "MARA_VENN"
+    code_entry: str = "Q4_CODEBOOK"
+    code_index_evidence: str = "Q4_CODE_INDEX"
+    deadline: int = 40
+    casebook_capacity: int = 4
+
+    @property
+    def entry_required(self) -> dict[str, set[str]]:
+        return {key: set(values) for key, values in self.entry_allowed.items()}
+
+
+DEFAULT_CASE = Map30Case()
+
+
 class Map30Environment(ScenarioV4Environment):
     map_id = "MAP-30"
 
-    def __init__(self, *, casebook_visible: bool = True, step_limit: int = 100) -> None:
+    def __init__(
+        self,
+        *,
+        casebook_visible: bool = True,
+        step_limit: int = 100,
+        case: Map30Case | None = None,
+    ) -> None:
+        # Optional case parameter lets the V6 fixture layer build independent
+        # investigations from the same engine. Defaults reproduce reviewed V4 MAP-30.
         self.casebook_visible = casebook_visible
         self.step_limit = min(step_limit, 100)
+        self.case = case if case is not None else DEFAULT_CASE
         self.seed = 0
         self.status = V4Status.RUNNING
         self.terminal_reason = None
@@ -197,9 +317,9 @@ class Map30Environment(ScenarioV4Environment):
                 "recorded_evidence": tuple(
                     {
                         "evidence_id": evidence_id,
-                        "source_class": EVIDENCE[evidence_id]["source_class"],
-                        "fact": EVIDENCE[evidence_id]["fact"],
-                        "rendered_text": EVIDENCE[evidence_id]["text"],
+                        "source_class": self.case.evidence[evidence_id]["source_class"],
+                        "fact": self.case.evidence[evidence_id]["fact"],
+                        "rendered_text": self.case.evidence[evidence_id]["text"],
                     }
                     for evidence_id in sorted(ids)
                 ),
@@ -209,13 +329,20 @@ class Map30Environment(ScenarioV4Environment):
 
     def _observation(self) -> V4Map30Observation:
         neighbors = tuple(
-            sorted(next(n for n in edge if n != self.node) for edge in EDGES if self.node in edge)
+            sorted(
+                next(n for n in edge if n != self.node)
+                for edge in self.case.edges
+                if self.node in edge
+            )
         )
         recent = self.recent_events[-5:]
         recent_ids = {
             evidence_id for event in recent for evidence_id in event.get("evidence_ids", [])
         }
-        if "Q4_CODE_INDEX" not in recent_ids and "Q4_CODEBOOK" in self.casebook:
+        if (
+            self.case.code_index_evidence not in recent_ids
+            and self.case.code_entry in self.casebook
+        ):
             self.q4_gap_observed = True
         return V4Map30Observation(
             current_tick=self.current_tick,
@@ -223,7 +350,7 @@ class Map30Environment(ScenarioV4Environment):
             local_neighbors=neighbors,
             public_alert="MIDNIGHT_TRIAL_PENDING",
             visible_local_evidence=tuple(
-                sorted(NODE_EVIDENCE.get(self.node, set()) - self.seen_evidence)
+                sorted(self.case.node_evidence.get(self.node, set()) - self.seen_evidence)
             ),
             recent_action_window=tuple(recent),
             casebook=self._casebook_view(),
@@ -258,7 +385,7 @@ class Map30Environment(ScenarioV4Environment):
 
     def _advance(self, result: str, payload: dict[str, Any] | None = None) -> str:
         self.current_tick += 1
-        if self.status is V4Status.RUNNING and self.current_tick >= 40:
+        if self.status is V4Status.RUNNING and self.current_tick >= self.case.deadline:
             self.status = V4Status.FAILURE
             self.terminal_reason = "DEADLINE_REACHED"
             result = self.terminal_reason
@@ -271,16 +398,19 @@ class Map30Environment(ScenarioV4Environment):
         name = action.tool
         if name == "move":
             target = action.to
-            if target not in NODES or frozenset((self.node, target)) not in EDGES:
+            if (
+                target not in self.case.nodes
+                or frozenset((self.node, target)) not in self.case.edges
+            ):
                 return self._reject("INVALID_MOVE")
             self.node = target
             result = "MOVE_SUCCEEDED"
         elif name == "inspect":
             evidence_id = action.evidence_id
-            if evidence_id not in NODE_EVIDENCE.get(self.node, set()):
+            if evidence_id not in self.case.node_evidence.get(self.node, set()):
                 return self._reject("EVIDENCE_NOT_AVAILABLE")
             assert evidence_id is not None
-            item = EVIDENCE[evidence_id]
+            item = self.case.evidence[evidence_id]
             self.seen_evidence.add(evidence_id)
             payload = {
                 "evidence_ids": [evidence_id],
@@ -296,7 +426,10 @@ class Map30Environment(ScenarioV4Environment):
             result = f"EVIDENCE_FOUND:{evidence_id}"
         elif name == "interview":
             npc_id = action.npc_id
-            if npc_id not in NPC_ANSWERS or NODE_NPCS.get(self.node) != npc_id:
+            if (
+                npc_id not in self.case.witness_rules
+                or self.case.node_npcs.get(self.node) != npc_id
+            ):
                 return self._reject("NPC_NOT_HERE")
             shown_ids = set(action.shown_evidence_ids or [])
             shown_entries = set(action.shown_casebook_entry_ids or [])
@@ -313,9 +446,9 @@ class Map30Environment(ScenarioV4Environment):
                 "evidence": [
                     {
                         "evidence_id": evidence_id,
-                        "source_class": EVIDENCE[evidence_id]["source_class"],
-                        "fact": EVIDENCE[evidence_id]["fact"],
-                        "rendered_text": EVIDENCE[evidence_id]["text"],
+                        "source_class": self.case.evidence[evidence_id]["source_class"],
+                        "fact": self.case.evidence[evidence_id]["fact"],
+                        "rendered_text": self.case.evidence[evidence_id]["text"],
                     }
                     for evidence_id in answer["evidence_ids"]
                 ],
@@ -324,14 +457,14 @@ class Map30Environment(ScenarioV4Environment):
         elif name == "record":
             entry_id = action.entry_id
             evidence_ids = set(action.evidence_ids or [])
-            if entry_id not in ENTRY_ALLOWED or not evidence_ids:
+            if entry_id not in self.case.entry_allowed or not evidence_ids:
                 return self._reject("INVALID_CASEBOOK_ENTRY")
             if not evidence_ids.issubset(self._available_evidence()) or not evidence_ids.issubset(
-                ENTRY_ALLOWED[entry_id]
+                self.case.entry_allowed[entry_id]
             ):
                 return self._reject("EVIDENCE_NOT_AVAILABLE")
             if entry_id not in self.casebook:
-                if len(self.casebook) >= 4:
+                if len(self.casebook) >= self.case.casebook_capacity:
                     return self._reject("CASEBOOK_FULL")
                 self.casebook[entry_id] = set()
             self.casebook[entry_id].update(evidence_ids)
@@ -350,15 +483,18 @@ class Map30Environment(ScenarioV4Environment):
             entry_ids = set(action.entry_ids or [])
             if not entry_ids.issubset(self.casebook):
                 return self._reject("CASEBOOK_ENTRY_NOT_FOUND")
-            if "Q4_CODEBOOK" not in self.casebook or not ENTRY_REQUIRED["Q4_CODEBOOK"].issubset(
-                self.casebook["Q4_CODEBOOK"]
+            code_required = self.case.entry_required[self.case.code_entry]
+            if (
+                self.case.code_entry not in self.casebook
+                or not code_required.issubset(self.casebook[self.case.code_entry])
             ):
                 result = "CODE_KEY_NOT_RECORDED"
-            elif not set(ENTRY_ORDER).issubset(entry_ids):
+            elif not set(self.case.entry_order).issubset(entry_ids):
                 result = "RECORDS_DO_NOT_ALIGN"
             elif all(
-                entry in self.casebook and ENTRY_REQUIRED[entry].issubset(self.casebook[entry])
-                for entry in ENTRY_ORDER
+                entry in self.casebook
+                and self.case.entry_required[entry].issubset(self.casebook[entry])
+                for entry in self.case.entry_order
             ):
                 self.chain_reconciled = True
                 result = "CHAIN_COHERENT"
@@ -373,15 +509,17 @@ class Map30Environment(ScenarioV4Environment):
                 "cited_entry_ids": list(action.cited_entry_ids or []),
             }
             complete = (
-                set(ENTRY_ORDER).issubset(set(action.cited_entry_ids or []))
+                set(self.case.entry_order).issubset(set(action.cited_entry_ids or []))
                 and self.chain_reconciled
                 and all(
-                    entry in self.casebook and ENTRY_REQUIRED[entry].issubset(self.casebook[entry])
-                    for entry in ENTRY_ORDER
+                    entry in self.casebook
+                    and self.case.entry_required[entry].issubset(self.casebook[entry])
+                    for entry in self.case.entry_order
                 )
             )
             accurate = (
-                action.person_id == "MARA_VENN" and tuple(action.event_claims or ()) == CLAIMS
+                action.person_id == self.case.culprit
+                and tuple(action.event_claims or ()) == self.case.claims
             )
             if complete and accurate:
                 self.status = V4Status.SUCCESS
@@ -402,27 +540,33 @@ class Map30Environment(ScenarioV4Environment):
     def _interview_answer(
         self, npc_id: str, shown_ids: set[str], shown_entries: set[str]
     ) -> dict[str, Any]:
-        if npc_id == "ARCHIVE_CLERK":
-            key = "Q4_with_docket" if "Q4_ARCHIVE_DOCKET" in shown_ids else "Q4_without_docket"
-        elif npc_id == "BANQUET_CLERK":
-            key = "HANDOFF_with_stub" if "B_KEY_STUB_2310" in shown_ids else "HANDOFF_without_stub"
-        elif npc_id == "KITCHEN_COOK":
-            ready = "EVENT_1_HANDOFF" in shown_entries and ENTRY_REQUIRED[
-                "EVENT_1_HANDOFF"
-            ].issubset(self.casebook.get("EVENT_1_HANDOFF", set()))
-            key = "WAX_with_event_1" if ready else "WAX_without_event_1"
-        else:
-            ready = "EVENT_2_WAX" in shown_entries and ENTRY_REQUIRED["EVENT_2_WAX"].issubset(
-                self.casebook.get("EVENT_2_WAX", set())
-            )
-            key = "SIGNAL_with_event_2" if ready else "SIGNAL_without_event_2"
-        answer_id, evidence_ids, text = NPC_ANSWERS[npc_id][key]
+        rules = self.case.witness_rules.get(npc_id, ())
+        required = self.case.entry_required
+        selected: WitnessRule | None = None
+        for rule in rules:
+            if (
+                rule.requires_shown_evidence is not None
+                and rule.requires_shown_evidence not in shown_ids
+            ):
+                continue
+            if rule.requires_casebook_entry is not None:
+                entry = rule.requires_casebook_entry
+                if entry not in shown_entries or not required[entry].issubset(
+                    self.casebook.get(entry, set())
+                ):
+                    continue
+            selected = rule
+            break
+        if selected is None and rules:
+            selected = rules[-1]
+        if selected is None:
+            raise AssertionError("MAP-30 witness has no answer rules.")
         return {
             "npc_id": npc_id,
-            "answer_id": answer_id,
-            "evidence_ids": list(evidence_ids),
-            "rendered_text": text,
-            "condition_key": key,
+            "answer_id": selected.answer_id,
+            "evidence_ids": list(selected.evidence_ids),
+            "rendered_text": selected.text,
+            "condition_key": selected.condition_key or selected.answer_id,
         }
 
     def _reject(self, reason: str) -> str:
@@ -451,7 +595,8 @@ class Map30Environment(ScenarioV4Environment):
         final = self.final_claim or {}
         claims = final.get("event_claims", [])
         correct_count = sum(
-            claim == expected.model_dump() for claim, expected in zip(claims, CLAIMS, strict=False)
+            claim == expected.model_dump()
+            for claim, expected in zip(claims, self.case.claims, strict=False)
         )
         evidence_ids = {evidence_id for ids in self.casebook.values() for evidence_id in ids}
         return {
@@ -461,17 +606,17 @@ class Map30Environment(ScenarioV4Environment):
             "unsupported_formal_accusations": self.unsupported_formal_accusations,
             "casebook_entry_count": len(self.casebook),
             "casebook_source_count": len(evidence_ids),
-            "q4_recorded": "Q4_CODEBOOK" in self.casebook,
+            "q4_recorded": self.case.code_entry in self.casebook,
             "q4_gap_observed": self.q4_gap_observed,
             "q4_recalled_after_gap": (
                 None
                 if not self.q4_gap_observed or self.final_claim is None
-                else self.final_claim.get("person_id") == "MARA_VENN"
-                and "Q4_CODEBOOK" in self.final_claim.get("cited_entry_ids", [])
+                else self.final_claim.get("person_id") == self.case.culprit
+                and self.case.code_entry in self.final_claim.get("cited_entry_ids", [])
             ),
             "event_claim_accuracy": f"{correct_count}/3",
             "timeline_consistent": [claim.get("time") for claim in claims]
-            == ["23:10", "23:22", "23:40"],
+            == [claim.time for claim in self.case.claims],
             "comparison_succeeded": self.chain_reconciled,
             "hypothesis_count": self.hypothesis_count,
             "hypotheses_adjudicated": False,

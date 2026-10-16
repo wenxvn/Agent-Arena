@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from collections import deque
+from collections import Counter, deque
+from itertools import product
 from typing import Any
 
 from agent_arena.worlds.scenario_v4.base import ScenarioV4Environment
@@ -25,6 +26,7 @@ DIRECTIONS = {
     "a": {"A": ("X",), "X": ("M",), "M": ("Y", "D"), "D": ("M",), "Y": ("B",), "B": ()},
     "b": {"B": ("Y",), "Y": ("M",), "M": ("X", "D"), "D": ("M",), "X": ("A",), "A": ()},
 }
+DEFAULT_SEGMENT_CAPACITIES = {"AX": 1, "XM": 1, "MY": 1, "YB": 1, "MD": 1}
 
 
 def _section(left: str, right: str) -> frozenset[str]:
@@ -34,8 +36,40 @@ def _section(left: str, right: str) -> frozenset[str]:
 class Map16Environment(ScenarioV4Environment):
     map_id = "MAP-16"
 
-    def __init__(self, *, step_limit: int = 100) -> None:
+    def __init__(
+        self,
+        *,
+        step_limit: int = 100,
+        adjacency: dict[str, tuple[str, ...]] | None = None,
+        directions: dict[str, dict[str, tuple[str, ...]]] | None = None,
+        start_positions: dict[str, str] | None = None,
+        goals: dict[str, str] | None = None,
+        segment_capacities: dict[str, int] | None = None,
+        node_capacities: dict[str, int] | None = None,
+        sidings: frozenset[str] = frozenset({"D"}),
+    ) -> None:
+        # Optional parameters let the V6 fixture layer build structurally different
+        # single-track layouts (one or more trains). Defaults reproduce the reviewed
+        # V4 MAP-16 scene exactly.
         self.step_limit = step_limit
+        self.adjacency = adjacency if adjacency is not None else ADJACENCY
+        self.directions = directions if directions is not None else DIRECTIONS
+        self.start_positions = (
+            start_positions if start_positions is not None else {"a": "A", "b": "B"}
+        )
+        self.goals = goals if goals is not None else {"a": "B", "b": "A"}
+        self.segment_capacities = (
+            segment_capacities
+            if segment_capacities is not None
+            else dict(DEFAULT_SEGMENT_CAPACITIES)
+        )
+        self.node_capacities = (
+            node_capacities
+            if node_capacities is not None
+            else {node: 1 for node in NODES}
+        )
+        self.sidings = sidings
+        self.trains = tuple(self.start_positions)
         self.seed = 0
         self.status = V4Status.RUNNING
         self.terminal_reason = None
@@ -49,7 +83,7 @@ class Map16Environment(ScenarioV4Environment):
     def _reset_state(self, seed: int) -> None:
         if seed not in {0, 1, 2}:
             raise ValueError("MAP-16 only accepts the three registered fixed-scene repeat labels.")
-        self.positions = {"a": "A", "b": "B"}
+        self.positions = dict(self.start_positions)
         self.current_tick = 0
         self.pending: dict[str, str] = {}
         self.last_action_result = "INITIAL"
@@ -69,12 +103,12 @@ class Map16Environment(ScenarioV4Environment):
     def _observation(self) -> V4Map16Observation:
         return V4Map16Observation(
             tick=self.current_tick,
-            topology={node: ADJACENCY[node] for node in NODES},
-            train_route_directions={train: DIRECTIONS[train] for train in ("a", "b")},
+            topology={node: self.adjacency[node] for node in self.adjacency},
+            train_route_directions={train: self.directions[train] for train in self.trains},
             train_positions=dict(self.positions),
-            train_goals={"a": "B", "b": "A"},
-            segment_capacities={"AX": 1, "XM": 1, "MY": 1, "YB": 1, "MD": 1},
-            node_capacities={node: 1 for node in NODES},
+            train_goals=dict(self.goals),
+            segment_capacities=dict(self.segment_capacities),
+            node_capacities=dict(self.node_capacities),
             occupied_nodes=tuple(sorted(self.positions.values())),
             pending_route_reservations=dict(self.pending),
             terminal=self.is_terminal,
@@ -82,14 +116,14 @@ class Map16Environment(ScenarioV4Environment):
         )
 
     def _route(self, action: ScenarioV4Action) -> str:
-        if action.train_id not in {"a", "b"} or action.next_node is None:
+        if action.train_id not in self.trains or action.next_node is None:
             return self._reject("INVALID_ROUTE")
         train = action.train_id
         destination = action.next_node
         current = self.positions[train]
         if train in self.pending:
             return self._reject("INVALID_ROUTE")
-        if destination not in DIRECTIONS[train][current]:
+        if destination not in self.directions[train][current]:
             return self._reject("INVALID_ROUTE")
         section = _section(current, destination)
         for other_train, other_destination in self.pending.items():
@@ -114,9 +148,10 @@ class Map16Environment(ScenarioV4Environment):
         if action.tool in {"set_route", "occupy_siding"}:
             if action.tool == "occupy_siding":
                 if (
-                    action.next_node != "D"
-                    or action.train_id not in {"a", "b"}
-                    or self.positions[action.train_id] != "M"
+                    action.train_id not in self.trains
+                    or action.next_node not in self.sidings
+                    or action.next_node
+                    not in self.directions[action.train_id][self.positions[action.train_id]]
                 ):
                     return self._reject("INVALID_ROUTE")
             return self._route(action)
@@ -142,29 +177,33 @@ class Map16Environment(ScenarioV4Environment):
                 current = self.positions[moving_train]
                 section = _section(current, destination)
                 if section in used:
+                    other = used[section]
                     reason = (
                         "HEAD_ON_SWAP"
-                        if current == self.positions[used[section]]
-                        and destination == self.positions[used[section]]
+                        if current == self.positions[other]
+                        and destination == self.positions[other]
                         else "SECTION_RESERVATION_CONFLICT"
                     )
                     return self._terminal_conflict(reason)
                 used[section] = moving_train
                 following[moving_train] = destination
-            if following["a"] == following["b"]:
+            collisions = [
+                node for node, count in Counter(following.values()).items() if count > 1
+            ]
+            if collisions:
                 return self._terminal_conflict(
                     "SIDING_CAPACITY_CONFLICT"
-                    if "D" in following.values()
+                    if any(node in self.sidings for node in collisions)
                     else "NODE_CAPACITY_CONFLICT"
                 )
             self.positions = following
             self.pending.clear()
             self.current_tick += 1
-            if self.positions == {"a": "B", "b": "A"}:
+            if all(self.positions[train] == self.goals[train] for train in self.trains):
                 self.status = V4Status.SUCCESS
                 self.terminal_reason = "GATE_OPENED"
                 return self._finish("GATE_OPENED")
-            if not self._has_safe_completion((self.positions["a"], self.positions["b"])):
+            if not self._has_safe_completion(tuple(self.positions[train] for train in self.trains)):
                 self.conflicts["DEADLOCK"] += 1
                 self.deadlock_count += 1
                 self.status = V4Status.FAILURE
@@ -190,29 +229,36 @@ class Map16Environment(ScenarioV4Environment):
         self.last_action_result = result
         return result
 
-    @staticmethod
-    def _successors(state: tuple[str, str]) -> set[tuple[str, str]]:
-        a, b = state
-        a_options = {a, *DIRECTIONS["a"][a]}
-        b_options = {b, *DIRECTIONS["b"][b]}
-        return {
-            (next_a, next_b)
-            for next_a in a_options
-            for next_b in b_options
-            if next_a != next_b
-            and not (next_a != a and next_b != b and _section(a, next_a) == _section(b, next_b))
-        }
+    def _successors(self, state: tuple[str, ...]) -> set[tuple[str, ...]]:
+        options = [
+            sorted({state[index], *self.directions[train][state[index]]})
+            for index, train in enumerate(self.trains)
+        ]
+        results: set[tuple[str, ...]] = set()
+        for combination in product(*options):
+            if len(set(combination)) != len(combination):
+                continue
+            blocked = False
+            for left in range(len(combination)):
+                for right in range(left + 1, len(combination)):
+                    if combination[left] != state[left] and combination[right] != state[right]:
+                        if _section(state[left], combination[left]) == _section(
+                            state[right], combination[right]
+                        ):
+                            blocked = True
+            if not blocked:
+                results.add(combination)
+        return results
 
-    @classmethod
-    def _has_safe_completion(cls, start: tuple[str, str]) -> bool:
-        goal = ("B", "A")
+    def _has_safe_completion(self, start: tuple[str, ...]) -> bool:
+        goal = tuple(self.goals[train] for train in self.trains)
         seen = {start}
         queue = deque([start])
         while queue:
             current = queue.popleft()
             if current == goal:
                 return True
-            for following in cls._successors(current):
+            for following in self._successors(current):
                 if following not in seen:
                     seen.add(following)
                     queue.append(following)
@@ -246,15 +292,14 @@ class Map16Environment(ScenarioV4Environment):
             "terminal_reason": self.terminal_reason,
         }
 
-    @classmethod
-    def _shortest_schedule(cls) -> tuple[int, int]:
-        start = ("A", "B")
-        goal = ("B", "A")
+    def _shortest_schedule(self) -> tuple[int, int]:
+        start = tuple(self.start_positions[train] for train in self.trains)
+        goal = tuple(self.goals[train] for train in self.trains)
         distances = {start: 0}
         queue = deque([start])
         while queue:
             current = queue.popleft()
-            for following in cls._successors(current):
+            for following in self._successors(current):
                 if following not in distances:
                     distances[following] = distances[current] + 1
                     queue.append(following)

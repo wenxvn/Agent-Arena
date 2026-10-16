@@ -92,9 +92,31 @@ MAX_FACTS = 32
 class Map22Environment(ScenarioV4Environment):
     map_id = "MAP-22"
 
-    def __init__(self, *, memory_enabled: bool = True, step_limit: int = 100) -> None:
+    def __init__(
+        self,
+        *,
+        memory_enabled: bool = True,
+        step_limit: int = 100,
+        nodes: dict[str, dict[str, Any]] | None = None,
+        start_node: str = "A",
+        target_node: str = "L",
+        move_budget: int = 30,
+        max_facts: int = MAX_FACTS,
+        optimal_moves: int = 8,
+        disabled_memory_result: str = "ACTION_NOT_AVAILABLE",
+    ) -> None:
+        # Optional parameters let the V6 fixture layer build structurally different
+        # signpost forests from the same rule engine. The defaults reproduce the
+        # reviewed V4 MAP-22 scene exactly.
         self.memory_enabled = memory_enabled
         self.step_limit = step_limit
+        self.nodes = nodes if nodes is not None else NODES
+        self.start_node = start_node
+        self.target_node = target_node
+        self.move_budget = move_budget
+        self.max_facts = max_facts
+        self.optimal_moves = optimal_moves
+        self.disabled_memory_result = disabled_memory_result
         self.seed = 0
         self.status = V4Status.RUNNING
         self.terminal_reason = None
@@ -108,16 +130,16 @@ class Map22Environment(ScenarioV4Environment):
     def _reset_state(self, seed: int) -> None:
         if seed not in {0, 1, 2}:
             raise ValueError("MAP-22 only accepts the three registered fixed-scene repeat labels.")
-        self.node = "A"
+        self.node = self.start_node
         self.movement_steps = 0
         self.target_visited = False
-        self.active_goal = "RUIN_TRIPLE_ARCH"
+        self.active_goal = self.nodes[self.target_node]["sign"]
         self.memory: list[V4MemoryFact] = []
         self.last_inspected_node: str | None = None
         self.last_traversed_edge: tuple[str, str, str] | None = None
-        self.unique_nodes = {"A"}
+        self.unique_nodes = {self.start_node}
         self.unique_edges: set[frozenset[str]] = set()
-        self.node_visits: dict[str, int] = {"A": 1}
+        self.node_visits: dict[str, int] = {self.start_node: 1}
         self.edge_traversals: dict[frozenset[str], int] = {}
         self.last_result = "INITIAL"
 
@@ -125,13 +147,13 @@ class Map22Environment(ScenarioV4Environment):
         detail = None
         if self.last_inspected_node == self.node:
             detail = {
-                "sign_id": NODES[self.node]["sign"],
-                "distinctive_feature": NODES[self.node]["feature"],
+                "sign_id": self.nodes[self.node]["sign"],
+                "distinctive_feature": self.nodes[self.node]["feature"],
             }
         return V4Map22Observation(
             movement_steps=self.movement_steps,
-            current_coarse_silhouette=NODES[self.node]["silhouette"],
-            visible_exit_bearings=tuple(sorted(NODES[self.node]["exits"])),
+            current_coarse_silhouette=self.nodes[self.node]["silhouette"],
+            visible_exit_bearings=tuple(sorted(self.nodes[self.node]["exits"])),
             inspected_current_sign_detail=detail,
             active_goal_marker=self.active_goal,
             agent_authored_memory_journal=tuple(self.memory),
@@ -145,9 +167,9 @@ class Map22Environment(ScenarioV4Environment):
             return self._finish("SIGNPOST_OBSERVED")
         if action.tool == "write_memory":
             if not self.memory_enabled:
-                return self._finish("ACTION_NOT_AVAILABLE")
+                return self._finish(self.disabled_memory_result)
             assert action.facts is not None
-            if len(self.memory) + len(action.facts) > MAX_FACTS:
+            if len(self.memory) + len(action.facts) > self.max_facts:
                 return self._finish("MEMORY_CAPACITY_EXCEEDED")
             for fact in action.facts:
                 if not self._fact_is_grounded(fact):
@@ -156,7 +178,7 @@ class Map22Environment(ScenarioV4Environment):
             return self._finish("MEMORY_WRITTEN")
         if action.tool == "move":
             assert action.bearing is not None
-            destination = NODES[self.node]["exits"].get(action.bearing)
+            destination = self.nodes[self.node]["exits"].get(action.bearing)
             if destination is None:
                 return self._finish("INVALID_BEARING")
             origin = self.node
@@ -168,24 +190,34 @@ class Map22Environment(ScenarioV4Environment):
             edge = frozenset((origin, destination))
             self.unique_edges.add(edge)
             self.edge_traversals[edge] = self.edge_traversals.get(edge, 0) + 1
-            if destination == "L":
+            if destination == self.target_node:
                 self.target_visited = True
-            if self.target_visited and destination == "A" and self.movement_steps <= 30:
+            if (
+                self.target_visited
+                and destination == self.start_node
+                and self.movement_steps <= self.move_budget
+            ):
                 self.status = V4Status.SUCCESS
                 self.terminal_reason = "RETURNED_TO_CAMP_WITH_RUIN_RECORD"
                 return self._finish(self.terminal_reason)
-            if self.movement_steps >= 30:
+            if self.movement_steps >= self.move_budget:
                 self.status = V4Status.FAILURE
                 self.terminal_reason = "STEP_LIMIT_REACHED"
                 return self._finish(self.terminal_reason)
             return self._finish("MOVE_SUCCEEDED")
         if action.tool == "check_goal":
             return self._finish(
-                "GOAL_MARKER_CONFIRMED" if self.node == "L" else "GOAL_MARKER_NOT_HERE"
+                "GOAL_MARKER_CONFIRMED"
+                if self.node == self.target_node
+                else "GOAL_MARKER_NOT_HERE"
             )
         if action.tool == "return_to_camp":
-            self.active_goal = "CAMP_LANTERN_RING"
-            if self.target_visited and self.node == "A" and self.movement_steps <= 30:
+            self.active_goal = self.nodes[self.start_node]["sign"]
+            if (
+                self.target_visited
+                and self.node == self.start_node
+                and self.movement_steps <= self.move_budget
+            ):
                 self.status = V4Status.SUCCESS
                 self.terminal_reason = "RETURNED_TO_CAMP_WITH_RUIN_RECORD"
                 return self._finish(self.terminal_reason)
@@ -197,17 +229,19 @@ class Map22Environment(ScenarioV4Environment):
             node = self.node
             return (
                 self.last_inspected_node == node
-                and fact.sign_id == NODES[node]["sign"]
-                and tuple(fact.exit_bearings or ()) == tuple(sorted(NODES[node]["exits"]))
+                and fact.sign_id == self.nodes[node]["sign"]
+                and tuple(fact.exit_bearings or ()) == tuple(sorted(self.nodes[node]["exits"]))
             )
         if self.last_traversed_edge is None:
             return False
         origin, bearing, destination = self.last_traversed_edge
-        reverse = next(key for key, value in NODES[destination]["exits"].items() if value == origin)
+        reverse = next(
+            key for key, value in self.nodes[destination]["exits"].items() if value == origin
+        )
         return (
-            fact.from_sign_id == NODES[origin]["sign"]
+            fact.from_sign_id == self.nodes[origin]["sign"]
             and fact.departure_bearing == bearing
-            and fact.to_sign_id == NODES[destination]["sign"]
+            and fact.to_sign_id == self.nodes[destination]["sign"]
             and fact.arrival_reverse_bearing == reverse
         )
 
@@ -242,7 +276,9 @@ class Map22Environment(ScenarioV4Environment):
             "repeated_edge_traversals": sum(self.edge_traversals.values())
             - len(self.edge_traversals),
             "return_success": self.is_success,
-            "shortest_route_gap": self.movement_steps - 8 if self.is_success else None,
+            "shortest_route_gap": (
+                self.movement_steps - self.optimal_moves if self.is_success else None
+            ),
             "memory_facts_written": len(self.memory),
             "terminal_reason": self.terminal_reason,
         }

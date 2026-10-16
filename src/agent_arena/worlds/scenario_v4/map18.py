@@ -79,9 +79,29 @@ TOPOLOGY = {
 class Map18Environment(ScenarioV4Environment):
     map_id = "MAP-18"
 
-    def __init__(self, *, alert_enabled: bool = True, step_limit: int = 100) -> None:
+    def __init__(
+        self,
+        *,
+        alert_enabled: bool = True,
+        step_limit: int = 100,
+        fault_edge: frozenset[str] | None = None,
+        fault_window: tuple[int, int] = (5, 10),
+        fault_enabled: bool = True,
+        alert_tick: int = 4,
+        horizon: int = HORIZON,
+        success_threshold: int = 13,
+    ) -> None:
+        # Optional parameters let the V6 fixture layer build independent fault
+        # scenarios from the same dispatch engine. Defaults reproduce the reviewed
+        # V4 MAP-18 scene exactly.
         self.alert_enabled = alert_enabled
-        self.step_limit = min(step_limit, HORIZON)
+        self.step_limit = min(step_limit, horizon)
+        self.fault_edge = fault_edge if fault_edge is not None else FAULT_EDGE
+        self.fault_window = fault_window
+        self.fault_enabled = fault_enabled
+        self.alert_tick = alert_tick
+        self.horizon = horizon
+        self.success_threshold = success_threshold
         self.seed = 0
         self.status = V4Status.RUNNING
         self.terminal_reason = None
@@ -116,9 +136,11 @@ class Map18Environment(ScenarioV4Environment):
         self.last_result = "INITIAL"
 
     def _observation(self) -> V4Map18Observation:
-        closed = ("R2_R3",) if 5 <= self.current_tick < 10 else ()
+        closed: tuple[str, ...] = ()
+        if self.fault_enabled and self.fault_window[0] <= self.current_tick < self.fault_window[1]:
+            closed = ("_".join(sorted(self.fault_edge)),)
         alert = None
-        if self.current_tick == 4 and self.alert_enabled:
+        if self.current_tick == self.alert_tick and self.alert_enabled:
             alert = {
                 "id": "NETWORK_DISRUPTION_WATCH",
                 "message": (
@@ -129,7 +151,7 @@ class Map18Environment(ScenarioV4Environment):
         states = self.task_status
         return V4Map18Observation(
             tick=self.current_tick,
-            ticks_remaining=HORIZON - self.current_tick,
+            ticks_remaining=self.horizon - self.current_tick,
             topology=TOPOLOGY,
             train_positions=dict(self.positions),
             station_berths=dict(sorted(Counter(self.positions.values()).items())),
@@ -149,9 +171,13 @@ class Map18Environment(ScenarioV4Environment):
             },
             published_dispatch_windows=DISPATCH_WINDOWS,
             alert_message_if_any=alert,
-            recovery_status="not_started"
-            if self.current_tick < 5
-            else ("section_closed" if self.current_tick < 10 else "reopened"),
+            recovery_status=(
+                "not_started"
+                if self.current_tick < self.fault_window[0]
+                else "section_closed"
+                if self.current_tick < self.fault_window[1]
+                else "reopened"
+            ),
             terminal=self.is_terminal,
             terminal_reason=self.terminal_reason,
         )
@@ -192,7 +218,11 @@ class Map18Environment(ScenarioV4Environment):
                         return self._record_failure("CANCELED_TRAIN_ROUTE_INVALID")
                 else:
                     return self._record_failure("COMPLETED_TRAIN_MOVED")
-                if frozenset((current, destination)) == FAULT_EDGE and 5 <= self.current_tick < 10:
+                if (
+                    self.fault_enabled
+                    and frozenset((current, destination)) == self.fault_edge
+                    and self.fault_window[0] <= self.current_tick < self.fault_window[1]
+                ):
                     closed_results[train] = "TRACK_CLOSED"
                     continue
                 accepted_moves[train] = (current, destination)
@@ -262,8 +292,8 @@ class Map18Environment(ScenarioV4Environment):
                 self.headings[train] = str(lock["reverse_toward"])
                 del self.current_train_locks[train]
         self.current_tick += 1
-        if self.current_tick >= HORIZON:
-            if self.delivered >= 13:
+        if self.current_tick >= self.horizon:
+            if self.delivered >= self.success_threshold:
                 self.status = V4Status.SUCCESS
                 self.terminal_reason = "SERVICE_COMPLETE"
             else:
@@ -313,11 +343,11 @@ class Map18Environment(ScenarioV4Environment):
             for task, tick in self.fault_resolution.items()
             if task in {"TASK_R2_R3", "TASK_R3_R2"}
         ]
-        recovery_duration = max(resolved) - 5 if resolved else None
+        recovery_duration = max(resolved) - self.fault_window[0] if resolved else None
         return {
             "success": self.is_success,
             "delivered_passengers": self.delivered,
-            "total_demand": 18,
+            "total_demand": sum(int(task["passengers"]) for task in TASKS.values()),
             "service_rate": self.delivered / 18,
             "canceled_passengers": self.canceled,
             "total_delay_person_ticks": self.delay_person_ticks,
