@@ -13,11 +13,12 @@ V7 **不**修改 V2/V4/V5/V6 的规则、Action/Observation/Trace、Oracle、账
 | 可运行指标 extractor | 6 | 已实现（MAP-08/16/18/22/26/30） |
 | 六图手工校验 | 36 | 6 图 × 6 条真实环境重放，覆盖成功/失败/边界/截尾 |
 | 注册指标 | 154 | 6 图 44 条 + 24 图 110 条（`MetricSpec`，全部带 `valid_range`） |
-| 泄漏与只读扫描 | 12 源 / 67 文档 | 通过 |
+| 泄漏与只读扫描 | 12 源 / 68 文档 | 通过 |
 | 人工审阅 | 30 | `human_approved`（用户 2026-10-17 确认复核；DeepSeek 未代签） |
 | 已有 MiMo trace 复算 | 47 | V6 真实 trace 的 post-hoc V7 二次分析（`real-trace-rescore.md`） |
-| V7 预登记 pilot | 12 | 10 启动 / 9 完整 / 1 中断（`unknown_provider_spend`）；已封账，见 `pilot-001-report.md` |
-| 新增付费 API | 67 请求 | 10 局启动、9 局完整；CNY `0.05086048`；账本已关闭，不续跑 |
+| V7 预登记 pilot-001 | 12 | 10 启动 / 9 完整 / 1 中断（`unknown_provider_spend`）；已封账，见 `pilot-001-report.md` |
+| V7 Pilot-001R 完整重跑 | 12 | 12/12 完整；独立新账本；CNY `0.08521648`；109 请求；见 `pilot-001r-report.md` |
+| 新增付费 API（两次 pilot 合计） | 176 请求 | CNY `0.13607696`；129,600 input / 18,354 output；两次账本分别独立 |
 
 ## 文件地图
 
@@ -37,6 +38,7 @@ docs/v7/
   real-trace-rescore.md        已有 V6 MiMo 47 局 trace 的 V7 post-hoc 复算（非新实验）
   pilot-001-registration.md    六图 12 局付费 pilot 的预登记、预算与停止规则
   pilot-001-report.md          该 pilot 的执行结果、中断原因、指标读数与边界
+  pilot-001r-report.md         同一矩阵在独立新账本上的 12/12 完整重跑结果
 
 src/agent_arena/v7/metrics/
   schema.py                    MetricSpec / MetricValue / TraceRecord
@@ -95,6 +97,6 @@ tests/test_v7_cards.py        30 卡结构自审测试
 ## 本轮不包含
 
 - 24 张设计图的运行时、Agent 行为或真实模型结果。
-- 30 图正式 V7 矩阵；本轮只执行六图 12 局 pilot，且因 `unknown_provider_spend` 在 9 局完整后停止，不能外推到 30 图。
+- 30 图正式 V7 矩阵；六图 12 局 pilot 已完成一次 9 局中断版和一次 12/12 完整重跑，但仍是单 seed、每条件 1 局，不能外推到 30 图。
 - 任何地图规则修改；发现冲突只写 `V7-DCR-*`。
 - 24 图运行时接入；30 卡已由用户复核并记录为 `human_approved`，但这不等于 24 图已可运行。

@@ -1348,3 +1348,21 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 下一步：先确认 provider 连接稳定性；若要完成 12 局或扩到 30 图，必须新建预登记、预算与冻结 gate，不复用本次账本。
 
 关联提交：本次提交。
+
+## 2026-10-17 V7 Pilot-001R 六图 12 局完整重跑
+
+事件：在用户明确授权继续后，使用新的 V7 账本和运行目录重跑 `pilot-001-registration.md` 的同一 12 局矩阵。Pilot-001 的旧账本保持关闭且未追加、未改写；新 run 完成 12/12 局，未再出现 `APIConnectionError` 或 `unknown_provider_spend`。
+
+原因：Pilot-001 在 MAP-26 `recovery_full` 第 8 次请求中断后按规则封账，只留下 9 局完整样本，无法覆盖 MAP-26 recovery 和 MAP-30 两局。用户明确要求继续并授予全部权限；本次沿用同一预登记矩阵、预算和停止规则，不新增假设、不修改 V4/V5/V6 规则，也不把重跑冒充新的主实验。
+
+改动：新增 `docs/v7/pilot-001r-report.md`，记录逐局结果、逐图读法、与 Pilot-001/V6 post-hoc 的对照、费用、哈希和边界；同步更新 `docs/v7/README.md`、`docs/v7/validation-report.md`、`docs/scope/scope.md` 与 `AGENTS.md`。旧 `pilot-001-report.md` 保持原样，旧 `runs/v7/pilot_registry.json` 归档为 `runs/v7/archived/pilot_registry.pilot-001.json`；新 registry 指向新 run。未修改 V7 extractor、V6 环境、Action 契约、Trace 写出器或历史账本。
+
+结果：12/12 完整；实验 ID `77ad5559-c8c0-44f0-bac5-b3c67d0aa5a4`；运行目录 `runs/v7/experiments/v7_pilot_001_20261017T050540Z_82dcd2c1dee847438cee96e4bdc1a8d2`；账本 `runs/v7/ledgers/v7_pilot_001_20261017T050540Z_82dcd2c1dee847438cee96e4bdc1a8d2.jsonl`。109 次请求、83,556 input / 10,740 output tokens、实际 CNY `0.08521648`、预留 CNY `1.11616`、provider 墙钟 558.349 秒；操作上限 CNY `2.00`、账本硬上限 CNY `11.00`。冻结 gate `5da2640…` 绑定运行时 commit `e67fe0b`。逐图成功数为 MAP-08 2/2、MAP-16 1/2、MAP-18 0/2、MAP-22 2/2、MAP-26 0/2、MAP-30 1/2；该计数只用于核对矩阵完整性，不是能力排名。关键新数据：MAP-18 `alert_off` 首步 `STATION_CAPACITY_EXCEEDED`、`service_rate=0`，`alert_on` 交付 6/18 后 `HEAD_ON_COLLISION`；MAP-22 L3 graph memory 成功、`path_gap=1`、写入 10 条记忆事实；MAP-26 free 与 recovery 均 `SPARES_EXHAUSTED`，recovery 的诊断正确但修复失败；MAP-30 完整调查 44 步 `DEADLINE_REACHED`、覆盖 0.25，纯召回 1 步成功、覆盖 1.0。
+
+验证：`scripts/report_v7_metrics.py` 处理 12 条 trace，12 `computed`、0 `design_only`、0 `invalid_trace`；`v7_metrics_all.json` SHA-256 `5390ab8e43a6168ea25c06bb2069b0646e24f9ea5dfb1a2d1e50a80e9ed673c1`，`run_manifest.json` SHA-256 `28d2241b262b8278a75e88b8d5da169fc3951b0545c1a3769fce34bedc385a6b`，账本 SHA-256 `ea8158ec60e37f3492c277cefd11118ccdb63258c4a8c3e26b863936d87525f5`。`runs/v7` 密钥/授权头/密钥前缀扫描 0 hits。Pilot-001 与 Pilot-001R 的同一矩阵结果出现方向性波动（MAP-26 free 成败、MAP-18 失败机制、MAP-22 `path_gap`、MAP-30 时长），因此本次仍不能当作条件效应或主实验结论。
+
+边界：仍是 E3-pilot；单 seed、每条件 1 局，多数条件对使用不同实例；没有 30 图正式矩阵、没有 24 图运行时、没有 12 条 DCR 的规则批准。Pilot-001R 使用独立新账本，但不重开 Pilot-001 旧账本；两次 pilot 的费用分别为 CNY `0.05086048` 与 `0.08521648`，合计 `0.13607696`。
+
+下一步：若要形成 V7 主实验，需新预登记同实例多 seed/重复配对矩阵，并单独冻结预算、停止规则与 gate；24 图运行时继续按 `docs/v7/pending-runtime/MAP-XX.md` 逐图接入。
+
+关联提交：本次提交。

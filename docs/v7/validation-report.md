@@ -3,7 +3,7 @@
 - 日期：2026-10-17
 - 基线提交：`6320660cbe2d7b774c44db5eb9dcee0d311a0410`
 - 运行环境：Windows，Python 3.13.3，pytest 8.4.2，pydantic 2.13.4
-- 本报告的离线验收部分：付费 API 0 次；新账本 0 个；`runs/`、`results/` 未写入。随后单独登记的 V7 Pilot-001 见 [`pilot-001-report.md`](pilot-001-report.md)，不并入本报告的离线结论。
+- 本报告的离线验收部分：付费 API 0 次；新账本 0 个；`runs/`、`results/` 未写入。随后单独登记的 V7 Pilot-001 见 [`pilot-001-report.md`](pilot-001-report.md)，其独立新账本上的 12/12 完整重跑见 [`pilot-001r-report.md`](pilot-001r-report.md)；两者都不并入本报告的离线结论。
 
 本报告只记录本轮真实执行过的离线命令与输出。凡是设计态、离线回放或未执行的内容，均单独标注，不把设计态说成运行时，也不把离线回放说成真实模型实验。
 
@@ -17,10 +17,10 @@
 | 六图离线回放 | 29/29 V6 实例全部成功复算，指标无 `invalid_trace` / `unavailable` | 验收脚本 + pytest |
 | 六图手工校验 | 6 图 × 6 条真实环境重放 = 36 条，覆盖成功/失败/边界/截尾/N/A | `tests/test_v7_hand_traces.py` |
 | 指标合法范围 | 154 条 `MetricSpec` 全部带非空 `valid_range` | schema + 单测 |
-| 泄漏与只读扫描 | 12 个 V7 源文件、67 份 V7 文档通过 | `scripts/check_v7_leakage.py` |
+| 泄漏与只读扫描 | 12 个 V7 源文件、68 份 V7 文档通过 | `scripts/check_v7_leakage.py` |
 | 24 图运行时 | **未实现**；调用 `compute_metrics` 抛 `NotImplementedError` | 单测固定 |
 | 人工审阅 | **已完成**；30 卡为 `human_approved`（用户 2026-10-17 确认） | front-matter + 验收脚本 |
-| 真实模型 V7 结果 | **已有一次不完整 pilot**：10 局启动、9 局完整、1 局 `unknown_provider_spend`、2 局未启动；不构成主实验 | `pilot-001-report.md`；另见 V6 trace post-hoc `real-trace-rescore.md` |
+| 真实模型 V7 结果 | **已有一次不完整 pilot 和一次 12/12 完整重跑**：Pilot-001 为 10 启动 / 9 完整 / 1 中断 / 2 未启动；Pilot-001R 在独立新账本上 12/12 完整，CNY `0.08521648`。两者均为 E3-pilot，不构成主实验 | `pilot-001-report.md`、`pilot-001r-report.md`；另见 V6 trace post-hoc `real-trace-rescore.md` |
 
 ## 2. 交付物
 
@@ -38,6 +38,7 @@ docs/v7/
   real-trace-rescore.md
   pilot-001-registration.md
   pilot-001-report.md
+  pilot-001r-report.md
   maps/MAP-01.md … MAP-30.md
   pending-runtime/README.md
   pending-runtime/MAP-01.md … MAP-29.md（24 张设计态图，跳过 08/16/18/22/26/30）
@@ -235,7 +236,7 @@ processed 2 trace(s): 1 computed, 1 design_only, 0 invalid_trace.
 ## 7. 未完成与限制
 
 1. **24 张设计图没有运行时。** 它们的 110 条指标只是注册与设计卡，`compute_metrics` 会拒绝计算。接入门槛见 `pending-runtime/MAP-XX.md` 与总表 `pending-runtime/README.md`。
-2. **没有新的真实模型 V7 主实验。** 本报告不包含任何按 V7 指标比较模型的结论；六图数值来自确定性求解器回放。已有 V6 MiMo 47 局真实 trace 的 post-hoc V7 复算单独记录在 `real-trace-rescore.md`；随后执行的 V7 Pilot-001 在 9 局完整后因 `unknown_provider_spend` 停止，单独记录在 `pilot-001-report.md`，也不构成主实验。
+2. **没有新的真实模型 V7 主实验。** 本报告不包含任何按 V7 指标比较模型的结论；六图数值来自确定性求解器回放。已有 V6 MiMo 47 局真实 trace 的 post-hoc V7 复算单独记录在 `real-trace-rescore.md`；V7 Pilot-001 在 9 局完整后因 `unknown_provider_spend` 停止，记录在 `pilot-001-report.md`；同一矩阵在独立新账本上的 12/12 完整重跑记录在 `pilot-001r-report.md`。两者均为单 seed、每条件 1 局的 E3-pilot，不构成主实验。
 3. **人工审阅已记录。** 30 张卡的 `review_status` 为 `human_approved`（用户 2026-10-17 确认）；执行模型没有代签。V6 的 29 个实例状态未改变。
 4. **V6 结果未被改写。** 本轮的 29 次回放是新生成的离线 trace，不覆盖 `runs/v6` 或既有账本。
 5. **冲突只登记，不改规则。** `V7-DCR-001 … 012` 仍为 `proposed`；其中 MAP-20 旁路损耗、MAP-20 成功阈值、MAP-25 原因码、MAP-21 动作字段、MAP-27 冲突码等仍需设计侧确认。

@@ -1,6 +1,7 @@
 # V7 Pilot-001 执行报告（按停止规则封账）
 
 > 状态：**stopped / 未完成 12 局**。12 局预登记中，10 局启动、9 局完整结束、1 局因 provider 连接错误中断、2 局未启动。
+> 后续：同一 12 局矩阵已在独立新账本上完成 **Pilot-001R 12/12**，见 [`pilot-001r-report.md`](pilot-001r-report.md)。本文件保留首次中断运行的原始记录，不回填、不改写。
 > 日期：2026-10-17。
 > 预登记：[`pilot-001-registration.md`](pilot-001-registration.md)。
 > 运行基底：V6 六图 runtime + V7 只读指标层；未修改 V4/V5/V6 规则、Action 契约、Trace 写出器或历史账本。
