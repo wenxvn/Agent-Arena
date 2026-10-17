@@ -1266,3 +1266,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 下一步：提交并推送本次五个相关文件。任何正式矩阵续跑仍须满足新的冻结、登记、预算和独立审查门禁；本次单次诊断及离线回归不构成续跑授权。
 
 关联提交：本次提交（提示词、回归测试与记录同一提交）。
+
+## 2026-10-17 V7 30 图分层能力评测离线层
+
+事件：按 `研究提纲/V7：30张地图分层能力评测与指标体系.md` 交付逐图能力构念、专属指标、确定性计分器与评测协议；6 张已有运行时的图落地 extractor，其余 24 图交付设计卡与运行时准入表。
+
+原因：V2–V6 的结果指标仍以通关率和步数为主，无法区分“移动预算内最优”“安全约束”“失败归因”和“成本”。V7 把这些量拆成逐图预登记、可由 trace 确定性复算的指标，同时保持历史资产只读。
+
+改动：新增只读层 `src/agent_arena/v7/metrics/`（`schema`、`common`、`references`、`registry`、六图独立 extractor），不修改 V4/V5/V6 环境、Action 契约、trace 写出器、prompt 或账本。注册 154 条 `MetricSpec`：6 图 44 条 implemented，24 图 110 条 design-only；design-only 图调用 `compute_metrics` 抛 `NotImplementedError`。交付 30 张 `docs/v7/maps/MAP-XX.md`、`pending-runtime/README.md`、`measurement-principles`、`difficulty-rubric`、`experiment-protocol`、`map-review-checklist`、`design-change-requests` 与 `validation-report`。指标缺失采用五态 `valid / not_applicable / censored / unavailable / invalid_trace`，不补 0。MAP-30 的 casebook 可见性歧义在 extractor 内用 judge 标志或 condition_id 区分，空 casebook 不再被误算为 0。
+
+验证：`.venv\Scripts\python.exe scripts\validate_v7_metrics.py` 通过，输出为 154 specs / 30 maps / 6 runtime-backed / 24 design-only / 29 solver episodes replayed offline；30 卡 front-matter 哈希与冻结 V4 源文件一致。V7 范围 `ruff check` 与 `ruff format --check` 通过；`mypy src/agent_arena/v7` 对 12 个源文件无问题；V7 定向 `pytest` 为 49 passed，全量 `pytest -q` 为 608 passed。六图回放使用 V6 求解器在真实 V4 环境执行，未调用 provider、未写 `runs/` 或账本。全仓 `ruff check .` 仍有 653 个既有错误，全部位于本轮未修改的 `worlds/v4/MAP-*/planning/*_audit.py`，未批量改写冻结审计脚本。
+
+边界：24 图仍无运行时；没有真实模型 V7 结果；30 卡维持 `pending_human_review`，V6 的 29 个实例状态不变；规则冲突只登记为 `V7-DCR-001 … 012`（proposed）。MAP-18 部分实例的故障在求解器完成交付后才出现，改线指标按预登记规则记 N/A，不把“未触发”记成“0 tick 恢复”。
+
+下一步：按 `pending-runtime/README.md` 逐图接入运行时；优先处理 MAP-18 故障绑定、MAP-26 恢复条件与 MAP-30 记忆条件的指标稳定性，再由人工复核 DCR 与 30 张卡。
+
+关联提交：待提交。

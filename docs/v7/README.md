@@ -1,0 +1,76 @@
+# V7：30 张地图的分层能力测量
+
+V7 只做一件事：把“地图是否通关”拆成**逐图预登记、可由 trace 确定性复算**的能力、约束、失败归因与成本指标，并把可运行地图的指标真正实现成离线 extractor。
+
+V7 **不**修改 V2/V4/V5/V6 的规则、Action/Observation/Trace、Oracle、账本或注册表；**不**调用付费 API；**不**把设计态地图说成已实现。
+
+## 当前状态
+
+| 项目 | 数量 | 状态 |
+|---|---|---|
+| 逐图手工指标卡 | 30 | 已交付（`maps/MAP-01.md` … `MAP-30.md`） |
+| 设计态运行时说明 | 24 | 已交付（`pending-runtime/README.md` 单表 + 逐图阻塞项） |
+| 可运行指标 extractor | 6 | 已实现（MAP-08/16/18/22/26/30） |
+| 注册指标 | 154 | 6 图 44 条 + 24 图 110 条（`MetricSpec`） |
+| 人工审阅 | 30 | `pending_human_review`（DeepSeek 不代签） |
+| 真实 API | 0 次新增 | 默认全离线 |
+
+## 文件地图
+
+```text
+docs/v7/
+  README.md                    本文件
+  source-audit.md              Batch 0 仓库与 30 图事实审计
+  measurement-principles.md    四类指标、状态、事件契约、比较层级
+  difficulty-rubric.md         六维设计向量与 30 图定位
+  experiment-protocol.md       预注册、样本单位、预算、统计与报告规范
+  map-review-checklist.md      六项人工复核清单（不代签）
+  design-change-requests.md    V7-DCR 清单（proposed，未改规则）
+  maps/MAP-01.md … MAP-30.md   逐图设计卡（权威细节）
+  pending-runtime/README.md     24 张无运行时地图的准入表与逐图阻塞项
+  validation-report.md         本轮真实命令、测试结果、限制
+
+src/agent_arena/v7/metrics/
+  schema.py                    MetricSpec / MetricValue / TraceRecord
+  common.py                    共享派生量（比率、熵、合法动作、截尾）
+  references.py                六图离线裁判常量（不进 prompt）
+  map08.py … map30.py          六图独立 extractor
+  registry.py                  30 图注册表与 compute_metrics 入口
+
+scripts/validate_v7_metrics.py 30 卡/注册表/六图 fixture 机器验收
+scripts/report_v7_metrics.py   从 V6 episode 目录离线生成 V7 指标表
+tests/test_v7_metrics.py       schema/common/registry/文档验收测试
+tests/test_v7_map_metrics.py   六图真实环境回放 fixture 指标测试
+```
+
+## 快速开始（离线）
+
+```powershell
+# 全部 V7 测试
+.venv\Scripts\python.exe -m pytest tests/test_v7_metrics.py tests/test_v7_map_metrics.py -q
+
+# 30 卡 + 注册表 + 六图 fixture 验收
+.venv\Scripts\python.exe scripts\validate_v7_metrics.py
+
+# 对已有 V6 episode 目录复算（不调用模型）
+.venv\Scripts\python.exe scripts\report_v7_metrics.py runs\v6\experiments\<id>\episodes\<episode>
+```
+
+`scripts/report_v7_metrics.py` 只读 `agent_trace.jsonl` 与可选的 `judge_metrics.json`；不启动环境、不调用 provider、不写账本。
+
+## 设计边界
+
+1. **不是 30 份同一模板**：每张卡有独立构念、公式、分母、反例、边界与同世界差异；注册表只共享类型与算术。
+2. **不是跨世界总分**：默认不发布单一总分；30 图矩阵按世界/能力/难度分面展示。
+3. **难度不是长度**：每图记录 `(可见性, 依赖深度, 事件动态性, 资源耦合, 记忆跨度, 分支复杂度)` 六维设计向量。
+4. **指标不替代结果**：结果、能力、安全、过程四类分开；安全违例不能被效率收益抵消。
+5. **缺失值不是 0**：`valid / not_applicable / censored / unavailable / invalid_trace` 五态显式记录。
+6. **私有真值只用于离线裁判**：`true_leak`、`fault_part`、案情真凶等只进入 extractor，不进入 prompt、公开 Observation、公开日志或报告表格。
+7. **历史不可改写**：V6 29 个实例仍为 `pending_human_review`；V7 不重写 V6 trace，也不关闭或新建账本。
+
+## 本轮不包含
+
+- 24 张设计图的运行时、Agent 行为或真实模型结果。
+- 任何新的付费 API 调用或预算登记。
+- 任何地图规则修改；发现冲突只写 `V7-DCR-*`。
+- 人工审阅签署；所有卡的 `review_status` 保持 `pending_human_review`。

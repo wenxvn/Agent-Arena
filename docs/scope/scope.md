@@ -29,6 +29,7 @@
 | 18 | 旧三世界重制图：去换皮，新 10×3 矩阵 | Research Core | done |
 | 19 | V3 主题世界：10 家族 × 3 难度 × 30 手工关卡 | Research Core | done |
 | 20 | V5 六图运行时与能力测量 | Research Core | in-progress |
+| 21 | V7 30 图分层能力指标离线层 | Research Core | done（离线层） |
 
 ## Foundation
 
@@ -146,6 +147,18 @@ A 至 E 保留早期交付清单与当时待办；当前阶段以本文 V2 门�
 - [ ] 对已出现差异的配对增加重复次数；下一次付费矩阵需新预算登记。
 
 细节见 `docs/specs/0019-v6-measurement-validity.md` 与 `docs/v6/`。
+
+### 0.1 V7 30 图分层能力指标（离线层已完成）
+
+- [x] 30 张逐图指标卡：每图独立构念、≥1 核心连续指标、≥1 安全/约束指标、≥1 失败归因、≥1 成本指标，附手算样例、反例与边界。
+- [x] 只读注册表 `src/agent_arena/v7/metrics/`：154 条 `MetricSpec`，6 图 44 条 implemented + 24 图 110 条 design-only；缺失五态，design-only 调用抛 `NotImplementedError`。
+- [x] 六图 extractor 与 29 个 V6 实例离线回放：全部成功复算，无 `invalid_trace` / `unavailable`。
+- [x] 验收脚本、报告脚本、49 项测试、难度向量、实验协议、人工复核清单与 DCR 登记。
+- [ ] 24 图运行时接入（逐图阻塞项见 `docs/v7/pending-runtime/README.md`）。
+- [ ] 人工复核 30 卡与 `V7-DCR-001 … 012`；当前全部 `pending_human_review` / `proposed`。
+- [ ] 真实模型 V7 实验；本轮 0 次新 API 调用、0 个新账本。
+
+细节见 `docs/v7/validation-report.md` 与 `docs/v7/maps/`。
 
 ### A. 原计划尚未完成
 
@@ -336,6 +349,7 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 十世界三十图矩阵及 9 张重制图已完成；flex pilot 与 seeded 共 45 局成功，详见 §K、§L 和 `docs/research/v1/08-cross-task-and-e1.md`。只读 Streamlit 研究回放 MVP 已提供，完整交互式实验界面仍属 Release 3。
 V3 30 个 Scenario 的离线实现与验收已完成，见第 19 项；真实模型对照仍须独立设计和登记。
 V4 的 30 张地图已完成逐图设计与离线固定轨迹审计，当前均为 `DESIGN_COMPLETE_PENDING_RUNTIME`；运行时工作在第 20 项，不能从设计或Oracle推出模型能力结论。
+V7 只读指标层已完成离线交付（6 图 44 条 + 24 图 110 条）；下一步是 24 图运行时接入、30 卡人工复核与 DCR 处置，不能把设计态指标或求解器回放当作模型能力结论。
 当前研究缺口：seeded v3 的 90/30 布局全集和程序性 dev/test holdout 已冻结，两个运行时 selector 与 120 个实例 hash 全匹配；模型行为评估待 S2 matched-pilot Gate，通过前不能启动在线矩阵。
 
 ## V1 研究提纲执行状态（2026-10-11，S0–S1 完成，S2–S6 部分）

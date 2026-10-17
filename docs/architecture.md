@@ -57,6 +57,12 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 - Runner 根据显式 `world_version` 选择 `legacy_v1` 或 `scenario_v3` Action contract；V3 Episode Trace 以可选字段保留兼容读取，提交答案在持久化 Trace 中脱敏。UI 只显示 Trace 中已保存的公开数据。
 - V3 当前 ReactAgent 使用版本化 `prompts/react_scenario_v3.txt`。候选动作、Memory/Planning 的未声明 V3 行为会被拒绝；离线 Oracle 只用于确定性验收，真实 Provider 对照须另立实验。
 
+## V7 指标层边界
+
+- `src/agent_arena/v7/metrics/` 是只读评测层：输入是已持久化 Episode Trace 与可选离线 judge artefact，输出是带五态状态的 `MetricValue`；不启动环境、不调用 Provider、不写账本。
+- 六张已有运行时的地图各自实现独立 extractor；跨图共享仅限 `schema.py`、`common.py` 的算术和 `references.py` 的冻结离线常量，不共享同一评分公式。
+- 24 张设计态地图只注册 `MetricSpec`（`implemented=False`），`compute_metrics` 必须抛 `NotImplementedError`；缺失、截尾、不适用和非法 trace 不得补 0。
+
 ## 更新规则
 
 - 新功能开始前先读取本文件和对应 spec，再读取相关代码。
