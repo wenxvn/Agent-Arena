@@ -9,7 +9,9 @@ source_commit: 766ec82529d4ee2499dde9592452eb68592f4637
 source_map_spec_hash: b7b9c6716d57f34ebb5e1512465290a308b1cf14892ec807b0369eb04842105d
 source_design_hash: f2ec9e0092d138bc8252090f153db9ea992775cf1ca5599de5ecd57f35ef5086
 design_status: DESIGN_COMPLETE_PENDING_RUNTIME
-review_status: pending_human_review
+review_status: human_approved
+reviewed_at: 2026-10-17
+reviewed_by: human
 runtime_status: design_only
 metric_status: registered_design
 ```

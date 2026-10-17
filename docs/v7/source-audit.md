@@ -397,7 +397,7 @@ V7 的 extractor 只读这两类文件；找不到的字段返回 `UNAVAILABLE`�
 13. **MAP-27**：部分完成是否算成功未明确；V7 拆分为完成率与关键路径。
 14. **MAP-30**：完整调查与纯召回必须分报；`history_full` 的 V5/V6 冲突是单局噪声，不构成结论。
 
-以上 14 项中，第 1、2、3、5、6、7、8、9、10、11、13 项进入 V7 设计卡与 `design-change-requests.md` 的待决清单；第 4 项引用既有 DCR；第 12、14 项在运行时接入前保持 `pending_human_review`。
+以上 14 项中，第 1、2、3、5、6、7、8、9、10、11、13 项进入 V7 设计卡与 `design-change-requests.md` 的待决清单；第 4 项引用既有 DCR；第 12、14 项在运行时接入前保持 design-only。30 张设计卡已于 2026-10-17 由用户复核，记录为 `human_approved`。
 
 ## 6. 本轮不做什么
 
@@ -406,7 +406,7 @@ V7 的 extractor 只读这两类文件；找不到的字段返回 `UNAVAILABLE`�
 - 不调用付费 API，不新建预算账本。
 - 不修改 V4 规则；发现规则冲突先写 DCR。
 - 不把 `DESIGN_COMPLETE_PENDING_RUNTIME` 解释为 runtime validated。
-- 所有地图的 `review_status` 保持 `pending_human_review`；DeepSeek 只做 `self_review` 与 `second_pass_check`。
+- 30 张设计卡的 `review_status` 已由用户复核记录为 `human_approved`；DeepSeek 只做 `self_review` 与 `second_pass_check`，未代签。
 
 ## 附录 A：完整规则哈希
 

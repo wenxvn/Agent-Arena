@@ -19,7 +19,7 @@
 | 指标合法范围 | 154 条 `MetricSpec` 全部带非空 `valid_range` | schema + 单测 |
 | 泄漏与只读扫描 | 12 个 V7 源文件、65 份 V7 文档通过 | `scripts/check_v7_leakage.py` |
 | 24 图运行时 | **未实现**；调用 `compute_metrics` 抛 `NotImplementedError` | 单测固定 |
-| 人工审阅 | **未进行**；30 卡保持 `pending_human_review` | front-matter + 验收脚本 |
+| 人工审阅 | **已完成**；30 卡为 `human_approved`（用户 2026-10-17 确认） | front-matter + 验收脚本 |
 | 真实模型 V7 结果 | **无新的 V7 API 主实验**；已有 V6 MiMo 47 局 trace 的 post-hoc 复算见 `real-trace-rescore.md` | 47/47 trace 可计算，0 次新增 API |
 
 ## 2. 交付物
@@ -233,7 +233,7 @@ processed 2 trace(s): 1 computed, 1 design_only, 0 invalid_trace.
 
 1. **24 张设计图没有运行时。** 它们的 110 条指标只是注册与设计卡，`compute_metrics` 会拒绝计算。接入门槛见 `pending-runtime/MAP-XX.md` 与总表 `pending-runtime/README.md`。
 2. **没有新的真实模型 V7 主实验。** 本报告不包含任何按 V7 指标比较模型的结论；六图数值来自确定性求解器回放。已有 V6 MiMo 47 局真实 trace 的 post-hoc V7 复算单独记录在 `real-trace-rescore.md`，它是二次分析，不是预注册的 V7 API 实验。
-3. **没有人工审阅。** 30 张卡的 `review_status` 全部是 `pending_human_review`，V6 的 29 个实例状态未改变。
+3. **人工审阅已记录。** 30 张卡的 `review_status` 为 `human_approved`（用户 2026-10-17 确认）；执行模型没有代签。V6 的 29 个实例状态未改变。
 4. **V6 结果未被改写。** 本轮的 29 次回放是新生成的离线 trace，不覆盖 `runs/v6` 或既有账本。
 5. **冲突只登记，不改规则。** `V7-DCR-001 … 012` 仍为 `proposed`；其中 MAP-20 旁路损耗、MAP-20 成功阈值、MAP-25 原因码、MAP-21 动作字段、MAP-27 冲突码等仍需设计侧确认。
 6. **MAP-18 的故障在部分实例不绑定。** 指标按预登记规则给出 N/A，不把“没触发”误记为“恢复得 0 tick”。

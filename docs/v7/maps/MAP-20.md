@@ -9,7 +9,9 @@ source_commit: 766ec82529d4ee2499dde9592452eb68592f4637
 source_map_spec_hash: e35ac16b9e02881753f19a39438eafd5da2d38b6432c4c8f16bdd3679d51797e
 source_design_hash: 6c306808efd61d0b11f4dda5aafc0eb999b8c733d4325d38d16091e8aaf159c8
 design_status: DESIGN_COMPLETE_PENDING_RUNTIME
-review_status: pending_human_review
+review_status: human_approved
+reviewed_at: 2026-10-17
+reviewed_by: human
 runtime_status: design_only
 metric_status: registered_design
 ```
@@ -96,4 +98,4 @@ D=(1,2,0,3,1,2)。相对 MAP-19 提升 **D↑（两阶段分配：直供→旁�
 - `source-audit.md` 的机制摘要写旁路“10% 损耗”，而 `DESIGN.md` 与 `map_spec.yaml` 均写 **20%**（下游收 4/5）。本卡按 20% 计算；接入前必须确认哪一处是权威，避免所有流量账偏差。
 - `safe_node_ticks` 的熔断 tick 是否进分母未冻结；两种口径会在失败局产生 1 tick 差异，接入前必须固定。
 - 精确温度在私有字段（`V7-DCR-010`）；指标口径需声明“裁判精确值”还是“带下界”。
-- 无运行时、无真实模型结果；所有数值为纸面/离线审计值。状态 `pending_human_review`。
+- 无运行时、无真实模型结果；所有数值为纸面/离线审计值。状态 `human_approved`。

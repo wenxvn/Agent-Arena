@@ -9,7 +9,9 @@ source_commit: 766ec82529d4ee2499dde9592452eb68592f4637
 source_map_spec_hash: da028ad6bd76a751b9cfacf0c13a2b7cdada0d697d19fa604c6d01ce1e4fa339
 source_design_hash: 259ab66b150fcbc42b174ba6e006aa859b5fbccfabde6312df51e52bafb3f978
 design_status: DESIGN_COMPLETE_PENDING_RUNTIME
-review_status: pending_human_review
+review_status: human_approved
+reviewed_at: 2026-10-17
+reviewed_by: human
 runtime_status: design_only
 metric_status: registered_design
 ```
@@ -97,4 +99,4 @@ D=(1,3,1,3,2,3)。相对 MAP-16 提升 **D↑（多阶段调度链）与 R↑（
 - 运行时实现前需固定 `stop` 的 `transfer_manifest` 语义（设计文档写“换乘至少等 1 tick”，但两份参照表均不使用换乘），否则 `cumulative_wait_person_ticks` 的分母口径会漂移。
 - `energy_per_passenger` 在 `delivered=0` 时为 N/A；需在运行时确认 `0/0` 不会被写成 0。
 - V4 设计未定义“同 tick 同向双车占 B-C”的独立失败码（目前并入 `SHARED_SEGMENT_CONFLICT`）；V7 记录为 `V7-DCR` 候选，不改规则。
-- 无运行时、无真实模型结果；本卡所有数值为**纸面/离线审计值**，不构成能力结论。状态保持 `pending_human_review`。
+- 无运行时、无真实模型结果；本卡所有数值为**纸面/离线审计值**，不构成能力结论。状态保持 `human_approved`。

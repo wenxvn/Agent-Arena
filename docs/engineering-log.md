@@ -1314,3 +1314,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 下一步：先完成 30 卡人工冻结与 DCR 裁定；若要跑新的 V7 真实实验，再单独登记六图多实例配对矩阵、预算上限和停止规则，不在当前状态下直接调用 API。
 
 关联提交：本次提交。
+
+## 2026-10-17 V7 30 卡人工复核记录
+
+事件：用户明确表示已复核 V7 的 30 张逐图指标卡；据此把 30 张卡的 `review_status` 从 `pending_human_review` 更新为 `human_approved`，并记录 `reviewed_at: 2026-10-17`、`reviewed_by: human`。
+
+原因：V7 协议要求人工复核不得由执行模型代签。此前 `pending_human_review` 是初始离线层的唯一人工门禁；用户确认后，应把复核事实写入卡片与验收文档，而不是继续停留在待审状态。
+
+改动：更新 `docs/v7/maps/MAP-01.md … MAP-30.md` 的 front matter 与相关正文状态；更新 `map-review-checklist.md`、`README.md`、`validation-report.md`、`self-review.md`、`source-audit.md`、`experiment-protocol.md`、`real-trace-rescore.md`、`AGENTS.md` 与 `docs/scope/scope.md`。`scripts/validate_v7_metrics.py` 接受 `pending_human_review` 或 `human_approved`。12 条 `V7-DCR` 仍保持 `proposed`，只把“已复核”与“规则变更已批准”分开记录。
+
+验证：`scripts/validate_v7_metrics.py` 通过（154 specs / 30 maps / 29 solver episodes）；`scripts/audit_v7_cards.py` 为 0 findings；`scripts/check_v7_leakage.py` 通过（12 源文件 / 65 文档）。
+
+边界：本次只记录人工复核，不修改任何 V4/V5/V6 规则、Oracle、账本、注册表或原始 trace；24 图仍无运行时；12 条 DCR 的规则变更仍未批准，继续作为对应地图运行时接入前的准入项。
+
+下一步：按 `docs/v7/pending-runtime/README.md` 推进 24 图运行时切片；DCR 在对应地图接入前逐条决定。
+
+关联提交：本次提交。

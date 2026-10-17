@@ -9,7 +9,9 @@ source_commit: 766ec82529d4ee2499dde9592452eb68592f4637
 source_map_spec_hash: 3c2e67f37b5de11bf388e476d78634bdee4b5b670bf5db759b82d74af9e6e378
 source_design_hash: c59ac4582d0743486b5cc9fc6f81527ca6ee93c3ede1728bce868fbb11d5cec4
 design_status: DESIGN_COMPLETE_PENDING_RUNTIME
-review_status: pending_human_review
+review_status: human_approved
+reviewed_at: 2026-10-17
+reviewed_by: human
 runtime_status: design_only
 metric_status: registered_design
 ```
@@ -96,4 +98,4 @@ D=(3,2,1,1,2,3)。相对 MAP-28 提升 **V↑（证词不可靠且有偏差类�
 - `contradiction_detection_rate` 的分母 2 是否应随“实际可比对的矛盾”变化：若 Agent 从未听到乙的地点，乙的矛盾不可检测，固定分母会低估；本卡按“本局可检测数”应为 2（两条都可听到），但需运行时确认。
 - `single_witness_trust` 与 `evidence_supported_testimony_ratio` 在 F02 上可能重叠计数；需固定“采信”的操作定义（提交字段 vs 比对记录）。
 - `UNKNOWN` 的渲染必须与“不知道”一致，不能暗示隐瞒；否则会把丙误标为不可靠。
-- 无运行时、无真实模型结果；所有数值为纸面审计值。状态 `pending_human_review`。
+- 无运行时、无真实模型结果；所有数值为纸面审计值。状态 `human_approved`。

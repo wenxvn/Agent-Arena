@@ -9,7 +9,9 @@ source_commit: 766ec82529d4ee2499dde9592452eb68592f4637
 source_map_spec_hash: b31e01f7dff799262c3aa6ae3e1902d44d7b1de40ba2adcf0111d2bb2d4d3c09
 source_design_hash: dd3dd1dbf97c713e6b8cd9d43a01a341ce8b4f83e562f7310247ce951804a266
 design_status: DESIGN_COMPLETE_PENDING_RUNTIME
-review_status: pending_human_review
+review_status: human_approved
+reviewed_at: 2026-10-17
+reviewed_by: human
 runtime_status: design_only
 metric_status: registered_design
 ```
@@ -95,4 +97,4 @@ D=(1,3,2,3,2,3)。相对 MAP-26 提升 **D↑（长程多阶段：救援/中继/
 - `critical_path_delay` 的参考值 20 来自手写方案 B，不是求解器最优；若未来有 BFS/整数规划最优，应替换并版本化。
 - `map27.resource_conflicts` 的公式含 `RESOURCE_CONFLICT`，但 `map_spec` 只列 `CARGO_CAPACITY_EXCEEDED` 等具体码；接入前需确认是否存在统一 `RESOURCE_CONFLICT`，否则只计货舱溢出。
 - 黑屏 tick 与完成 tick 不是同向指标（A 黑屏短但慢），报告不得合成单一“效率分”。
-- 无运行时、无真实模型结果；所有数值为纸面资源账。状态 `pending_human_review`。
+- 无运行时、无真实模型结果；所有数值为纸面资源账。状态 `human_approved`。

@@ -9,7 +9,9 @@ source_commit: 766ec82529d4ee2499dde9592452eb68592f4637
 source_map_spec_hash: 50ee8a132fc079b1f8f09cba0b508a901d5a948078af5f0b1ca72dcdcfc94bf1
 source_design_hash: 9883b7e893339d853261dc664c61ccb27b86296927962e129084e2d5d65e3b43
 design_status: DESIGN_COMPLETE_PENDING_RUNTIME
-review_status: pending_human_review
+review_status: human_approved
+reviewed_at: 2026-10-17
+reviewed_by: human
 runtime_status: design_only
 metric_status: registered_design
 ```
@@ -94,4 +96,4 @@ D=(1,1,1,2,1,1)。本世界基线：单回路时滞 + 单一共享资源（总�
 
 - `V7-DCR-010`：精确温度在私有字段，超阈面积存在“裁判精确值”与“带下界”两种口径，运行时 extractor 必须声明使用哪一种。
 - `COOLANT_EXHAUSTED` 在 `map_spec` 失败码中存在，但设计文档未给出触发条件（总阀量超预算只是整条拒绝）；接入前需确认该码是否可达，否则 `map19.coolant_exhausted` 恒 0，应改报 `UNAVAILABLE`。
-- 无运行时、无真实模型结果；所有数值为纸面回放值。状态 `pending_human_review`。
+- 无运行时、无真实模型结果；所有数值为纸面回放值。状态 `human_approved`。

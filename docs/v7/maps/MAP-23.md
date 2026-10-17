@@ -9,7 +9,9 @@ source_commit: 766ec82529d4ee2499dde9592452eb68592f4637
 source_map_spec_hash: 6553f77fa05248f995615ff1cd0dd47b5399d2ec02c59f6d6e8e68120aaec952
 source_design_hash: ee791a8edff4f2ecb2e47b331fbaaa43ec9478287a11ad09a4b503fbfbeea8f9
 design_status: DESIGN_COMPLETE_PENDING_RUNTIME
-review_status: pending_human_review
+review_status: human_approved
+reviewed_at: 2026-10-17
+reviewed_by: human
 runtime_status: design_only
 metric_status: registered_design
 ```
@@ -96,4 +98,4 @@ D=(3,2,1,3,2,3)。相对 MAP-22 提升 **D↑（先侦察再调查的两阶段�
 - `supplies_spent` 的净消耗 vs 毛支出口径未在 `map_spec` 冻结；本卡采用净消耗，运行时必须二选一并固定，否则 `cost_per_discovery` 会相差一倍以上。
 - `repeated_invalid_exploration` 在 V4 三条失败轨迹中都为 0（它们是补给耗尽，不是重复排查）；需要一个专门用例（二次调查已排除入口）来证明该指标可达非零。
 - `SUPPLY_STRANDED` 的判定依赖“所有动作都不可负担”，`mark` 零成本仍可执行但不推进；运行时需确认不会因此死循环。
-- 无运行时、无真实模型结果；所有数值为纸面枚举值。状态 `pending_human_review`。
+- 无运行时、无真实模型结果；所有数值为纸面枚举值。状态 `human_approved`。

@@ -14,7 +14,7 @@ V7 **不**修改 V2/V4/V5/V6 的规则、Action/Observation/Trace、Oracle、账
 | 六图手工校验 | 36 | 6 图 × 6 条真实环境重放，覆盖成功/失败/边界/截尾 |
 | 注册指标 | 154 | 6 图 44 条 + 24 图 110 条（`MetricSpec`，全部带 `valid_range`） |
 | 泄漏与只读扫描 | 12 源 / 65 文档 | 通过 |
-| 人工审阅 | 30 | `pending_human_review`（DeepSeek 不代签） |
+| 人工审阅 | 30 | `human_approved`（用户 2026-10-17 确认复核；DeepSeek 未代签） |
 | 已有 MiMo trace 复算 | 47 | V6 真实 trace 的 post-hoc V7 二次分析（`real-trace-rescore.md`） |
 | 新增付费 API | 0 次 | 默认全离线；未登记新的 V7 API 实验 |
 
@@ -87,4 +87,4 @@ tests/test_v7_cards.py        30 卡结构自审测试
 - 24 张设计图的运行时、Agent 行为或真实模型结果。
 - 任何新的付费 API 调用或预算登记。
 - 任何地图规则修改；发现冲突只写 `V7-DCR-*`。
-- 人工审阅签署；所有卡的 `review_status` 保持 `pending_human_review`。
+- 24 图运行时接入；30 卡已由用户复核并记录为 `human_approved`，但这不等于 24 图已可运行。

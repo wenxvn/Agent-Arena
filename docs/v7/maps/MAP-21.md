@@ -9,7 +9,9 @@ source_commit: 766ec82529d4ee2499dde9592452eb68592f4637
 source_map_spec_hash: eb8eb1f9ae8846fc57884f4850f99fb0ae19383368f832794074b1e4e4049aee
 source_design_hash: f24289ecbad95b18d3770013106d63e07cd4cf7b3533a25b66d59f4085af461e
 design_status: DESIGN_COMPLETE_PENDING_RUNTIME
-review_status: pending_human_review
+review_status: human_approved
+reviewed_at: 2026-10-17
+reviewed_by: human
 runtime_status: design_only
 metric_status: registered_design
 ```
@@ -97,4 +99,4 @@ D=(3,2,3,2,2,3)。相对 MAP-20 提升 **V↑（喷发时刻隐藏，仅有噪�
 - `map21.false_safety_claims` 在现有动作集中不可触发，`FALSE_SAFETY_CLAIM` 原因码也不在 `reason_codes` 中；需人工决定是新增“安全承诺”动作，还是把该 metric 标为 UNAVAILABLE（不得报假 0）。
 - 风险积分的 `risk_t` 采用“公开后验的累积概率”；若运行时后验字段不可用，需退化为仅用原始信号重算，并标明口径。
 - `evacuation_coverage` 的分母随“是否采样品/是否测量”变化，跨策略比较时须同时报分母。
-- 无运行时、无真实模型结果；四策略期望值为纸面全枚举。状态 `pending_human_review`。
+- 无运行时、无真实模型结果；四策略期望值为纸面全枚举。状态 `human_approved`。

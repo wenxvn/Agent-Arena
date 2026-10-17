@@ -9,7 +9,9 @@ source_commit: 766ec82529d4ee2499dde9592452eb68592f4637
 source_map_spec_hash: d75b3643587b4301ff7f5f3873f8cf16d0e8a523498139521e5f49bdaa9e99f4
 source_design_hash: cba4a5035a7a6fa9e866a416c73150be5f940334ca698decabdb47ff9fb21a2e
 design_status: DESIGN_COMPLETE_PENDING_RUNTIME
-review_status: pending_human_review
+review_status: human_approved
+reviewed_at: 2026-10-17
+reviewed_by: human
 runtime_status: design_only
 metric_status: registered_design
 ```
@@ -94,4 +96,4 @@ D=(2,2,0,0,2,2)。本世界基线：短证据链 + 双来源独立性；无隐�
 
 - `map28.unsupported_accusations` 的公式写“without two sources”，但未说明是“任一字段不足”还是“全部字段不足”；本卡按“任一字段不足即计 1 次”定义，需在运行时冻结。
 - `time_contradictions` 需要“被已记录证据排除”的判定表；若 Agent 未记录锁芯日志，21:15 是否算矛盾取决于证词窗口（21:13–21:15 含端点），边界需明确定义。
-- 无运行时、无真实模型结果；所有数值为纸面调查账。状态 `pending_human_review`。
+- 无运行时、无真实模型结果；所有数值为纸面调查账。状态 `human_approved`。

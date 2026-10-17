@@ -155,9 +155,10 @@ A 至 E 保留早期交付清单与当时待办；当前阶段以本文 V2 门�
 - [x] 六图 extractor 与 29 个 V6 实例离线回放：全部成功复算，无 `invalid_trace` / `unavailable`。
 - [x] 六图 36 条真实环境手算轨迹（每图 6 条，覆盖成功/失败/边界/截尾/N/A）与 154 条 `MetricSpec.valid_range`。
 - [x] 验收脚本、报告脚本、结构自审脚本、泄漏扫描脚本、90 项 V7 测试、难度向量、实验协议、人工复核清单与 DCR 登记。
+- [x] 人工复核 30 卡：2026-10-17 用户确认，全部记录为 `human_approved`。
+- [x] `V7-DCR-001 … 012` 已逐条复核登记；规则变更仍保留为对应地图运行时接入前的准入项，未私改 V4 规则。
 - [ ] 24 图运行时接入（逐图阻塞项见 `docs/v7/pending-runtime/MAP-XX.md` 与总表 `README.md`）。
-- [ ] 人工复核 30 卡与 `V7-DCR-001 … 012`；当前全部 `pending_human_review` / `proposed`。
-- [ ] 真实模型 V7 实验；本轮 0 次新 API 调用、0 个新账本。
+- [ ] 真实模型 V7 主实验；已有 V6 MiMo 47 局 trace 的 post-hoc 复算，但没有新的预注册 V7 API 矩阵。
 
 细节见 `docs/v7/validation-report.md` 与 `docs/v7/maps/`。
 
@@ -350,7 +351,7 @@ Done when: 反思触发次数、输入摘要和后续动作可追踪，并能证
 十世界三十图矩阵及 9 张重制图已完成；flex pilot 与 seeded 共 45 局成功，详见 §K、§L 和 `docs/research/v1/08-cross-task-and-e1.md`。只读 Streamlit 研究回放 MVP 已提供，完整交互式实验界面仍属 Release 3。
 V3 30 个 Scenario 的离线实现与验收已完成，见第 19 项；真实模型对照仍须独立设计和登记。
 V4 的 30 张地图已完成逐图设计与离线固定轨迹审计，当前均为 `DESIGN_COMPLETE_PENDING_RUNTIME`；运行时工作在第 20 项，不能从设计或Oracle推出模型能力结论。
-V7 只读指标层已完成离线交付（6 图 44 条 + 24 图 110 条，六图各 6 条手算 fixture）；下一步是 24 图运行时接入、30 卡人工复核与 DCR 处置，不能把设计态指标或求解器回放当作模型能力结论。
+V7 只读指标层已完成离线交付（6 图 44 条 + 24 图 110 条，六图各 6 条手算 fixture），30 卡已由用户复核记录为 `human_approved`；下一步是 24 图运行时接入与 DCR 规则决策，不能把设计态指标、求解器回放或 V6 trace 的 post-hoc 复算当作新的 V7 模型能力结论。
 当前研究缺口：seeded v3 的 90/30 布局全集和程序性 dev/test holdout 已冻结，两个运行时 selector 与 120 个实例 hash 全匹配；模型行为评估待 S2 matched-pilot Gate，通过前不能启动在线矩阵。
 
 ## V1 研究提纲执行状态（2026-10-11，S0–S1 完成，S2–S6 部分）

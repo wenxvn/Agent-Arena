@@ -9,7 +9,9 @@ source_commit: 766ec82529d4ee2499dde9592452eb68592f4637
 source_map_spec_hash: eacb2d29835b0bd0c0ee95c25f5b77ae40315b5d51bda7bf10c5bc276b1d32e6
 source_design_hash: 2c788c3f6b491c3ade654cb5bd02c4d591c7d2a1521924b04e5bbffd741cf15f
 design_status: DESIGN_COMPLETE_PENDING_RUNTIME
-review_status: pending_human_review
+review_status: human_approved
+reviewed_at: 2026-10-17
+reviewed_by: human
 runtime_status: design_only
 metric_status: registered_design
 ```
@@ -96,4 +98,4 @@ D=(2,3,3,2,2,3)。相对 MAP-23 提升 **D↑（多阶段：取两件物资 + �
 - `route_cost_ratio` 的分母依赖“当前潮窗约束下的最短路”，但潮窗相位是 seed 私有；运行时必须用**公开读数 + 已知周期**推导可行路，不能用私有相位。
 - `replanning_latency` 在“无需改路”的轨迹（山路策略）应为 N/A，需要一个专门用例固化，避免被误算成 0。
 - 设计文档中“过时笔记恢复”与“正常更新”的动作序号差（2 vs 3）已给出，但未注册为独立 metric；V7 不新增，避免与 latency 重复计数。
-- 无运行时、无真实模型结果；所有数值为纸面/离线审计值。状态 `pending_human_review`。
+- 无运行时、无真实模型结果；所有数值为纸面/离线审计值。状态 `human_approved`。

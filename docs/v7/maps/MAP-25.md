@@ -9,7 +9,9 @@ source_commit: 766ec82529d4ee2499dde9592452eb68592f4637
 source_map_spec_hash: f20327d215855561de9a7bafe075ca530e99724d83a79622bd1d97556f076b57
 source_design_hash: 533bd978e29b6c89122177f9694eb61cec1c7cfb01f08897c73e9a4205cb07b9
 design_status: DESIGN_COMPLETE_PENDING_RUNTIME
-review_status: pending_human_review
+review_status: human_approved
+reviewed_at: 2026-10-17
+reviewed_by: human
 runtime_status: design_only
 metric_status: registered_design
 ```
@@ -96,4 +98,4 @@ D=(1,2,0,1,1,1)。本世界基线：单 Agent、单线程、无事件；难度�
 
 - `map25.unsafe_eva_attempts` 与 `map25.oxygen_shortfall` 的注册表公式使用了不存在的码名（`EVA_BEFORE_SAFE`/`OXYGEN_SHORTFALL`），接入前必须映射到 `UNSUITED_EVA`+`UNSAFE_UNTETHERED_EVA` 与 `OXYGEN_DEPLETED`，否则指标恒 0。
 - `required_check_coverage` 的分母 7 是 V7 的定义（4 装备 + 2 检查 + 1 诊断）；若未来把“排压”也算必需步骤，分母会变，需版本化。
-- 无运行时、无真实模型结果；所有数值为纸面流程审计值。状态 `pending_human_review`。
+- 无运行时、无真实模型结果；所有数值为纸面流程审计值。状态 `human_approved`。

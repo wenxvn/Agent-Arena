@@ -181,8 +181,10 @@ def _check_cards(failures: list[str]) -> None:
                 failures.append(f"{map_id}: front matter missing {key}")
         if fields.get("map_id") != map_id:
             failures.append(f"{map_id}: front matter map_id mismatch")
-        if fields.get("review_status") != "pending_human_review":
-            failures.append(f"{map_id}: review_status must stay pending_human_review")
+        if fields.get("review_status") not in {"pending_human_review", "human_approved"}:
+            failures.append(
+                f"{map_id}: review_status must be pending_human_review or human_approved"
+            )
         has_runtime = map_id in EXPECTED_RUNTIME_COUNTS
         expected_runtime = "runtime" if has_runtime else "design_only"
         if fields.get("runtime_status") != expected_runtime:
