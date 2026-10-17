@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `b9201a539d66119baedf3cf9e6b6057b266b94e98ce5a564c740c0d2c0bd2560` |
 | rule_hash | `4aa810269535dad84ce3ad40f5d524edaabe084ab970085b851d0e6a8dd298b4` |
-| prompt_hash | `935f6be8553f24c252846fc50e90cd33bae8ce31f63ea50742b0dcc43da8d224` |
+| prompt_hash | `384ccc6cba165cd61e99aef961efcdb45feb4d71fb995e09a470b2c6904e5a8a` |
 | metric_schema_hash | `996b31a1abc646f81b338e3e11e25af4ae986d59be798dd93acf770c6fb46db3` |
 | oracle_hash | `aa308112628841678eb5b06d63da6d936b925d34e59dec3a73724261242f54e2` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -47,6 +47,8 @@ MAP-05｜三束信号：单路共享供电下的跨塔校准与窗口排程。
 - `wait`：`ticks`
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
+
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
 
 ## 5. 结算顺序、胜负与失败码
 
@@ -86,7 +88,13 @@ MAP-05｜三束信号：单路共享供电下的跨塔校准与窗口排程。
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | failure | False | SIGNAL_WINDOW_MISSED | 19 | 0.01176612 | `V8-MAP-05-R0-20261017T074657Z-ce0bf747` | `effective_signals`=0.0; `idle_ticks`=0; `missed_windows`=1; `power_overcommit`=0 |
+| 1 | failure | False | SIGNAL_WINDOW_MISSED | 20 | 0.01133772 | `V8-MAP-05-R1-20261017T074749Z-59117c83` | `effective_signals`=0.333333; `idle_ticks`=4; `missed_windows`=1; `power_overcommit`=0 |
+| 2 | failure | False | SIGNAL_WINDOW_MISSED | 19 | 0.01027484 | `V8-MAP-05-R2-20261017T074855Z-9656232d` | `effective_signals`=0.333333; `idle_ticks`=5; `missed_windows`=1; `power_overcommit`=0 |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -95,4 +103,4 @@ MAP-05｜三束信号：单路共享供电下的跨塔校准与窗口排程。
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `5/5`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

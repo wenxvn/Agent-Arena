@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `f7ed000d38c6c5d74b3d947bc314c3560c26ec71259d6eee930a38599b2ee9ac` |
 | rule_hash | `2adb4f3322d07b95fb81113a52d0b3e2a818fd464ada905ad630ae5b8c0e508f` |
-| prompt_hash | `bdcc3971b243c4284aea5d37db437ee248fc08a2b5ee16afb325e57744a8c123` |
+| prompt_hash | `2cf20ce61105a4571842c8e38e1168111cecf30986e146ab31d4066c13860834` |
 | metric_schema_hash | `231eeb42db153e168379291687e3095002fa92fdd26ab71f399f2f4b30274c18` |
 | oracle_hash | `48944ae9757caf5bda1259998416767872bac58af3e11487230eeaa6f382b751` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -46,6 +46,8 @@ MAP-06｜暴风眼：80% 条件预报、风险预算与加固决策。
 - `wait`：`ticks`
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
+
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
 
 ## 5. 结算顺序、胜负与失败码
 
@@ -85,7 +87,13 @@ MAP-06｜暴风眼：80% 条件预报、风险预算与加固决策。
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | success | True | LAMP_RESTORED | 2 | 0.0008094 | `V8-MAP-06-R0-20261017T075242Z-d6a79ad4` | `high_risk_exposure_ticks`=0; `observation_cost`=0; `resource_exhausted`=0; `task_success_rate`=1.0 |
+| 1 | success | True | LAMP_RESTORED | 3 | 0.00100636 | `V8-MAP-06-R1-20261017T075247Z-6553bba0` | `high_risk_exposure_ticks`=0; `observation_cost`=0; `resource_exhausted`=0; `task_success_rate`=1.0 |
+| 2 | success | True | LAMP_RESTORED | 3 | 0.00086292 | `V8-MAP-06-R2-20261017T075309Z-721455ab` | `high_risk_exposure_ticks`=0; `observation_cost`=0; `resource_exhausted`=0; `task_success_rate`=1.0 |
+
+三次重复成功 3/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -94,4 +102,4 @@ MAP-06｜暴风眼：80% 条件预报、风险预算与加固决策。
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `5/5`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

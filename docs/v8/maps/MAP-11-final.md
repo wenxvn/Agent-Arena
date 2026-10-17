@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `bc26ce92ed45beb82b407c4970bf7174986a8b74edc5348dbadedd5d16a9d296` |
 | rule_hash | `86334e9a3fa67b50ad93d3962a6b64b3a1bf20a52611747701b400edaaaa0e88` |
-| prompt_hash | `20ef93f0ba390ed7ae1df5ae35592b6e6371a61fc17fa1842b1e0292756ab1f7` |
+| prompt_hash | `d8def691ba3268f36ca281939bff8f1571ed229d6152bb9f6a98db7ec4f126ad` |
 | metric_schema_hash | `416566d683ef3d73bc57a04842ff14e8be40bfeba6249a584a6d69a7ef832fc8` |
 | oracle_hash | `d10e23484f8db925aa5c407f6ff2fbf1f5ad22e1ce8e1720a24ab859b594de04` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -66,6 +66,8 @@ MAP-11｜失联的小队：带噪天气下的短线风险与长线安全路线�
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
@@ -100,7 +102,13 @@ MAP-11｜失联的小队：带噪天气下的短线风险与长线安全路线�
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | failure | False | SUPPLY_SHORTAGE | 2 | 0.001328 | `V8-MAP-11-R0-20261017T081943Z-1fac09c9` | `abandoned_reachable_targets`=1; `first_clue_delay`=2; `rescue_count`=0; `rescuer_hypothermia`=0 |
+| 1 | failure | False | SUPPLY_SHORTAGE | 2 | 0.00077152 | `V8-MAP-11-R1-20261017T081949Z-88d39115` | `abandoned_reachable_targets`=1; `first_clue_delay`=2; `rescue_count`=0; `rescuer_hypothermia`=0 |
+| 2 | failure | False | SUPPLY_SHORTAGE | 2 | 0.00029976 | `V8-MAP-11-R2-20261017T081958Z-6bd77165` | `abandoned_reachable_targets`=1; `first_clue_delay`=2; `rescue_count`=0; `rescuer_hypothermia`=0 |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -109,4 +117,4 @@ MAP-11｜失联的小队：带噪天气下的短线风险与长线安全路线�
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `5/5`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

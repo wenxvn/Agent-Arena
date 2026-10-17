@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `99b6ee5cd8aa556143afd35c095fc319d448a8c0c14864704246c005326c9e90` |
 | rule_hash | `7d8322b90d7c67cf77d8cd39bc98bc8327c56097de34c5ffa35310fa3cf12e4f` |
-| prompt_hash | `5adf87aff2e7c07bc3e6596ffb42d5e68108e80a1e6eba724cd39b16be56268f` |
+| prompt_hash | `54fa0fb08673fd5eb63b412fc0fabc2c68c317b577ee658dbf0db9e498da4efc` |
 | metric_schema_hash | `5294368961d55a133851ae06f72438a2b6ea9cab0a233795436af1e9e8173f44` |
 | oracle_hash | `0744583b34ca7836cb9e485564d03fb269bb47e1bcfc3d16f5fdecdb1656b446` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -70,6 +70,8 @@ MAP-15｜会变化的迷宫：四色互补规则、奇偶相位切换与未见�
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
@@ -104,7 +106,13 @@ MAP-15｜会变化的迷宫：四色互补规则、奇偶相位切换与未见�
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | missing | None | None | — | None | `None` | — |
+| 1 | missing | None | None | — | None | `None` | — |
+| 2 | missing | None | None | — | None | `None` | — |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -113,4 +121,4 @@ MAP-15｜会变化的迷宫：四色互补规则、奇偶相位切换与未见�
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `5/5`；oracle: `verified`；fixtures: `4/4`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

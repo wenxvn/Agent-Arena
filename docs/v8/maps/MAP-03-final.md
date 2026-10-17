@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `9c322bb5a43955af1ae85b8cb79eba8126fcdd5b0782f16b26661683de941879` |
 | rule_hash | `ba6ee7abcbb1bf4fa915ca43a22985640b9378cd38c3483eed56f6e83ea8dad4` |
-| prompt_hash | `910c8e0d392dfa0a3b324decad11f4a03d76f7f42b22166539c6fd453052a4dc` |
+| prompt_hash | `8647f5409b23c375c44ba630c55f9f6d5be3b5e36d5d4c3cd6135244e3d8c998` |
 | metric_schema_hash | `54cbe1b6893f87f5f236741bb92daea7c25724d8ffce4440a5ab75aa6fab0a82` |
 | oracle_hash | `0ba3a97587da65b4cd8cfc4dd85a4673ddac6bb6edb4afac6dd56716a923f335` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -48,6 +48,8 @@ MAP-03｜最后的百步：五阶段里程碑与一次性远期代码召回。
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
@@ -82,7 +84,13 @@ MAP-03｜最后的百步：五阶段里程碑与一次性远期代码召回。
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | failure | False | EVA_OXYGEN_EXHAUSTED | 28 | 0.01721744 | `V8-MAP-03-R0-20261017T073906Z-238898f5` | `long_delay_recall_accuracy`=0.0; `lost_sample`=0; `phase_completion_coverage`=0.2; `phase_order_violations`=2 |
+| 1 | failure | False | EVA_OXYGEN_EXHAUSTED | 21 | 0.01235524 | `V8-MAP-03-R1-20261017T074047Z-92eadacf` | `long_delay_recall_accuracy`=0.0; `lost_sample`=0; `phase_completion_coverage`=0.2; `phase_order_violations`=1 |
+| 2 | failure | False | SAMPLE_COLD_WINDOW_EXPIRED | 27 | 0.01346528 | `V8-MAP-03-R2-20261017T074226Z-a8156d63` | `long_delay_recall_accuracy`=0.0; `lost_sample`=1; `phase_completion_coverage`=0.2; `phase_order_violations`=2 |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -91,4 +99,4 @@ MAP-03｜最后的百步：五阶段里程碑与一次性远期代码召回。
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `5/5`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

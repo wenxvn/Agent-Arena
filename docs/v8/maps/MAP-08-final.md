@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `14daf6879328c3c86e2280809b061b1f11501ede87f9f8c98910440120d09050` |
 | rule_hash | `9a3827c2f5fe75bd6368e98035fde35a2048fedb73d0f150bbc64eda13e6ddd2` |
-| prompt_hash | `cac62163bf554d871037c712c478fa114e8757eca39042f1a3d6c5bfbd156e62` |
+| prompt_hash | `6ce88b04d9faa155804a6c8b116f217f9820e8f43a74d306283676e569ad6390` |
 | metric_schema_hash | `f89bbd9503fe2a7e16fa6188e727df26fda47f0af794fe31fe4ba9d21c5113df` |
 | oracle_hash | `b086a8e9d0b7b3ccf4388a0f39e300e7a0640eeacf4f31d4affda7054b8c60a8` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -47,14 +47,16 @@
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
 
 本图结算要点：复用 V4 规则：压力测试耗 2 tick；泄漏水位逐 tick 上升；错误密封剂立即失败。
 
-- 成功码：见运行时
-- 失败码：`由终局 `verdict`/动态码表达，见失败路径`
+- 成功码：`LEAK_SEALED`
+- 失败码：`SEALANT_MISUSED`, `CORE_WATER_LIMIT_EXCEEDED`
 - 机制失败路径：
   - 错误密封剂 → `SEALANT_MISUSED`
   - 不测试直接修 → `diagnosis_accuracy=0`
@@ -87,7 +89,13 @@
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | decision_budget_reached | False | None | 38 | 0.02169032 | `V8-MAP-08-R0-20261017T080241Z-fe1a5b93` | `candidate_reduction`=0.0; `information_gain_bits`=0.0; `legal_action_rate`=0.105263; `peak_core_water`=3.0 |
+| 1 | decision_budget_reached | False | None | 38 | 0.01801644 | `V8-MAP-08-R1-20261017T080618Z-4b45160b` | `candidate_reduction`=0.0; `information_gain_bits`=0.0; `legal_action_rate`=0.157895; `peak_core_water`=4.0 |
+| 2 | decision_budget_reached | False | None | 38 | 0.01830844 | `V8-MAP-08-R2-20261017T081119Z-446e53fc` | `candidate_reduction`=0.0; `information_gain_bits`=0.0; `legal_action_rate`=0.157895; `peak_core_water`=4.0 |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -96,4 +104,4 @@
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `7/7`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

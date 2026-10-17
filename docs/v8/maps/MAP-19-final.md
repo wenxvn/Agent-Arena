@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `5c9491adac611088209ce6c37b98c1a421bc49e039adeed54398a6ce34db96f8` |
 | rule_hash | `28b181b4b82e63005302789504eb74fb4a81f1186fb808ba3b1ced749b88328d` |
-| prompt_hash | `216515bfe66e249727dd36bf92a3fdd7d9bfb503da9090519d85d447119919f8` |
+| prompt_hash | `4750ba4b14041503f7026658e420ce4c43d1746fdf4768e445a6690b753c49e2` |
 | metric_schema_hash | `04755621dae6661ae0bbf1e99f2727d8a1ddc2f7f6f51ab9be6777913d6de3fd` |
 | oracle_hash | `ce9e138b4dafc6e04a684a939935341d928ac3061727c603833522ac021704e3` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -61,6 +61,8 @@ MAP-21 是隐藏喷发时刻下的风险决策。本图没有移动、没有随�
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
@@ -94,7 +96,13 @@ MAP-21 是隐藏喷发时刻下的风险决策。本图没有移动、没有随�
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | missing | None | None | — | None | `None` | — |
+| 1 | missing | None | None | — | None | `None` | — |
+| 2 | missing | None | None | — | None | `None` | — |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -103,4 +111,4 @@ MAP-21 是隐藏喷发时刻下的风险决策。本图没有移动、没有随�
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `4/4`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

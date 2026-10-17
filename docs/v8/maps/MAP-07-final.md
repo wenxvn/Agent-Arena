@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `c18b0b93713e055a2f8bfc162c3befdef1a98de46a15f290767afe38bc2bc81f` |
 | rule_hash | `1183d0dea109c7670eb69122eac7bafedf9a0ff3872feb5336d8266dfe336e88` |
-| prompt_hash | `708889a136c110057fac62e8d9640932c3208976f669e68449512e5e2be66552` |
+| prompt_hash | `7a4bd1042bb5d5c83a333178af6213ac98e11e8c206c288a58296cca5102fac9` |
 | metric_schema_hash | `1528fabb3ebbd137674d22701f12bdbb6ebc10802f8cde5e392f6816bc95804e` |
 | oracle_hash | `b7a5f5a4edc45f5a35126c5efebcf98a743a3f1f359f59365c272a1d9f2c8a4b` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -64,6 +64,8 @@ MAP-09 是漏水/电量/供氧/通信的跨系统资源耦合；本图没有行�
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
@@ -71,7 +73,7 @@ MAP-09 是漏水/电量/供氧/通信的跨系统资源耦合；本图没有行�
 本图结算要点：同一 tick 内按 v1→v2→v3→v4→泵 级联结算；任一舱溢出即失败。
 
 - 成功码：`LOW_WATER_STABLE`
-- 失败码：`由终局 `verdict`/动态码表达，见失败路径`
+- 失败码：`COMPARTMENT_OVERFLOW_A/B/C（动态舱室码）`
 - 机制失败路径：
   - 上游先开导致 A 溢出 → `COMPARTMENT_OVERFLOW_A`
   - v4 单向回流误开 → 回灌 A
@@ -102,7 +104,13 @@ MAP-09 是漏水/电量/供氧/通信的跨系统资源耦合；本图没有行�
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | decision_budget_reached | False | None | 30 | 0.02222448 | `V8-MAP-07-R0-20261017T075714Z-beecf3f5` | `excess_water_integral`=180; `illegal_valve_combo`=0; `interventions`=0; `overpressure_ticks`=0 |
+| 1 | decision_budget_reached | False | None | 30 | 0.01893456 | `V8-MAP-07-R1-20261017T075858Z-6e19c745` | `excess_water_integral`=180; `illegal_valve_combo`=0; `interventions`=0; `overpressure_ticks`=0 |
+| 2 | decision_budget_reached | False | None | 30 | 0.01385244 | `V8-MAP-07-R2-20261017T080115Z-043df7cf` | `excess_water_integral`=180; `illegal_valve_combo`=0; `interventions`=0; `overpressure_ticks`=0 |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -111,4 +119,4 @@ MAP-09 是漏水/电量/供氧/通信的跨系统资源耦合；本图没有行�
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `5/5`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `42ae98aa24e90202b931fa381b4fc6d953abcbc3ab74755b74a8f524f642648b` |
 | rule_hash | `ce443167b19df2c528eaeff66adb7196129eb116d15d59f1e933afeb13a612ee` |
-| prompt_hash | `d9936c02ab7c0e49f65b24c2f6d7c10274869a11131e35cdc58d587531894b63` |
+| prompt_hash | `c586f95d94f7149ae46cfaf56ef1baf576958a1281a864a92ed913ea2cc8bc35` |
 | metric_schema_hash | `b3ea6a921cfd4d391b9ed7d10d4060f42dad2b2f09c1bffcfc7780aad836d9cf` |
 | oracle_hash | `d532d11ebdedceee0c464d7961609bc14378b16bb8dfeac3e77a09fbfc9ab815` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -92,14 +92,16 @@ Celine 于 21:06 从 ``S-V`` 密道门进入、21:14 从同一门离开。V 有�
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
 
 本图结算要点：四字段双来源交叉；窗口猜测与锁分钟矛盾；未观察记录不可作为正式引用。
 
-- 成功码：见运行时
-- 失败码：`由终局 `verdict`/动态码表达，见失败路径`
+- 成功码：`ALL_CLAIMS_SUPPORTED_AND_CORRECT`
+- 失败码：`CASE_REJECTED`
 - 机制失败路径：
   - 窗口猜测与锁分钟矛盾 → `CASE_REJECTED`
   - 未观察记录作为引用 → 拒绝
@@ -129,7 +131,13 @@ Celine 于 21:06 从 ``S-V`` 密道门进入、21:14 从同一门离开。V 有�
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | missing | None | None | — | None | `None` | — |
+| 1 | missing | None | None | — | None | `None` | — |
+| 2 | missing | None | None | — | None | `None` | — |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -138,4 +146,4 @@ Celine 于 21:06 从 ``S-V`` 密道门进入、21:14 从同一门离开。V 有�
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `4/4`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

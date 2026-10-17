@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `b1224ccd52a712c7bf60d51797633f345b304ae620b876225250179e1a3fb8bf` |
 | rule_hash | `47548b6c5585a6d0d82b8de082d1ce1f99009e4e9bd9639f0957ed623b0b8048` |
-| prompt_hash | `0f17c4d5929cf65492cd555a7e172bd61954476a3128d384e92b1119462fb7bb` |
+| prompt_hash | `50cdea891e4cd0991657a50680082fecc1f79fe895fb8a67301ecf13af38e43d` |
 | metric_schema_hash | `1fca8c5b91c939b9b8bfab0d71e0512c1f2c50c947576f782eb27dcc675a27e0` |
-| oracle_hash | `f627a861e83d990c243ea2add6ed9d3630ad0f69e19d50e9cd0312772158519e` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| oracle_hash | `78c6cb0640ea250aeecd495ab360f2e52e6bde65ffeaa33faaeadb570382d9c0` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -48,14 +48,16 @@
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
 
 本图结算要点：两列车联合预约；同 tick 节点/区间容量冲突即失败；makespan 由 V7 extractor 计算。
 
-- 成功码：见运行时
-- 失败码：`由终局 `verdict`/动态码表达，见失败路径`
+- 成功码：`GATE_OPENED`
+- 失败码：`NODE_CAPACITY_CONFLICT`, `HEAD_ON_SWAP`, `SECTION_CONFLICT`, `DEADLOCK`
 
 ## 6. 资源边界与护栏
 
@@ -85,7 +87,13 @@
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | missing | None | None | — | None | `None` | — |
+| 1 | missing | None | None | — | None | `None` | — |
+| 2 | missing | None | None | — | None | `None` | — |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -94,4 +102,4 @@
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `8/8`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

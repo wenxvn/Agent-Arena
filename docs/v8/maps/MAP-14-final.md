@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `61267f92369922d2d30914a51cf765ff6cc500fe18845137751827b0fa7393d0` |
 | rule_hash | `1c352a0fd891f588c267746134491cfdd74c53489846547b4754d2d1154b80a2` |
-| prompt_hash | `647b54a000d2cdfddaf220eaff5f85ed88986fa32563cb8d4a6f11169c1f1722` |
+| prompt_hash | `e7bd106cf4984266d975356902274932050725e1c012bf9f058dfe0de0327806` |
 | metric_schema_hash | `87e805885613bafae1ce9f81dd0fbf78611589ba6439449d65cde98a956f6673` |
 | oracle_hash | `292f0dc0038a59cccc545a24d1f2095cb75b21fb5c0301314eb5dd1da2510b5e` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -67,6 +67,8 @@ MAP-14｜说谎的祭司：三锁型 × 三诚实者的九态真值推理与问�
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
@@ -101,7 +103,13 @@ MAP-14｜说谎的祭司：三锁型 × 三诚实者的九态真值推理与问�
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | decision_budget_reached | False | None | 38 | 0.02326660 | `V8-MAP-14-R0-20261017T084136Z-c801fa6a` | `contradiction_missed`=0; `minimum_query_gap`=0; `queries_used`=0; `query_budget_overruns`=0 |
+| 1 | decision_budget_reached | False | None | 38 | 0.02225512 | `V8-MAP-14-R1-20261017T084459Z-a2091da8` | `contradiction_missed`=0; `minimum_query_gap`=0; `queries_used`=0; `query_budget_overruns`=0 |
+| 2 | decision_budget_reached | False | None | 38 | 0.01866248 | `V8-MAP-14-R2-20261017T084729Z-e554717a` | `contradiction_missed`=0; `minimum_query_gap`=0; `queries_used`=0; `query_budget_overruns`=0 |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -110,4 +118,4 @@ MAP-14｜说谎的祭司：三锁型 × 三诚实者的九态真值推理与问�
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `5/5`；oracle: `verified`；fixtures: `4/4`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

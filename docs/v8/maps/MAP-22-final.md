@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `efc76acdc469af8fd965418396b2a549b2147300a33fdb3eab2c70b150151412` |
 | rule_hash | `e856cec6daf4d388e89c2d239153cb5fbcb955de65c8d2ccd62753319f293856` |
-| prompt_hash | `a58d5608fb6bb64e847a7e94ee5d7a659ecfcf172430a68d9001f0919702ad67` |
+| prompt_hash | `acfc6243b2f2fba2fc02293c298e09d7c8a2237229f05f91ffc7adb425a7a0a1` |
 | metric_schema_hash | `f0f6f77e4e0557f0ea1f479314f70b4dd167b84f3b137443addbc522178893ef` |
 | oracle_hash | `388ae9bdf55001710afa6a7b6af76a6b7265f624dafd5e5b2815dee69b3e801d` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -48,14 +48,16 @@
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
 
 本图结算要点：公开方位行走；图记忆只记录亲历路标与边；返营并记录遗迹才算成功。
 
-- 成功码：见运行时
-- 失败码：`由终局 `verdict`/动态码表达，见失败路径`
+- 成功码：`RETURNED_TO_CAMP_WITH_RUIN_RECORD`
+- 失败码：`STEP_LIMIT_REACHED`
 
 ## 6. 资源边界与护栏
 
@@ -84,7 +86,13 @@
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | missing | None | None | — | None | `None` | — |
+| 1 | missing | None | None | — | None | `None` | — |
+| 2 | missing | None | None | — | None | `None` | — |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -93,4 +101,4 @@
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `7/7`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

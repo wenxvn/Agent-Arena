@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `e130d30cf7b59738fbff1d7016cab5fe920bf376fb220f6bf0f7cabba92ed987` |
 | rule_hash | `b0b4cf2c14e981f2ff4f561be50266f235e8e021fea00d01857ed2ceea7c248f` |
-| prompt_hash | `53c26a78c7db7814367ced659e9b53bb7136e6b1f76e5faa0bf1c42e3a25a648` |
+| prompt_hash | `65fb8d0bdc4d80d2da962ea4dde959a0932c3119ff6c69230bca5978a96dd4a3` |
 | metric_schema_hash | `31c2795d2a3ac4e6f9cb8a623099ac4d17dba0a4a59bef2a8be39742daa26305` |
 | oracle_hash | `753f601461a743c03b294d0c9c3997565c4b205b30d60aee8ab3d0e0f4c1f8e6` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -48,6 +48,8 @@ MAP-01｜破损的曙光号：生命支持、互斥供电与船壳修补的依�
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
@@ -82,7 +84,13 @@ MAP-01｜破损的曙光号：生命支持、互斥供电与船壳修补的依�
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | failure | False | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 11 | 0.00758384 | `V8-MAP-01-R0-20261017T073248Z-ca460a38` | `dependency_satisfaction_rate`=0.666667; `dependency_violations`=1; `longest_oxygen_outage_ticks`=4; `oxygen_guardrail_violations`=1 |
+| 1 | failure | False | BUS_RESET_WITH_HULL_OPEN | 22 | 0.00941168 | `V8-MAP-01-R1-20261017T073346Z-48162592` | `dependency_satisfaction_rate`=0.166667; `dependency_violations`=4; `longest_oxygen_outage_ticks`=3; `oxygen_guardrail_violations`=0 |
+| 2 | failure | False | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 4 | 0.00158872 | `V8-MAP-01-R2-20261017T073606Z-b3547066` | `dependency_satisfaction_rate`=0.0; `dependency_violations`=0; `longest_oxygen_outage_ticks`=4; `oxygen_guardrail_violations`=1 |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -91,4 +99,4 @@ MAP-01｜破损的曙光号：生命支持、互斥供电与船壳修补的依�
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `5/5`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

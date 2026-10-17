@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `c181e297e1007c5b20c6c21e2e424080fac3f5a0270ffecde366f0cef83f18a0` |
 | rule_hash | `d4bddf5702e6ae32487dbc92692cd9cb303b5a2b2ab9ff98274348e71215f74d` |
-| prompt_hash | `f83feeaf2e44b404816288759631a31bd39d132d44a41cbf6914976ec6a2ff13` |
+| prompt_hash | `9a41e1ad55acab564369ef6b518f668366cad07b4a30280f2b8ce254cc925b41` |
 | metric_schema_hash | `404a53fb3f561dd1b3360b7c3d07eacaa01736405b0b19716ebf1d4bf543a3d1` |
 | oracle_hash | `ac03fd734bec643647bb18c2233160f1795e053ac1c07a61fe84a21af3fda43d` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -65,6 +65,8 @@ MAP-10｜最后一桶燃料：同一 12 单位燃料池的运输位置与时间�
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
@@ -99,7 +101,13 @@ MAP-10｜最后一桶燃料：同一 12 单位燃料池的运输位置与时间�
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | failure | False | GENERATOR_FUEL_SHORTAGE | 2 | 0.001246 | `V8-MAP-10-R0-20261017T081851Z-1441712c` | `base_frozen`=0; `fuel_consumed`=2; `key_task_fuel_efficiency`=0.0; `minimum_base_temperature`=5 |
+| 1 | failure | False | GENERATOR_FUEL_SHORTAGE | 5 | 0.00193544 | `V8-MAP-10-R1-20261017T081925Z-e76dcf0a` | `base_frozen`=0; `fuel_consumed`=7; `key_task_fuel_efficiency`=0.0; `minimum_base_temperature`=5 |
+| 2 | failure | False | GENERATOR_FUEL_SHORTAGE | 2 | 0.00020976 | `V8-MAP-10-R2-20261017T081940Z-134cae46` | `base_frozen`=0; `fuel_consumed`=2; `key_task_fuel_efficiency`=0.0; `minimum_base_temperature`=5 |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -108,4 +116,4 @@ MAP-10｜最后一桶燃料：同一 12 单位燃料池的运输位置与时间�
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `5/5`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

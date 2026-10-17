@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `5a5bcd0ba3871f4eeecd48af7524a6321dbc9810a975fdf54ed99f54d8116490` |
 | rule_hash | `983f83987d118852a14786cd7053721e7211b9334a1490cc62441c10486c52b5` |
-| prompt_hash | `4010568a7029da86c5f2c2d2285df965eafa24318479ac1747d0feb9ee02d229` |
+| prompt_hash | `2e9a5c9112ef3e60b160f93916978180e8e1ad3777dcc239f2f71ba3bf3a0753` |
 | metric_schema_hash | `c3aad88588e64d69be592ee505fdf730c8c99feea98680eebd1e4f1c740e0269` |
 | oracle_hash | `858c0ae04676c134fae5275ae7161c7d363521a0d00cfdfe5220010609581483` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -62,6 +62,8 @@ MAP-20｜冷却网络：带 20% 损耗的跨区旁路与四重流量约束。
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
@@ -95,7 +97,13 @@ MAP-20｜冷却网络：带 20% 损耗的跨区旁路与四重流量约束。
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | missing | None | None | — | None | `None` | — |
+| 1 | missing | None | None | — | None | `None` | — |
+| 2 | missing | None | None | — | None | `None` | — |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -104,4 +112,4 @@ MAP-20｜冷却网络：带 20% 损耗的跨区旁路与四重流量约束。
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `4/4`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

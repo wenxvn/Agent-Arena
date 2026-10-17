@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `74f17503668585f1d243dcf9a3d83722d8eeb4054db4745696427aa4f8f76ccb` |
 | rule_hash | `603948debd2faa2a785e625d14b9a79f5e73676691d5743366c7866652af68d5` |
-| prompt_hash | `df9f3ec9eb4d8fc804bafdc4e7d629ac3a8073a3a2cf0e0d4587c1a80d4cb919` |
+| prompt_hash | `95021c0f25c32bb074fc635fc46c879a4982d95b0c54c7ea5a74448509859614` |
 | metric_schema_hash | `5b66c933d65a5ed2879772f6cd37e8b9234520f5b545cd3d0cab6d26a893acd4` |
 | oracle_hash | `89f01678768bb0b19717f0f03113d43673d17ac29005dec37e9b2e2b704ec7d3` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -63,6 +63,8 @@ MAP-09｜深海连锁故障：漏水、电量、供氧与通信四条链的跨�
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
@@ -97,7 +99,13 @@ MAP-09｜深海连锁故障：漏水、电量、供氧与通信四条链的跨�
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | failure | False | SHORT_CIRCUIT | 2 | 0.001313 | `V8-MAP-09-R0-20261017T081550Z-c6fa53e8` | `fault_propagation_scale`=1; `hard_threshold_breaches`=1; `repair_actions`=0; `repair_dependency_violations`=0 |
+| 1 | failure | False | SHORT_CIRCUIT | 2 | 0.00024876 | `V8-MAP-09-R1-20261017T081554Z-1debfaf3` | `fault_propagation_scale`=1; `hard_threshold_breaches`=1; `repair_actions`=0; `repair_dependency_violations`=0 |
+| 2 | failure | False | SHORT_CIRCUIT | 2 | 0.00079924 | `V8-MAP-09-R2-20261017T081606Z-8d27efe7` | `fault_propagation_scale`=1; `hard_threshold_breaches`=1; `repair_actions`=0; `repair_dependency_violations`=0 |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -106,4 +114,4 @@ MAP-09｜深海连锁故障：漏水、电量、供氧与通信四条链的跨�
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `5/5`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。

@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `16dd9b625da0404a1aa9ca0491bbb4d3ca61bf68a441a30babc507f6354d1536` |
 | rule_hash | `f48f10bc47fd68c0565a5dbd9f945602695eb0e3fae3a9eff554c3549532f5d4` |
-| prompt_hash | `8dc15046113630b39c77ce20d1e7c131c39d54fa855b9569a9924889f6affdbd` |
+| prompt_hash | `c58e552f6e4fc88735cc8984fd2e7bf52c8090b7b35e217db2a0d3d8608b2451` |
 | metric_schema_hash | `8a5efbdb9af9a3c7c8ade5af2979a312f40145207df6489d0f9589a1706d8e50` |
 | oracle_hash | `885f67a317f42969cb3ca57a79a24c2cccece36166d437ffb747874a52278ea9` |
-| commit | `a13ba1e11e267447fbb3c8a4c6b1f5319a313806` |
+| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
 
 ## 1. 设计意图与独特机制
 
@@ -48,6 +48,8 @@ MAP-02｜双重警报：动作序号触发的泄漏事件与在线目标重排�
 
 字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。
 
+对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确；隐藏真值不进入词表。
+
 ## 5. 结算顺序、胜负与失败码
 
 统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → `_after_tick` 结算周期事件 → 检查步数上限。
@@ -82,7 +84,13 @@ MAP-02｜双重警报：动作序号触发的泄漏事件与在线目标重排�
 
 ## 9. MiMo 三次正式运行
 
-正式 90 局尚未生成；本节由 `scripts/report_v8_maps.py` 在运行结束后回填。
+| rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
+|---|---|---|---|---|---|---|---|
+| 0 | failure | False | NAV_CORE_FLOODED | 6 | 0.00384868 | `V8-MAP-02-R0-20261017T073729Z-cb6ef5a5` | `crew_decompression`=0; `dual_objective_completion`=0.0; `event_response_latency`=1; `stale_plan_actions_after_leak`=0 |
+| 1 | failure | False | NAV_CORE_FLOODED | 6 | 0.00180020 | `V8-MAP-02-R1-20261017T073800Z-12c6cc9e` | `crew_decompression`=0; `dual_objective_completion`=0.0; `event_response_latency`=1; `stale_plan_actions_after_leak`=0 |
+| 2 | failure | False | NAV_CORE_FLOODED | 6 | 0.00147932 | `V8-MAP-02-R2-20261017T073850Z-223dcf46` | `crew_decompression`=0; `dual_objective_completion`=0.0; `event_response_latency`=1; `stale_plan_actions_after_leak`=1 |
+
+三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 
@@ -91,4 +99,4 @@ MAP-02｜双重警报：动作序号触发的泄漏事件与在线目标重排�
 ## 11. 验收结论
 
 - design: `audited`；runtime: `verified`；metrics: `5/5`；oracle: `verified`；fixtures: `3/3`。
-- 正式 3 局：`pending`；最终状态：`runtime_verified`。
+- 正式 3 局：`completed`；最终状态：`finalized`。
