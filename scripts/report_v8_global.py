@@ -327,9 +327,11 @@ def main() -> int:
             "- three_valid_mimo_runs：三次正式运行均有 trace/judge/V8 metrics/usage，"
             "且不是接口误导或无效 schema 导致的无效轨迹。",
             "",
-            "正式运行前有两次预跑作废：`pre_timeout_001`（wall-clock 上限过紧）与"
-            "`pre_vocab_001`（交互词表缺失）。两者均归档在 `runs/v8/aborted/`，"
-            "不计入正式 90 局；修复后已重新冻结。",
+            "正式运行前有五次预跑作废：`pre_timeout_001`（wall-clock 上限过紧）、"
+            "`pre_vocab_001`（01–06 交互词表缺失）、`pre_vocab_full_001`（其余字符串枚举缺失）、"
+            "`pre_map01_rule_001`（MAP-01 供氧硬规则未公开）与 `pre_location_001`"
+            "（交互对象位置未公开）。五者均归档在 `runs/v8/aborted/`，不计入正式 90 局；"
+            "修复后已重新冻结。",
             "",
             "## 3. 未解决风险",
             "",
