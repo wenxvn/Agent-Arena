@@ -57,7 +57,17 @@ def _git_commit() -> str:
 
 def _git_dirty() -> bool:
     result = subprocess.run(
-        ["git", "status", "--porcelain"],
+        [
+            "git",
+            "status",
+            "--porcelain",
+            "--",
+            "src/agent_arena/v8",
+            "src/agent_arena/worlds/scenario_v8",
+            "scripts",
+            "tests",
+            "docs/v8",
+        ],
         cwd=ROOT,
         capture_output=True,
         text=True,
