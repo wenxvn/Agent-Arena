@@ -16,6 +16,7 @@ V7 **不**修改 V2/V4/V5/V6 的规则、Action/Observation/Trace、Oracle、账
 | 泄漏与只读扫描 | 12 源 / 65 文档 | 通过 |
 | 人工审阅 | 30 | `human_approved`（用户 2026-10-17 确认复核；DeepSeek 未代签） |
 | 已有 MiMo trace 复算 | 47 | V6 真实 trace 的 post-hoc V7 二次分析（`real-trace-rescore.md`） |
+| V7 预登记 pilot | 12 | 六图 12 局；已预登记（`pilot-001-registration.md`），尚未调用付费 API |
 | 新增付费 API | 0 次 | 默认全离线；未登记新的 V7 API 实验 |
 
 ## 文件地图
@@ -34,6 +35,7 @@ docs/v7/
   pending-runtime/MAP-XX.md     24 张无运行时地图的逐图准入说明（README.md 为总表）
   validation-report.md         本轮真实命令、测试结果、限制
   real-trace-rescore.md        已有 V6 MiMo 47 局 trace 的 V7 post-hoc 复算（非新实验）
+  pilot-001-registration.md    六图 12 局付费 pilot 的预登记、预算与停止规则
 
 src/agent_arena/v7/metrics/
   schema.py                    MetricSpec / MetricValue / TraceRecord
@@ -44,6 +46,7 @@ src/agent_arena/v7/metrics/
 
 scripts/validate_v7_metrics.py 30 卡/注册表/六图 fixture 机器验收
 scripts/report_v7_metrics.py   从 V6 episode 目录离线生成 V7 指标表
+scripts/run_v7_pilot.py       六图 12 局 V7 pilot 预检与付费运行入口
 scripts/audit_v7_cards.py     30 卡结构、指标覆盖与构念相似度自审
 scripts/check_v7_leakage.py   V7 只读边界与凭据形状文本扫描
 tests/test_v7_metrics.py       schema/common/registry/文档验收测试
@@ -68,6 +71,12 @@ tests/test_v7_cards.py        30 卡结构自审测试
 
 # 对已有 V6 episode 目录复算（不调用模型）
 .venv\Scripts\python.exe scripts\report_v7_metrics.py runs\v6\experiments\<id>\episodes\<episode>
+
+# V7 Pilot-001 预检（不调用模型；需要当前 HEAD 的 V6 冻结门禁）
+.venv\Scripts\python.exe scripts\run_v7_pilot.py --preflight
+
+# V7 Pilot-001 付费运行（仅在预检通过、预登记已提交后使用）
+.venv\Scripts\python.exe scripts\run_v7_pilot.py --execute-paid
 ```
 
 `scripts/report_v7_metrics.py` 只读 `agent_trace.jsonl` 与可选的 `judge_metrics.json`；不启动环境、不调用 provider、不写账本。
@@ -85,6 +94,6 @@ tests/test_v7_cards.py        30 卡结构自审测试
 ## 本轮不包含
 
 - 24 张设计图的运行时、Agent 行为或真实模型结果。
-- 任何新的付费 API 调用或预算登记。
+- 30 图正式 V7 矩阵；本轮只预登记六图 12 局 pilot，不把 pilot 结果外推到 30 图。
 - 任何地图规则修改；发现冲突只写 `V7-DCR-*`。
 - 24 图运行时接入；30 卡已由用户复核并记录为 `human_approved`，但这不等于 24 图已可运行。
