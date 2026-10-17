@@ -97,7 +97,10 @@
 | `runs/v8/ledger.jsonl` | 38 | MAP-13 R2 `InternalServerError` → unknown spend | 封账；MAP-13 R2 由 supplement_001 补跑 |
 | `runs/v8/supplement_001/ledger.jsonl` | 4 | MAP-15 R0 `InternalServerError` → unknown spend | 封账；剩余局由 supplement_002 补跑 |
 | `runs/v8/supplement_002/ledger.jsonl` | 24 | MAP-22 连续 3 局 `schema_fault_limit` | 审计后封账；MAP-22 旧三局标 superseded |
-| `runs/v8/supplement_003/ledger.jsonl` | 进行中 | — | 重跑 MAP-22 R0–R2 + MAP-23–30 |
+| `runs/v8/supplement_003/ledger.jsonl` | 14 | MAP-26 R2 `InternalServerError` → unknown spend | 封账；剩余局由 supplement_004 补跑 |
+| `runs/v8/supplement_004/ledger.jsonl` | 4 | MAP-28 R0 `InternalServerError` → unknown spend | 封账；剩余局由 supplement_005 补跑 |
+| `runs/v8/supplement_005/ledger.jsonl` | 9 | 正常完成 → 90/90 | 完成；MAP-12 预算修复由 supplement_006 重跑 |
+| `runs/v8/supplement_006/ledger.jsonl` | 3 | MAP-12 预算修正重跑 | 完成 |
 
 **MAP-22 版本修复**：三局 schema 失败的原因是 `write_memory(facts)` 的
 `node_page` / `traversed_edge_page` 字段结构没有公开，模型反复提交了结构相似但字段
@@ -105,6 +108,12 @@
 `prompt_hash` 变化，其他 29 图的 `scenario_hash / rule_hash / prompt_hash /
 metric_schema_hash` 不变。旧三局保留但标记 `SUPERSEDED.json`，不计入正式结果。
 这是提纲允许的“三局都因无效 schema 失败 → 修复后重新冻结重跑”，不是静默改规则。
+
+**MAP-12 预算修复**：MAP-12 的规则是 30 天 × 每日 2 个劳动槽，至少需要 60 个动作；
+预登记按“困难 46”给出的预算使完成在算术上不可行。三局 `decision_budget_reached` 是预算
+设计错误，不是能力失败。已将 MAP-12 的冻结 `decision_budget` 修正为 60（公开 prompt 中
+的预算数字随之变化，`prompt_hash` 变化），旧三局标 `SUPERSEDED.json`，在
+supplement_006 中以 60 预算重跑。其他 29 图预算不变。
 
 ### 3.5 设计文件与 V7 卡片
 

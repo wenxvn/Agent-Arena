@@ -10,8 +10,8 @@
 | rule_hash | `47548b6c5585a6d0d82b8de082d1ce1f99009e4e9bd9639f0957ed623b0b8048` |
 | prompt_hash | `50cdea891e4cd0991657a50680082fecc1f79fe895fb8a67301ecf13af38e43d` |
 | metric_schema_hash | `1fca8c5b91c939b9b8bfab0d71e0512c1f2c50c947576f782eb27dcc675a27e0` |
-| oracle_hash | `3d2076e7bc1c4442a2c7dfba6766f9dc613ad40af2029b50a8824e0d623bf3ef` |
-| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
+| oracle_hash | `5c7ff1f46860a037cc0b835351db138fbf215d6342f0b266952632e887086cb9` |
+| commit | `039e25ce6503871ceb31184e85c9265451ee7486` |
 
 ## 1. 设计意图与独特机制
 

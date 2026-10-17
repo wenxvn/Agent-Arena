@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `5d942a953707ad85e978b4c36a7364ed6d1e6f326c4cd25f79977c4eefe702be` |
 | rule_hash | `ec0b473f08d1aa5f2ce6e7288b7877ab07ba66fe8123c772e91f69f216d76bba` |
-| prompt_hash | `9e2173ef8dc233d66531a0fb77ab02b3dcd737e16f023640f4fabd6347f44211` |
+| prompt_hash | `fee5dd65ba07390484be5a8c8e8aceb4f23b7c7b5c0271d10a5d899f5c3a213b` |
 | metric_schema_hash | `a550eb48e76727fe4fafaf2ab67e09cb5d03d5fc02ed0bf644b0dca73e860a06` |
 | oracle_hash | `3b9bceac95c40e9bdfeb166f2cc82cf15ec2f74b846da61e44a8f4c0b1f18ea3` |
-| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
+| commit | `039e25ce6503871ceb31184e85c9265451ee7486` |
 
 ## 1. 设计意图与独特机制
 
@@ -108,9 +108,9 @@ MAP-11 是短时空间搜救与带噪风暴抽签；本图没有空间移动、�
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | decision_budget_reached | False | None | 46 | 0.03324104 | `V8-MAP-12-R0-20261017T082009Z-ee25b01f` | `fuel_consumed`=28; `heating_outage_days`=0; `minimum_safety_margin`=6; `plan_breach_days`=17 |
-| 1 | decision_budget_reached | False | None | 46 | 0.03032332 | `V8-MAP-12-R1-20261017T082700Z-35d78b26` | `fuel_consumed`=26; `heating_outage_days`=0; `minimum_safety_margin`=6; `plan_breach_days`=19 |
-| 2 | decision_budget_reached | False | None | 46 | 0.03042388 | `V8-MAP-12-R2-20261017T083006Z-0e18cd1b` | `fuel_consumed`=29; `heating_outage_days`=0; `minimum_safety_margin`=6; `plan_breach_days`=15 |
+| 0 | failure | False | RESEARCH_TARGET_MISSED | 60 | 0.03977192 | `V8-MAP-12-R0-20261017T113334Z-e36d02ca` | `fuel_consumed`=33; `heating_outage_days`=0; `minimum_safety_margin`=-1; `plan_breach_days`=25 |
+| 1 | failure | False | RESEARCH_TARGET_MISSED | 60 | 0.04074212 | `V8-MAP-12-R1-20261017T114002Z-8090aae0` | `fuel_consumed`=35; `heating_outage_days`=0; `minimum_safety_margin`=-1; `plan_breach_days`=23 |
+| 2 | failure | False | RESEARCH_TARGET_MISSED | 60 | 0.03448492 | `V8-MAP-12-R2-20261017T114556Z-d7fef335` | `fuel_consumed`=35; `heating_outage_days`=0; `minimum_safety_margin`=-1; `plan_breach_days`=25 |
 
 三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 

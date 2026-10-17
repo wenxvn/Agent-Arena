@@ -7,8 +7,8 @@
 | status | count |
 |---|---|
 | censored | 2 |
-| decision_budget_reached | 35 |
-| failure | 36 |
+| decision_budget_reached | 32 |
+| failure | 39 |
 | success | 17 |
 
 ## 2. 失败码频次
@@ -17,35 +17,31 @@
 
 | failure_code | count |
 |---|---|
-| `CENSORED` | 37 |
-| `GATE_OPENED` | 5 |
+| `CENSORED` | 34 |
 | `NAV_CORE_FLOODED` | 3 |
 | `SIGNAL_WINDOW_MISSED` | 3 |
-| `LAMP_RESTORED` | 3 |
 | `SHORT_CIRCUIT` | 3 |
 | `GENERATOR_FUEL_SHORTAGE` | 3 |
 | `SUPPLY_SHORTAGE` | 3 |
-| `EVACUATED_BEFORE_ERUPTION` | 3 |
+| `RESEARCH_TARGET_MISSED` | 3 |
 | `VEHICLE_STRANDED` | 3 |
 | `OXYGEN_SUPPLY_INTERRUPTION_LIMIT` | 2 |
 | `EVA_OXYGEN_EXHAUSTED` | 2 |
 | `RESCUE_SIGNAL_WINDOW_EXPIRED` | 2 |
 | `NODE_CAPACITY_CONFLICT` | 2 |
 | `ACTION_LIMIT_REACHED` | 2 |
-| `PRODUCTION_TARGET_MET` | 2 |
 | `SUPPLY_DEPLETED` | 2 |
-| `ALL_ITEMS_DELIVERED` | 2 |
 | `BUS_RESET_WITH_HULL_OPEN` | 1 |
 | `SAMPLE_COLD_WINDOW_EXPIRED` | 1 |
-| `SIGNAL_LIT` | 1 |
 | `DEADLOCK` | 1 |
 | `INVALID_ACTION` | 1 |
 | `STATION_CAPACITY_EXCEEDED` | 1 |
 | `THERMAL_RUNAWAY` | 1 |
 | `THERMAL_OVERHEAT` | 1 |
-| `TRUE_ENTRANCE_FOUND` | 1 |
 | `STRANDED_ON_BRIDGE` | 1 |
 | `OXYGEN_DEPLETED` | 1 |
+
+`CENSORED` 汇总“决策预算耗尽”与地图自身 horizon 截尾，不是机制失败码；其余码为地图私有失败码或 `INVALID_ACTION`。
 
 ## 3. 地板与天花板
 
@@ -63,7 +59,7 @@
 | spaceship | 0/3 | 0/3 | 0/3 | MAP-01:12.3, MAP-02:6.0, MAP-03:25.3 |
 | lighthouse | 1/3 | 0/3 | 3/3 | MAP-04:15.3, MAP-05:19.3, MAP-06:2.7 |
 | abyss | 0/3 | 0/3 | 0/3 | MAP-07:30.0, MAP-08:38.0, MAP-09:2.0 |
-| polar | 0/3 | 0/3 | 0/3 | MAP-10:3.0, MAP-11:2.0, MAP-12:46.0 |
+| polar | 0/3 | 0/3 | 0/3 | MAP-10:3.0, MAP-11:2.0, MAP-12:60.0 |
 | pyramid | 2/3 | 0/3 | 3/3 | MAP-13:25.3, MAP-14:38.0, MAP-15:12.3 |
 | subway | 0/3 | 0/3 | 0/3 | MAP-16:15.0, MAP-17:38.0, MAP-18:9.0 |
 | volcano | 0/3 | 2/3 | 3/3 | MAP-19:27.7, MAP-20:19.3, MAP-21:1.7 |
@@ -73,9 +69,9 @@
 
 ## 5. 资源与费用
 
-- 总费用 ¥1.25363556；单局均值 ¥0.013929。
-- 输入 token 1566789，输出 token 103774。
-- 请求 1902，平均每局 21.1。
+- 总费用 ¥1.27464628；单局均值 ¥0.014163。
+- 输入 token 1599077，输出 token 105944。
+- 请求 1944，平均每局 21.6。
 - 费用按供应商 usage 结算；未知消费会立即封账，不用估算值替代。
 
 ## 6. Provider / schema 异常
@@ -96,7 +92,7 @@
 - **MAP-09**：R0: fault_propagation_scale=1, hard_threshold_breaches=1, stable_time_ratio=0.5；R1: fault_propagation_scale=1, hard_threshold_breaches=1, stable_time_ratio=0.5；R2: fault_propagation_scale=1, hard_threshold_breaches=1, stable_time_ratio=0.5
 - **MAP-10**：R0: base_frozen=0, key_task_fuel_efficiency=0.0, minimum_base_temperature=5；R1: base_frozen=0, key_task_fuel_efficiency=0.0, minimum_base_temperature=5；R2: base_frozen=0, key_task_fuel_efficiency=0.0, minimum_base_temperature=5
 - **MAP-11**：R0: rescue_count=0, rescuer_hypothermia=0；R1: rescue_count=0, rescuer_hypothermia=0；R2: rescue_count=0, rescuer_hypothermia=0
-- **MAP-12**：R0: heating_outage_days=0, minimum_safety_margin=6, survival_days=0.766667；R1: heating_outage_days=0, minimum_safety_margin=6, survival_days=0.766667；R2: heating_outage_days=0, minimum_safety_margin=6, survival_days=0.766667
+- **MAP-12**：R0: heating_outage_days=0, minimum_safety_margin=-1, survival_days=1.0；R1: heating_outage_days=0, minimum_safety_margin=-1, survival_days=1.0；R2: heating_outage_days=0, minimum_safety_margin=-1, survival_days=1.0
 - **MAP-13**：R0: constraint_satisfaction_ratio=0.2, correct_sequence=0, illegal_door_attempts=3；R1: constraint_satisfaction_ratio=0.8, correct_sequence=1, illegal_door_attempts=0；R2: constraint_satisfaction_ratio=0.8, correct_sequence=1, illegal_door_attempts=0
 - **MAP-14**：R0: minimum_query_gap=0, query_budget_overruns=0；R1: minimum_query_gap=0, query_budget_overruns=0；R2: minimum_query_gap=0, query_budget_overruns=0
 - **MAP-16**：R0: deadlock=1, head_on_conflicts=0, legal_reservation_rate=1.0；R1: deadlock=0, head_on_conflicts=0, legal_reservation_rate=0.4；R2: deadlock=0, head_on_conflicts=0, legal_reservation_rate=1.0

@@ -11,7 +11,7 @@
 | prompt_hash | `5d1068396fb0e1c26a396afcae8d4cd7c42aef47f6dd7bee55fd8c4ccd80d704` |
 | metric_schema_hash | `f0f6f77e4e0557f0ea1f479314f70b4dd167b84f3b137443addbc522178893ef` |
 | oracle_hash | `388ae9bdf55001710afa6a7b6af76a6b7265f624dafd5e5b2815dee69b3e801d` |
-| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
+| commit | `039e25ce6503871ceb31184e85c9265451ee7486` |
 
 ## 1. 设计意图与独特机制
 

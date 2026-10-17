@@ -1,12 +1,14 @@
 # V8 MiMo 90 局结果
 
-- freeze_hash：`4cd8a14131b9ca2022575badd93667d79864efd8d77d77ebc2a9957c9876661b`
+- freeze_hash：`b174a6f734fbc6b2f1d25c0b6beba40f62431ce0572b281a40c0c3049c32dbb0`
 - 模型：`mimo-v2.6-flash` / provider `openai` / temperature 0
 - 正式完成：**90/90**；缺口 0 局
-- 正式局已结算费用：**¥1.25363556**（硬上限 ¥10）
-- Token：输入 1566789 / 输出 103774；请求 1902
-- 账本：settled `1.27504600` / attempts `1956` / failed `4` / closed `True`（UNKNOWN_PROVIDER_SPEND）
+- 正式局已结算费用：**¥1.27464628**（硬上限 ¥10）
+- Token：输入 1599077 / 输出 105944；请求 1944
+- 账本：settled `1.39004496` / attempts `2136` / failed `4` / closed `True`（UNKNOWN_PROVIDER_SPEND）
 - 预警：无
+
+> 费用口径：上表“正式局已结算费用”只统计 90 行正式结果；账本 settled 还包含被 superseded 的 MAP-12/MAP-22 旧局、补跑与原失败尝试，因此更高。
 
 > n=3 只作重复运行描述，不做显著性断言。Oracle 成功率不是 MiMo 能力。
 
@@ -47,9 +49,9 @@
 | 31 | MAP-11 | polar | 中等 | 0 | failure | False | SUPPLY_SHORTAGE | 2 | 2 | 0.001328 | `rescue_count`=0; `rescuer_hypothermia`=0 |
 | 32 | MAP-11 | polar | 中等 | 1 | failure | False | SUPPLY_SHORTAGE | 2 | 2 | 0.00077152 | `rescue_count`=0; `rescuer_hypothermia`=0 |
 | 33 | MAP-11 | polar | 中等 | 2 | failure | False | SUPPLY_SHORTAGE | 2 | 2 | 0.00029976 | `rescue_count`=0; `rescuer_hypothermia`=0 |
-| 34 | MAP-12 | polar | 困难 | 0 | decision_budget_reached | False | None | 46 | 46 | 0.03324104 | `heating_outage_days`=0; `minimum_safety_margin`=6 |
-| 35 | MAP-12 | polar | 困难 | 1 | decision_budget_reached | False | None | 46 | 46 | 0.03032332 | `heating_outage_days`=0; `minimum_safety_margin`=6 |
-| 36 | MAP-12 | polar | 困难 | 2 | decision_budget_reached | False | None | 46 | 46 | 0.03042388 | `heating_outage_days`=0; `minimum_safety_margin`=6 |
+| 34 | MAP-12 | polar | 困难 | 0 | failure | False | RESEARCH_TARGET_MISSED | 60 | 60 | 0.03977192 | `heating_outage_days`=0; `minimum_safety_margin`=-1 |
+| 35 | MAP-12 | polar | 困难 | 1 | failure | False | RESEARCH_TARGET_MISSED | 60 | 60 | 0.04074212 | `heating_outage_days`=0; `minimum_safety_margin`=-1 |
+| 36 | MAP-12 | polar | 困难 | 2 | failure | False | RESEARCH_TARGET_MISSED | 60 | 60 | 0.03448492 | `heating_outage_days`=0; `minimum_safety_margin`=-1 |
 | 37 | MAP-13 | pyramid | 简单 | 0 | decision_budget_reached | False | None | 30 | 30 | 0.02209248 | `constraint_satisfaction_ratio`=0.2; `correct_sequence`=0 |
 | 38 | MAP-13 | pyramid | 简单 | 1 | success | True | GATE_OPENED | 27 | 27 | 0.01553652 | `constraint_satisfaction_ratio`=0.8; `correct_sequence`=1 |
 | 39 | MAP-13 | pyramid | 简单 | 2 | success | True | GATE_OPENED | 19 | 19 | 0.00938184 | `constraint_satisfaction_ratio`=0.8; `correct_sequence`=1 |
@@ -120,7 +122,7 @@
 | MAP-09 | abyss | 困难 | default | 0/3 | {'failure': 3} | 2.0 | 0.00236100 |
 | MAP-10 | polar | 简单 | default | 0/3 | {'failure': 3} | 3.0 | 0.00339120 |
 | MAP-11 | polar | 中等 | default | 0/3 | {'failure': 3} | 2.0 | 0.00239928 |
-| MAP-12 | polar | 困难 | default | 0/3 | {'decision_budget_reached': 3} | 46.0 | 0.09398824 |
+| MAP-12 | polar | 困难 | default | 0/3 | {'failure': 3} | 60.0 | 0.11499896 |
 | MAP-13 | pyramid | 简单 | default | 2/3 | {'decision_budget_reached': 1, 'success': 2} | 25.3 | 0.04701084 |
 | MAP-14 | pyramid | 中等 | default | 0/3 | {'decision_budget_reached': 3} | 38.0 | 0.06418420 |
 | MAP-15 | pyramid | 困难 | default | 3/3 | {'success': 3} | 12.3 | 0.02055960 |
@@ -143,18 +145,20 @@
 ## 3. 状态与费用分布
 
 - `censored`：2
-- `decision_budget_reached`：35
-- `failure`：36
+- `decision_budget_reached`：32
+- `failure`：39
 - `success`：17
 - 成功：17/90（18.9% of completed）
-- 单局平均费用：¥0.013929
-- 单局平均请求：21.1
+- 单局平均费用：¥0.014163
+- 单局平均请求：21.6
 
 ## 4. 补跑与中断
 
 - 尝试记录：94（含补跑与原失败）
 - provider_error 的正式局：0
 - unknown_spend 的正式局：0
+
+以下为已被补跑替换的原失败尝试（保留记录，不计入正式 90 行）：
   - MAP-13 R2 `V8-MAP-13-R2-20261017T083750Z-787ade08` status=unknown_provider_spend error=InternalServerError unknown_spend=True
   - MAP-15 R0 `V8-MAP-15-R0-20261017T085151Z-a8381a55` status=unknown_provider_spend error=APIConnectionError unknown_spend=True
   - MAP-26 R2 `V8-MAP-26-R2-20261017T101609Z-05797deb` status=unknown_provider_spend error=InternalServerError unknown_spend=True

@@ -85,6 +85,8 @@ def main() -> int:
 
     failure_codes: Counter[str] = Counter()
     for row in rows:
+        if row["success"]:
+            continue
         for code in judge_failure_codes(row):
             failure_codes[code] += 1
 
@@ -108,6 +110,9 @@ def main() -> int:
         f" / failed `{ledger['failed_requests']}` / closed `{ledger['closed']}`"
         f"（{ledger.get('closed_reason') or '未封账'}）",
         f"- 预警：{ledger['warnings'] or '无'}",
+        "",
+        "> 费用口径：上表“正式局已结算费用”只统计 90 行正式结果；账本 settled 还包含被"
+        " superseded 的 MAP-12/MAP-22 旧局、补跑与原失败尝试，因此更高。",
         "",
         "> n=3 只作重复运行描述，不做显著性断言。Oracle 成功率不是 MiMo 能力。",
         "",
@@ -159,6 +164,8 @@ def main() -> int:
             f"- 尝试记录：{len(attempts)}（含补跑与原失败）",
             f"- provider_error 的正式局：{len(provider_errors)}",
             f"- unknown_spend 的正式局：{len(unknown)}",
+            "",
+            "以下为已被补跑替换的原失败尝试（保留记录，不计入正式 90 行）：",
         ]
     )
     for item in attempts:
@@ -210,6 +217,9 @@ def main() -> int:
         fail_lines.append("| — | 0 |")
     fail_lines.extend(
         [
+            "",
+            "`CENSORED` 汇总“决策预算耗尽”与地图自身 horizon 截尾，不是机制失败码；"
+            "其余码为地图私有失败码或 `INVALID_ACTION`。",
             "",
             "## 3. 地板与天花板",
             "",
@@ -304,6 +314,8 @@ def main() -> int:
         f"- 冻结：`{freeze['freeze_hash']}`，commit `{freeze['commit']}`。",
         "- 离线门禁：30/30；154/154 指标；55 条 Oracle；85 条冻结 fixture + 12 条补充用例。",
         f"- 正式 MiMo：**{completed}/90**；缺口 {len(gaps)} 局；总费用 ¥{total_cost}。",
+        f"- 账本 settled：¥{ledger['settled_cost']}（含 superseded 旧局、补跑与原失败尝试）；"
+        f"未知消费预留：¥{ledger.get('unknown_spend_reserved', '0')}。",
         f"- 冻结 hash 一致性：{'通过' if not hash_mismatches else f'{len(hash_mismatches)} 处不一致'}",
         f"- commit 版本分布：{dict(commit_counts)}",
         "",

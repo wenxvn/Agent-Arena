@@ -8,6 +8,7 @@
 - `planning/` 只保存通用 `PlanState`、`PlannerDecision`、`PlanSignal` 和公开进度监控；不得放入 Spaceship Escape 特定路线或直接执行环境动作。Planning 的成本和生命周期字段由 `evaluation/trace.py` 与 `evaluation/benchmark.py` 记录。
 - `ui/` 是只读 Streamlit 研究回放界面：仅消费 `runs/`、`results/` 中已有 trace/CSV，不读 `.env`、不调用 Provider、不启动新实验；运行命令见根目录 README。
 - `v7/` 是只读指标层：只消费 Episode Trace 与离线 judge artefact，不修改 V4/V5/V6 环境、Action、Trace 写出器或账本；24 张 design-only 图调用 `compute_metrics` 必须抛 `NotImplementedError`，不得伪造分数。每条 `MetricSpec` 带 `valid_range`；六图有 36 条真实环境手算 fixture；新增 extractor 前先跑 `scripts/check_v7_leakage.py` 与 `scripts/audit_v7_cards.py`。
+- `v8/` 是隔离的 30 图实验层：`worlds/scenario_v8/` 保存 24 张新运行时与 6 张 V4 适配图，`v8/` 保存五态指标投影、¥10 append-only 账本、公开 prompt 与 90 局 runner。不得修改 V3–V7 契约或历史账本；正式运行前必须通过 `scripts/validate_v8_offline.py` 并用 `scripts/freeze_v8.py` 冻结 30 图 hash。`runs/v8/` 为唯一输出目录。
 - 运行质量检查：`uv run ruff check .`、`uv run mypy src`、`uv run pytest`。
 
 _此文件由 /sync 根据引入改动生成，建议人工快速检查。_

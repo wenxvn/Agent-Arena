@@ -1,10 +1,11 @@
 # V8 最终验收
 
-- 冻结：`4cd8a14131b9ca2022575badd93667d79864efd8d77d77ebc2a9957c9876661b`，commit `4ffbdeb2e6d22abfd340b9ea1aff73fade979674`。
+- 冻结：`b174a6f734fbc6b2f1d25c0b6beba40f62431ce0572b281a40c0c3049c32dbb0`，commit `039e25ce6503871ceb31184e85c9265451ee7486`。
 - 离线门禁：30/30；154/154 指标；55 条 Oracle；85 条冻结 fixture + 12 条补充用例。
-- 正式 MiMo：**90/90**；缺口 0 局；总费用 ¥1.25363556。
+- 正式 MiMo：**90/90**；缺口 0 局；总费用 ¥1.27464628。
+- 账本 settled：¥1.39004496（含 superseded 旧局、补跑与原失败尝试）；未知消费预留：¥0.04096。
 - 冻结 hash 一致性：通过
-- commit 版本分布：{'223e532ed9b9613ba96e06d129b41fb1f52b37bc': 63, '4ffbdeb2e6d22abfd340b9ea1aff73fade979674': 27}
+- commit 版本分布：{'223e532ed9b9613ba96e06d129b41fb1f52b37bc': 60, '039e25ce6503871ceb31184e85c9265451ee7486': 3, '4ffbdeb2e6d22abfd340b9ea1aff73fade979674': 27}
 
 ## 1. 30 图定稿表
 
