@@ -22,6 +22,8 @@
 
 - Agent 只接收 `V8Observation` 的公开字段白名单。
 - prompt 只由地图公开元数据、`SHAPES` 动作契约、当前公开 Observation 与最近 5 条公开动作结果组成。
+- 对需要 `target/choice` 字符串的地图，系统 prompt 附带**公开静态交互词表**；词表只列
+  可尝试的动作名，不表示当前位置可执行、前置条件已满足或顺序正确，也不含隐藏真值。
 - Oracle、`judge_state`、私有真值、指标 id 与求解器路径不得进入 prompt。
 - 离线门禁会扫描 prompt 中的指标 id、`judge_state`、`oracle_trace` 等标记。
 

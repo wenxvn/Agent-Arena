@@ -35,17 +35,29 @@
 3. **六张适配图各只有 1 条手算 fixture**。已按 `tests/test_v7_hand_traces.py` 的已发布值补充第二条，覆盖成功/失败或边界。
 4. **Runner 最初只统计解析失败，不统计环境形状拒绝**，导致 `INVALID_ACTION_SCHEMA` 不计入 `invalid_action_count` 与连续 schema 故障。已修复并加测试。
 
-### 3.3 正式运行前的一次预跑与作废
+### 3.3 正式运行前的两次预跑与作废
 
-在第一次启动 90 局时，Runner 的 wall-clock 安全上限是 10 分钟。MAP-03 的最难轨迹在
-慢请求下会超过该上限，导致“决策预算尚未用完就被截尾”。这不是预登记的能力约束，
-而是运行器安全参数，因此：
+**预跑 A（pre_timeout_001）**：Runner 的 wall-clock 安全上限最初是 10 分钟。MAP-03 的
+最难轨迹在慢请求下会超过该上限，导致“决策预算尚未用完就被截尾”。这不是预登记的
+能力约束，而是运行器安全参数，因此：
 
 - 已产生的 5 个正式 episode 与部分 MAP-03 轨迹全部移入
   `runs/v8/aborted/pre_timeout_001/`，**不计入正式 90 局**；
 - 旧账本一并封存，费用约 ¥0.02，不混入新账本；
 - 将安全上限改为 30 分钟（正式约束仍是决策预算与 `step_limit`），重新冻结后从零开始；
 - 该次预跑的完整 trace、账本与旧 freeze manifest 保留，供审计。
+
+**预跑 B（pre_vocab_001）**：重跑后 MAP-01 三局都在 4 个决策内失败，且从未尝试
+`interact`。审计发现运行时没有公开交互目标的字符串词表：V4 `map_spec.yaml` 把
+`visible_objects` 列为公开字段，但 V8 的 `PUBLIC_FIELDS` 只有状态量；模型只能猜
+`oxygen_relay`、`start_support` 等目标名。按提纲“接口不明不可作为正式结果”，这属于
+接口缺陷，不是能力失败。
+
+- 已产生的 6 个 episode 与账本移入 `runs/v8/aborted/pre_vocab_001/`；
+- 在 `prompts.py` 增加**公开静态交互词表**（只列可尝试的字符串，不表示当前位置可执行
+  或顺序正确，不泄露隐藏真值），覆盖 MAP-01–06 这类需要 `target/choice` 的地图；
+- 规则模块没有改动，`rule_hash` 不变；`prompt_hash` 对 MAP-01–06 变化；
+- 重新冻结后从零开始正式 90 局。
 
 ### 3.4 设计文件与 V7 卡片
 

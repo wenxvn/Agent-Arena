@@ -111,6 +111,58 @@ _CONDITION_NOTES = {
     "history5_casebook": "本条件提供结构化案卷；条目只能引用已公开证据。",
 }
 
+#: 公开的交互词表。只列“可以被尝试”的字符串，不表示当前位置可执行、
+#: 前置条件已满足或顺序正确；这些仍由 Observation 与结果码决定。
+_VOCABULARY: dict[str, tuple[str, ...]] = {
+    "MAP-01": (
+        "inspect(target): power_diagram, scrubber_status, airlock_gauge",
+        "pickup(item_id): patch_kit",
+        "interact(target, choice): oxygen_relay/start_support, "
+        "local_breaker/route_arm, local_breaker/route_support, "
+        "hull_panel/apply_patch, main_reactor/reset_bus, "
+        "airlock_console/pressure_test, bridge_console/confirm_repair",
+    ),
+    "MAP-02": (
+        "inspect(target): alarm_panel, core_cradle",
+        "pickup(item_id): crew",
+        "interact(target, choice): nav_core/brace_in_case, "
+        "center_gate/isolate_L1, crew/escort",
+    ),
+    "MAP-03": (
+        "inspect(target): telemetry_panel",
+        "interact(target, choice): aux_panel/restore_power, "
+        "sample_manifest/read_tag, cryo_case/stabilize_sample, "
+        "antenna/repair, telemetry/transmit",
+        "submit(target, answer): route_console（answer 使用已读到的航线码）",
+    ),
+    "MAP-04": (
+        "inspect(target): tide_gauge",
+        "pickup(item_id): wick",
+        "interact(target, choice): lamp/fit_wick, lamp/ignite",
+    ),
+    "MAP-05": (
+        "inspect(target_id): schedule_chart",
+        "switch_power(station): R, B, W",
+        "interact(target_id, operation): R|B|W 配合 "
+        "calibrate_align, calibrate_phase_lock, send_signal",
+    ),
+    "MAP-06": (
+        "inspect(target_id): forecast",
+        "interact(target_id, operation): P/repair_lighthouse, G/harden",
+    ),
+}
+
+
+def vocabulary(environment: MapEnvironment) -> str:
+    items = _VOCABULARY.get(environment.map_id)
+    if not items:
+        return ""
+    lines = "\n".join(f"- {item}" for item in items)
+    return (
+        "可用动作名（只列公开字符串词表；不表示当前位置可执行或顺序正确，"
+        "前置条件仍以 Observation 与结果码为准）：\n" + lines + "\n"
+    )
+
 
 def map_docstring(environment: MapEnvironment) -> str:
     text = (type(environment).__doc__ or "").strip().splitlines()
@@ -157,6 +209,7 @@ def system_prompt(
         '{"decision_reason":"不超过 200 字的公开理由","action":{"tool":"..."}}。'
         "action 的字段组合必须精确匹配下列契约之一；不得添加未列出的字段，也不得提交 null。\n"
         f"动作契约：\n{action_contract(environment)}\n"
+        f"{vocabulary(environment)}"
         f"本局最多 {decision_budget} 个决策；超时、资源耗尽、机制失败都是合法结局。"
     )
 
@@ -191,4 +244,4 @@ def user_prompt(
     return "\n".join(parts)
 
 
-__all__ = ["action_contract", "map_docstring", "system_prompt", "user_prompt"]
+__all__ = ["action_contract", "map_docstring", "system_prompt", "user_prompt", "vocabulary"]
