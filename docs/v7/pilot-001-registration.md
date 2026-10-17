@@ -1,6 +1,6 @@
 # V7 Pilot-001 预登记：六图 12 局配对探针
 
-> 状态：已预登记并已执行；首次执行结果见 [`pilot-001-report.md`](pilot-001-report.md)，同一矩阵在独立新账本上的 12/12 完整重跑见 [`pilot-001r-report.md`](pilot-001r-report.md)。本文件保留预登记原文，不回填结果。
+> 状态：已预登记并已执行；执行结果见 [`pilot-001-report.md`](pilot-001-report.md)。本文件保留预登记原文，不回填结果。
 > 登记日期：2026-10-17。
 > 运行基底：V6 六图运行时的只读 V7 指标层；不修改 V4/V5/V6 规则、Action 契约、Trace 写出器或历史账本。
 > 30 张 V7 设计卡已于 2026-10-17 由用户复核，记录为 `human_approved`；12 条 `V7-DCR` 仍为 `proposed`，本 pilot 不据此修改规则。
