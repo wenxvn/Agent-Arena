@@ -121,6 +121,8 @@ _VOCABULARY: dict[str, tuple[str, ...]] = {
         "local_breaker/route_arm, local_breaker/route_support, "
         "hull_panel/apply_patch, main_reactor/reset_bus, "
         "airlock_console/pressure_test, bridge_console/confirm_repair",
+        "公开规则：未供氧时每 tick 氧气余量 -1；连续断供超过 3 tick 立即失败；"
+        "恢复供氧后断供计数清零。",
     ),
     "MAP-02": (
         "inspect(target): alarm_panel, core_cradle",

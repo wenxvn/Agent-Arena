@@ -11,6 +11,7 @@ def test_vocabulary_lists_public_interaction_names() -> None:
     prompt = system_prompt(create_environment("MAP-01"), decision_budget=30)
     assert "oxygen_relay/start_support" in prompt
     assert "bridge_console/confirm_repair" in prompt
+    assert "连续断供超过 3 tick" in prompt
     assert "可用动作名" in prompt
 
 
