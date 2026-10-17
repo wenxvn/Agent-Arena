@@ -1330,3 +1330,21 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 下一步：按 `docs/v7/pending-runtime/README.md` 推进 24 图运行时切片；DCR 在对应地图接入前逐条决定。
 
 关联提交：本次提交。
+
+## 2026-10-17 V7 Pilot-001 六图 12 局真实 API 探针（按 unknown spend 停止）
+
+事件：30 卡人工复核后，按 `docs/v7/pilot-001-registration.md` 运行 V7 六图 12 局 MiMo pilot。实际启动 10 局、9 局完整结束；MAP-26 `recovery_full` 第 8 次请求返回 `APIConnectionError`，provider 未给出可确认结算，账本按 `UNKNOWN_PROVIDER_SPEND` 关闭，MAP-30 两局未启动。
+
+原因：用户已授权使用 MiMo API，且 30 卡已完成人工复核。预登记明确要求新实验单独登记预算、样本、停止规则和冻结 gate；本 pilot 只覆盖有运行时的六图，不触碰 24 图设计态，也不把 V6 历史结果当作新实验数据。
+
+改动：新增 `docs/v7/pilot-001-registration.md`、`docs/v7/pilot-001-report.md`、`scripts/run_v7_pilot.py` 与 `tests/test_v7_pilot.py`；在 `docs/v7/README.md`、`docs/scope/scope.md`、`AGENTS.md` 记录 pilot 状态。运行使用新的 `runs/v7` registry、账本与目录，不打开或追加 V2/V5/V6 账本；运行前重新冻结 V6 offline gate（`5d97a589…`），gate 绑定 `877dc01`。
+
+结果：10 局启动、9 局完整、1 局中断；67 次请求、46,044 input / 7,614 output tokens、实际 CNY `0.05086048`、预留 CNY `0.68608`、provider 墙钟 398.718 秒；操作上限 CNY `2.00`、账本硬上限 CNY `11.00`。V7 复算 10 条 trace：10 `computed`、0 `invalid_trace`；MAP-26 中断局 `repair_success=censored`，不作为完整样本。关键读数：MAP-08 两局成功；MAP-16 L1 `makespan_gap=0`、L3 `node_capacity_conflicts=1` 且 `makespan_gap=N/A`；MAP-18 两局失败、`service_rate` 0–0.166667；MAP-22 L3 graph memory 成功、`path_gap=3`；MAP-26 free diagnosis 成功、recovery 中断；MAP-30 无数据。
+
+验证：`scripts/report_v7_metrics.py` 处理 10 条 trace 全部成功；V7 定向测试 90 passed；pilot 选择测试 2 passed；`scripts/validate_v7_metrics.py`、`audit_v7_cards.py`、`check_v7_leakage.py` 保持通过。对 `runs/v7` 扫描 API 密钥、Bearer 授权头、密钥环境变量赋值与常见密钥前缀文本为 0 hits。全量冻结 gate 检查在运行前全绿。
+
+边界：pilot 未完成 12 局，不能计算成功率、均值或显著性；单 seed、每条件 1 局，且多组条件对使用不同实例；MAP-30 无新数据；24 图仍无运行时；12 条 DCR 仍为 `proposed`。账本已关闭，不续跑、不新建 successor ledger；报告提交后 gate 因 HEAD 前进而失效，后续新实验必须重新冻结。
+
+下一步：先确认 provider 连接稳定性；若要完成 12 局或扩到 30 图，必须新建预登记、预算与冻结 gate，不复用本次账本。
+
+关联提交：本次提交。
