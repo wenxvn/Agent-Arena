@@ -14,10 +14,12 @@ def test_vocabulary_lists_public_interaction_names() -> None:
     assert "可用动作名" in prompt
 
 
-def test_vocabulary_is_absent_for_maps_without_interaction_choice() -> None:
+def test_vocabulary_covers_numeric_control_maps() -> None:
     environment = create_environment("MAP-19")
-    assert vocabulary(environment) == ""
-    assert "可用动作名" not in system_prompt(environment, decision_budget=30)
+    text = vocabulary(environment)
+    assert "set_cooling" in text
+    assert "read_temperature" in text
+    assert "map19." not in system_prompt(environment, decision_budget=30)
 
 
 def test_vocabulary_does_not_leak_private_state() -> None:

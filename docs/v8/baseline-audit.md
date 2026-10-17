@@ -35,7 +35,7 @@
 3. **六张适配图各只有 1 条手算 fixture**。已按 `tests/test_v7_hand_traces.py` 的已发布值补充第二条，覆盖成功/失败或边界。
 4. **Runner 最初只统计解析失败，不统计环境形状拒绝**，导致 `INVALID_ACTION_SCHEMA` 不计入 `invalid_action_count` 与连续 schema 故障。已修复并加测试。
 
-### 3.3 正式运行前的两次预跑与作废
+### 3.3 正式运行前的三次预跑与作废
 
 **预跑 A（pre_timeout_001）**：Runner 的 wall-clock 安全上限最初是 10 分钟。MAP-03 的
 最难轨迹在慢请求下会超过该上限，导致“决策预算尚未用完就被截尾”。这不是预登记的
@@ -58,6 +58,16 @@
   或顺序正确，不泄露隐藏真值），覆盖 MAP-01–06 这类需要 `target/choice` 的地图；
 - 规则模块没有改动，`rule_hash` 不变；`prompt_hash` 对 MAP-01–06 变化；
 - 重新冻结后从零开始正式 90 局。
+
+**预跑 C（pre_vocab_full_001）**：只覆盖 01–06 的词表仍不足。审计发现 MAP-14/15/17/
+23/25/27/28/29/30 也存在“动作字符串不在 Observation 中”的同类问题（如
+`A_sun_wheel`、`OPEN_ACCOUNT`、`array_fuse_B`、`EVENT_1_HANDOFF`）。因此：
+
+- 已产生的 episode 与账本移入 `runs/v8/aborted/pre_vocab_full_001/`；
+- 将公开词表扩展到全部需要字符串枚举/操作名的 19 张图；仍只列可尝试的名字与值域，
+  不列隐藏真值、正确顺序或正确答案；
+- 规则模块仍未改动，`rule_hash` 不变；`prompt_hash` 变化；
+- 重新冻结后开始正式 90 局。
 
 ### 3.4 设计文件与 V7 卡片
 

@@ -150,6 +150,157 @@ _VOCABULARY: dict[str, tuple[str, ...]] = {
         "inspect(target_id): forecast",
         "interact(target_id, operation): P/repair_lighthouse, G/harden",
     ),
+    "MAP-07": (
+        "inspect(target_id): water_levels, pipe_diagram",
+        "interact(target_id=console, operation): set_valve 配 "
+        'arguments={"valve_id": v1|v2|v3|v4, "open": true|false}；'
+        "start_pump, stop_pump；predict_next_levels 配 "
+        'arguments={"A":int,"B":int,"C":int,"D":int}',
+    ),
+    "MAP-08": (
+        "inspect(target_id): X, Y",
+        "interact(target_id, operation): X|Y/pressure_test_X|pressure_test_Y, "
+        "B|D|F/repair_leak",
+    ),
+    "MAP-09": (
+        "inspect(target_id): water_gauges, power_panel, oxygen_panel",
+        "interact(target_id, operation): E/bulkhead_E_P 配 "
+        'arguments={"mode": preserve|sacrifice}；P/pump_once, '
+        "E/restore_power_line, O/restart_oxygen, O/replenish_oxygen, "
+        "C/send_distress_packet",
+    ),
+    "MAP-10": (
+        "walk(edge_id) / drive_snowmobile(edge_id[, direction])：使用 visible_edges 中的边",
+        "load_fuel(quantity): 1..5；set_heating(choice): on|off；"
+        "activate_generator()；transmit()；wait(ticks)",
+    ),
+    "MAP-11": (
+        "move(edge_id[, direction, loaded_return])：使用 visible_edges 中的边；"
+        "负重返程需 loaded_return=true",
+        "scout()；resupply(quantity)；rest()；rescue()",
+    ),
+    "MAP-12": (
+        "set_heating(choice): on|off；start_greenhouse_power()；plant_batch()；"
+        "research()；repair_controller()；wait()",
+        "transfer(commodity, from_node, to_node, edge_id, quantity): "
+        "commodity ∈ food|parts；quantity 为正整数",
+    ),
+    "MAP-13": (
+        "read_inscription(room): C, N, E, S, W",
+        "record_constraint(clue_id): 使用 observed_clues 中已读到的 clue_id",
+        'set_trial_layout(layout_by_room): {"N": 符号, "E": 符号, "S": 符号, '
+        '"W": 符号}，符号 ∈ 日|眼|芦|甲 且各一次',
+        "verify_layout()",
+    ),
+    "MAP-14": (
+        "ask(claim_id): A1, A2, B1, B2, C1, C2",
+        "compare_evidence(choice, person_id, support_evidence_ids): "
+        "choice ∈ A_sun_wheel|B_crescent|C_star_well；"
+        "person_id ∈ A_priest|B_priest|C_priest；support 使用 ANSWER_* / "
+        "ARCHIVE_NOT_C 等已公开证据 id",
+        "submit_configuration(choice): A_sun_wheel|B_crescent|C_star_well",
+    ),
+    "MAP-15": (
+        "inspect_symbols(area): A, B, C, T",
+        "choose_door(slot_index): 从 1 开始，最多 4",
+        "record_rule(rule_id, supporting_sample_ids): rule_id 为自定义假设名，"
+        "supporting_sample_ids 使用 training_sample_log 中的 id",
+        "predict_transition(answer): red|blue|gold|green（只在 T 可用）",
+    ),
+    "MAP-16": (
+        "set_route(train_id, next_node): train_id ∈ a|b；next_node 使用 topology 中的节点",
+        "occupy_siding(train_id, next_node)；release_section(train_id, section_id)；"
+        "inspect_network()；move_train()",
+    ),
+    "MAP-17": (
+        "set_timetable(tick, operations): tick 为 0..11；operations 形如 "
+        '{"T_A": {"op": "release", "to": "B"}}',
+        "op ∈ release（配 to）|stop（配 board）|switch_line（配 line, board）|delay；"
+        "train_id ∈ T_A|T_C|T_D|T_F；board 是 {OD: 人数}",
+    ),
+    "MAP-18": (
+        "set_timetable(tick, operations): operations 形如 "
+        '{"T_R1": {"op": "release", "to": "R2"}}',
+        "op ∈ release（配 to）|detour（配 to）|temporary_stop|"
+        "turnback（配 reverse_toward, duration_ticks）|cancel_service（配 task_id）；"
+        "train_id ∈ T_R1|T_R2|T_R3|T_B|T_G|T_X",
+    ),
+    "MAP-19": (
+        "read_temperature(station): A, B, C",
+        "set_cooling(set_cooling): 三个 0..2 的整数（A,B,C）",
+        "adjust_loads(adjust_loads): 三个 0..2 的整数（停机/降载/满载）",
+        "forecast_next(forecast_next): 三个整数；wait()",
+    ),
+    "MAP-20": (
+        "read_temperature(station): A, B, C",
+        "set_flow(set_flow_tenths): 直供流量数组（十分之一单位）",
+        "open_bypass(open_bypasses): 形如 "
+        '{"AB": {"from": "A", "to": "B", "input_tenths": 5}}，link ∈ AB|BC',
+        "adjust_loads(adjust_loads): FULL|REDUCED|IDLE 数组；wait()",
+    ),
+    "MAP-21": (
+        "move(edge_id)：使用 available_edges",
+        "measure()（2 tick）；reinforce_sample_case()；"
+        "collect_and_carry_sample(sample_id): R_SURFACE_ASH|W_LAYERED_CORE|S_DEEP_ISOTOPE",
+    ),
+    "MAP-22": (
+        "move(bearing)：使用 visible_exit_bearings",
+        "observe_signpost()；check_goal()；return_to_camp()；"
+        "write_memory(facts)（只写亲历的 node_page / traversed_edge_page）",
+    ),
+    "MAP-23": (
+        "investigate(entrance): X, Y, Z；scout() 在 N|R|H 侦察；"
+        "mark(choice): X|Y|Z；resupply() 只在 A",
+    ),
+    "MAP-24": (
+        "move(to)：使用 local_connections；take(item_id): relic_C|supply_case_D；"
+        "probe_bridge()；measure_tide()；record_route()；wait()",
+    ),
+    "MAP-25": (
+        "move(to): H, T, A, S；inspect(target): equipment|array",
+        "equip(item_id): eva_suit|diagnostic_unit|wrench|safety_tether",
+        "diagnose(device_id): diagnostic_unit；"
+        "repair(target_id, tool_ids[, diagnosis_code]): "
+        "target_id=array_fuse_B，tool_ids 需含 diagnostic_unit 与 wrench；"
+        "diagnosis_code 使用 diagnose 后公开的值，也可省略",
+        "depressurize()；eva_exit()；return_to_A()；pressurize()",
+    ),
+    "MAP-26": (
+        "move(to): D, A, B；read_log(log_id)；test(test_id)；"
+        "take_spare(part_id)；replace(part_id)；rollback()；restart()",
+    ),
+    "MAP-27": (
+        "load(item_id): sample_container|medical_kit|relay_repair_kit；"
+        "drive(to)；charge()；repair_relay()；sample(item_id)",
+        "rescue(operation[, item_id]): field_stabilize（配 medical_kit）|"
+        "remote_evacuation；submit()",
+    ),
+    "MAP-28": (
+        "investigate(target_id): vault_lock_events|footprint_trail；"
+        "read_record(record_id): key_registry；interview(witness_id): kitchen_cook；"
+        "record(clue_id)：使用已观察的具体证据 id",
+        "submit(claims, citations_by_claim): claims 形如 "
+        '[{"claim_id": "person_id", "value": "..."}]，四个 claim_id 为 '
+        "person_id, entry_path_id, entry_time, exit_time；"
+        "citations_by_claim 为 {claim_id: [evidence_id, ...]}",
+    ),
+    "MAP-29": (
+        "ask(npc_id, question_template_id): npc_id ∈ A|B|C|D；template ∈ "
+        "OPEN_ACCOUNT|TIME_BASIS|LOCATION_BASIS|ARCHIVE_CROSS_INDEX|SOUND_PATTERN",
+        "investigate(target_id): study_clock|courtyard_bell_trace；"
+        "compare_testimony(npc_id, statement_ids, against_evidence_ids)",
+        "submit(event_time, event_location, unreliable_npc_id, support_ids, "
+        "unreliability_proof_ids)",
+    ),
+    "MAP-30": (
+        "inspect(evidence_id)；interview(npc_id, topic_id, shown_evidence_ids, "
+        "shown_casebook_entry_ids): npc_id ∈ ARCHIVE_CLERK|BANQUET_CLERK|"
+        "KITCHEN_COOK|TOWER_WATCH；topic_id ∈ Q4_CODEBOOK|EVENT_1_HANDOFF|"
+        "EVENT_2_WAX|EVENT_3_SIGNAL",
+        "record(entry_id, evidence_ids)；compare_records(entry_ids)；"
+        "submit_intermediate_hypothesis(candidate_person, confidence, event_ids_known)",
+        "formal_accuse(person_id, event_claims, cited_entry_ids)",
+    ),
 }
 
 
