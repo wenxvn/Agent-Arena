@@ -1366,3 +1366,21 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 下一步：若要形成 V7 主实验，需新预登记同实例多 seed/重复配对矩阵，并单独冻结预算、停止规则与 gate；24 图运行时继续按 `docs/v7/pending-runtime/MAP-XX.md` 逐图接入。
 
 关联提交：本次提交。
+
+## 2026-10-17 V9 30 图难度定标、失败归因与能力区分度
+
+事件：按用户提供的 V9 提纲完成 30 图逐图能力构念审计、失败归因、独立基线、指标第二路径与有界 MiMo 复测。V8 90 局、账本、冻结 hash 与规则保持只读；V9 新增独立代码、文档、账本与实验 ID。
+
+原因：V8 的 0/3 与 3/3 不能直接解释为能力；需要先区分公开信息/接口/预算/场景可解性，再判断哪些图达到研究级测量。
+
+改动：新增 `src/agent_arena/v9/`（审计、证据包、120 条独立指标复算、30 个公开启发式/消融、独立 ¥10 账本、有界 runner、公开信息补充与指标叠加）、`docs/v9/`（30 份逐图审计、14 份 DCR、状态矩阵、最终报告）、`tests/test_v9_*.py` 与 `scripts/v9_*`。10 张图补充公开信息（05/07/08/09/10/11/12/16/25/26），9 图新增只读指标叠加；V8 规则、账本与 Trace 零改动。
+
+结果：Batch 0 复算 90/90，17/90 成功，22 张 0/3；正式费用 ¥1.27464628，全部账本三口径为 ¥1.27464628 / ¥1.39004496 / ¥1.45502656。30 图审计结论：**7 张 VALIDATED、8 张 NEEDS_MORE_EVIDENCE、13 张 NEEDS_REDESIGN、2 张 BLOCKED**；11 张存在构念旁路（MAP-06 seed 0、MAP-15 goal 泄露、MAP-21 直达撤离等），至少 13 张 0/3 首因是公开信息/接口而非能力。基线：55/55 Oracle、600 次随机 11 成功（仅 MAP-15/21）、30/30 公开启发式、120/120 独立指标复算。MiMo V9 预登记 29 条记录，settled **¥0.34049884**、512 请求、2 次 `InternalServerError` unknown spend；主账本与 supplement_001 按规则封账、未重开，剩余局在 supplement_002 完成。MAP-10/11 0/2→2/2、MAP-07/26 0/1→1/1、MAP-09 从 2 决策短路后移到 12 决策缺氧；MAP-12 `v9_fixed` 两次中断后停止，未完成。
+
+验证：`pytest` 888 passed；`ruff check src/agent_arena/v9 tests/test_v9_*.py scripts/v9_*.py scripts/run_v9_mimo.py` 通过；`mypy src` 166 个源文件 0 issues；`git diff --check` 通过；V8 冻结 hash 与 90 局 Trace 未改。
+
+边界：MiMo 是 E3-pilot，样本小、单实例 seed、模型单一，不作显著性/排名；30 份审计是 `agent_reviewed`，没有 `human_approved`；`runs/` 是本地生成物。V9 只证明 7 张图当前可用于研究级测量，其余仍需接口/指标/构念修复。
+
+下一步：先处理 MAP-18 horizon、MAP-03 记忆通道、MAP-06 cohort、MAP-15 goal、MAP-21 判据；再对 07/08/09/10/11/12/26 做多 seed 复核；把 9 条 overlay 指标提升为 V10 正式指标。
+
+关联提交：本次提交。

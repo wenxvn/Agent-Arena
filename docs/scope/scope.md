@@ -432,3 +432,17 @@ V3 按 [spec 0017](../specs/0017-world-redesign-v3/index.md) 推进，内容来�
 Spec [0018](../specs/0018-v5-six-map-measurement.md)
 
 真实模型阶段记录（2026-10-16）：冻结 offline gate 在 `e440cc1b599a5de4a57650f418d78b03c4746399` 通过。MiMo smoke 的 MAP-08 首局 70 次决策均为 `INVALID_ACTION_SCHEMA`，依研究提纲的系统接口失败停止；第 71 个请求 reservation 未结算，唯一 V5 ledger 因 unknown spend 关闭。0/39 episode 完成，六局 smoke gate 未通过，Stage C 未启动。停止后补全 prompt JSON 字段说明，加入连续 3 次 schema 拒绝即 fail-closed 的离线保护；封账后经用户授权的一次诊断显示 Action 缺少 `tool`、改用 `verb`。随后在 provider 边界加入同义动作键折叠（`verb` 等唯一同义键折叠为 `tool` 后再走严格校验，并在 trace 记录 `recovered_action_discriminator`），歧义/未知别名仍按非法处理；再按用户授权实时复测：3/3 首步请求 schema 合法，模型误读 `edge_id` 后补充 MAP-08 公开 Observation 编码说明，seed 0 单局 5 步通关（均为封账后诊断，不计入 39 局）。用户随后授权新建登记 pilot：归档旧 registry、在提交 `aae5088` 重新冻结 gate（`f0619e80…`），experiment `0d0685c8-…` 完成 **39/39 局**，15/39 成功，689 请求、0 unknown spend、报告费用 ¥0.24287288（逐图 3-seed：MAP-08 4/6、MAP-16 1/6、MAP-18 0/6、MAP-22 0/6、MAP-26 4/6、MAP-30 6/9）。全量 518 项测试与 scoped Ruff/mypy 通过。V5 仍为 in-progress：MAP-16/18/22 在当前条件下几乎无成功，须先修正测量设计；固定 scene 重复 seed 不构成模型排名或泛化结论。
+
+### 21. V9 30 图难度定标、失败归因与能力区分度 · done（2026-10-17）
+
+按根目录 `研究提纲/V9：30图难度定标、失败归因与能力区分度优化.md` 执行。V8 90 局、账本、冻结 hash 保持只读；V9 新增独立 `src/agent_arena/v9/`、`docs/v9/`、`runs/v9/` 与账本。
+
+- [x] Batch 0：90/90 正式局可复算，header/runtime hash 30/30 一致，费用三口径（正式 ¥1.27464628 / 含补跑 ¥1.39004496 / 含作废预跑 ¥1.45502656）。
+- [x] Batch 1–4：30/30 逐图审计、22 张 0/3 根因分类、3 张 3/3 旁路检查、10 世界三难度递进评估。
+- [x] Batch 5：55/55 Oracle、600 次 `legal_random`（11 成功，仅 MAP-15/21）、30/30 公开启发式、120/120 独立指标复算。
+- [x] Batch 6：10 张图的公开信息补充（05/07/08/09/10/11/12/16/25/26）与 9 图指标叠加；14 份 DCR，另有 MAP-25/26/27 专项候选；V8 规则零改动。
+- [x] 状态矩阵：VALIDATED 7、NEEDS_MORE_EVIDENCE 8、NEEDS_REDESIGN 13、BLOCKED 2；未标记 `human_approved`。
+- [x] 有界 MiMo V9：预登记 29 条记录，settled **¥0.34049884**，2 次 provider `InternalServerError` unknown spend；主账本与 supplement_001 按规则封账，剩余局在 supplement_002 完成。MAP-07/10/11/26 的前后对照改善（0→1 或 0/2→2/2），MAP-09 从 2 决策短路后移到 12 决策缺氧，MAP-12 `v9_fixed` 未完成。逐局与费用见 `docs/v9/mimo-results.md`，不构成主实验。
+- [x] 验证：888 pytest passed、`ruff`/`mypy` scoped 通过、`git diff --check`；详见 `docs/v9/final-report.md`。
+
+边界：V9 只证明“当前 30 图中 7 张可用于研究级测量”，其余 23 张仍是工程可运行或需要重构；0/3 不能直接解释为模型能力为零。真实 MiMo 是预登记的 E3-pilot，不用于排名或显著性断言。

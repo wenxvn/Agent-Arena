@@ -1,0 +1,256 @@
+{
+  "analysis_plan": {
+    "metrics": "V8 旧指标 + V9 overlay（censored 投影、map12 研究分等）并列",
+    "n": "每条件 2 次重复；floors/bypass 各 1 次；不做显著性断言",
+    "primary": "同图同实例、同模型、同预算的 v8_compat vs v9_fixed 描述性对照"
+  },
+  "budget_cny": "10",
+  "commit": "35e37117e890c8e165a708d89204a01cf1801466",
+  "created_at": "2026-10-17T13:21:24.187127+00:00",
+  "decision_budgets": {
+    "MAP-06": 46,
+    "MAP-07": 30,
+    "MAP-08": 38,
+    "MAP-12": 60,
+    "MAP-14": 38,
+    "MAP-15": 46,
+    "MAP-18": 46,
+    "MAP-21": 46,
+    "MAP-22": 30,
+    "MAP-26": 38,
+    "MAP-29": 38
+  },
+  "episodes": [
+    {
+      "arm": "v8_compat",
+      "decision_budget": 60,
+      "hypothesis": "补公开 transfer 边后，维修链可执行，研究分应成为主要失败点。",
+      "map_id": "MAP-12",
+      "replicate_id": 1,
+      "seed": 0
+    },
+    {
+      "arm": "v9_fixed",
+      "decision_budget": 60,
+      "hypothesis": "补公开 transfer 边后，维修链可执行，研究分应成为主要失败点。",
+      "map_id": "MAP-12",
+      "replicate_id": 0,
+      "seed": 0
+    },
+    {
+      "arm": "v9_fixed",
+      "decision_budget": 60,
+      "hypothesis": "补公开 transfer 边后，维修链可执行，研究分应成为主要失败点。",
+      "map_id": "MAP-12",
+      "replicate_id": 1,
+      "seed": 0
+    },
+    {
+      "arm": "v8_compat",
+      "decision_budget": 30,
+      "hypothesis": "公开 control_panel 后，阀门操作是否真正发生（区分接口与预判）。",
+      "map_id": "MAP-07",
+      "replicate_id": 0,
+      "seed": 0
+    },
+    {
+      "arm": "v9_fixed",
+      "decision_budget": 30,
+      "hypothesis": "公开 control_panel 后，阀门操作是否真正发生（区分接口与预判）。",
+      "map_id": "MAP-07",
+      "replicate_id": 0,
+      "seed": 0
+    },
+    {
+      "arm": "v8_compat",
+      "decision_budget": 38,
+      "hypothesis": "公开复合边名与 inspect 目标后，诊断链是否启动。",
+      "map_id": "MAP-08",
+      "replicate_id": 0,
+      "seed": 0
+    },
+    {
+      "arm": "v9_fixed",
+      "decision_budget": 38,
+      "hypothesis": "公开复合边名与 inspect 目标后，诊断链是否启动。",
+      "map_id": "MAP-08",
+      "replicate_id": 0,
+      "seed": 0
+    },
+    {
+      "arm": "v8_compat",
+      "decision_budget": 38,
+      "hypothesis": "公开 log/test/part 枚举后，诊断→修复→重启是否可执行。",
+      "map_id": "MAP-26",
+      "replicate_id": 0,
+      "seed": 0
+    },
+    {
+      "arm": "v9_fixed",
+      "decision_budget": 38,
+      "hypothesis": "公开 log/test/part 枚举后，诊断→修复→重启是否可执行。",
+      "map_id": "MAP-26",
+      "replicate_id": 0,
+      "seed": 0
+    },
+    {
+      "arm": "v9_fixed",
+      "decision_budget": 38,
+      "hypothesis": "3 锁盲交 5 步是否仍能通关（检验 CONSTRUCT_BYPASS 的重复性）。",
+      "map_id": "MAP-14",
+      "replicate_id": 0,
+      "seed": 0
+    },
+    {
+      "arm": "v9_fixed",
+      "decision_budget": 46,
+      "hypothesis": "12 决策硬上限与窗口旁路是否稳定复现（D/CONSTRUCT 证据）。",
+      "map_id": "MAP-18",
+      "replicate_id": 0,
+      "seed": 0
+    },
+    {
+      "arm": "v9_fixed",
+      "decision_budget": 30,
+      "hypothesis": "公开记忆 schema 下 30 决策是否仍不足（B/D 边界）。",
+      "map_id": "MAP-22",
+      "replicate_id": 0,
+      "seed": 0
+    },
+    {
+      "arm": "v9_fixed",
+      "decision_budget": 38,
+      "hypothesis": "补齐比对/提交语义后，证词分诊是否仍为 0。",
+      "map_id": "MAP-29",
+      "replicate_id": 0,
+      "seed": 0
+    },
+    {
+      "arm": "v9_fixed",
+      "decision_budget": 46,
+      "hypothesis": "seed=5 长风暴下，直达修复是否按设计失败（检验 seed 0 旁路）。",
+      "map_id": "MAP-06",
+      "replicate_id": 0,
+      "seed": 5
+    },
+    {
+      "arm": "v9_fixed",
+      "decision_budget": 46,
+      "hypothesis": "goal 仍泄露规则时，短策略是否继续 100% 通关（基线重复）。",
+      "map_id": "MAP-15",
+      "replicate_id": 0,
+      "seed": 0
+    },
+    {
+      "arm": "v9_fixed",
+      "decision_budget": 46,
+      "hypothesis": "直达 O_E 是否继续 1 决策通关（旁路重复）。",
+      "map_id": "MAP-21",
+      "replicate_id": 0,
+      "seed": 0
+    }
+  ],
+  "experiment_label": "V9-PILOT-001-SUPPLEMENT-001",
+  "manifest_hash": "06fd6a6a3e50f2dc9e800445cdb720cda07ee75fa5c9c5a6ae86311d8c259ed2",
+  "max_episodes": 16,
+  "model": "mimo-v2.6-flash",
+  "provider": "openai",
+  "reason": "主账本在 MAP-12 R1 v8_compat 第 29 次请求遇到 provider InternalServerError，按规则以 UNKNOWN_PROVIDER_SPEND 关闭；不重开旧账本，补充账本只执行预登记中尚未完成的 episode。",
+  "runtime_hashes": {
+    "MAP-06": {
+      "metric_schema_hash": "231eeb42db153e168379291687e3095002fa92fdd26ab71f399f2f4b30274c18",
+      "rule_hash": "2adb4f3322d07b95fb81113a52d0b3e2a818fd464ada905ad630ae5b8c0e508f",
+      "scenario_hash": "f7ed000d38c6c5d74b3d947bc314c3560c26ec71259d6eee930a38599b2ee9ac",
+      "source_hash": "47c7238f33395959152c4b8c67b9a2f985c7bdcb1ec1a77d9df399b37438d353",
+      "v8_compat": "2cf20ce61105a4571842c8e38e1168111cecf30986e146ab31d4066c13860834",
+      "v9_fixed": "2cf20ce61105a4571842c8e38e1168111cecf30986e146ab31d4066c13860834"
+    },
+    "MAP-07": {
+      "metric_schema_hash": "1528fabb3ebbd137674d22701f12bdbb6ebc10802f8cde5e392f6816bc95804e",
+      "rule_hash": "1183d0dea109c7670eb69122eac7bafedf9a0ff3872feb5336d8266dfe336e88",
+      "scenario_hash": "c18b0b93713e055a2f8bfc162c3befdef1a98de46a15f290767afe38bc2bc81f",
+      "source_hash": "7863e3453d9515b5da31e1a5d8e1cca0e902f75d627710dc0b6afae569910fc5",
+      "v8_compat": "7a4bd1042bb5d5c83a333178af6213ac98e11e8c206c288a58296cca5102fac9",
+      "v9_fixed": "71e09afd432ab1fbb2872f61b4edb0766196a11b84d24837658ae583c1a88c24"
+    },
+    "MAP-08": {
+      "metric_schema_hash": "f89bbd9503fe2a7e16fa6188e727df26fda47f0af794fe31fe4ba9d21c5113df",
+      "rule_hash": "9a3827c2f5fe75bd6368e98035fde35a2048fedb73d0f150bbc64eda13e6ddd2",
+      "scenario_hash": "14daf6879328c3c86e2280809b061b1f11501ede87f9f8c98910440120d09050",
+      "source_hash": "09a3ae8f757c02e3eb4ed5e183ea4be8d581773a537c102a57af53c75880820b",
+      "v8_compat": "6ce88b04d9faa155804a6c8b116f217f9820e8f43a74d306283676e569ad6390",
+      "v9_fixed": "1e815108eb47419ecd86c49ac20f56e29722070f7c18548b2bf42ca9744df22d"
+    },
+    "MAP-12": {
+      "metric_schema_hash": "a550eb48e76727fe4fafaf2ab67e09cb5d03d5fc02ed0bf644b0dca73e860a06",
+      "rule_hash": "ec0b473f08d1aa5f2ce6e7288b7877ab07ba66fe8123c772e91f69f216d76bba",
+      "scenario_hash": "5d942a953707ad85e978b4c36a7364ed6d1e6f326c4cd25f79977c4eefe702be",
+      "source_hash": "9b3ff7b7e8867b48c8fd717058369883391007522238255708817525df343914",
+      "v8_compat": "fee5dd65ba07390484be5a8c8e8aceb4f23b7c7b5c0271d10a5d899f5c3a213b",
+      "v9_fixed": "02ccf51c8b526519312f61bb2d580c02abd4b58f3185d586ae9826a6fc713d25"
+    },
+    "MAP-14": {
+      "metric_schema_hash": "87e805885613bafae1ce9f81dd0fbf78611589ba6439449d65cde98a956f6673",
+      "rule_hash": "1c352a0fd891f588c267746134491cfdd74c53489846547b4754d2d1154b80a2",
+      "scenario_hash": "61267f92369922d2d30914a51cf765ff6cc500fe18845137751827b0fa7393d0",
+      "source_hash": "beff0b577fb7e35c10edaef414a00924869515d8a347732fb9ce3848410f5c19",
+      "v8_compat": "e7bd106cf4984266d975356902274932050725e1c012bf9f058dfe0de0327806",
+      "v9_fixed": "e7bd106cf4984266d975356902274932050725e1c012bf9f058dfe0de0327806"
+    },
+    "MAP-15": {
+      "metric_schema_hash": "5294368961d55a133851ae06f72438a2b6ea9cab0a233795436af1e9e8173f44",
+      "rule_hash": "7d8322b90d7c67cf77d8cd39bc98bc8327c56097de34c5ffa35310fa3cf12e4f",
+      "scenario_hash": "99b6ee5cd8aa556143afd35c095fc319d448a8c0c14864704246c005326c9e90",
+      "source_hash": "e6f1fceafa64da58fbb82c2f2e0c134a04d6774350858c73f52593b77a68b028",
+      "v8_compat": "54fa0fb08673fd5eb63b412fc0fabc2c68c317b577ee658dbf0db9e498da4efc",
+      "v9_fixed": "54fa0fb08673fd5eb63b412fc0fabc2c68c317b577ee658dbf0db9e498da4efc"
+    },
+    "MAP-18": {
+      "metric_schema_hash": "cadd9063303d73b9287c81940fb56e43a5866d0be42e32306d98a0e38f5572e2",
+      "rule_hash": "aa446dfaa631197cd1f46b66e5c481eef6a68da694f76776afd4567cd75c5d8e",
+      "scenario_hash": "52cde32f9e044815df6763b2feb13b840ef009520866edab51c4b3598a04d88a",
+      "source_hash": "e014f03dbb9b1292248bbb438863a736831fa8bdb9adad1c48b28dcceef4441e",
+      "v8_compat": "6634e89ab1f1a27e079591b5610983983d4f2d62a01cff578ddedc6e697af2dc",
+      "v9_fixed": "6634e89ab1f1a27e079591b5610983983d4f2d62a01cff578ddedc6e697af2dc"
+    },
+    "MAP-21": {
+      "metric_schema_hash": "98f4748000a0c1505103576ce538cda62050a1eb1dda71fd3ae3d87724f69ed9",
+      "rule_hash": "59675a2c82400a7f571fedecfeed78ebea4f72e963778a0efd58816e4f08439e",
+      "scenario_hash": "9bd77d5dcb8ae60fe9cd78bbc9343e9fd13d316ff46c57e75f1fa96b679085f9",
+      "source_hash": "1223109c8bd0460ed3d2922008a50a2e1ad4d7da61bb776ac98b1ac3dbfce156",
+      "v8_compat": "d1480bc9838f9d5b9f8b9af0e732fa38eef85b4a7ea692b03da6314722df1338",
+      "v9_fixed": "d1480bc9838f9d5b9f8b9af0e732fa38eef85b4a7ea692b03da6314722df1338"
+    },
+    "MAP-22": {
+      "metric_schema_hash": "f0f6f77e4e0557f0ea1f479314f70b4dd167b84f3b137443addbc522178893ef",
+      "rule_hash": "e856cec6daf4d388e89c2d239153cb5fbcb955de65c8d2ccd62753319f293856",
+      "scenario_hash": "efc76acdc469af8fd965418396b2a549b2147300a33fdb3eab2c70b150151412",
+      "source_hash": "0c7dc48a6ab872ef33c20cad407e9ecea008646099790813026235eeec70c9d7",
+      "v8_compat": "5d1068396fb0e1c26a396afcae8d4cd7c42aef47f6dd7bee55fd8c4ccd80d704",
+      "v9_fixed": "5d1068396fb0e1c26a396afcae8d4cd7c42aef47f6dd7bee55fd8c4ccd80d704"
+    },
+    "MAP-26": {
+      "metric_schema_hash": "6a53a449699c1a647d23711002166ee5987f86cff10e1fcada31334bc29cdcea",
+      "rule_hash": "a0de5a1957c0a82cff7636ba86f8ce513c85d7ec30edee810885dcd882cc595e",
+      "scenario_hash": "3a292dd03e01fb8fdd588e2b08dbdc3cf0b08cf975e3633e37750d9f4d612c0c",
+      "source_hash": "5008ebb0cbbcf128c1f767b6041aa9884c21662a913ecbe2ae0bcd91ff521ff0",
+      "v8_compat": "98c30e9cfdb9e8a98d986c85251cc54b2332fc308e7a78374b206116e1bfdc48",
+      "v9_fixed": "06c524416b96425e395c7d4024ba438e58bfb2344aef9abe9fe1487a701e91fe"
+    },
+    "MAP-29": {
+      "metric_schema_hash": "02f9dba16f750cb03255c6ce8a667a2a267280222783b0a1be8784d744460641",
+      "rule_hash": "9549fbc011f9d9aa9352e3ad12219700d08ac6c22a060dac3a297d642753d3e8",
+      "scenario_hash": "6ea1b4f0f4812258081c15ad2f062c3c3bf81141748c25a3216894d13007d5da",
+      "source_hash": "aa4133fe24695b904349d7f40a67430c49bcfd08aab5a7c0a49f622db725a820",
+      "v8_compat": "22cad66d69fd90646dfca500e985430544b84bbdc55e63543a5c8519e6891ec6",
+      "v9_fixed": "22cad66d69fd90646dfca500e985430544b84bbdc55e63543a5c8519e6891ec6"
+    }
+  },
+  "stop_rules": {
+    "consecutive_provider_errors": 3,
+    "global_cost": "¥10 硬上限；请求前预留",
+    "retry": "仅确认未计费的 provider_error 重试一次，新 run_id",
+    "unknown_spend": "立即封账并停止全部后续请求"
+  },
+  "temperature": 0
+}

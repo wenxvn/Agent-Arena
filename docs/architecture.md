@@ -65,6 +65,14 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 - 24 张设计态地图只注册 `MetricSpec`（`implemented=False`），`compute_metrics` 必须抛 `NotImplementedError`；缺失、截尾、不适用和非法 trace 不得补 0。每张设计态图有独立的 `docs/v7/pending-runtime/MAP-XX.md` 记录阻塞项与接入门槛。
 - `scripts/check_v7_leakage.py` 静态检查 V7 只读边界；V7 不得导入 runner/prompt/provider/environment 模块，不得写文件或读取凭据。
 
+## V9 审计与定标层边界
+
+- `src/agent_arena/v9/` 是只读审计与有界验证层：`audit.py` 复算 V8 90 局，`evidence.py` 生成逐图证据包，`metric_checks/` 提供 120 条独立指标复算，`policies/` 提供 30 个公开启发式与消融。
+- V9 不修改 `worlds/scenario_v8/`、V4 适配层、V7 extractor 或 V8 账本；公开信息补充只存在于 `v9/prompts.py` 的 `v9_fixed` 臂，`v8_compat` 臂与 V8 prompt 逐字一致。
+- `v9/metrics.py` 按 V7 登记的 censor 规则重新投影 `decision_budget_reached`；`v9/metric_overlay.py` 新增/修正有证据的指标，旧值保留在 `runs/v9/rescore/`。
+- `v9/budget.py` 是独立 append-only 账本（¥10 硬上限、请求前预留、unknown spend 封账）；`v9/runner.py` 记录 `arm`、`prompt_hash`、`overlay_schema_hash`，与 V8 结果分开报告。
+- 30 份逐图审计在 `docs/v9/maps/`，DCR 在 `docs/v9/dcr/`；`human_approved` 只能由用户确认，执行 Agent 只标 `agent_reviewed`。
+
 ## 更新规则
 
 - 新功能开始前先读取本文件和对应 spec，再读取相关代码。
