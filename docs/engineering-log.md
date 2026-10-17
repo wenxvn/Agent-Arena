@@ -1343,7 +1343,7 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 
 验证：`scripts/report_v7_metrics.py` 处理 10 条 trace 全部成功；V7 定向测试 90 passed；pilot 选择测试 2 passed；`scripts/validate_v7_metrics.py`、`audit_v7_cards.py`、`check_v7_leakage.py` 保持通过。对 `runs/v7` 扫描 API 密钥、Bearer 授权头、密钥环境变量赋值与常见密钥前缀文本为 0 hits。全量冻结 gate 检查在运行前全绿。
 
-边界：pilot 未完成 12 局，不能计算成功率、均值或显著性；单 seed、每条件 1 局，且多组条件对使用不同实例；MAP-30 无新数据；24 图仍无运行时；12 条 DCR 仍为 `proposed`。账本已关闭，不续跑、不新建 successor ledger；报告提交后 gate 因 HEAD 前进而失效，后续新实验必须重新冻结。
+边界：pilot 未完成 12 局，不能计算成功率、均值或显著性；单 seed、每条件 1 局，且多组条件对使用不同实例；MAP-30 无新数据；24 图仍无运行时；12 条 DCR 仍为 `proposed`。账本已关闭，不续跑、不新建 successor ledger；pilot 绑定的 gate 仅认证 `877dc01`，报告提交后已按当前 HEAD 重新冻结新 gate，但新 gate 不回溯认证本次 pilot，后续新实验仍须重新登记。
 
 下一步：先确认 provider 连接稳定性；若要完成 12 局或扩到 30 图，必须新建预登记、预算与冻结 gate，不复用本次账本。
 

@@ -94,7 +94,7 @@ L1 `history5` 成功，`path_gap=0`，4 次决策；L3 `history5_graph_memory` �
 5. **MAP-26 recovery 中断**：`repair_success=censored`，不纳入完整样本；provider 错误不是地图失败。
 6. **24 图仍无运行时**：本 pilot 只使用 MAP-08/16/18/22/26/30 的 V6 runtime；没有为 MAP-01–07、09–15、17、19–21、23–25、27–29 生成运行时或真实结果。
 7. **12 条 DCR 仍为 `proposed`**：本 pilot 没有修改 V4 规则，也没有把 DCR 标成已批准。
-8. **报告提交后 gate 失效**：运行时 gate 绑定 `877dc01`；本报告提交会推进 HEAD，后续任何新付费实验都必须重新冻结 gate、重新登记预算与停止规则，不能复用本账本续跑。
+8. **Pilot 使用的 gate 与当前 gate 分离**：pilot 运行时 gate 绑定 `877dc01`（`5d97a589…`）；报告提交后已按当前 HEAD 重新冻结 gate，但新 gate 不回溯认证本次 pilot。后续任何新付费实验仍必须重新登记预算与停止规则，不能复用本账本续跑。
 
 ## 6. 证据与复算
 
