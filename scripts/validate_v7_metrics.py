@@ -2,11 +2,12 @@
 
 Checks, in order:
 
-1. Registry invariants: 30 maps, 140 specs, 44 implemented + 96 design-only,
+1. Registry invariants: 30 maps, 154 specs, 44 implemented + 110 design-only,
    unique ids, per-map kind coverage, frozen doc refs.
 2. Every design card's front-matter hashes match the frozen V4 sources, and
    every metric id printed in a card exists in that map's registry entry.
-3. The 24 maps without a runtime are listed in ``pending-runtime/README.md``.
+3. The 24 maps without a runtime each have a per-map pending-runtime note and a
+   row in ``pending-runtime/README.md``.
 4. Offline replay: the V6 solvers' actions are re-executed against the real V4
    environments for the six runtime-backed maps, then every metric is recomputed
    from the resulting public trace. No provider, no network, no paid API.
@@ -230,6 +231,13 @@ def _check_pending_runtime(failures: list[str]) -> None:
             continue
         if f"| {map_id} |" not in text:
             failures.append(f"{map_id}: missing from pending-runtime table")
+        note = ROOT / "docs" / "v7" / "pending-runtime" / f"{map_id}.md"
+        if not note.exists():
+            failures.append(f"{map_id}: pending-runtime note is missing")
+            continue
+        note_text = note.read_text(encoding="utf-8")
+        if map_id not in note_text or "design_only" not in note_text:
+            failures.append(f"{map_id}: pending-runtime note lacks map id or design_only status")
 
 
 def _replay(instance_id: str, condition_id: str) -> tuple[Any, Any]:

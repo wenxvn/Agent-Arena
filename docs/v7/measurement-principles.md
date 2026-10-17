@@ -22,6 +22,7 @@
 | `kind` | outcome / primary / guardrail / diagnostic |
 | `construct_name` | 一句“它测什么”，不得只写“表现” |
 | `unit` | tick / 比例 / 人·tick / bit / 次 / 0-1 … |
+| `valid_range` | 合法取值范围；比例 0..1、0/1、计数 ≥0、水位 0..7.5、有符号损失差等必须显式 |
 | `direction` | higher / lower / descriptive |
 | `formula` | 可直接实现的表达式 |
 | `denominator` | 明确分母与 0 分母规则 |

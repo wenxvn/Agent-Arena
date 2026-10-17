@@ -13,7 +13,7 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
 
 class MetricStatus(StrEnum):
@@ -45,6 +45,45 @@ class TraceFormatError(ValueError):
     """The supplied rows cannot be interpreted as one V7 episode trace."""
 
 
+def _derived_valid_range(unit: str, formula: str) -> str:
+    """Return the pre-registered admissible range for a metric value.
+
+    Most V7 units already imply a range. The few signed or rule-bounded
+    quantities are handled explicitly so a missing ``valid_range`` can never be
+    misread as an unbounded or fabricated zero-valued metric.
+    """
+
+    if unit == "0/1":
+        return "0 或 1"
+    if unit == "比例 0..1":
+        return "0..1"
+    if unit == "水位单位":
+        return "0..7.5（>7.0 即失败）"
+    if unit == "水位·tick":
+        return ">= 0（超额水位累计）"
+    if unit in {"温度", "温度单位", "温度·tick"}:
+        if "max(0" in formula or "exceed" in formula.lower() or "超额" in formula:
+            return ">= 0（相对安全上限的超限量）"
+        return "由该图规则温度上下限约束；报告原值"
+    if unit in {"损失单位", "库存单位"}:
+        return "可正可负（损失差 / 安全库存差）"
+    if "queries_used - minimum_queries" in formula:
+        return ">= 0（不得少于该实例最小问询数）"
+    if "committed_ticks - BFS_optimum" in formula:
+        return ">= 0（成功局不应短于 BFS 最优）"
+    if "movement_steps - BFS_optimal_moves" in formula:
+        return ">= 0（成功局不应短于 BFS 最优）"
+    if "actual_remaining_cost / shortest_feasible_cost" in formula:
+        return ">= 1（改线后剩余成本不得低于最短可行成本）"
+    if unit in {"任务/燃料", "资源/人", "能耗/人", "补给/发现"}:
+        return ">= 0（分母为 0 时按该指标缺失规则处理）"
+    if unit == "个子系统":
+        return "0..该图登记子系统数"
+    if unit in {"燃料单位", "资源单位 + tick", "风险·tick", "节点·tick"}:
+        return ">= 0"
+    return ">= 0"
+
+
 class MetricSpec(BaseModel):
     """One pre-registered per-map metric definition."""
 
@@ -60,12 +99,23 @@ class MetricSpec(BaseModel):
     denominator: str
     window: str
     applicability: str
+    valid_range: str = ""
     missing_rule: str
     censor_rule: str
     source_events: tuple[str, ...]
     adversarial_note: str
     implemented: bool
     doc_ref: str
+
+    @model_validator(mode="before")
+    @classmethod
+    def _fill_valid_range(cls, data: Any) -> Any:
+        if isinstance(data, dict) and not data.get("valid_range"):
+            data = dict(data)
+            data["valid_range"] = _derived_valid_range(
+                str(data.get("unit", "")), str(data.get("formula", ""))
+            )
+        return data
 
 
 class MetricValue(BaseModel):

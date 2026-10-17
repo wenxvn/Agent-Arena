@@ -1,6 +1,7 @@
 # V7 逐图人工复核清单
 
 > 本清单用于**人工**审阅。DeepSeek 可以完成 `self_review` 与 `second_pass_check`，但不能冒充人工签署。未签署前，所有地图 `review_status = pending_human_review`。
+> 本轮机器可验证项与修正记录见 [`self-review.md`](self-review.md)；下表“待审”只表示人工复核尚未发生。
 
 ## 1. 六项独立复核（每项提交证据，不勾选）
 
@@ -76,7 +77,7 @@
 | MAP-05 | 待审 | 待审 | 设计态 | 纸面 + DCR | 待审 | 待审 | `pending_human_review` |
 | MAP-06 | 待审 | 待审 | 设计态 | 纸面 | 待审 | 待审 | `pending_human_review` |
 | MAP-07 | 待审 | 待审 | 设计态 | 纸面 | 待审 | 待审 | `pending_human_review` |
-| MAP-08 | 待审 | 待审 | ✅ trace | ✅ 求解器 | 待审 | 天花板待处理 | `pending_human_review` |
+| MAP-08 | 待审 | 待审 | ✅ trace + 6 条 fixture | ✅ 求解器 | 待审 | 天花板待处理 | `pending_human_review` |
 | MAP-09 | 待审 | 待审 | 设计态 | 纸面 | 待审 | 待审 | `pending_human_review` |
 | MAP-10 | 待审 | 待审 | 设计态 | 纸面 | 待审 | 待审 | `pending_human_review` |
 | MAP-11 | 待审 | 待审 | 设计态 | 纸面 | 待审 | 待审 | `pending_human_review` |
@@ -84,21 +85,21 @@
 | MAP-13 | 待审 | 待审 | 设计态 | 约束审计 | 待审 | 待审 | `pending_human_review` |
 | MAP-14 | 待审 | 待审 | 设计态 | 真值表审计 | 待审 | 待审 | `pending_human_review` |
 | MAP-15 | 待审 | 待审 | 设计态 | 规则审计 | 待审 | 待审 | `pending_human_review` |
-| MAP-16 | 待审 | 待审 | ✅ trace | ✅ BFS | 待审 | L1 天花板 | `pending_human_review` |
+| MAP-16 | 待审 | 待审 | ✅ trace + 6 条 fixture | ✅ BFS | 待审 | L1 天花板 | `pending_human_review` |
 | MAP-17 | 待审 | 待审 | 设计态 | Pareto 审计 | 待审 | 待审 | `pending_human_review` |
-| MAP-18 | 待审 | 待审 | ✅ trace | 构造解（非最优） | 待审 | 地板待处理 | `pending_human_review` |
+| MAP-18 | 待审 | 待审 | ✅ trace + 6 条 fixture | 构造解（非最优） | 待审 | 地板待处理 | `pending_human_review` |
 | MAP-19 | 待审 | 待审 | 设计态 | 热审计 | 待审 | 待审 | `pending_human_review` |
 | MAP-20 | 待审 | 待审 | 设计态 | 流量审计 | 待审 | 待审 | `pending_human_review` |
 | MAP-21 | 待审 | 待审 | 设计态 | 决策审计 | 待审 | 待审 | `pending_human_review` |
-| MAP-22 | 待审 | 待审 | ✅ trace | ✅ BFS | 待审 | L3 待重复 | `pending_human_review` |
+| MAP-22 | 待审 | 待审 | ✅ trace + 6 条 fixture | ✅ BFS | 待审 | L3 待重复 | `pending_human_review` |
 | MAP-23 | 待审 | 待审 | 设计态 | 信息审计 | 待审 | 待审 | `pending_human_review` |
 | MAP-24 | 待审 | 待审 | 设计态 | 地图更新审计 | 待审 | 待审 | `pending_human_review` |
 | MAP-25 | 待审 | 待审 | 设计态 | 流程审计 | 待审 | 待审 | `pending_human_review` |
-| MAP-26 | 待审 | 待审 | ✅ trace | ✅ 恢复尾搜索 | 待审 | 恢复地板 | `pending_human_review` |
+| MAP-26 | 待审 | 待审 | ✅ trace + 6 条 fixture | ✅ 恢复尾搜索 | 待审 | 恢复地板 | `pending_human_review` |
 | MAP-27 | 待审 | 待审 | 设计态 | 协同审计 | 待审 | 待审 | `pending_human_review` |
 | MAP-28 | 待审 | 待审 | 设计态 | 证据审计 | 待审 | 待审 | `pending_human_review` |
 | MAP-29 | 待审 | 待审 | 设计态 | 证词审计 | 待审 | 待审 | `pending_human_review` |
-| MAP-30 | 待审 | 待审 | ✅ trace | ✅ 构造解 | 待审 | 调查地板 | `pending_human_review` |
+| MAP-30 | 待审 | 待审 | ✅ trace + 6 条 fixture | ✅ 构造解 | 待审 | 调查地板 | `pending_human_review` |
 
 ## 4. 人工审阅时必须回答的问题
 

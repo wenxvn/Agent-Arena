@@ -61,7 +61,9 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 
 - `src/agent_arena/v7/metrics/` 是只读评测层：输入是已持久化 Episode Trace 与可选离线 judge artefact，输出是带五态状态的 `MetricValue`；不启动环境、不调用 Provider、不写账本。
 - 六张已有运行时的地图各自实现独立 extractor；跨图共享仅限 `schema.py`、`common.py` 的算术和 `references.py` 的冻结离线常量，不共享同一评分公式。
-- 24 张设计态地图只注册 `MetricSpec`（`implemented=False`），`compute_metrics` 必须抛 `NotImplementedError`；缺失、截尾、不适用和非法 trace 不得补 0。
+- 每条 `MetricSpec` 带显式 `valid_range`、缺失/截尾规则；六图 extractor 有 36 条真实环境手算 fixture，覆盖成功、机制失败、边界、截尾与 N/A。
+- 24 张设计态地图只注册 `MetricSpec`（`implemented=False`），`compute_metrics` 必须抛 `NotImplementedError`；缺失、截尾、不适用和非法 trace 不得补 0。每张设计态图有独立的 `docs/v7/pending-runtime/MAP-XX.md` 记录阻塞项与接入门槛。
+- `scripts/check_v7_leakage.py` 静态检查 V7 只读边界；V7 不得导入 runner/prompt/provider/environment 模块，不得写文件或读取凭据。
 
 ## 更新规则
 

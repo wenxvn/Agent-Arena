@@ -44,17 +44,17 @@ metric_status: implemented_offline_validated
 
 ## 4. 能力混淆分析
 
-- `return_success=1` 可能靠 DFS 式穷举：30 步 DFS 也成功，但 `path_gap=22`；必须与 gap 并列。
+- `return_success=1` 可能靠长巡游：30 步巡游也成功，但 `path_gap=22`；必须与 gap 并列。
 - `path_gap=0` 可能只因为实例短（L1 最优 4）；L1 不能证明长程记忆，必须按实例分报。
-- `repeated_public_edge_rate=0` **不等于高效**：DFS 巡游把每条无向边走两次但方向相反，**有向**重复率为 0；它靠节点回访（7 次）换覆盖。该指标是过程诊断，不单独支撑记忆结论。
+- `repeated_public_edge_rate=0` **不等于高效**：一条 10 步简单环也能做到有向重复率 0，但 `path_gap=2`。该指标是过程诊断，不单独支撑记忆结论。
 - `memory_facts_written` 是**成本**：写得越多不表示记得越好；要同时看 `return_success` 与 `path_gap`。
 - 低 `illegal_bearing_actions` 只说明接口用法正确：固定罗盘贪心 F01 也几乎不产生非法方位，却 30 步失败。
 
 ## 5. 两条手算轨迹
 
-**A. 18 步图记忆巡回（成功，27 条事实）**：`A-B-D-G-J-K-H-E-B-E-F-I-L-K-H-I-F-C-A`，把 15 条独立边全部至少走一次，`B-E / F-I / H-K` 各多走一次；第 12 步到 L，之后靠已存边记录回 A，第 18 步成功。沿路写 12 张节点卡 + 15 张边卡 = 27 条；回访节点 7 次、重复无向边 3 次。指标：`return_success=1`；`path_gap = 18 − 8 = 10`；有向重复率 = 3/18 ≈ **0.1667**；grounding 违例 0；非法方位 0；`memory_facts_written=27`。
+**A. 18 步图记忆巡回（成功，27 条事实）**：`A-B-D-G-J-K-H-E-B-E-F-I-L-K-H-I-F-C-A`，把 15 条独立边全部至少走一次，`B-E / F-I / H-K` 各多走一次；第 12 步到 L，之后靠已存边记录回 A，第 18 步成功。沿路写 12 张节点卡 + 15 张边卡 = 27 条；回访节点 7 次、重复无向边 3 次。指标：`return_success=1`；`path_gap = 18 − 8 = 10`；按当前公开签名代理，有向重复率 = 1/18 ≈ **0.0556**（E/H 粗形与出口相同被并为一个位置；若节点别名可区分则为 0）；grounding 违例 0；非法方位 0；`memory_facts_written=27`。
 
-**B. 30 步 DFS 巡游（成功，边界）**：`A-B-D-G-J-K-L-I-H-K-H-E-F-I-F-C-A-C-F-E-B-E-H-I-L-K-J-G-D-B-A`，15 条边各走两次，覆盖 12 节点，第 6 步见到 L，第 30 步回 A。指标：`return_success=1`；`path_gap = 30 − 8 = 22`；有向重复率 **0.0**（每条边正反各一次）；grounding/非法方位 0。**这条轨迹专门说明“重复率 0 但极不高效”**。
+**B. 30 步巡游（成功，边界）**：`A-B-D-G-J-K-H-E-B-E-F-I-L-I-F-C-F-E-B-D-B-E-F-I-L-K-H-I-F-C-A`，第 12 步见到 L，插入一段 12 步无重复有向边的 L 环，再沿回程第 30 步回 A。指标：`return_success=1`；`path_gap = 30 − 8 = 22`；有向重复率 = 9/30 = **0.3**；grounding/非法方位 0。**这条轨迹说明“重复率不为 0 仍可成功，但效率很低”**。
 
 > 两条轨迹只在“是否穷举覆盖”上有差异，均合法；它们不是同一策略的换序模板。
 
@@ -66,7 +66,7 @@ metric_status: implemented_offline_validated
 
 ## 7. 两个边界
 
-- **30 步恰好成功 vs 第 31 步**：B01 的 DFS 恰在 30 步回 A 成功；F03 需要 31 步，失败。步数预算是包含端点，不是“小于 30”。
+- **30 步恰好成功 vs 第 31 步**：B 的 30 步巡游恰在 30 步回 A 成功；F03 需要 31 步，失败。步数预算是包含端点，不是“小于 30”。
 - **完整图上界 8 步 vs 实际可见信息**：8 步只在拥有全图时可达，Agent 看不到全图；不能把 `path_gap>0` 一律解释为“能力差”，它同时反映探索成本。L1（最优 4）与 L3（最优 8）必须分报。
 
 ## 8. 信息泄漏负例
@@ -75,7 +75,7 @@ metric_status: implemented_offline_validated
 
 ## 9. Oracle/求解状态
 
-V4 `oracle_trace.jsonl` 有 18 步图记忆巡回与 30 步 DFS 两条手写成功，`planning/` 的审计器两次重放图巡回与局部 Observation 并核对字节一致；V6 `solve_map22` 用 `(node, target_visited)` 状态 BFS 得每实例最短往返（4/4/8/8）。V6 真实 API 6 局：**5/6**；L3 出现条件差异——`history5` 30 moves 截尾、`history5_graph_memory` 11 moves 成功。**单局证据，不能外推。**
+V4 `oracle_trace.jsonl` 有 18 步图记忆巡回与 30 步巡游两条手写成功，`planning/` 的审计器两次重放图巡回与局部 Observation 并核对字节一致；V6 `solve_map22` 用 `(node, target_visited)` 状态 BFS 得每实例最短往返（4/4/8/8）。V6 真实 API 6 局：**5/6**；L3 出现条件差异——`history5` 30 moves 截尾、`history5_graph_memory` 11 moves 成功。**单局证据，不能外推。**
 
 ## 10. 与同世界另两图差异
 

@@ -1,7 +1,7 @@
 # V7 验证报告
 
 - 日期：2026-10-17
-- 基线提交：`766ec82529d4ee2499dde9592452eb68592f4637`
+- 基线提交：`6320660cbe2d7b774c44db5eb9dcee0d311a0410`
 - 运行环境：Windows，Python 3.13.3，pytest 8.4.2，pydantic 2.13.4
 - 付费 API：0 次；新账本：0 个；`runs/`、`results/`：未写入
 
@@ -15,6 +15,9 @@
 | 注册指标 | 154 条（6 图 44 条 implemented + 24 图 110 条 design-only） | 注册表与验收脚本一致 |
 | 可运行 extractor | 6 图，独立实现，仅共享 schema/common/references 算术 | `src/agent_arena/v7/metrics/map*.py` |
 | 六图离线回放 | 29/29 V6 实例全部成功复算，指标无 `invalid_trace` / `unavailable` | 验收脚本 + pytest |
+| 六图手工校验 | 6 图 × 6 条真实环境重放 = 36 条，覆盖成功/失败/边界/截尾/N/A | `tests/test_v7_hand_traces.py` |
+| 指标合法范围 | 154 条 `MetricSpec` 全部带非空 `valid_range` | schema + 单测 |
+| 泄漏与只读扫描 | 12 个 V7 源文件、64 份 V7 文档通过 | `scripts/check_v7_leakage.py` |
 | 24 图运行时 | **未实现**；调用 `compute_metrics` 抛 `NotImplementedError` | 单测固定 |
 | 人工审阅 | **未进行**；30 卡保持 `pending_human_review` | front-matter + 验收脚本 |
 | 真实模型 V7 结果 | **无**；本轮不产生任何模型对照 | 无 API 调用 |
@@ -30,9 +33,11 @@ docs/v7/
   experiment-protocol.md
   map-review-checklist.md
   design-change-requests.md
+  self-review.md
   validation-report.md
   maps/MAP-01.md … MAP-30.md
   pending-runtime/README.md
+  pending-runtime/MAP-01.md … MAP-29.md（24 张设计态图，跳过 08/16/18/22/26/30）
 
 src/agent_arena/v7/
   __init__.py
@@ -42,13 +47,18 @@ src/agent_arena/v7/
 scripts/
   validate_v7_metrics.py
   report_v7_metrics.py
+  audit_v7_cards.py
+  check_v7_leakage.py
 
 tests/
   test_v7_metrics.py
   test_v7_map_metrics.py
+  test_v7_hand_traces.py
+  test_v7_leakage.py
+  test_v7_cards.py
 ```
 
-设计态地图的运行时说明采用**单份准入表 + 逐图阻塞项**，而不是 24 份内容高度重复的 `pending-runtime/MAP-XX.md`。理由写在 `pending-runtime/README.md` 开头：避免模板化文件伪装成 24 份独立交付。每张图的完整指标定义仍在各自的 `maps/MAP-XX.md`。
+24 张设计态图除 `pending-runtime/README.md` 总表外，都有一份独立的 `pending-runtime/MAP-XX.md`。每份文件写入该图自己的能力构念、阻塞项、建议第一刀、已注册指标与接入验收门槛；它们明确标注 `design_only`，不是运行时，也不是实测。
 
 ## 3. 机器验收
 
@@ -71,49 +81,55 @@ V7 metric validation passed: 154 specs across 30 maps (6 runtime-backed, 24 desi
 3. 6 张运行时图满足 44 条已实现指标；24 张设计图满足 110 条 design-only 指标。
 4. 30 张卡的 `source_map_spec_hash` / `source_design_hash` 与 `worlds/v4/MAP-XX/map_spec.yaml`、`DESIGN.md` 的 SHA-256 一致。
 5. 卡片中出现的每个 `mapXX.*` 指标都在注册表中存在，且每张卡覆盖该图全部已注册指标。
-6. 24 张设计图都出现在 `pending-runtime/README.md` 的准入表中。
+6. 24 张设计图都出现在 `pending-runtime/README.md` 的准入表中，并且各自有独立的 `pending-runtime/MAP-XX.md`。
 7. 用 V6 求解器在真实 V4 环境重放 29 个实例，成功终局、指标 id 集合一致、无 `invalid_trace` / `unavailable`，并抽检各图关键值。
 
 ### 3.2 静态检查
 
 ```powershell
-.venv\Scripts\python.exe -m ruff check src\agent_arena\v7 scripts\validate_v7_metrics.py scripts\report_v7_metrics.py tests\test_v7_metrics.py tests\test_v7_map_metrics.py
-.venv\Scripts\python.exe -m ruff format --check src\agent_arena\v7 scripts\validate_v7_metrics.py scripts\report_v7_metrics.py tests\test_v7_metrics.py tests\test_v7_map_metrics.py
+.venv\Scripts\python.exe -m ruff check src\agent_arena\v7 scripts\validate_v7_metrics.py scripts\report_v7_metrics.py scripts\audit_v7_cards.py scripts\check_v7_leakage.py tests\test_v7_metrics.py tests\test_v7_map_metrics.py tests\test_v7_hand_traces.py tests\test_v7_leakage.py tests\test_v7_cards.py
+.venv\Scripts\python.exe -m ruff format --check src\agent_arena\v7 scripts\validate_v7_metrics.py scripts\report_v7_metrics.py scripts\audit_v7_cards.py scripts\check_v7_leakage.py tests\test_v7_metrics.py tests\test_v7_map_metrics.py tests\test_v7_hand_traces.py tests\test_v7_leakage.py tests\test_v7_cards.py
 .venv\Scripts\python.exe -m mypy src\agent_arena\v7
+.venv\Scripts\python.exe -m mypy src
 ```
 
 真实输出：
 
 ```text
 All checks passed!
-16 files already formatted
+21 files already formatted
 Success: no issues found in 12 source files
+Success: no issues found in 100 source files
 ```
 
 ### 3.3 测试
 
 ```powershell
-.venv\Scripts\python.exe -m pytest tests\test_v7_metrics.py tests\test_v7_map_metrics.py -q
+.venv\Scripts\python.exe -m pytest tests\test_v7_metrics.py tests\test_v7_map_metrics.py tests\test_v7_hand_traces.py tests\test_v7_leakage.py tests\test_v7_cards.py -q
 .venv\Scripts\python.exe -m pytest -q
 ```
 
 真实输出：
 
 ```text
-.................................................                        [100%]
-49 passed in 1.00s
+........................................................................ [ 80%]
+..................                                                       [100%]
+90 passed in 1.15s
 
 ........................................................................ [ 11%]
 ...
-608 passed in 40.30s
+649 passed in 40.47s
 ```
 
 全量测试必须在未设置 `PYTHONIOENCODING=utf-8` 的 shell 中运行；仓库既有的 `tests/test_flex_v3_seeded.py` 用 `subprocess.run(text=True)` 按本地代码页解码子进程 stderr，强行把子进程输出设为 UTF-8 会让该测试读到 `None`。这是既有测试在 Windows 上的编码假设，与本轮代码无关。
 
-测试分两层：
+测试分为以下五组：
 
-- `tests/test_v7_metrics.py`：注册表数量、唯一性、三类指标覆盖、五态缺失、零分母 N/A、拒绝码口径、trace 解析错误、`load_trace` 读取。
-- `tests/test_v7_map_metrics.py`：29 个 V6 实例真实环境回放；另有 3 个合成 trace 边界用例。
+- `tests/test_v7_metrics.py`：注册表数量、唯一性、三类指标覆盖、`valid_range`、五态缺失、零分母 N/A、拒绝码口径、trace 解析错误、`load_trace` 读取。
+- `tests/test_v7_map_metrics.py`：29 个 V6 实例真实环境回放；另有合成 trace 边界用例。
+- `tests/test_v7_hand_traces.py`：6 图 × 6 条真实环境重放，逐条断言成功、失败、边界、截尾与 N/A 的具体数值。
+- `tests/test_v7_leakage.py`：V7 源文件禁止导入 runner/prompt/provider/environment，禁止写文件与读取凭据；并验证检测器本身能发现违规导入。
+- `tests/test_v7_cards.py`：30 卡 13 小节、指标引用、跨卡构念相似度与结构自审。
 
 ### 3.4 全仓 Ruff 的既有失败
 
@@ -121,7 +137,7 @@ Success: no issues found in 12 source files
 .venv\Scripts\python.exe -m ruff check .
 ```
 
-真实结果：`Found 653 errors`，全部位于已跟踪、本轮未修改的 `worlds/v4/MAP-*/planning/*_audit.py`（E501 行宽、I001 import 排序、B905 `zip` 缺 `strict=`）。`git diff --name-only` 不含这些文件，因此不是 V7 引入的回归。
+真实结果：`Found 653 errors`，全部位于已跟踪、本轮未修改的 `worlds/v4/MAP-*/planning/*.py`（601 E501 行宽、24 B905 `zip` 缺 `strict=`、23 I001 import 排序，另有少量 UP033/B007/B904/F401）。`git diff --name-only` 不含这些文件，因此不是 V7 引入的回归。
 
 本轮不批量改写这些冻结设计审计脚本：它们属于 V4 设计证据，修复格式会产生与 V7 无关的大 diff。V7 自身的 Ruff 范围（下节命令）全部通过。若后续要恢复“全仓 Ruff 绿”，应作为独立的历史文件格式整理任务处理，并逐文件确认不改变审计语义。
 
@@ -179,6 +195,18 @@ MAP-30 的 Observation 在不可见 casebook 的记忆条件下也会序列化 `
 
 该规则只影响 V7 只读 extractor，不修改 MAP-30 环境、Observation 或 V6 trace。
 
+### 5.2 六图 36 条手算 fixture 与第二遍修正
+
+`tests/test_v7_hand_traces.py` 用真实 V4 环境重放 36 条动作序列（每图 6 条），断言
+`map08.peak_core_water=7.0`、`map16.makespan_gap=0`、`map18.first_reroute_delay=6`、
+`map22.path_gap=22`、`map26.repeat_error_rate=0.5`、`map30.accusation_claim_precision=0.0`
+等具体值，并覆盖 CENSORED / N/A 分支。第二遍核对同时修正了：
+
+- MAP-22 原 30 步 DFS 手算轨迹不可重放，已换成可重放的 30 步巡游（`path_gap=22`、`repeated_public_edge_rate=0.3`）。
+- MAP-22 `path_gap` 原按 `move` 动作数计，非法方位会多加 1；已改用成功终局 observation 的 `movement_steps`。
+- MAP-30 F03 原写精确率 1/3；按 `max(0, matched−extra)/3` 应为 0.0，已修正。
+- MAP-22 18 步轨迹的重复率按当前公开签名代理为 0.0556（E/H 同签名），已注明代理局限。
+
 ## 6. 报告脚本
 
 `scripts/report_v7_metrics.py` 只读已有 episode 目录：
@@ -203,7 +231,7 @@ processed 2 trace(s): 1 computed, 1 design_only, 0 invalid_trace.
 
 ## 7. 未完成与限制
 
-1. **24 张设计图没有运行时。** 它们的 110 条指标只是注册与设计卡，`compute_metrics` 会拒绝计算。接入门槛见 `pending-runtime/README.md`。
+1. **24 张设计图没有运行时。** 它们的 110 条指标只是注册与设计卡，`compute_metrics` 会拒绝计算。接入门槛见 `pending-runtime/MAP-XX.md` 与总表 `pending-runtime/README.md`。
 2. **没有真实模型 V7 实验。** 本报告不包含任何按 V7 指标比较模型的结论；六图数值来自确定性求解器回放。
 3. **没有人工审阅。** 30 张卡的 `review_status` 全部是 `pending_human_review`，V6 的 29 个实例状态未改变。
 4. **V6 结果未被改写。** 本轮的 29 次回放是新生成的离线 trace，不覆盖 `runs/v6` 或既有账本。
@@ -216,15 +244,19 @@ processed 2 trace(s): 1 computed, 1 design_only, 0 invalid_trace.
 
 ```powershell
 # 静态检查
-.venv\Scripts\python.exe -m ruff check src\agent_arena\v7 scripts\validate_v7_metrics.py scripts\report_v7_metrics.py tests\test_v7_metrics.py tests\test_v7_map_metrics.py
-.venv\Scripts\python.exe -m ruff format --check src\agent_arena\v7 scripts\validate_v7_metrics.py scripts\report_v7_metrics.py tests\test_v7_metrics.py tests\test_v7_map_metrics.py
+.venv\Scripts\python.exe -m ruff check src\agent_arena\v7 scripts\validate_v7_metrics.py scripts\report_v7_metrics.py scripts\audit_v7_cards.py scripts\check_v7_leakage.py tests\test_v7_metrics.py tests\test_v7_map_metrics.py tests\test_v7_hand_traces.py tests\test_v7_leakage.py tests\test_v7_cards.py
+.venv\Scripts\python.exe -m ruff format --check src\agent_arena\v7 scripts\validate_v7_metrics.py scripts\report_v7_metrics.py scripts\audit_v7_cards.py scripts\check_v7_leakage.py tests\test_v7_metrics.py tests\test_v7_map_metrics.py tests\test_v7_hand_traces.py tests\test_v7_leakage.py tests\test_v7_cards.py
 .venv\Scripts\python.exe -m mypy src\agent_arena\v7
 
 # 注册表 + 30 卡 + 六图离线回放
 .venv\Scripts\python.exe scripts\validate_v7_metrics.py
 
+# 结构自审与泄漏扫描
+.venv\Scripts\python.exe scripts\audit_v7_cards.py
+.venv\Scripts\python.exe scripts\check_v7_leakage.py
+
 # 测试
-.venv\Scripts\python.exe -m pytest tests\test_v7_metrics.py tests\test_v7_map_metrics.py -q
+.venv\Scripts\python.exe -m pytest tests\test_v7_metrics.py tests\test_v7_map_metrics.py tests\test_v7_hand_traces.py tests\test_v7_leakage.py tests\test_v7_cards.py -q
 ```
 
 全部命令离线执行，不读取 `.env`，不创建 provider，不调用网络。

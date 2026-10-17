@@ -200,7 +200,12 @@ def compute(record: TraceRecord) -> dict[str, MetricValue]:
         )
     }
 
-    moves = sum(1 for event in record.events if event.tool == "move")
+    moves_value = record.final_observation.get("movement_steps")
+    moves = (
+        moves_value
+        if isinstance(moves_value, int)
+        else sum(1 for event in record.events if event.tool == "move")
+    )
     if censored:
         result["map22.path_gap"] = MetricValue.censored(
             "map22.path_gap", "episode 在移动预算或 provider 边界截尾。"

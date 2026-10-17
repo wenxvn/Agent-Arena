@@ -9,9 +9,11 @@ V7 **不**修改 V2/V4/V5/V6 的规则、Action/Observation/Trace、Oracle、账
 | 项目 | 数量 | 状态 |
 |---|---|---|
 | 逐图手工指标卡 | 30 | 已交付（`maps/MAP-01.md` … `MAP-30.md`） |
-| 设计态运行时说明 | 24 | 已交付（`pending-runtime/README.md` 单表 + 逐图阻塞项） |
+| 设计态运行时说明 | 24 | 已交付（`pending-runtime/MAP-XX.md` 各图准入说明 + `README.md` 总表） |
 | 可运行指标 extractor | 6 | 已实现（MAP-08/16/18/22/26/30） |
-| 注册指标 | 154 | 6 图 44 条 + 24 图 110 条（`MetricSpec`） |
+| 六图手工校验 | 36 | 6 图 × 6 条真实环境重放，覆盖成功/失败/边界/截尾 |
+| 注册指标 | 154 | 6 图 44 条 + 24 图 110 条（`MetricSpec`，全部带 `valid_range`） |
+| 泄漏与只读扫描 | 12 源 / 64 文档 | 通过 |
 | 人工审阅 | 30 | `pending_human_review`（DeepSeek 不代签） |
 | 真实 API | 0 次新增 | 默认全离线 |
 
@@ -26,8 +28,9 @@ docs/v7/
   experiment-protocol.md       预注册、样本单位、预算、统计与报告规范
   map-review-checklist.md      六项人工复核清单（不代签）
   design-change-requests.md    V7-DCR 清单（proposed，未改规则）
+  self-review.md               机器自审与第二遍修正记录（非人工签署）
   maps/MAP-01.md … MAP-30.md   逐图设计卡（权威细节）
-  pending-runtime/README.md     24 张无运行时地图的准入表与逐图阻塞项
+  pending-runtime/MAP-XX.md     24 张无运行时地图的逐图准入说明（README.md 为总表）
   validation-report.md         本轮真实命令、测试结果、限制
 
 src/agent_arena/v7/metrics/
@@ -39,18 +42,27 @@ src/agent_arena/v7/metrics/
 
 scripts/validate_v7_metrics.py 30 卡/注册表/六图 fixture 机器验收
 scripts/report_v7_metrics.py   从 V6 episode 目录离线生成 V7 指标表
+scripts/audit_v7_cards.py     30 卡结构、指标覆盖与构念相似度自审
+scripts/check_v7_leakage.py   V7 只读边界与凭据形状文本扫描
 tests/test_v7_metrics.py       schema/common/registry/文档验收测试
 tests/test_v7_map_metrics.py   六图真实环境回放 fixture 指标测试
+tests/test_v7_hand_traces.py   6 图 × 6 条手算轨迹的真实环境重放
+tests/test_v7_leakage.py      V7 只读与泄漏扫描测试
+tests/test_v7_cards.py        30 卡结构自审测试
 ```
 
 ## 快速开始（离线）
 
 ```powershell
 # 全部 V7 测试
-.venv\Scripts\python.exe -m pytest tests/test_v7_metrics.py tests/test_v7_map_metrics.py -q
+.venv\Scripts\python.exe -m pytest tests/test_v7_metrics.py tests/test_v7_map_metrics.py tests/test_v7_hand_traces.py tests/test_v7_leakage.py tests/test_v7_cards.py -q
 
 # 30 卡 + 注册表 + 六图 fixture 验收
 .venv\Scripts\python.exe scripts\validate_v7_metrics.py
+
+# 卡片结构自审与泄漏扫描
+.venv\Scripts\python.exe scripts\audit_v7_cards.py
+.venv\Scripts\python.exe scripts\check_v7_leakage.py
 
 # 对已有 V6 episode 目录复算（不调用模型）
 .venv\Scripts\python.exe scripts\report_v7_metrics.py runs\v6\experiments\<id>\episodes\<episode>

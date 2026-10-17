@@ -101,6 +101,7 @@ def test_metric_ids_are_unique_prefixed_and_documented() -> None:
         assert spec.map_id in spec.doc_ref
         assert spec.construct_name
         assert spec.formula
+        assert spec.valid_range
         assert spec.source_events
         assert spec.missing_rule
         assert spec.censor_rule
@@ -112,6 +113,21 @@ def test_every_map_declares_primary_guardrail_and_diagnostic() -> None:
         assert MetricKind.PRIMARY in kinds, map_id
         assert MetricKind.GUARDRAIL in kinds, map_id
         assert MetricKind.DIAGNOSTIC in kinds, map_id
+
+
+def test_valid_range_matches_the_declared_unit() -> None:
+    for spec in registry.all_specs():
+        if spec.unit == "比例 0..1":
+            assert spec.valid_range == "0..1", spec.metric_id
+        elif spec.unit == "0/1":
+            assert spec.valid_range == "0 或 1", spec.metric_id
+        elif spec.unit == "水位单位":
+            assert spec.valid_range.startswith("0..7.5"), spec.metric_id
+        else:
+            assert spec.valid_range, spec.metric_id
+    signed = [spec for spec in registry.all_specs() if spec.unit in {"损失单位", "库存单位"}]
+    assert signed
+    assert all("可正可负" in spec.valid_range for spec in signed)
 
 
 def test_design_only_map_raises_instead_of_returning_zero() -> None:

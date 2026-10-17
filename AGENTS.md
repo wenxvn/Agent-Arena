@@ -13,7 +13,7 @@
 - 当前模块结构见 `docs/architecture.md`，交付顺序和进度见 `docs/scope/scope.md`。
 - 重要阶段、决策、验证和阻塞记录在 `docs/engineering-log.md`，它不替代 scope、spec 或 Git 历史。
 - V6 能力测量效度：离线层已完成（审计 V5 失败并定位 MAP-22 接口契约缺陷；参数化 V4 引擎并建立 **29 个独立 V6 实例**、三个闭塞段、三个恢复失败前缀、纯召回变体、独立求解器与泄漏检查）。真实 API 复测已完成（MiMo，**47 局，CNY ¥0.29230284，17/47**）：MAP-22 的 V5 0/6 确认为接口假象；**MAP-22 L3 记忆消融与 MAP-30 纯召回出现条件差异**；MAP-08/L1-MAP-16/MAP-26-free 天花板、MAP-18/MAP-26-recovery/MAP-30 完整调查地板，维持 `HOLD`。详见 `docs/v6/pilot-report.md` 与 spec 0019。所有 V6 实例仍 `pending_human_review`。
-- V7 30 图分层能力评测离线层已交付：`src/agent_arena/v7/metrics/` 为只读层，注册 **154 条 MetricSpec**（6 图 44 条 implemented + 24 图 110 条 design-only），交付 30 张逐图指标卡、五态缺失规则、6 图 extractor、离线验收脚本与报告；29 个 V6 实例回放全部成功复算。24 图仍无运行时，没有真实模型 V7 结果，30 卡保持 `pending_human_review`。详见 `docs/v7/validation-report.md`。
+- V7 30 图分层能力评测离线层已交付：`src/agent_arena/v7/metrics/` 为只读层，注册 **154 条 MetricSpec**（6 图 44 条 implemented + 24 图 110 条 design-only，全部带 `valid_range`），交付 30 张逐图指标卡、五态缺失规则、6 图 extractor、六图 36 条真实环境手算 fixture、结构自审与泄漏扫描、24 份 `pending-runtime/MAP-XX.md`、离线验收脚本与报告；29 个 V6 实例回放全部成功复算。24 图仍无运行时，没有真实模型 V7 结果，30 卡保持 `pending_human_review`。详见 `docs/v7/validation-report.md` 与 `docs/v7/self-review.md`。
 
 ## 技术与模型配置
 
