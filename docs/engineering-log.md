@@ -1282,3 +1282,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 下一步：按 `pending-runtime/README.md` 逐图接入运行时；优先处理 MAP-18 故障绑定、MAP-26 恢复条件与 MAP-30 记忆条件的指标稳定性，再由人工复核 DCR 与 30 张卡。
 
 关联提交：待提交。
+
+## 2026-10-17 V7 六图手算 fixture、合法范围与机器自审补齐
+
+事件：补齐 V7 离线层的可执行验收缺口：6 张运行图各 6 条真实环境手算轨迹、154 条 `MetricSpec.valid_range`、V7 只读/泄漏扫描、30 卡结构自审，以及 24 张设计图的逐图 `pending-runtime/MAP-XX.md`。
+
+原因：上一轮已交付注册表、30 卡与六图 extractor，但手算轨迹尚未全部变成测试断言，`MetricSpec` 缺合法范围，24 图只有总表；这些都使“可复算”与“逐图接入”缺少可执行证据。
+
+改动：新增 `tests/test_v7_hand_traces.py`（6 图 × 6 条，覆盖成功/机制失败/边界/截尾/N/A）、`tests/test_v7_leakage.py`、`tests/test_v7_cards.py`、`scripts/audit_v7_cards.py`、`scripts/check_v7_leakage.py`；`MetricSpec` 增加 `valid_range` 并在缺失时按单位推导；修复 `map22.path_gap` 把被拒绝 move 计入 gap 的缺陷；修正 MAP-22 不可重放的 30 步手算轨迹、MAP-22 18 步轨迹重复率与 MAP-30 F03 精确率；为 24 张设计图各生成一份 `docs/v7/pending-runtime/MAP-XX.md`，总表保留共同门槛。
+
+验证：`scripts/validate_v7_metrics.py` 通过（154 specs / 30 maps / 29 solver episodes）；`scripts/audit_v7_cards.py` 为 0 findings，30 卡 13 小节齐全，剔除通用指标族后最高构念相似度 0.8；`scripts/check_v7_leakage.py` 检查 12 个 V7 源文件、64 份文档，无禁止导入/写文件/凭据形状文本；V7 定向 `pytest` 为 90 passed，全量 `pytest -q` 为 649 passed；V7 scoped Ruff、format、mypy 通过。全仓 Ruff 仍有 653 个既有错误，全部在未修改的 V4 审计脚本。
+
+边界：30 卡仍为 `pending_human_review`，12 条 DCR 仍为 `proposed`；24 图仍无运行时；没有真实 V7 模型结果；本轮 0 次付费 API、0 个新账本、未写 `runs/` 或 `results/`。机器自审不能替代人工签署。
+
+下一步：等待人工复核 30 卡与 DCR；按逐图 `pending-runtime/MAP-XX.md` 的阻塞项选择下一张运行时切片；若需要全仓 Ruff 绿，单独整理冻结 V4 审计脚本的既有格式问题。
+
+关联提交：`01b95ff862a6ea55b48b3ca00d3146ec1c4324e2`。
