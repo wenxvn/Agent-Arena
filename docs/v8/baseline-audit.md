@@ -35,7 +35,7 @@
 3. **六张适配图各只有 1 条手算 fixture**。已按 `tests/test_v7_hand_traces.py` 的已发布值补充第二条，覆盖成功/失败或边界。
 4. **Runner 最初只统计解析失败，不统计环境形状拒绝**，导致 `INVALID_ACTION_SCHEMA` 不计入 `invalid_action_count` 与连续 schema 故障。已修复并加测试。
 
-### 3.3 正式运行前的四次预跑与作废
+### 3.3 正式运行前的五次预跑与作废
 
 **预跑 A（pre_timeout_001）**：Runner 的 wall-clock 安全上限最初是 10 分钟。MAP-03 的
 最难轨迹在慢请求下会超过该上限，导致“决策预算尚未用完就被截尾”。这不是预登记的
@@ -76,6 +76,15 @@
 
 - 已产生的 episode 与账本移入 `runs/v8/aborted/pre_map01_rule_001/`；
 - 在 MAP-01 的公开词表中加入该硬规则（不暴露私有计数器，只公开规则文本）；
+- 规则模块仍未改动；`prompt_hash` 变化，重新冻结后开始正式 90 局。
+
+**预跑 E（pre_location_001）**：MAP-01 仍在第 4 tick 失败，轨迹为 B→H→O→H→O：
+模型知道要恢复供氧，但不知道 `oxygen_relay` 在 B/H，而不是供氧舱 O。V4 设计的
+`public_observation_fields` 含 `visible_objects`，V8 运行时没有实现该字段。
+
+- 已产生的 episode 与账本移入 `runs/v8/aborted/pre_location_001/`；
+- 在 MAP-01–06 的公开词表中加入“位置对象”行，说明每个可交互对象出现在哪些位置；
+  这是公开世界知识，不包含隐藏真值或正确顺序；
 - 规则模块仍未改动；`prompt_hash` 变化，重新冻结后开始正式 90 局。
 
 ### 3.4 设计文件与 V7 卡片

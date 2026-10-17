@@ -123,12 +123,16 @@ _VOCABULARY: dict[str, tuple[str, ...]] = {
         "airlock_console/pressure_test, bridge_console/confirm_repair",
         "公开规则：未供氧时每 tick 氧气余量 -1；连续断供超过 3 tick 立即失败；"
         "恢复供氧后断供计数清零。",
+        "位置对象：B/H=oxygen_relay；B=bridge_console；H=power_diagram；"
+        "O=scrubber_status；P=main_reactor；W=patch_kit, local_breaker, hull_panel；"
+        "A=airlock_gauge, airlock_console",
     ),
     "MAP-02": (
         "inspect(target): alarm_panel, core_cradle",
         "pickup(item_id): crew",
         "interact(target, choice): nav_core/brace_in_case, "
         "center_gate/isolate_L1, crew/escort",
+        "位置对象：C=alarm_panel, center_gate；R1=core_cradle, nav_core；L2=crew",
     ),
     "MAP-03": (
         "inspect(target): telemetry_panel",
@@ -136,21 +140,26 @@ _VOCABULARY: dict[str, tuple[str, ...]] = {
         "sample_manifest/read_tag, cryo_case/stabilize_sample, "
         "antenna/repair, telemetry/transmit",
         "submit(target, answer): route_console（answer 使用已读到的航线码）",
+        "位置对象：D1=aux_panel；U1=sample_manifest, cryo_case；"
+        "U2=route_console；U3=telemetry_panel, telemetry；V=antenna",
     ),
     "MAP-04": (
-        "inspect(target): tide_gauge",
+        "inspect(target): tide_gauge（任意位置可读当前相位）",
         "pickup(item_id): wick",
         "interact(target, choice): lamp/fit_wick, lamp/ignite",
+        "位置对象：T=lamp；G=wick",
     ),
     "MAP-05": (
         "inspect(target_id): schedule_chart",
         "switch_power(station): R, B, W",
         "interact(target_id, operation): R|B|W 配合 "
         "calibrate_align, calibrate_phase_lock, send_signal",
+        "位置对象：C=schedule_chart、总电源；R/B/W=各信号站",
     ),
     "MAP-06": (
         "inspect(target_id): forecast",
         "interact(target_id, operation): P/repair_lighthouse, G/harden",
+        "位置对象：Q=forecast；P=repair_lighthouse；G=harden",
     ),
     "MAP-07": (
         "inspect(target_id): water_levels, pipe_diagram",
