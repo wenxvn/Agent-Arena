@@ -5,6 +5,8 @@
 `worlds/v4/MAP-XX/DESIGN.md`。脚本不运行环境、不改写任何 trace。
 """
 
+# ruff: noqa: E501 - 中文报告表格与长句不按 100 列硬折行
+
 from __future__ import annotations
 
 import importlib
@@ -95,6 +97,26 @@ FAILURE_PATHS = {
 }
 
 ADAPTER = {"MAP-08", "MAP-16", "MAP-18", "MAP-22", "MAP-26", "MAP-30"}
+
+CODE_OVERRIDES: dict[str, dict[str, list[str]]] = {
+    "MAP-07": {"fail": ["COMPARTMENT_OVERFLOW_A/B/C（动态舱室码）"]},
+    "MAP-08": {"success": ["LEAK_SEALED"], "fail": ["SEALANT_MISUSED", "CORE_WATER_LIMIT_EXCEEDED"]},
+    "MAP-16": {
+        "success": ["GATE_OPENED"],
+        "fail": ["NODE_CAPACITY_CONFLICT", "HEAD_ON_SWAP", "SECTION_CONFLICT", "DEADLOCK"],
+    },
+    "MAP-18": {
+        "success": ["SERVICE_COMPLETE"],
+        "fail": ["HEAD_ON_COLLISION", "STATION_CAPACITY_EXCEEDED", "DEADLINE_SERVICE_BELOW_70"],
+    },
+    "MAP-22": {"success": ["RETURNED_TO_CAMP_WITH_RUIN_RECORD"], "fail": ["STEP_LIMIT_REACHED"]},
+    "MAP-26": {"success": ["ALL_OBJECTIVES_COMPLETE"], "fail": ["SPARES_EXHAUSTED"]},
+    "MAP-28": {"success": ["ALL_CLAIMS_SUPPORTED_AND_CORRECT"], "fail": ["CASE_REJECTED"]},
+    "MAP-30": {
+        "success": ["ALL_THREE_EVENTS_ACCOUNTED_FOR_AND_MARA_VENN_PROVEN"],
+        "fail": ["ACCUSATION_LIMIT_EXCEEDED"],
+    },
+}
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -226,7 +248,18 @@ def main() -> int:
             f"- **{item}**（{facts[item]['level']}）：{mechanism_summary(item)}"
             for item in sorted(same_world)
         ]
-        fail_codes = fact["fail_codes"] or ["由终局 `verdict`/动态码表达，见失败路径"]
+        fail_codes = CODE_OVERRIDES.get(map_id, {}).get("fail", fact["fail_codes"])
+        success_codes = CODE_OVERRIDES.get(map_id, {}).get(
+            "success", fact["success_codes"]
+        )
+        fail_codes_text = (
+            ", ".join(f"`{code}`" for code in fail_codes)
+            or "由终局 `verdict`/动态码表达，见失败路径"
+        )
+        success_codes_text = (
+            ", ".join(f"`{code}`" for code in success_codes)
+            or "见运行时 terminal_reason"
+        )
         failure_paths = FAILURE_PATHS.get(map_id, [])
         lines = [
             f"# {map_id} 定稿：{title}",
@@ -236,7 +269,7 @@ def main() -> int:
             f"| 世界 | {fact['world']} |",
             f"| 难度 | {fact['level']} |",
             f"| 条件 | `{fact['condition']}` |",
-            f"| 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |",
+            "| 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |",
             f"| scenario_hash | `{entry['scenario_hash']}` |",
             f"| rule_hash | `{entry['rule_hash']}` |",
             f"| prompt_hash | `{entry['prompt_hash']}` |",
@@ -254,7 +287,7 @@ def main() -> int:
             "",
             *comparison,
             "",
-            f"本图动作、状态变量与失败码均独立于上述两图；共享的只有 `MapEnvironment` 生命周期、"
+            "本图动作、状态变量与失败码均独立于上述两图；共享的只有 `MapEnvironment` 生命周期、"
             "一个逻辑时钟、图边工具和哈希函数。",
             "",
             "## 3. 公开与私有状态",
@@ -283,8 +316,8 @@ def main() -> int:
             "",
             f"本图结算要点：{SETTLEMENT[map_id]}",
             "",
-            f"- 成功码：{', '.join(f'`{code}`' for code in fact['success_codes']) or '见运行时'}",
-            f"- 失败码：{', '.join(f'`{code}`' for code in fail_codes)}",
+            f"- 成功码：{success_codes_text}",
+            f"- 失败码：{fail_codes_text}",
         ]
         if failure_paths:
             lines.append("- 机制失败路径：")
@@ -309,7 +342,7 @@ def main() -> int:
                 "",
                 f"- Oracle 用例：{', '.join(f'{case['trace_id']}（{case['steps']} 步）' for case in fact['oracle'])}",
                 f"- 手算 fixture：{', '.join(f'{case['name']}（{case['actions']} 步）' for case in fact['fixtures'])}{extra_text}",
-                f"- 同初态确定性重放：通过；终止后不变性：通过；无泄漏：通过。",
+                "- 同初态确定性重放：通过；终止后不变性：通过；无泄漏：通过。",
                 f"- 单图自检：`.\\.venv\\Scripts\\python.exe scripts/check_v8_map.py {map_id}` → `{map_id}: OK`。",
                 "",
                 "## 9. MiMo 三次正式运行",
@@ -372,7 +405,8 @@ def main() -> int:
         matrix.append(
             f"| {fact['world']} | {map_id} | {fact['level']} | {matrix_title} |"
             f" audited | verified | {len(fact['metrics'])}/{len(fact['metrics'])} | verified |"
-            f" 无（见 dcr-resolution） | `{freeze['maps'][map_id]['rule_hash'][:12]}` | human_approved(V7 cards) |"
+            f" 无（见 dcr-resolution） | `{freeze['maps'][map_id]['rule_hash'][:12]}` |"
+            f" v7_card_human_approved; v8_runtime_agent_audited |"
         )
     (DOCS / "runtime-matrix.md").write_text("\n".join(matrix) + "\n", encoding="utf-8")
 
