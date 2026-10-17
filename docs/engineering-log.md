@@ -1298,3 +1298,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 下一步：等待人工复核 30 卡与 DCR；按逐图 `pending-runtime/MAP-XX.md` 的阻塞项选择下一张运行时切片；若需要全仓 Ruff 绿，单独整理冻结 V4 审计脚本的既有格式问题。
 
 关联提交：`01b95ff862a6ea55b48b3ca00d3146ec1c4324e2`。
+
+## 2026-10-17 V7 真实 MiMo trace 二次复算
+
+事件：在不新增付费调用、不新建账本的前提下，用已完成的 V6 真实 MiMo 47 局 trace 复算 V7 六图指标，得到六图在真实模型轨迹上的首份 V7 数值。
+
+原因：用户询问可以用 MiMo API 跑 V7。按 `experiment-protocol.md`，新的 V7 真实实验必须在 30 张卡人工冻结后单独登记预算、样本、停止规则和门禁；当前 30 卡仍为 `pending_human_review`，直接新跑会绕过预注册。已有 V6 trace 是真实 MiMo API 数据，适合先做只读二次分析，也能避免重复付费。
+
+改动：新增 `docs/v7/real-trace-rescore.md`，记录数据源、复算命令、六图汇总、逐图读法、五态缺失与不可外推边界；在 `docs/v7/README.md` 和 `docs/v7/validation-report.md` 增加交叉引用。未修改 V7 extractor、V6 环境、Action 契约、Trace 写出器、prompt 或任何历史账本。
+
+验证：`scripts/report_v7_metrics.py` 处理 47 条 trace，输出 47 computed、0 design_only、0 invalid_trace。原始 V6 数据为 17/47 成功、492 次请求、CNY ¥0.29230284、provider 墙钟 2169.045 秒。复算关键值包括：MAP-08 `diagnosis_accuracy` 全 1.0；MAP-16 L1 两条件 `makespan_gap=0`、L2/L3 四局 `makespan_gap=N/A` 且 `node_capacity_conflicts=1`；MAP-18 `service_rate` 0–0.333（9 有效、1 censored），改线指标 10 局全 N/A；MAP-22 L3 `history5` 失败、`history5_graph_memory` 成功且 `path_gap=3`；MAP-26 `free_diagnosis` 3/4 修复、`recovery_*` 0/9 修复；MAP-30 完整调查 0/3 证据链覆盖率为 0，纯召回 casebook 1/1 覆盖率为 1。没有用 0 填补 N/A、censored 或 unavailable。
+
+边界：该结果是真实 trace 的 post-hoc 二次分析（E3-post-hoc），不是新的 V7 API 主实验；每条件只有 1 局，不能做显著性、排名或跨模型推断；24 图仍无运行时；30 卡仍由人工复核。本轮 0 次新增付费 API、0 个新账本、未写 `runs/` 或 `results/`。
+
+下一步：先完成 30 卡人工冻结与 DCR 裁定；若要跑新的 V7 真实实验，再单独登记六图多实例配对矩阵、预算上限和停止规则，不在当前状态下直接调用 API。
+
+关联提交：本次提交。

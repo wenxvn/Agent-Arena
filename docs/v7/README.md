@@ -13,9 +13,10 @@ V7 **不**修改 V2/V4/V5/V6 的规则、Action/Observation/Trace、Oracle、账
 | 可运行指标 extractor | 6 | 已实现（MAP-08/16/18/22/26/30） |
 | 六图手工校验 | 36 | 6 图 × 6 条真实环境重放，覆盖成功/失败/边界/截尾 |
 | 注册指标 | 154 | 6 图 44 条 + 24 图 110 条（`MetricSpec`，全部带 `valid_range`） |
-| 泄漏与只读扫描 | 12 源 / 64 文档 | 通过 |
+| 泄漏与只读扫描 | 12 源 / 65 文档 | 通过 |
 | 人工审阅 | 30 | `pending_human_review`（DeepSeek 不代签） |
-| 真实 API | 0 次新增 | 默认全离线 |
+| 已有 MiMo trace 复算 | 47 | V6 真实 trace 的 post-hoc V7 二次分析（`real-trace-rescore.md`） |
+| 新增付费 API | 0 次 | 默认全离线；未登记新的 V7 API 实验 |
 
 ## 文件地图
 
@@ -32,6 +33,7 @@ docs/v7/
   maps/MAP-01.md … MAP-30.md   逐图设计卡（权威细节）
   pending-runtime/MAP-XX.md     24 张无运行时地图的逐图准入说明（README.md 为总表）
   validation-report.md         本轮真实命令、测试结果、限制
+  real-trace-rescore.md        已有 V6 MiMo 47 局 trace 的 V7 post-hoc 复算（非新实验）
 
 src/agent_arena/v7/metrics/
   schema.py                    MetricSpec / MetricValue / TraceRecord
