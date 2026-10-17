@@ -11,7 +11,7 @@
 | prompt_hash | `22cad66d69fd90646dfca500e985430544b84bbdc55e63543a5c8519e6891ec6` |
 | metric_schema_hash | `02f9dba16f750cb03255c6ce8a667a2a267280222783b0a1be8784d744460641` |
 | oracle_hash | `712d90fc974acfeb44094e4774ca67b92eca27b8faadaaba4ab2d96e7bf99a9c` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -130,9 +130,9 @@ MAP-30 是长间隔召回与多事件案卷。本图固定四名 NPC、四种不
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | decision_budget_reached | False | None | 38 | 0.04048732 | `V8-MAP-29-R0-20261017T105544Z-260b1802` | `contradiction_detection_rate`=0.0; `query_budget_overruns`=0; `single_witness_trust`=0 |
+| 1 | decision_budget_reached | False | None | 38 | 0.04046624 | `V8-MAP-29-R1-20261017T105936Z-ec83d220` | `contradiction_detection_rate`=0.0; `query_budget_overruns`=0; `single_witness_trust`=0 |
+| 2 | decision_budget_reached | False | None | 38 | 0.03567872 | `V8-MAP-29-R2-20261017T110340Z-482b3e69` | `contradiction_detection_rate`=0.0; `query_budget_overruns`=0; `single_witness_trust`=0 |
 
 三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 

@@ -11,7 +11,7 @@
 | prompt_hash | `54fa0fb08673fd5eb63b412fc0fabc2c68c317b577ee658dbf0db9e498da4efc` |
 | metric_schema_hash | `5294368961d55a133851ae06f72438a2b6ea9cab0a233795436af1e9e8173f44` |
 | oracle_hash | `0744583b34ca7836cb9e485564d03fb269bb47e1bcfc3d16f5fdecdb1656b446` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -108,11 +108,11 @@ MAP-15｜会变化的迷宫：四色互补规则、奇偶相位切换与未见�
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | success | True | GATE_OPENED | 11 | 0.00648664 | `V8-MAP-15-R0-20261017T090948Z-551115e9` | `invalid_transitions`=1; `loop_states`=0; `probes_to_target`=5; `reset_losses`=2 |
+| 1 | success | True | GATE_OPENED | 12 | 0.00656380 | `V8-MAP-15-R1-20261017T091043Z-8ae2681f` | `invalid_transitions`=1; `loop_states`=0; `probes_to_target`=5; `reset_losses`=2 |
+| 2 | success | True | GATE_OPENED | 14 | 0.00750916 | `V8-MAP-15-R2-20261017T091131Z-9d9d9075` | `invalid_transitions`=3; `loop_states`=0; `probes_to_target`=7; `reset_losses`=6 |
 
-三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
+三次重复成功 3/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 

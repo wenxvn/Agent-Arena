@@ -10,8 +10,8 @@
 | rule_hash | `47548b6c5585a6d0d82b8de082d1ce1f99009e4e9bd9639f0957ed623b0b8048` |
 | prompt_hash | `50cdea891e4cd0991657a50680082fecc1f79fe895fb8a67301ecf13af38e43d` |
 | metric_schema_hash | `1fca8c5b91c939b9b8bfab0d71e0512c1f2c50c947576f782eb27dcc675a27e0` |
-| oracle_hash | `78c6cb0640ea250aeecd495ab360f2e52e6bde65ffeaa33faaeadb570382d9c0` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| oracle_hash | `3d2076e7bc1c4442a2c7dfba6766f9dc613ad40af2029b50a8824e0d623bf3ef` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -89,9 +89,9 @@
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | failure | False | DEADLOCK | 6 | 0.0037252 | `V8-MAP-16-R0-20261017T091223Z-53fd210b` | `committed_ticks`=2; `deadlock`=1; `head_on_conflicts`=0; `legal_action_rate`=1.0 |
+| 1 | failure | False | NODE_CAPACITY_CONFLICT | 24 | 0.01343676 | `V8-MAP-16-R1-20261017T091303Z-0a5e0822` | `committed_ticks`=3; `deadlock`=0; `head_on_conflicts`=0; `legal_action_rate`=0.583333 |
+| 2 | failure | False | NODE_CAPACITY_CONFLICT | 15 | 0.00612656 | `V8-MAP-16-R2-20261017T091445Z-e1cb5211` | `committed_ticks`=3; `deadlock`=0; `head_on_conflicts`=0; `legal_action_rate`=0.8 |
 
 三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 

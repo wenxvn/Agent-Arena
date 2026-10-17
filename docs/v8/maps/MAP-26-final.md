@@ -11,7 +11,7 @@
 | prompt_hash | `98c30e9cfdb9e8a98d986c85251cc54b2332fc308e7a78374b206116e1bfdc48` |
 | metric_schema_hash | `6a53a449699c1a647d23711002166ee5987f86cff10e1fcada31334bc29cdcea` |
 | oracle_hash | `81b9cb207b7b78ba4c710b26c0edb0122fc8faa555c6fe661fb1dfa230eb8f23` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -90,9 +90,9 @@
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | decision_budget_reached | False | None | 38 | 0.02055772 | `V8-MAP-26-R0-20261017T101026Z-5011be58` | `legal_action_rate`=0.394737; `repair_success`=0; `spares_remaining`=2; `tests_run`=0 |
+| 1 | decision_budget_reached | False | None | 38 | 0.01883928 | `V8-MAP-26-R1-20261017T101301Z-dfe20208` | `legal_action_rate`=0.447368; `repair_success`=0; `spares_remaining`=2; `tests_run`=0 |
+| 2 | decision_budget_reached | False | None | 38 | 0.01941904 | `V8-MAP-26-R2-20261017T103232Z-16e3d421` | `legal_action_rate`=0.368421; `repair_success`=0; `spares_remaining`=2; `tests_run`=4 |
 
 三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 

@@ -37,6 +37,8 @@ GATE_PATH = ROOT / "runs" / "v8" / "offline_gate.json"
 OUTPUT = ROOT / "runs" / "v8" / "freeze_manifest.json"
 MODEL_NAME = "mimo-v2.6-flash"
 ALLOWED_ENDPOINT = ("https", "api.xiaomimimo.com", "/v1")
+#: MAP-12 的 30 天 × 2 劳动槽需要 60 个动作；级别默认预算 46 不可行。
+DECISION_BUDGET_OVERRIDES = {"MAP-12": 60}
 V4_RUNTIME_MAPS = frozenset(CONDITIONS)
 
 
@@ -135,7 +137,7 @@ def main() -> int:
     maps: dict[str, Any] = {}
     for map_id in MAP_IDS:
         level = LEVEL_OF[map_id]
-        budget = DECISION_BUDGETS[level]
+        budget = DECISION_BUDGET_OVERRIDES.get(map_id, DECISION_BUDGETS[level])
         environment = create_environment(map_id, step_limit=160)
         prompt = system_prompt(environment, decision_budget=budget)
         oracle = _oracle_payload(map_id)

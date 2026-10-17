@@ -87,7 +87,26 @@
   这是公开世界知识，不包含隐藏真值或正确顺序；
 - 规则模块仍未改动；`prompt_hash` 变化，重新冻结后开始正式 90 局。
 
-### 3.4 设计文件与 V7 卡片
+### 3.4 正式运行中的 provider 中断与版本修复
+
+正式 90 局不是一次不中断的批处理；每次停机都保留原账本与 trace，补跑使用独立账本和
+新 run_id。当前记录：
+
+| 账本 | 正式局 | 结束原因 | 处理 |
+|---|---|---|---|
+| `runs/v8/ledger.jsonl` | 38 | MAP-13 R2 `InternalServerError` → unknown spend | 封账；MAP-13 R2 由 supplement_001 补跑 |
+| `runs/v8/supplement_001/ledger.jsonl` | 4 | MAP-15 R0 `InternalServerError` → unknown spend | 封账；剩余局由 supplement_002 补跑 |
+| `runs/v8/supplement_002/ledger.jsonl` | 24 | MAP-22 连续 3 局 `schema_fault_limit` | 审计后封账；MAP-22 旧三局标 superseded |
+| `runs/v8/supplement_003/ledger.jsonl` | 进行中 | — | 重跑 MAP-22 R0–R2 + MAP-23–30 |
+
+**MAP-22 版本修复**：三局 schema 失败的原因是 `write_memory(facts)` 的
+`node_page` / `traversed_edge_page` 字段结构没有公开，模型反复提交了结构相似但字段
+不合法的对象。修复只在公开 prompt 中加入事实 schema，规则模块未改；MAP-22 的
+`prompt_hash` 变化，其他 29 图的 `scenario_hash / rule_hash / prompt_hash /
+metric_schema_hash` 不变。旧三局保留但标记 `SUPERSEDED.json`，不计入正式结果。
+这是提纲允许的“三局都因无效 schema 失败 → 修复后重新冻结重跑”，不是静默改规则。
+
+### 3.5 设计文件与 V7 卡片
 
 - 30 图的 `worlds/v4/MAP-XX/{DESIGN.md,map_spec.yaml,evidence_or_rules.yaml,oracle_trace.jsonl,acceptance.md,failure_traces/cases.yaml}` 全部存在。
 - V7 的 30 张指标卡已由用户于 2026-10-17 复核为 `human_approved`；V8 沿用其 `MetricSpec`，没有新增或改名。

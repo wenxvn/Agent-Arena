@@ -8,10 +8,10 @@
 | 生命周期 | design_audited → rules_frozen → runtime_verified → metrics_verified → mimo_3runs_completed → finalized |
 | scenario_hash | `efc76acdc469af8fd965418396b2a549b2147300a33fdb3eab2c70b150151412` |
 | rule_hash | `e856cec6daf4d388e89c2d239153cb5fbcb955de65c8d2ccd62753319f293856` |
-| prompt_hash | `acfc6243b2f2fba2fc02293c298e09d7c8a2237229f05f91ffc7adb425a7a0a1` |
+| prompt_hash | `5d1068396fb0e1c26a396afcae8d4cd7c42aef47f6dd7bee55fd8c4ccd80d704` |
 | metric_schema_hash | `f0f6f77e4e0557f0ea1f479314f70b4dd167b84f3b137443addbc522178893ef` |
 | oracle_hash | `388ae9bdf55001710afa6a7b6af76a6b7265f624dafd5e5b2815dee69b3e801d` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -88,9 +88,9 @@
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | decision_budget_reached | False | None | 30 | 0.02321652 | `V8-MAP-22-R0-20261017T095222Z-68e884e9` | `illegal_bearing_actions`=1; `legal_action_rate`=0.933333; `memory_facts_written`=7; `memory_grounding_violations`=1 |
+| 1 | decision_budget_reached | False | None | 30 | 0.02036660 | `V8-MAP-22-R1-20261017T095410Z-5d7125fa` | `illegal_bearing_actions`=0; `legal_action_rate`=1.0; `memory_facts_written`=7; `memory_grounding_violations`=0 |
+| 2 | decision_budget_reached | False | None | 30 | 0.01894224 | `V8-MAP-22-R2-20261017T095608Z-0f0e3e48` | `illegal_bearing_actions`=0; `legal_action_rate`=1.0; `memory_facts_written`=6; `memory_grounding_violations`=0 |
 
 三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 

@@ -11,7 +11,7 @@
 | prompt_hash | `f90bcee72193100a2566cdd8e1d51199718e2a57309868ea0c6c701b3e2ac573` |
 | metric_schema_hash | `678d9e0132d61ca9967709cfeb9f2eb8c8b625999ac1e0c1f562debd3c692627` |
 | oracle_hash | `41e53eba2084a791b9c3740d4694011a23132083687c28e33c64d427c046f8ab` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -99,11 +99,11 @@ MAP-24 的图会在局中坍塌、核心是在线改路。本图路网与成本�
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | failure | False | SUPPLY_DEPLETED | 16 | 0.0094424 | `V8-MAP-23-R0-20261017T095752Z-a3d3a12a` | `clue_utilization`=1.0; `ignored_counterevidence`=0; `repeated_invalid_exploration`=0 |
+| 1 | failure | False | SUPPLY_DEPLETED | 22 | 0.01201268 | `V8-MAP-23-R1-20261017T095837Z-f7a63f5f` | `clue_utilization`=1.0; `ignored_counterevidence`=0; `repeated_invalid_exploration`=0 |
+| 2 | success | True | TRUE_ENTRANCE_FOUND | 10 | 0.00511756 | `V8-MAP-23-R2-20261017T100007Z-e08f6f78` | `clue_utilization`=1.0; `cost_per_discovery`=9.0; `ignored_counterevidence`=0; `repeated_invalid_exploration`=0 |
 
-三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
+三次重复成功 1/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 

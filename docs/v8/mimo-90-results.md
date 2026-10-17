@@ -1,11 +1,11 @@
 # V8 MiMo 90 局结果
 
-- freeze_hash：`a346ddcdace8758b077bdb563566901980f97c9996b9d20c25f811a048a26bdf`
+- freeze_hash：`4cd8a14131b9ca2022575badd93667d79864efd8d77d77ebc2a9957c9876661b`
 - 模型：`mimo-v2.6-flash` / provider `openai` / temperature 0
-- 正式完成：**42/90**；缺口 48 局
-- 正式局已结算费用：**¥0.45363316**（硬上限 ¥10）
-- Token：输入 583499 / 输出 39245；请求 796
-- 账本：settled `0.46374768` / attempts `814` / failed `2` / closed `True`（UNKNOWN_PROVIDER_SPEND）
+- 正式完成：**90/90**；缺口 0 局
+- 正式局已结算费用：**¥1.25363556**（硬上限 ¥10）
+- Token：输入 1566789 / 输出 103774；请求 1902
+- 账本：settled `1.27504600` / attempts `1956` / failed `4` / closed `True`（UNKNOWN_PROVIDER_SPEND）
 - 预警：无
 
 > n=3 只作重复运行描述，不做显著性断言。Oracle 成功率不是 MiMo 能力。
@@ -56,54 +56,54 @@
 | 40 | MAP-14 | pyramid | 中等 | 0 | decision_budget_reached | False | None | 38 | 38 | 0.02326660 | `globally_consistent_hypothesis_rate`=None; `minimum_query_gap`=0 |
 | 41 | MAP-14 | pyramid | 中等 | 1 | decision_budget_reached | False | None | 38 | 38 | 0.02225512 | `globally_consistent_hypothesis_rate`=None; `minimum_query_gap`=0 |
 | 42 | MAP-14 | pyramid | 中等 | 2 | decision_budget_reached | False | None | 38 | 38 | 0.01866248 | `globally_consistent_hypothesis_rate`=None; `minimum_query_gap`=0 |
-| 43 | MAP-15 | None | None | 0 | missing | None | None | — | — | None |  |
-| 44 | MAP-15 | None | None | 1 | missing | None | None | — | — | None |  |
-| 45 | MAP-15 | None | None | 2 | missing | None | None | — | — | None |  |
-| 46 | MAP-16 | None | None | 0 | missing | None | None | — | — | None |  |
-| 47 | MAP-16 | None | None | 1 | missing | None | None | — | — | None |  |
-| 48 | MAP-16 | None | None | 2 | missing | None | None | — | — | None |  |
-| 49 | MAP-17 | None | None | 0 | missing | None | None | — | — | None |  |
-| 50 | MAP-17 | None | None | 1 | missing | None | None | — | — | None |  |
-| 51 | MAP-17 | None | None | 2 | missing | None | None | — | — | None |  |
-| 52 | MAP-18 | None | None | 0 | missing | None | None | — | — | None |  |
-| 53 | MAP-18 | None | None | 1 | missing | None | None | — | — | None |  |
-| 54 | MAP-18 | None | None | 2 | missing | None | None | — | — | None |  |
-| 55 | MAP-19 | None | None | 0 | missing | None | None | — | — | None |  |
-| 56 | MAP-19 | None | None | 1 | missing | None | None | — | — | None |  |
-| 57 | MAP-19 | None | None | 2 | missing | None | None | — | — | None |  |
-| 58 | MAP-20 | None | None | 0 | missing | None | None | — | — | None |  |
-| 59 | MAP-20 | None | None | 1 | missing | None | None | — | — | None |  |
-| 60 | MAP-20 | None | None | 2 | missing | None | None | — | — | None |  |
-| 61 | MAP-21 | None | None | 0 | missing | None | None | — | — | None |  |
-| 62 | MAP-21 | None | None | 1 | missing | None | None | — | — | None |  |
-| 63 | MAP-21 | None | None | 2 | missing | None | None | — | — | None |  |
-| 64 | MAP-22 | None | None | 0 | missing | None | None | — | — | None |  |
-| 65 | MAP-22 | None | None | 1 | missing | None | None | — | — | None |  |
-| 66 | MAP-22 | None | None | 2 | missing | None | None | — | — | None |  |
-| 67 | MAP-23 | None | None | 0 | missing | None | None | — | — | None |  |
-| 68 | MAP-23 | None | None | 1 | missing | None | None | — | — | None |  |
-| 69 | MAP-23 | None | None | 2 | missing | None | None | — | — | None |  |
-| 70 | MAP-24 | None | None | 0 | missing | None | None | — | — | None |  |
-| 71 | MAP-24 | None | None | 1 | missing | None | None | — | — | None |  |
-| 72 | MAP-24 | None | None | 2 | missing | None | None | — | — | None |  |
-| 73 | MAP-25 | None | None | 0 | missing | None | None | — | — | None |  |
-| 74 | MAP-25 | None | None | 1 | missing | None | None | — | — | None |  |
-| 75 | MAP-25 | None | None | 2 | missing | None | None | — | — | None |  |
-| 76 | MAP-26 | None | None | 0 | missing | None | None | — | — | None |  |
-| 77 | MAP-26 | None | None | 1 | missing | None | None | — | — | None |  |
-| 78 | MAP-26 | None | None | 2 | missing | None | None | — | — | None |  |
-| 79 | MAP-27 | None | None | 0 | missing | None | None | — | — | None |  |
-| 80 | MAP-27 | None | None | 1 | missing | None | None | — | — | None |  |
-| 81 | MAP-27 | None | None | 2 | missing | None | None | — | — | None |  |
-| 82 | MAP-28 | None | None | 0 | missing | None | None | — | — | None |  |
-| 83 | MAP-28 | None | None | 1 | missing | None | None | — | — | None |  |
-| 84 | MAP-28 | None | None | 2 | missing | None | None | — | — | None |  |
-| 85 | MAP-29 | None | None | 0 | missing | None | None | — | — | None |  |
-| 86 | MAP-29 | None | None | 1 | missing | None | None | — | — | None |  |
-| 87 | MAP-29 | None | None | 2 | missing | None | None | — | — | None |  |
-| 88 | MAP-30 | None | None | 0 | missing | None | None | — | — | None |  |
-| 89 | MAP-30 | None | None | 1 | missing | None | None | — | — | None |  |
-| 90 | MAP-30 | None | None | 2 | missing | None | None | — | — | None |  |
+| 43 | MAP-15 | pyramid | 困难 | 0 | success | True | GATE_OPENED | 11 | 11 | 0.00648664 | `invalid_transitions`=1; `probes_to_target`=5 |
+| 44 | MAP-15 | pyramid | 困难 | 1 | success | True | GATE_OPENED | 12 | 12 | 0.00656380 | `invalid_transitions`=1; `probes_to_target`=5 |
+| 45 | MAP-15 | pyramid | 困难 | 2 | success | True | GATE_OPENED | 14 | 14 | 0.00750916 | `invalid_transitions`=3; `probes_to_target`=7 |
+| 46 | MAP-16 | subway | 简单 | 0 | failure | False | DEADLOCK | 6 | 6 | 0.0037252 | `deadlock`=1; `head_on_conflicts`=0 |
+| 47 | MAP-16 | subway | 简单 | 1 | failure | False | NODE_CAPACITY_CONFLICT | 24 | 24 | 0.01343676 | `deadlock`=0; `head_on_conflicts`=0 |
+| 48 | MAP-16 | subway | 简单 | 2 | failure | False | NODE_CAPACITY_CONFLICT | 15 | 15 | 0.00612656 | `deadlock`=0; `head_on_conflicts`=0 |
+| 49 | MAP-17 | subway | 中等 | 0 | decision_budget_reached | False | None | 38 | 38 | 0.04320516 | `cumulative_wait_person_ticks`=18; `overcapacity_events`=0 |
+| 50 | MAP-17 | subway | 中等 | 1 | decision_budget_reached | False | None | 38 | 38 | 0.04268300 | `cumulative_wait_person_ticks`=22; `overcapacity_events`=1 |
+| 51 | MAP-17 | subway | 中等 | 2 | decision_budget_reached | False | None | 38 | 38 | 0.03214256 | `cumulative_wait_person_ticks`=24; `overcapacity_events`=0 |
+| 52 | MAP-18 | subway | 困难 | 0 | censored | False | ACTION_LIMIT_REACHED | 12 | 12 | 0.0126596 | `collision_violations`=0; `completed_train_moves`=0 |
+| 53 | MAP-18 | subway | 困难 | 1 | failure | False | STATION_CAPACITY_EXCEEDED | 3 | 3 | 0.00185604 | `collision_violations`=0; `completed_train_moves`=0 |
+| 54 | MAP-18 | subway | 困难 | 2 | censored | False | ACTION_LIMIT_REACHED | 12 | 12 | 0.01118360 | `collision_violations`=0; `completed_train_moves`=3 |
+| 55 | MAP-19 | volcano | 简单 | 0 | decision_budget_reached | False | None | 30 | 30 | 0.01906692 | `critical_overheat_ticks`=0; `oscillation_count`=2 |
+| 56 | MAP-19 | volcano | 简单 | 1 | failure | False | THERMAL_RUNAWAY | 23 | 23 | 0.01512828 | `critical_overheat_ticks`=1; `oscillation_count`=0 |
+| 57 | MAP-19 | volcano | 简单 | 2 | decision_budget_reached | False | None | 30 | 30 | 0.01850988 | `critical_overheat_ticks`=0; `oscillation_count`=0 |
+| 58 | MAP-20 | volcano | 中等 | 0 | failure | False | THERMAL_OVERHEAT | 22 | 22 | 0.01901904 | `flow_conservation_violations`=0; `max_node_exceedance`=20 |
+| 59 | MAP-20 | volcano | 中等 | 1 | success | True | PRODUCTION_TARGET_MET | 19 | 19 | 0.01298908 | `flow_conservation_violations`=0; `max_node_exceedance`=0 |
+| 60 | MAP-20 | volcano | 中等 | 2 | success | True | PRODUCTION_TARGET_MET | 17 | 17 | 0.01325256 | `flow_conservation_violations`=1; `max_node_exceedance`=0 |
+| 61 | MAP-21 | volcano | 困难 | 0 | success | True | EVACUATED_BEFORE_ERUPTION | 2 | 2 | 0.0010214 | `evacuation_coverage`=1.0; `false_safety_claims`=None |
+| 62 | MAP-21 | volcano | 困难 | 1 | success | True | EVACUATED_BEFORE_ERUPTION | 1 | 1 | 0.00013024 | `evacuation_coverage`=1.0; `false_safety_claims`=None |
+| 63 | MAP-21 | volcano | 困难 | 2 | success | True | EVACUATED_BEFORE_ERUPTION | 2 | 2 | 0.00027476 | `evacuation_coverage`=1.0; `false_safety_claims`=None |
+| 64 | MAP-22 | jungle | 简单 | 0 | decision_budget_reached | False | None | 30 | 30 | 0.02321652 | `illegal_bearing_actions`=1; `memory_grounding_violations`=1 |
+| 65 | MAP-22 | jungle | 简单 | 1 | decision_budget_reached | False | None | 30 | 30 | 0.02036660 | `illegal_bearing_actions`=0; `memory_grounding_violations`=0 |
+| 66 | MAP-22 | jungle | 简单 | 2 | decision_budget_reached | False | None | 30 | 30 | 0.01894224 | `illegal_bearing_actions`=0; `memory_grounding_violations`=0 |
+| 67 | MAP-23 | jungle | 中等 | 0 | failure | False | SUPPLY_DEPLETED | 16 | 16 | 0.0094424 | `clue_utilization`=1.0; `cost_per_discovery`=None |
+| 68 | MAP-23 | jungle | 中等 | 1 | failure | False | SUPPLY_DEPLETED | 22 | 22 | 0.01201268 | `clue_utilization`=1.0; `cost_per_discovery`=None |
+| 69 | MAP-23 | jungle | 中等 | 2 | success | True | TRUE_ENTRANCE_FOUND | 10 | 10 | 0.00511756 | `clue_utilization`=1.0; `cost_per_discovery`=9.0 |
+| 70 | MAP-24 | jungle | 困难 | 0 | failure | False | STRANDED_ON_BRIDGE | 9 | 9 | 0.0059154 | `collapsed_edge_attempts`=0; `replanning_latency`=None |
+| 71 | MAP-24 | jungle | 困难 | 1 | success | True | ALL_ITEMS_DELIVERED | 9 | 9 | 0.00240008 | `collapsed_edge_attempts`=0; `replanning_latency`=None |
+| 72 | MAP-24 | jungle | 困难 | 2 | success | True | ALL_ITEMS_DELIVERED | 12 | 12 | 0.00647696 | `collapsed_edge_attempts`=0; `replanning_latency`=1 |
+| 73 | MAP-25 | lunar | 简单 | 0 | decision_budget_reached | False | None | 30 | 30 | 0.01400724 | `dependency_order_correctness`=0.454545; `required_check_coverage`=0.428571 |
+| 74 | MAP-25 | lunar | 简单 | 1 | failure | False | OXYGEN_DEPLETED | 29 | 29 | 0.01034928 | `dependency_order_correctness`=0.555556; `required_check_coverage`=0.428571 |
+| 75 | MAP-25 | lunar | 简单 | 2 | decision_budget_reached | False | None | 30 | 30 | 0.01114996 | `dependency_order_correctness`=0.692308; `required_check_coverage`=1.0 |
+| 76 | MAP-26 | lunar | 中等 | 0 | decision_budget_reached | False | None | 38 | 38 | 0.02055772 | `diagnosis_accuracy`=None; `recovery_latency`=None |
+| 77 | MAP-26 | lunar | 中等 | 1 | decision_budget_reached | False | None | 38 | 38 | 0.01883928 | `diagnosis_accuracy`=None; `recovery_latency`=None |
+| 78 | MAP-26 | lunar | 中等 | 2 | decision_budget_reached | False | None | 38 | 38 | 0.01941904 | `diagnosis_accuracy`=None; `recovery_latency`=None |
+| 79 | MAP-27 | lunar | 困难 | 0 | failure | False | VEHICLE_STRANDED | 8 | 8 | 0.00580636 | `communication_blackout_ticks`=13; `critical_path_delay`=None |
+| 80 | MAP-27 | lunar | 困难 | 1 | failure | False | VEHICLE_STRANDED | 10 | 10 | 0.00448080 | `communication_blackout_ticks`=12; `critical_path_delay`=None |
+| 81 | MAP-27 | lunar | 困难 | 2 | failure | False | VEHICLE_STRANDED | 6 | 6 | 0.00210904 | `communication_blackout_ticks`=14; `critical_path_delay`=None |
+| 82 | MAP-28 | castle | 简单 | 0 | decision_budget_reached | False | None | 30 | 30 | 0.02140084 | `key_evidence_coverage`=0.25; `timeline_constraint_satisfaction`=0.0 |
+| 83 | MAP-28 | castle | 简单 | 1 | decision_budget_reached | False | None | 30 | 30 | 0.02366732 | `key_evidence_coverage`=0.75; `timeline_constraint_satisfaction`=0.0 |
+| 84 | MAP-28 | castle | 简单 | 2 | decision_budget_reached | False | None | 30 | 30 | 0.01490564 | `key_evidence_coverage`=0.25; `timeline_constraint_satisfaction`=0.0 |
+| 85 | MAP-29 | castle | 中等 | 0 | decision_budget_reached | False | None | 38 | 38 | 0.04048732 | `contradiction_detection_rate`=0.0; `evidence_supported_testimony_ratio`=None |
+| 86 | MAP-29 | castle | 中等 | 1 | decision_budget_reached | False | None | 38 | 38 | 0.04046624 | `contradiction_detection_rate`=0.0; `evidence_supported_testimony_ratio`=None |
+| 87 | MAP-29 | castle | 中等 | 2 | decision_budget_reached | False | None | 38 | 38 | 0.03567872 | `contradiction_detection_rate`=0.0; `evidence_supported_testimony_ratio`=None |
+| 88 | MAP-30 | castle | 困难 | 0 | decision_budget_reached | False | None | 46 | 46 | 0.03396008 | `accusation_claim_precision`=None; `evidence_chain_coverage`=0.0 |
+| 89 | MAP-30 | castle | 困难 | 1 | decision_budget_reached | False | None | 46 | 46 | 0.04683228 | `accusation_claim_precision`=None; `evidence_chain_coverage`=0.0 |
+| 90 | MAP-30 | castle | 困难 | 2 | decision_budget_reached | False | None | 46 | 46 | 0.04502456 | `accusation_claim_precision`=0.666667; `evidence_chain_coverage`=0.0 |
 
 ## 2. 逐图汇总
 
@@ -123,88 +123,43 @@
 | MAP-12 | polar | 困难 | default | 0/3 | {'decision_budget_reached': 3} | 46.0 | 0.09398824 |
 | MAP-13 | pyramid | 简单 | default | 2/3 | {'decision_budget_reached': 1, 'success': 2} | 25.3 | 0.04701084 |
 | MAP-14 | pyramid | 中等 | default | 0/3 | {'decision_budget_reached': 3} | 38.0 | 0.06418420 |
-| MAP-15 | pyramid | 困难 | default | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-16 | subway | 简单 | constraint_table | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-17 | subway | 中等 | default | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-18 | subway | 困难 | alert_on | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-19 | volcano | 简单 | default | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-20 | volcano | 中等 | default | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-21 | volcano | 困难 | default | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-22 | jungle | 简单 | history5_graph_memory | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-23 | jungle | 中等 | default | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-24 | jungle | 困难 | default | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-25 | lunar | 简单 | default | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-26 | lunar | 中等 | free_diagnosis | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-27 | lunar | 困难 | default | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-28 | castle | 简单 | default | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-29 | castle | 中等 | default | 0/3 | {'missing': 3} | 0.0 | 0 |
-| MAP-30 | castle | 困难 | history5_casebook | 0/3 | {'missing': 3} | 0.0 | 0 |
+| MAP-15 | pyramid | 困难 | default | 3/3 | {'success': 3} | 12.3 | 0.02055960 |
+| MAP-16 | subway | 简单 | constraint_table | 0/3 | {'failure': 3} | 15.0 | 0.02328852 |
+| MAP-17 | subway | 中等 | default | 0/3 | {'decision_budget_reached': 3} | 38.0 | 0.11803072 |
+| MAP-18 | subway | 困难 | alert_on | 0/3 | {'censored': 2, 'failure': 1} | 9.0 | 0.02569924 |
+| MAP-19 | volcano | 简单 | default | 0/3 | {'decision_budget_reached': 2, 'failure': 1} | 27.7 | 0.05270508 |
+| MAP-20 | volcano | 中等 | default | 2/3 | {'failure': 1, 'success': 2} | 19.3 | 0.04526068 |
+| MAP-21 | volcano | 困难 | default | 3/3 | {'success': 3} | 1.7 | 0.00142640 |
+| MAP-22 | jungle | 简单 | history5_graph_memory | 0/3 | {'decision_budget_reached': 3} | 30.0 | 0.06252536 |
+| MAP-23 | jungle | 中等 | default | 1/3 | {'failure': 2, 'success': 1} | 16.0 | 0.02657264 |
+| MAP-24 | jungle | 困难 | default | 2/3 | {'failure': 1, 'success': 2} | 10.0 | 0.01479244 |
+| MAP-25 | lunar | 简单 | default | 0/3 | {'decision_budget_reached': 2, 'failure': 1} | 29.7 | 0.03550648 |
+| MAP-26 | lunar | 中等 | free_diagnosis | 0/3 | {'decision_budget_reached': 3} | 38.0 | 0.05881604 |
+| MAP-27 | lunar | 困难 | default | 0/3 | {'failure': 3} | 8.0 | 0.01239620 |
+| MAP-28 | castle | 简单 | default | 0/3 | {'decision_budget_reached': 3} | 30.0 | 0.05997380 |
+| MAP-29 | castle | 中等 | default | 0/3 | {'decision_budget_reached': 3} | 38.0 | 0.11663228 |
+| MAP-30 | castle | 困难 | history5_casebook | 0/3 | {'decision_budget_reached': 3} | 46.0 | 0.12581692 |
 
 ## 3. 状态与费用分布
 
-- `decision_budget_reached`：13
-- `failure`：23
-- `missing`：48
-- `success`：6
-- 成功：6/90（14.3% of completed）
-- 单局平均费用：¥0.010801
-- 单局平均请求：19.0
+- `censored`：2
+- `decision_budget_reached`：35
+- `failure`：36
+- `success`：17
+- 成功：17/90（18.9% of completed）
+- 单局平均费用：¥0.013929
+- 单局平均请求：21.1
 
 ## 4. 补跑与中断
 
-- 尝试记录：44（含补跑与原失败）
+- 尝试记录：94（含补跑与原失败）
 - provider_error 的正式局：0
 - unknown_spend 的正式局：0
   - MAP-13 R2 `V8-MAP-13-R2-20261017T083750Z-787ade08` status=unknown_provider_spend error=InternalServerError unknown_spend=True
   - MAP-15 R0 `V8-MAP-15-R0-20261017T085151Z-a8381a55` status=unknown_provider_spend error=APIConnectionError unknown_spend=True
+  - MAP-26 R2 `V8-MAP-26-R2-20261017T101609Z-05797deb` status=unknown_provider_spend error=InternalServerError unknown_spend=True
+  - MAP-28 R0 `V8-MAP-28-R0-20261017T103954Z-1abe3469` status=unknown_provider_spend error=APIConnectionError unknown_spend=True
 
 ## 5. 缺口
 
-- MAP-15 R0：attempts=1 statuses=['unknown_provider_spend']
-- MAP-15 R1：attempts=0 statuses=[]
-- MAP-15 R2：attempts=0 statuses=[]
-- MAP-16 R0：attempts=0 statuses=[]
-- MAP-16 R1：attempts=0 statuses=[]
-- MAP-16 R2：attempts=0 statuses=[]
-- MAP-17 R0：attempts=0 statuses=[]
-- MAP-17 R1：attempts=0 statuses=[]
-- MAP-17 R2：attempts=0 statuses=[]
-- MAP-18 R0：attempts=0 statuses=[]
-- MAP-18 R1：attempts=0 statuses=[]
-- MAP-18 R2：attempts=0 statuses=[]
-- MAP-19 R0：attempts=0 statuses=[]
-- MAP-19 R1：attempts=0 statuses=[]
-- MAP-19 R2：attempts=0 statuses=[]
-- MAP-20 R0：attempts=0 statuses=[]
-- MAP-20 R1：attempts=0 statuses=[]
-- MAP-20 R2：attempts=0 statuses=[]
-- MAP-21 R0：attempts=0 statuses=[]
-- MAP-21 R1：attempts=0 statuses=[]
-- MAP-21 R2：attempts=0 statuses=[]
-- MAP-22 R0：attempts=0 statuses=[]
-- MAP-22 R1：attempts=0 statuses=[]
-- MAP-22 R2：attempts=0 statuses=[]
-- MAP-23 R0：attempts=0 statuses=[]
-- MAP-23 R1：attempts=0 statuses=[]
-- MAP-23 R2：attempts=0 statuses=[]
-- MAP-24 R0：attempts=0 statuses=[]
-- MAP-24 R1：attempts=0 statuses=[]
-- MAP-24 R2：attempts=0 statuses=[]
-- MAP-25 R0：attempts=0 statuses=[]
-- MAP-25 R1：attempts=0 statuses=[]
-- MAP-25 R2：attempts=0 statuses=[]
-- MAP-26 R0：attempts=0 statuses=[]
-- MAP-26 R1：attempts=0 statuses=[]
-- MAP-26 R2：attempts=0 statuses=[]
-- MAP-27 R0：attempts=0 statuses=[]
-- MAP-27 R1：attempts=0 statuses=[]
-- MAP-27 R2：attempts=0 statuses=[]
-- MAP-28 R0：attempts=0 statuses=[]
-- MAP-28 R1：attempts=0 statuses=[]
-- MAP-28 R2：attempts=0 statuses=[]
-- MAP-29 R0：attempts=0 statuses=[]
-- MAP-29 R1：attempts=0 statuses=[]
-- MAP-29 R2：attempts=0 statuses=[]
-- MAP-30 R0：attempts=0 statuses=[]
-- MAP-30 R1：attempts=0 statuses=[]
-- MAP-30 R2：attempts=0 statuses=[]
+无：90 局均有正式结果。

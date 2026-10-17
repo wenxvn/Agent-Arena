@@ -11,7 +11,7 @@
 | prompt_hash | `6634e89ab1f1a27e079591b5610983983d4f2d62a01cff578ddedc6e697af2dc` |
 | metric_schema_hash | `cadd9063303d73b9287c81940fb56e43a5866d0be42e32306d98a0e38f5572e2` |
 | oracle_hash | `3dd5305e90c49d2fe49d40ebbb477cea05384a59c08fab3074f9c6833e6486d1` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -85,9 +85,9 @@
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | censored | False | ACTION_LIMIT_REACHED | 12 | 0.0126596 | `V8-MAP-18-R0-20261017T092959Z-f8ab9e51` | `collision_violations`=0; `completed_train_moves`=0; `first_reroute_delay`=1; `legal_action_rate`=0.75 |
+| 1 | failure | False | STATION_CAPACITY_EXCEEDED | 3 | 0.00185604 | `V8-MAP-18-R1-20261017T093054Z-f668d093` | `collision_violations`=0; `completed_train_moves`=0; `delay_person_ticks`=0; `legal_action_rate`=1.0 |
+| 2 | censored | False | ACTION_LIMIT_REACHED | 12 | 0.01118360 | `V8-MAP-18-R2-20261017T093106Z-c4bfb5ea` | `collision_violations`=0; `completed_train_moves`=3; `legal_action_rate`=0.666667; `station_capacity_violations`=0 |
 
 三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 

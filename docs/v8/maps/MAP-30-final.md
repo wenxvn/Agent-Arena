@@ -11,7 +11,7 @@
 | prompt_hash | `55732022598689c2a18e164776df961dfe9237c61609f96c2e2ea140b1b0b504` |
 | metric_schema_hash | `e5331bbc8a0c4968c03d1c5c4bb654af8e1932c10ee39579a9f89d019e8e51b5` |
 | oracle_hash | `8c3bfa120e346b1e12980cdb5fdc39492aa1dc50f0894fd9079694275cc0c600` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -90,9 +90,9 @@
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | decision_budget_reached | False | None | 46 | 0.03396008 | `V8-MAP-30-R0-20261017T110714Z-a635ed01` | `chain_reconciled`=0; `evidence_chain_coverage`=0.0; `investigation_progress`=0.0; `legal_action_rate`=0.804348 |
+| 1 | decision_budget_reached | False | None | 46 | 0.04683228 | `V8-MAP-30-R1-20261017T111157Z-c722a70c` | `chain_reconciled`=0; `evidence_chain_coverage`=0.0; `investigation_progress`=0.5; `legal_action_rate`=0.804348 |
+| 2 | decision_budget_reached | False | None | 46 | 0.04502456 | `V8-MAP-30-R2-20261017T111639Z-e8be28b2` | `accusation_claim_precision`=0.666667; `chain_reconciled`=0; `evidence_chain_coverage`=0.0; `investigation_progress`=0.5 |
 
 三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 

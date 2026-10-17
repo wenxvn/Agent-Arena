@@ -143,7 +143,7 @@ def verify_freeze(freeze: dict[str, Any]) -> None:
         entry = maps[map_id]
         level = entry["difficulty"]
         environment = create_environment(map_id, step_limit=160)
-        prompt = system_prompt(environment, decision_budget=DECISION_BUDGETS[level])
+        prompt = system_prompt(environment, decision_budget=entry["decision_budget"])
         if entry["rule_hash"] != rule_hash(map_id):
             raise SystemExit(f"{map_id} rule_hash 已变化，必须重新冻结。")
         if entry["scenario_hash"] != scenario_hash(map_id):
@@ -157,6 +157,7 @@ def verify_freeze(freeze: dict[str, Any]) -> None:
 def formal_plan() -> list[dict[str, Any]]:
     plan = []
     for spec in registered_specs():
+        budget = 60 if spec.map_id == "MAP-12" else spec.decision_budget
         plan.append(
             {
                 "map_id": spec.map_id,
@@ -165,7 +166,7 @@ def formal_plan() -> list[dict[str, Any]]:
                 "condition_id": spec.condition_id,
                 "seed": spec.seed,
                 "replicate_id": spec.replicate_id,
-                "decision_budget": spec.decision_budget,
+                "decision_budget": budget,
             }
         )
     return plan
@@ -324,7 +325,7 @@ def main() -> int:
                 spec = V8EpisodeSpec(
                     map_id,
                     replicate,
-                    DECISION_BUDGETS[freeze["maps"][map_id]["difficulty"]],
+                    freeze["maps"][map_id]["decision_budget"],
                 )
                 runner = V8Runner(
                     provider=provider,

@@ -11,7 +11,7 @@
 | prompt_hash | `d1480bc9838f9d5b9f8b9af0e732fa38eef85b4a7ea692b03da6314722df1338` |
 | metric_schema_hash | `98f4748000a0c1505103576ce538cda62050a1eb1dda71fd3ae3d87724f69ed9` |
 | oracle_hash | `959fd1c97bcd244c681267a8071dbb0b1c97775bb14b79c84be366fc69376322` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -98,11 +98,11 @@ MAP-21｜喷发倒计时：隐藏喷发时刻、贝叶斯测量与撤离停手�
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | success | True | EVACUATED_BEFORE_ERUPTION | 2 | 0.0010214 | `V8-MAP-21-R0-20261017T094201Z-a4e73f43` | `evacuation_coverage`=1.0; `late_evacuation`=0; `risk_exposure_integral`=0.0 |
+| 1 | success | True | EVACUATED_BEFORE_ERUPTION | 1 | 0.00013024 | `V8-MAP-21-R1-20261017T094213Z-3d9c410d` | `evacuation_coverage`=1.0; `late_evacuation`=0; `risk_exposure_integral`=0.0 |
+| 2 | success | True | EVACUATED_BEFORE_ERUPTION | 2 | 0.00027476 | `V8-MAP-21-R2-20261017T094219Z-6177107b` | `evacuation_coverage`=1.0; `late_evacuation`=0; `risk_exposure_integral`=0.0 |
 
-三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
+三次重复成功 3/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 

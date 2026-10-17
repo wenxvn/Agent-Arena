@@ -11,7 +11,7 @@
 | prompt_hash | `368928e30727b6d2f663336758f35af070f1e763dbfef400ccf2875a3e97336e` |
 | metric_schema_hash | `653c1e4c10afb6246b3b742cf28b4845b114de64bc54cb7a38735c1e51ffe921` |
 | oracle_hash | `8963e6494dc7762da6336e295907ca2fe6a28c4c77d1215760c353ad7f7b0b0f` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -124,9 +124,9 @@ MAP-27｜月面联合行动：两格货舱、一次性电芯与两阶段救援�
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | failure | False | VEHICLE_STRANDED | 8 | 0.00580636 | `V8-MAP-27-R0-20261017T103727Z-7d22e4e5` | `communication_blackout_ticks`=13; `joint_task_completion_rate`=0.0; `resource_conflicts`=0 |
+| 1 | failure | False | VEHICLE_STRANDED | 10 | 0.00448080 | `V8-MAP-27-R1-20261017T103810Z-8a598271` | `communication_blackout_ticks`=12; `joint_task_completion_rate`=0.0; `resource_conflicts`=0 |
+| 2 | failure | False | VEHICLE_STRANDED | 6 | 0.00210904 | `V8-MAP-27-R2-20261017T103905Z-0f942fc4` | `communication_blackout_ticks`=14; `joint_task_completion_rate`=0.0; `resource_conflicts`=0 |
 
 三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 

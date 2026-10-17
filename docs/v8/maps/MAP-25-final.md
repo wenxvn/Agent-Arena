@@ -11,7 +11,7 @@
 | prompt_hash | `b46a6639fbe641503b8cb13a9c4a270c7d5cea801d2c19d96aa970485cc8daae` |
 | metric_schema_hash | `42958829874a90cafae1b92248a8ca713b3eebd2ed3df8518c7851a30ed58951` |
 | oracle_hash | `c35d7fbe9c57659e4f2617ec09f542a906a628fd9804c3030c321bbd56d0ef1a` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -103,9 +103,9 @@ MAP-27 是多主体协同。本图是单 Agent 单线程流程，故障固定且
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | decision_budget_reached | False | None | 30 | 0.01400724 | `V8-MAP-25-R0-20261017T100410Z-8a64cbdd` | `dependency_order_correctness`=0.454545; `oxygen_shortfall`=0; `required_check_coverage`=0.428571; `unsafe_eva_attempts`=0 |
+| 1 | failure | False | OXYGEN_DEPLETED | 29 | 0.01034928 | `V8-MAP-25-R1-20261017T100614Z-d408f23c` | `dependency_order_correctness`=0.555556; `oxygen_shortfall`=1; `required_check_coverage`=0.428571; `unsafe_eva_attempts`=0 |
+| 2 | decision_budget_reached | False | None | 30 | 0.01114996 | `V8-MAP-25-R2-20261017T100747Z-74246a3f` | `dependency_order_correctness`=0.692308; `oxygen_shortfall`=0; `required_check_coverage`=1.0; `unsafe_eva_attempts`=0 |
 
 三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 

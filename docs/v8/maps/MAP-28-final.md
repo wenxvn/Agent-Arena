@@ -11,7 +11,7 @@
 | prompt_hash | `c586f95d94f7149ae46cfaf56ef1baf576958a1281a864a92ed913ea2cc8bc35` |
 | metric_schema_hash | `b3ea6a921cfd4d391b9ed7d10d4060f42dad2b2f09c1bffcfc7780aad836d9cf` |
 | oracle_hash | `d532d11ebdedceee0c464d7961609bc14378b16bb8dfeac3e77a09fbfc9ab815` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -133,9 +133,9 @@ Celine 于 21:06 从 ``S-V`` 密道门进入、21:14 从同一门离开。V 有�
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | decision_budget_reached | False | None | 30 | 0.02140084 | `V8-MAP-28-R0-20261017T104822Z-d62a592d` | `key_evidence_coverage`=0.25; `time_contradictions`=0; `timeline_constraint_satisfaction`=0.0; `unsupported_accusations`=0 |
+| 1 | decision_budget_reached | False | None | 30 | 0.02366732 | `V8-MAP-28-R1-20261017T105046Z-8ad773ef` | `key_evidence_coverage`=0.75; `time_contradictions`=0; `timeline_constraint_satisfaction`=0.0; `unsupported_accusations`=0 |
+| 2 | decision_budget_reached | False | None | 30 | 0.01490564 | `V8-MAP-28-R2-20261017T105321Z-7ce91398` | `key_evidence_coverage`=0.25; `time_contradictions`=0; `timeline_constraint_satisfaction`=0.0; `unsupported_accusations`=0 |
 
 三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 

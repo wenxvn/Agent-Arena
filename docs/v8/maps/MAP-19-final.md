@@ -11,7 +11,7 @@
 | prompt_hash | `4750ba4b14041503f7026658e420ce4c43d1746fdf4768e445a6690b753c49e2` |
 | metric_schema_hash | `04755621dae6661ae0bbf1e99f2727d8a1ddc2f7f6f51ab9be6777913d6de3fd` |
 | oracle_hash | `ce9e138b4dafc6e04a684a939935341d928ac3061727c603833522ac021704e3` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -98,9 +98,9 @@ MAP-21 是隐藏喷发时刻下的风险决策。本图没有移动、没有随�
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | decision_budget_reached | False | None | 30 | 0.01906692 | `V8-MAP-19-R0-20261017T093205Z-3f40887f` | `coolant_exhausted`=0; `critical_overheat_ticks`=0; `oscillation_count`=2; `temperature_exceedance_area`=3 |
+| 1 | failure | False | THERMAL_RUNAWAY | 23 | 0.01512828 | `V8-MAP-19-R1-20261017T093406Z-d99918e7` | `coolant_exhausted`=0; `critical_overheat_ticks`=1; `oscillation_count`=0; `temperature_exceedance_area`=15 |
+| 2 | decision_budget_reached | False | None | 30 | 0.01850988 | `V8-MAP-19-R2-20261017T093535Z-0027009f` | `coolant_exhausted`=0; `critical_overheat_ticks`=0; `oscillation_count`=0; `temperature_exceedance_area`=3 |
 
 三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 

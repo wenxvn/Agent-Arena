@@ -11,7 +11,7 @@
 | prompt_hash | `e3de9bb00f301a1be00f419ab8bb339cd2b578fa44545278a1d4e0e1f72cf0d3` |
 | metric_schema_hash | `d86f91f264766519786113bb65ac9f0dd7f247174f61b8ce87e00e3e2668dae2` |
 | oracle_hash | `2fd0ac718f61cc92bed2b84e4fe3084425969d96fb2584b4d6c1baafd2f6c6cd` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -101,11 +101,11 @@ MAP-24｜消失的道路：桥塌事件、潮窗与过期路线笔记。
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | failure | False | STRANDED_ON_BRIDGE | 9 | 0.0059154 | `V8-MAP-24-R0-20261017T100123Z-3523377d` | `collapsed_edge_attempts`=0; `rescue_failure`=1 |
+| 1 | success | True | ALL_ITEMS_DELIVERED | 9 | 0.00240008 | `V8-MAP-24-R1-20261017T100207Z-2b1d8bb1` | `collapsed_edge_attempts`=0; `rescue_failure`=0 |
+| 2 | success | True | ALL_ITEMS_DELIVERED | 12 | 0.00647696 | `V8-MAP-24-R2-20261017T100237Z-087a6524` | `collapsed_edge_attempts`=0; `replanning_latency`=1; `rescue_failure`=0; `route_cost_ratio`=1.0 |
 
-三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
+三次重复成功 2/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 

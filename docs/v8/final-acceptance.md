@@ -1,9 +1,10 @@
 # V8 最终验收
 
-- 冻结：`a346ddcdace8758b077bdb563566901980f97c9996b9d20c25f811a048a26bdf`，commit `223e532ed9b9613ba96e06d129b41fb1f52b37bc`。
+- 冻结：`4cd8a14131b9ca2022575badd93667d79864efd8d77d77ebc2a9957c9876661b`，commit `4ffbdeb2e6d22abfd340b9ea1aff73fade979674`。
 - 离线门禁：30/30；154/154 指标；55 条 Oracle；85 条冻结 fixture + 12 条补充用例。
-- 正式 MiMo：**42/90**；缺口 48 局；总费用 ¥0.45363316。
+- 正式 MiMo：**90/90**；缺口 0 局；总费用 ¥1.25363556。
 - 冻结 hash 一致性：通过
+- commit 版本分布：{'223e532ed9b9613ba96e06d129b41fb1f52b37bc': 63, '4ffbdeb2e6d22abfd340b9ea1aff73fade979674': 27}
 
 ## 1. 30 图定稿表
 
@@ -16,29 +17,29 @@
 | lighthouse | MAP-05 | 中等 | 三束信号 | `4aa810269535` | verified | 5/5 | verified | 0/3 | finalized |
 | lighthouse | MAP-06 | 困难 | 暴风眼 | `2adb4f3322d0` | verified | 5/5 | verified | 3/3 | finalized |
 | abyss | MAP-07 | 简单 | 逆流阀门 | `1183d0dea109` | verified | 5/5 | verified | 0/3 | finalized |
-| abyss | MAP-08 | 中等 | A V4 environment behind the V8 public contract. | `9a3827c2f5fe` | verified | 7/7 | verified | 0/3 | finalized |
+| abyss | MAP-08 | 中等 | 看不见的裂缝 | `9a3827c2f5fe` | verified | 7/7 | verified | 0/3 | finalized |
 | abyss | MAP-09 | 困难 | 深海连锁故障 | `603948debd2f` | verified | 5/5 | verified | 0/3 | finalized |
 | polar | MAP-10 | 简单 | 最后一桶燃料 | `d4bddf5702e6` | verified | 5/5 | verified | 0/3 | finalized |
 | polar | MAP-11 | 中等 | 失联的小队 | `86334e9a3fa6` | verified | 5/5 | verified | 0/3 | finalized |
 | polar | MAP-12 | 困难 | 极夜三十天 | `ec0b473f08d1` | verified | 5/5 | verified | 0/3 | finalized |
 | pyramid | MAP-13 | 简单 | 四神之门 | `0481b734b73d` | verified | 5/5 | verified | 2/3 | finalized |
 | pyramid | MAP-14 | 中等 | 说谎的祭司 | `1c352a0fd891` | verified | 5/5 | verified | 0/3 | finalized |
-| pyramid | MAP-15 | 困难 | 会变化的迷宫 | `7d8322b90d7c` | verified | 5/5 | verified | 0/3 | blocked |
-| subway | MAP-16 | 简单 | A V4 environment behind the V8 public contract. | `47548b6c5585` | verified | 8/8 | verified | 0/3 | blocked |
-| subway | MAP-17 | 中等 | 早高峰 | `9e9985a2238a` | verified | 4/4 | verified | 0/3 | blocked |
-| subway | MAP-18 | 困难 | A V4 environment behind the V8 public contract. | `aa446dfaa631` | verified | 8/8 | verified | 0/3 | blocked |
-| volcano | MAP-19 | 简单 | 温度临界点 | `28b181b4b82e` | verified | 4/4 | verified | 0/3 | blocked |
-| volcano | MAP-20 | 中等 | 冷却网络 | `983f83987d11` | verified | 4/4 | verified | 0/3 | blocked |
-| volcano | MAP-21 | 困难 | 喷发倒计时 | `59675a2c8240` | verified | 4/4 | verified | 0/3 | blocked |
-| jungle | MAP-22 | 简单 | A V4 environment behind the V8 public contract. | `e856cec6daf4` | verified | 7/7 | verified | 0/3 | blocked |
-| jungle | MAP-23 | 中等 | 迷雾中的遗迹 | `7579ca9aa3fa` | verified | 4/4 | verified | 0/3 | blocked |
-| jungle | MAP-24 | 困难 | 消失的道路 | `394665914bb5` | verified | 4/4 | verified | 0/3 | blocked |
-| lunar | MAP-25 | 简单 | 第一次出舱 | `51e3acc1edab` | verified | 4/4 | verified | 0/3 | blocked |
-| lunar | MAP-26 | 中等 | A V4 environment behind the V8 public contract. | `a0de5a1957c0` | verified | 7/7 | verified | 0/3 | blocked |
-| lunar | MAP-27 | 困难 | 月面联合行动 | `b993858b9d0b` | verified | 4/4 | verified | 0/3 | blocked |
-| castle | MAP-28 | 简单 | 消失的王冠 | `ce443167b19d` | verified | 4/4 | verified | 0/3 | blocked |
-| castle | MAP-29 | 中等 | 不可靠的证人 | `9549fbc011f9` | verified | 4/4 | verified | 0/3 | blocked |
-| castle | MAP-30 | 困难 | A V4 environment behind the V8 public contract. | `f53fe656d63d` | verified | 7/7 | verified | 0/3 | blocked |
+| pyramid | MAP-15 | 困难 | 会变化的迷宫 | `7d8322b90d7c` | verified | 5/5 | verified | 3/3 | finalized |
+| subway | MAP-16 | 简单 | 单线会车 | `47548b6c5585` | verified | 8/8 | verified | 0/3 | finalized |
+| subway | MAP-17 | 中等 | 早高峰 | `9e9985a2238a` | verified | 4/4 | verified | 0/3 | finalized |
+| subway | MAP-18 | 困难 | 故障传播 | `aa446dfaa631` | verified | 8/8 | verified | 0/3 | finalized |
+| volcano | MAP-19 | 简单 | 温度临界点 | `28b181b4b82e` | verified | 4/4 | verified | 0/3 | finalized |
+| volcano | MAP-20 | 中等 | 冷却网络 | `983f83987d11` | verified | 4/4 | verified | 2/3 | finalized |
+| volcano | MAP-21 | 困难 | 喷发倒计时 | `59675a2c8240` | verified | 4/4 | verified | 3/3 | finalized |
+| jungle | MAP-22 | 简单 | 没有地图的森林 | `e856cec6daf4` | verified | 7/7 | verified | 0/3 | finalized |
+| jungle | MAP-23 | 中等 | 迷雾中的遗迹 | `7579ca9aa3fa` | verified | 4/4 | verified | 1/3 | finalized |
+| jungle | MAP-24 | 困难 | 消失的道路 | `394665914bb5` | verified | 4/4 | verified | 2/3 | finalized |
+| lunar | MAP-25 | 简单 | 第一次出舱 | `51e3acc1edab` | verified | 4/4 | verified | 0/3 | finalized |
+| lunar | MAP-26 | 中等 | 失败的维修计划 | `a0de5a1957c0` | verified | 7/7 | verified | 0/3 | finalized |
+| lunar | MAP-27 | 困难 | 月面联合行动 | `b993858b9d0b` | verified | 4/4 | verified | 0/3 | finalized |
+| castle | MAP-28 | 简单 | 消失的王冠 | `ce443167b19d` | verified | 4/4 | verified | 0/3 | finalized |
+| castle | MAP-29 | 中等 | 不可靠的证人 | `9549fbc011f9` | verified | 4/4 | verified | 0/3 | finalized |
+| castle | MAP-30 | 困难 | 30 午夜审判 | `f53fe656d63d` | verified | 7/7 | verified | 0/3 | finalized |
 
 ## 2. 逐图验收结论
 
@@ -62,55 +63,7 @@
 
 ## 4. 缺口与后续 V9 建议
 
-未完成的正式局：
-- MAP-15 R0：['unknown_provider_spend']
-- MAP-15 R1：[]
-- MAP-15 R2：[]
-- MAP-16 R0：[]
-- MAP-16 R1：[]
-- MAP-16 R2：[]
-- MAP-17 R0：[]
-- MAP-17 R1：[]
-- MAP-17 R2：[]
-- MAP-18 R0：[]
-- MAP-18 R1：[]
-- MAP-18 R2：[]
-- MAP-19 R0：[]
-- MAP-19 R1：[]
-- MAP-19 R2：[]
-- MAP-20 R0：[]
-- MAP-20 R1：[]
-- MAP-20 R2：[]
-- MAP-21 R0：[]
-- MAP-21 R1：[]
-- MAP-21 R2：[]
-- MAP-22 R0：[]
-- MAP-22 R1：[]
-- MAP-22 R2：[]
-- MAP-23 R0：[]
-- MAP-23 R1：[]
-- MAP-23 R2：[]
-- MAP-24 R0：[]
-- MAP-24 R1：[]
-- MAP-24 R2：[]
-- MAP-25 R0：[]
-- MAP-25 R1：[]
-- MAP-25 R2：[]
-- MAP-26 R0：[]
-- MAP-26 R1：[]
-- MAP-26 R2：[]
-- MAP-27 R0：[]
-- MAP-27 R1：[]
-- MAP-27 R2：[]
-- MAP-28 R0：[]
-- MAP-28 R1：[]
-- MAP-28 R2：[]
-- MAP-29 R0：[]
-- MAP-29 R1：[]
-- MAP-29 R2：[]
-- MAP-30 R0：[]
-- MAP-30 R1：[]
-- MAP-30 R2：[]
+正式 90 局均有结果；无接口或预算缺口。
 
 V9 建议：
 

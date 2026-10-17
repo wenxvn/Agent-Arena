@@ -19,6 +19,16 @@ V8 = ROOT / "runs" / "v8"
 DOCS = ROOT / "docs" / "v8"
 
 
+ADAPTER_TITLES = {
+    "MAP-08": "看不见的裂缝",
+    "MAP-16": "单线会车",
+    "MAP-18": "故障传播",
+    "MAP-22": "没有地图的森林",
+    "MAP-26": "失败的维修计划",
+    "MAP-30": "30 午夜审判",
+}
+
+
 def read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -296,6 +306,7 @@ def main() -> int:
         f"- 正式 MiMo：**{completed}/90**；缺口 {len(gaps)} 局；总费用 ¥{total_cost}。",
         f"- 冻结 hash 一致性：{'通过' if not hash_mismatches else f'{len(hash_mismatches)} 处不一致'}",
         f"- commit 版本分布：{dict(commit_counts)}",
+        "",
         "## 1. 30 图定稿表",
         "",
         "| world | map | 难度 | 独特机制 | rule_hash | runtime | metrics | oracle | 3 局 | 状态 |",
@@ -303,9 +314,12 @@ def main() -> int:
     ]
     for map_id, item in maps.items():
         fact = facts[map_id]
-        mechanism = (fact["docstring"][0] if fact["docstring"] else fact["title"]).split(
-            "：", 1
-        )[-1]
+        if map_id in ADAPTER_TITLES:
+            mechanism = ADAPTER_TITLES[map_id]
+        else:
+            mechanism = (fact["docstring"][0] if fact["docstring"] else fact["title"]).split(
+                "：", 1
+            )[-1]
         status = "finalized" if item["statuses"].get("missing", 0) == 0 else "blocked"
         acc.append(
             f"| {item['world']} | {map_id} | {item['difficulty']} | {mechanism} |"

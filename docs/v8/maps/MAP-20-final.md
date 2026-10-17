@@ -11,7 +11,7 @@
 | prompt_hash | `2e9a5c9112ef3e60b160f93916978180e8e1ad3777dcc239f2f71ba3bf3a0753` |
 | metric_schema_hash | `c3aad88588e64d69be592ee505fdf730c8c99feea98680eebd1e4f1c740e0269` |
 | oracle_hash | `858c0ae04676c134fae5275ae7161c7d363521a0d00cfdfe5220010609581483` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -99,11 +99,11 @@ MAP-20｜冷却网络：带 20% 损耗的跨区旁路与四重流量约束。
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | failure | False | THERMAL_OVERHEAT | 22 | 0.01901904 | `V8-MAP-20-R0-20261017T093752Z-3824d0d4` | `flow_conservation_violations`=0; `key_node_runaway`=1; `max_node_exceedance`=20; `safe_node_ticks`=29 |
+| 1 | success | True | PRODUCTION_TARGET_MET | 19 | 0.01298908 | `V8-MAP-20-R1-20261017T093931Z-00dbed48` | `flow_conservation_violations`=0; `key_node_runaway`=0; `max_node_exceedance`=0; `safe_node_ticks`=30 |
+| 2 | success | True | PRODUCTION_TARGET_MET | 17 | 0.01325256 | `V8-MAP-20-R2-20261017T094050Z-669e7442` | `flow_conservation_violations`=1; `key_node_runaway`=0; `max_node_exceedance`=0; `safe_node_ticks`=30 |
 
-三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
+三次重复成功 2/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 
 ## 10. 未决问题与边界说明
 

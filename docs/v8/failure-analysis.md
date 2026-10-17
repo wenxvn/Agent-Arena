@@ -1,15 +1,15 @@
 # V8 失败分析
 
-基于 42 局正式结果；n=3，不做显著性断言。
+基于 90 局正式结果；n=3，不做显著性断言。
 
 ## 1. 状态分布
 
 | status | count |
 |---|---|
-| decision_budget_reached | 13 |
-| failure | 23 |
-| missing | 48 |
-| success | 6 |
+| censored | 2 |
+| decision_budget_reached | 35 |
+| failure | 36 |
+| success | 17 |
 
 ## 2. 失败码频次
 
@@ -17,25 +17,40 @@
 
 | failure_code | count |
 |---|---|
-| `CENSORED` | 13 |
+| `CENSORED` | 37 |
+| `GATE_OPENED` | 5 |
 | `NAV_CORE_FLOODED` | 3 |
 | `SIGNAL_WINDOW_MISSED` | 3 |
 | `LAMP_RESTORED` | 3 |
 | `SHORT_CIRCUIT` | 3 |
 | `GENERATOR_FUEL_SHORTAGE` | 3 |
 | `SUPPLY_SHORTAGE` | 3 |
+| `EVACUATED_BEFORE_ERUPTION` | 3 |
+| `VEHICLE_STRANDED` | 3 |
 | `OXYGEN_SUPPLY_INTERRUPTION_LIMIT` | 2 |
 | `EVA_OXYGEN_EXHAUSTED` | 2 |
 | `RESCUE_SIGNAL_WINDOW_EXPIRED` | 2 |
-| `GATE_OPENED` | 2 |
+| `NODE_CAPACITY_CONFLICT` | 2 |
+| `ACTION_LIMIT_REACHED` | 2 |
+| `PRODUCTION_TARGET_MET` | 2 |
+| `SUPPLY_DEPLETED` | 2 |
+| `ALL_ITEMS_DELIVERED` | 2 |
 | `BUS_RESET_WITH_HULL_OPEN` | 1 |
 | `SAMPLE_COLD_WINDOW_EXPIRED` | 1 |
 | `SIGNAL_LIT` | 1 |
+| `DEADLOCK` | 1 |
+| `INVALID_ACTION` | 1 |
+| `STATION_CAPACITY_EXCEEDED` | 1 |
+| `THERMAL_RUNAWAY` | 1 |
+| `THERMAL_OVERHEAT` | 1 |
+| `TRUE_ENTRANCE_FOUND` | 1 |
+| `STRANDED_ON_BRIDGE` | 1 |
+| `OXYGEN_DEPLETED` | 1 |
 
 ## 3. 地板与天花板
 
-- 3/3 成功（天花板）：MAP-06
-- 0/3 成功（地板）：MAP-01, MAP-02, MAP-03, MAP-05, MAP-07, MAP-08, MAP-09, MAP-10, MAP-11, MAP-12, MAP-14
+- 3/3 成功（天花板）：MAP-06, MAP-15, MAP-21
+- 0/3 成功（地板）：MAP-01, MAP-02, MAP-03, MAP-05, MAP-07, MAP-08, MAP-09, MAP-10, MAP-11, MAP-12, MAP-14, MAP-16, MAP-17, MAP-18, MAP-19, MAP-22, MAP-25, MAP-26, MAP-27, MAP-28, MAP-29, MAP-30
 
 地板不自动等于“能力为零”：可能是接口、预算、机制陷阱或模型策略失败；逐图原因见 `maps/MAP-XX-final.md` 与 judge metrics。
 
@@ -49,18 +64,18 @@
 | lighthouse | 1/3 | 0/3 | 3/3 | MAP-04:15.3, MAP-05:19.3, MAP-06:2.7 |
 | abyss | 0/3 | 0/3 | 0/3 | MAP-07:30.0, MAP-08:38.0, MAP-09:2.0 |
 | polar | 0/3 | 0/3 | 0/3 | MAP-10:3.0, MAP-11:2.0, MAP-12:46.0 |
-| pyramid | 2/3 | 0/3 | 0/3 | MAP-13:25.3, MAP-14:38.0, MAP-15:0.0 |
-| subway | 0/3 | 0/3 | 0/3 | MAP-16:0.0, MAP-17:0.0, MAP-18:0.0 |
-| volcano | 0/3 | 0/3 | 0/3 | MAP-19:0.0, MAP-20:0.0, MAP-21:0.0 |
-| jungle | 0/3 | 0/3 | 0/3 | MAP-22:0.0, MAP-23:0.0, MAP-24:0.0 |
-| lunar | 0/3 | 0/3 | 0/3 | MAP-25:0.0, MAP-26:0.0, MAP-27:0.0 |
-| castle | 0/3 | 0/3 | 0/3 | MAP-28:0.0, MAP-29:0.0, MAP-30:0.0 |
+| pyramid | 2/3 | 0/3 | 3/3 | MAP-13:25.3, MAP-14:38.0, MAP-15:12.3 |
+| subway | 0/3 | 0/3 | 0/3 | MAP-16:15.0, MAP-17:38.0, MAP-18:9.0 |
+| volcano | 0/3 | 2/3 | 3/3 | MAP-19:27.7, MAP-20:19.3, MAP-21:1.7 |
+| jungle | 0/3 | 1/3 | 2/3 | MAP-22:30.0, MAP-23:16.0, MAP-24:10.0 |
+| lunar | 0/3 | 0/3 | 0/3 | MAP-25:29.7, MAP-26:38.0, MAP-27:8.0 |
+| castle | 0/3 | 0/3 | 0/3 | MAP-28:30.0, MAP-29:38.0, MAP-30:46.0 |
 
 ## 5. 资源与费用
 
-- 总费用 ¥0.45363316；单局均值 ¥0.010801。
-- 输入 token 583499，输出 token 39245。
-- 请求 796，平均每局 19.0。
+- 总费用 ¥1.25363556；单局均值 ¥0.013929。
+- 输入 token 1566789，输出 token 103774。
+- 请求 1902，平均每局 21.1。
 - 费用按供应商 usage 结算；未知消费会立即封账，不用估算值替代。
 
 ## 6. Provider / schema 异常
@@ -84,6 +99,20 @@
 - **MAP-12**：R0: heating_outage_days=0, minimum_safety_margin=6, survival_days=0.766667；R1: heating_outage_days=0, minimum_safety_margin=6, survival_days=0.766667；R2: heating_outage_days=0, minimum_safety_margin=6, survival_days=0.766667
 - **MAP-13**：R0: constraint_satisfaction_ratio=0.2, correct_sequence=0, illegal_door_attempts=3；R1: constraint_satisfaction_ratio=0.8, correct_sequence=1, illegal_door_attempts=0；R2: constraint_satisfaction_ratio=0.8, correct_sequence=1, illegal_door_attempts=0
 - **MAP-14**：R0: minimum_query_gap=0, query_budget_overruns=0；R1: minimum_query_gap=0, query_budget_overruns=0；R2: minimum_query_gap=0, query_budget_overruns=0
+- **MAP-16**：R0: deadlock=1, head_on_conflicts=0, legal_reservation_rate=1.0；R1: deadlock=0, head_on_conflicts=0, legal_reservation_rate=0.4；R2: deadlock=0, head_on_conflicts=0, legal_reservation_rate=1.0
+- **MAP-17**：R0: cumulative_wait_person_ticks=18, overcapacity_events=0, service_rate=0.4；R1: cumulative_wait_person_ticks=22, overcapacity_events=1, service_rate=0.2；R2: cumulative_wait_person_ticks=24, overcapacity_events=0, service_rate=0.4
+- **MAP-18**：R0: collision_violations=0, completed_train_moves=0, first_reroute_delay=1；R1: collision_violations=0, completed_train_moves=0, delay_person_ticks=0；R2: collision_violations=0, completed_train_moves=3, station_capacity_violations=0
+- **MAP-19**：R0: critical_overheat_ticks=0, oscillation_count=2, temperature_exceedance_area=3；R1: critical_overheat_ticks=1, oscillation_count=0, temperature_exceedance_area=15；R2: critical_overheat_ticks=0, oscillation_count=0, temperature_exceedance_area=3
+- **MAP-20**：R0: flow_conservation_violations=0, max_node_exceedance=20, safe_node_ticks=29；R1: flow_conservation_violations=0, max_node_exceedance=0, safe_node_ticks=30；R2: flow_conservation_violations=1, max_node_exceedance=0, safe_node_ticks=30
+- **MAP-22**：R0: illegal_bearing_actions=1, memory_grounding_violations=1, return_success=0；R1: illegal_bearing_actions=0, memory_grounding_violations=0, return_success=0；R2: illegal_bearing_actions=0, memory_grounding_violations=0, return_success=0
+- **MAP-23**：R0: clue_utilization=1.0, repeated_invalid_exploration=0；R1: clue_utilization=1.0, repeated_invalid_exploration=0；R2: clue_utilization=1.0, cost_per_discovery=9.0, repeated_invalid_exploration=0
+- **MAP-24**：R0: collapsed_edge_attempts=0；R1: collapsed_edge_attempts=0；R2: collapsed_edge_attempts=0, replanning_latency=1, route_cost_ratio=1.0
+- **MAP-25**：R0: dependency_order_correctness=0.454545, required_check_coverage=0.428571, unsafe_eva_attempts=0；R1: dependency_order_correctness=0.555556, required_check_coverage=0.428571, unsafe_eva_attempts=0；R2: dependency_order_correctness=0.692308, required_check_coverage=1.0, unsafe_eva_attempts=0
+- **MAP-26**：R0: repair_success=0, spares_remaining=2；R1: repair_success=0, spares_remaining=2；R2: repair_success=0, spares_remaining=2
+- **MAP-27**：R0: communication_blackout_ticks=13, joint_task_completion_rate=0.0；R1: communication_blackout_ticks=12, joint_task_completion_rate=0.0；R2: communication_blackout_ticks=14, joint_task_completion_rate=0.0
+- **MAP-28**：R0: key_evidence_coverage=0.25, timeline_constraint_satisfaction=0.0, unsupported_accusations=0；R1: key_evidence_coverage=0.75, timeline_constraint_satisfaction=0.0, unsupported_accusations=0；R2: key_evidence_coverage=0.25, timeline_constraint_satisfaction=0.0, unsupported_accusations=0
+- **MAP-29**：R0: contradiction_detection_rate=0.0, query_budget_overruns=0；R1: contradiction_detection_rate=0.0, query_budget_overruns=0；R2: contradiction_detection_rate=0.0, query_budget_overruns=0
+- **MAP-30**：R0: evidence_chain_coverage=0.0, unsupported_accusations=0；R1: evidence_chain_coverage=0.0, unsupported_accusations=0；R2: accusation_claim_precision=0.666667, evidence_chain_coverage=0.0, q4_recall_accuracy=0
 
 ## 8. 解释边界
 

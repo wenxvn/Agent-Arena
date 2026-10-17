@@ -11,7 +11,7 @@
 | prompt_hash | `1ff298c7c0dac93a2bd8aca9bfc110ff4d551ca924d9d7e0f1cc2d4bc8401ed5` |
 | metric_schema_hash | `d82a19a1e94964db317283e281e56d9478e94f48e2aacd2103245b610f210dc1` |
 | oracle_hash | `fd7d74af82fcc5a1bc8b987dd0b1c7fd4b561a306d056c381374f6284422abd2` |
-| commit | `223e532ed9b9613ba96e06d129b41fb1f52b37bc` |
+| commit | `4ffbdeb2e6d22abfd340b9ea1aff73fade979674` |
 
 ## 1. 设计意图与独特机制
 
@@ -108,9 +108,9 @@ MAP-17｜早高峰：B-C 共享瓶颈下的四车联合时刻表与多目标 Par
 
 | rep | status | success | 终止原因 | 决策 | cost | run_id | 主指标 |
 |---|---|---|---|---|---|---|---|
-| 0 | missing | None | None | — | None | `None` | — |
-| 1 | missing | None | None | — | None | `None` | — |
-| 2 | missing | None | None | — | None | `None` | — |
+| 0 | decision_budget_reached | False | None | 38 | 0.04320516 | `V8-MAP-17-R0-20261017T091611Z-b5e8fa52` | `cumulative_wait_person_ticks`=18; `energy_per_passenger`=3.75; `overcapacity_events`=0; `service_rate`=0.4 |
+| 1 | decision_budget_reached | False | None | 38 | 0.04268300 | `V8-MAP-17-R1-20261017T092040Z-5ef4145b` | `cumulative_wait_person_ticks`=22; `energy_per_passenger`=6.5; `overcapacity_events`=1; `service_rate`=0.2 |
+| 2 | decision_budget_reached | False | None | 38 | 0.03214256 | `V8-MAP-17-R2-20261017T092548Z-a756f10a` | `cumulative_wait_person_ticks`=24; `energy_per_passenger`=2.5; `overcapacity_events`=0; `service_rate`=0.4 |
 
 三次重复成功 0/3。n=3 只描述重复运行，不做显著性断言；MiMo 失败是合法结果，不能由 Oracle 成功率替代。
 

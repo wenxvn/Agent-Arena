@@ -17,6 +17,9 @@ ORIGINAL = V8 / "experiments" / "episodes"
 SUPPLEMENT = V8 / "supplement_001"
 SUPPLEMENT_2 = V8 / "supplement_002"
 SUPPLEMENT_3 = V8 / "supplement_003"
+SUPPLEMENT_4 = V8 / "supplement_004"
+ROOTS = [ORIGINAL, *sorted(V8.glob("supplement_*/experiments/episodes"))]
+LEDGERS = [V8 / "ledger.jsonl", *sorted(V8.glob("supplement_*/ledger.jsonl"))]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 
@@ -29,12 +32,7 @@ def read_json(path: Path) -> dict[str, Any]:
 
 def merged_manifests() -> dict[tuple[str, int], list[dict[str, Any]]]:
     attempts: dict[tuple[str, int], list[dict[str, Any]]] = {}
-    for root in (
-        ORIGINAL,
-        SUPPLEMENT / "experiments" / "episodes",
-        SUPPLEMENT_2 / "experiments" / "episodes",
-        SUPPLEMENT_3 / "experiments" / "episodes",
-    ):
+    for root in ROOTS:
         if not root.is_dir():
             continue
         for path in sorted(root.glob("*/episode_manifest.json")):
@@ -48,12 +46,7 @@ def merged_manifests() -> dict[tuple[str, int], list[dict[str, Any]]]:
 
 def merged_events() -> list[dict[str, Any]]:
     events: list[dict[str, Any]] = []
-    for path in (
-        V8 / "ledger.jsonl",
-        SUPPLEMENT / "ledger.jsonl",
-        SUPPLEMENT_2 / "ledger.jsonl",
-        SUPPLEMENT_3 / "ledger.jsonl",
-    ):
+    for path in LEDGERS:
         if path.is_file():
             events.extend(
                 json.loads(line)
@@ -77,27 +70,22 @@ def main() -> int:
         ):
             experiment_ids.append(experiment_id)
     registry["experiment_ids"] = experiment_ids
-    registry["ledgers"] = {
-        "original": {
-            "path": "runs/v8/ledger.jsonl",
-            "closed_reason": "UNKNOWN_PROVIDER_SPEND",
-            "formal_episodes_before_close": 38,
-        },
-        "supplement_001": {
-            "path": "runs/v8/supplement_001/ledger.jsonl",
-            "purpose": "provider interruption supplement; new run_id per episode",
-            "formal_episodes_before_close": 4,
-        },
-        "supplement_002": {
-            "path": "runs/v8/supplement_002/ledger.jsonl",
-            "purpose": "final authorized supplement for the remaining 48 episodes",
-            "closed_reason": "SCHEMA_FAULT_AUDIT_MAP22",
-        },
-        "supplement_003": {
-            "path": "runs/v8/supplement_003/ledger.jsonl",
-            "purpose": "MAP-22 prompt-schema fix rerun + MAP-23–30",
-        },
-    }
+    ledgers: dict[str, Any] = {}
+    for path in LEDGERS:
+        if not path.is_file():
+            continue
+        events = [
+            json.loads(line)
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        key = "original" if path.parent == V8 else path.parent.name
+        ledgers[key] = {
+            "path": path.relative_to(ROOT).as_posix(),
+            **base.ledger_snapshot(events),
+            "event_count": len(events),
+        }
+    registry["ledgers"] = ledgers
     (V8 / "registry.json").write_text(
         json.dumps(registry, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
         encoding="utf-8",
