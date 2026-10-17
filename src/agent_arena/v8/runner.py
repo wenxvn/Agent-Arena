@@ -49,7 +49,9 @@ from agent_arena.worlds.scenario_v8.catalog import (
 from agent_arena.worlds.scenario_v8.models import V8Action, V8Observation
 
 DECISION_BUDGETS = {"简单": 30, "中等": 38, "困难": 46}
-MAX_EPISODE_SECONDS = 10 * 60
+#: Wall-clock safety only; the registered binding limit is the decision budget.
+#: Set high enough that a slow provider cannot censor a full 46-decision episode.
+MAX_EPISODE_SECONDS = 30 * 60
 MAX_DECISION_INDEX = 60
 
 

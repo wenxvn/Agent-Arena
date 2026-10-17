@@ -1,0 +1,903 @@
+{
+  "MAP-01": {
+    "actions": [
+      {
+        "edge_id": "B_H",
+        "tool": "move"
+      },
+      {
+        "edge_id": "H_P",
+        "tool": "move"
+      },
+      {
+        "choice": "reset_bus",
+        "target": "main_reactor",
+        "tool": "interact"
+      }
+    ],
+    "expect": {
+      "map01.completion_ticks": null,
+      "map01.dependency_satisfaction_rate": 0.0,
+      "map01.dependency_violations": 1,
+      "map01.longest_oxygen_outage_ticks": 3,
+      "map01.oxygen_guardrail_violations": 0
+    },
+    "name": "bus_reset_before_hull_patch_fails"
+  },
+  "MAP-02": {
+    "actions": [
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      }
+    ],
+    "expect": {
+      "map02.completion_ticks": null,
+      "map02.crew_decompression": 0,
+      "map02.dual_objective_completion": 0.0,
+      "map02.event_response_latency": null,
+      "map02.stale_plan_actions_after_leak": 0
+    },
+    "name": "ignore_leak_nav_core_floods"
+  },
+  "MAP-03": {
+    "actions": [
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      }
+    ],
+    "expect": {
+      "map03.completion_ticks": null,
+      "map03.long_delay_recall_accuracy": 0.0,
+      "map03.lost_sample": 0,
+      "map03.phase_completion_coverage": 0.0,
+      "map03.phase_order_violations": 0
+    },
+    "name": "return_window_expires_without_calibration"
+  },
+  "MAP-04": {
+    "actions": [
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      }
+    ],
+    "expect": {
+      "map04.earliest_safe_crossing_delay": null,
+      "map04.high_tide_entries": 0,
+      "map04.wait_ticks": 18,
+      "map04.window_hit_rate": null
+    },
+    "name": "rescue_window_expires"
+  },
+  "MAP-05": {
+    "actions": [
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      }
+    ],
+    "expect": {
+      "map05.effective_signals": 0.0,
+      "map05.idle_ticks": 0,
+      "map05.missed_windows": 1,
+      "map05.window_utilization": 0.0
+    },
+    "name": "first_signal_window_missed"
+  },
+  "MAP-06": {
+    "actions": [
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      },
+      {
+        "ticks": 1,
+        "tool": "wait"
+      }
+    ],
+    "expect": {
+      "map06.high_risk_exposure_ticks": 0,
+      "map06.observation_cost": 0,
+      "map06.resource_exhausted": 0,
+      "map06.task_success_rate": 0.0
+    },
+    "name": "deadline_missed_without_repair",
+    "seed": 0
+  },
+  "MAP-08": {
+    "actions": [
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      },
+      {
+        "tool": "wait",
+        "turns": 1
+      }
+    ],
+    "expect": {
+      "map08.diagnosis_accuracy": null,
+      "map08.peak_core_water": 7.5,
+      "map08.tests_run": 0,
+      "map08.wrong_repair": null
+    },
+    "name": "core-water-limit-boundary"
+  },
+  "MAP-16": {
+    "actions": [
+      {
+        "tool": "inspect_network"
+      },
+      {
+        "next_node": "Y",
+        "tool": "set_route",
+        "train_id": "b"
+      },
+      {
+        "tool": "move_train"
+      },
+      {
+        "next_node": "M",
+        "tool": "set_route",
+        "train_id": "b"
+      },
+      {
+        "tool": "move_train"
+      },
+      {
+        "next_node": "X",
+        "tool": "set_route",
+        "train_id": "a"
+      },
+      {
+        "tool": "move_train"
+      },
+      {
+        "next_node": "M",
+        "tool": "set_route",
+        "train_id": "a"
+      },
+      {
+        "next_node": "X",
+        "tool": "set_route",
+        "train_id": "b"
+      },
+      {
+        "tool": "move_train"
+      }
+    ],
+    "expect": {
+      "map16.committed_ticks": 3,
+      "map16.head_on_conflicts": 1,
+      "map16.legal_reservation_rate": 0.8,
+      "map16.makespan_gap": null
+    },
+    "name": "head-on-swap-failure"
+  },
+  "MAP-18": {
+    "actions": [
+      {
+        "operations": {
+          "T_R1": {
+            "op": "release",
+            "to": "R2"
+          },
+          "T_R2": {
+            "op": "temporary_stop"
+          },
+          "T_R3": {
+            "op": "release",
+            "to": "R2"
+          }
+        },
+        "tick": 0,
+        "tool": "set_timetable"
+      }
+    ],
+    "expect": {
+      "map18.collision_violations": 0,
+      "map18.service_rate": 0.0,
+      "map18.station_capacity_violations": 1
+    },
+    "name": "station-capacity-failure"
+  },
+  "MAP-22": {
+    "actions": [
+      {
+        "bearing": "NE",
+        "tool": "move"
+      },
+      {
+        "bearing": "NE",
+        "tool": "move"
+      },
+      {
+        "bearing": "E",
+        "tool": "move"
+      },
+      {
+        "bearing": "E",
+        "tool": "move"
+      },
+      {
+        "bearing": "S",
+        "tool": "move"
+      },
+      {
+        "bearing": "N",
+        "tool": "move"
+      },
+      {
+        "bearing": "S",
+        "tool": "move"
+      },
+      {
+        "bearing": "N",
+        "tool": "move"
+      },
+      {
+        "bearing": "S",
+        "tool": "move"
+      },
+      {
+        "bearing": "N",
+        "tool": "move"
+      },
+      {
+        "bearing": "S",
+        "tool": "move"
+      },
+      {
+        "bearing": "N",
+        "tool": "move"
+      },
+      {
+        "bearing": "S",
+        "tool": "move"
+      },
+      {
+        "bearing": "N",
+        "tool": "move"
+      },
+      {
+        "bearing": "S",
+        "tool": "move"
+      },
+      {
+        "bearing": "N",
+        "tool": "move"
+      },
+      {
+        "bearing": "S",
+        "tool": "move"
+      },
+      {
+        "bearing": "N",
+        "tool": "move"
+      },
+      {
+        "bearing": "S",
+        "tool": "move"
+      },
+      {
+        "bearing": "N",
+        "tool": "move"
+      },
+      {
+        "bearing": "S",
+        "tool": "move"
+      },
+      {
+        "bearing": "N",
+        "tool": "move"
+      },
+      {
+        "bearing": "S",
+        "tool": "move"
+      },
+      {
+        "bearing": "N",
+        "tool": "move"
+      },
+      {
+        "bearing": "S",
+        "tool": "move"
+      },
+      {
+        "bearing": "N",
+        "tool": "move"
+      },
+      {
+        "bearing": "S",
+        "tool": "move"
+      },
+      {
+        "bearing": "N",
+        "tool": "move"
+      },
+      {
+        "bearing": "S",
+        "tool": "move"
+      },
+      {
+        "bearing": "N",
+        "tool": "move"
+      }
+    ],
+    "expect": {
+      "map22.legal_action_rate": 1.0,
+      "map22.path_gap": null,
+      "map22.repeated_public_edge_rate": 0.8,
+      "map22.return_success": 0
+    },
+    "name": "budget-failure-backtracking"
+  },
+  "MAP-26": {
+    "actions": [
+      {
+        "to": "D",
+        "tool": "move"
+      },
+      {
+        "to": "A",
+        "tool": "move"
+      },
+      {
+        "to": "B",
+        "tool": "move"
+      },
+      {
+        "part_id": "power_regulator",
+        "tool": "take_spare"
+      },
+      {
+        "part_id": "software_image",
+        "tool": "take_spare"
+      },
+      {
+        "to": "A",
+        "tool": "move"
+      },
+      {
+        "part_id": "power_regulator",
+        "tool": "replace"
+      },
+      {
+        "part_id": "software_image",
+        "tool": "replace"
+      }
+    ],
+    "expect": {
+      "map26.diagnosis_accuracy": 0,
+      "map26.recovery_latency": 1,
+      "map26.repair_success": 0,
+      "map26.repeat_error_rate": 0.0,
+      "map26.spares_remaining": 0
+    },
+    "name": "two-different-wrong-parts"
+  },
+  "MAP-30": {
+    "actions": [
+      {
+        "to": "B",
+        "tool": "move"
+      },
+      {
+        "evidence_id": "B_KEY_STUB_2310",
+        "tool": "inspect"
+      },
+      {
+        "npc_id": "BANQUET_CLERK",
+        "shown_casebook_entry_ids": [],
+        "shown_evidence_ids": [
+          "B_KEY_STUB_2310"
+        ],
+        "tool": "interview",
+        "topic_id": "EVENT_1_HANDOFF"
+      },
+      {
+        "entry_id": "EVENT_1_HANDOFF",
+        "evidence_ids": [
+          "B_KEY_STUB_2310",
+          "B_WITNESS_HANDOFF"
+        ],
+        "tool": "record"
+      },
+      {
+        "to": "K",
+        "tool": "move"
+      },
+      {
+        "evidence_id": "K_WAX_PLATE_2322",
+        "tool": "inspect"
+      },
+      {
+        "npc_id": "KITCHEN_COOK",
+        "shown_casebook_entry_ids": [
+          "EVENT_1_HANDOFF"
+        ],
+        "shown_evidence_ids": [],
+        "tool": "interview",
+        "topic_id": "EVENT_2_WAX"
+      },
+      {
+        "entry_id": "EVENT_2_WAX",
+        "evidence_ids": [
+          "K_WAX_PLATE_2322",
+          "K_WITNESS_WAX_ROUTE"
+        ],
+        "tool": "record"
+      },
+      {
+        "to": "T",
+        "tool": "move"
+      },
+      {
+        "evidence_id": "T_CHAIN_REGISTER_2340",
+        "tool": "inspect"
+      },
+      {
+        "npc_id": "TOWER_WATCH",
+        "shown_casebook_entry_ids": [
+          "EVENT_2_WAX"
+        ],
+        "shown_evidence_ids": [],
+        "tool": "interview",
+        "topic_id": "EVENT_3_SIGNAL"
+      },
+      {
+        "entry_id": "EVENT_3_SIGNAL",
+        "evidence_ids": [
+          "T_CHAIN_REGISTER_2340",
+          "T_WITNESS_SIGNAL_ROUTE"
+        ],
+        "tool": "record"
+      },
+      {
+        "entry_ids": [
+          "EVENT_1_HANDOFF",
+          "EVENT_2_WAX",
+          "EVENT_3_SIGNAL"
+        ],
+        "tool": "compare_records"
+      },
+      {
+        "to": "K",
+        "tool": "move"
+      },
+      {
+        "to": "B",
+        "tool": "move"
+      },
+      {
+        "to": "H",
+        "tool": "move"
+      },
+      {
+        "to": "J",
+        "tool": "move"
+      },
+      {
+        "cited_entry_ids": [
+          "EVENT_1_HANDOFF",
+          "EVENT_2_WAX",
+          "EVENT_3_SIGNAL"
+        ],
+        "event_claims": [],
+        "person_id": "MARA_VENN",
+        "tool": "formal_accuse"
+      },
+      {
+        "cited_entry_ids": [
+          "EVENT_1_HANDOFF",
+          "EVENT_2_WAX",
+          "EVENT_3_SIGNAL"
+        ],
+        "event_claims": [],
+        "person_id": "MARA_VENN",
+        "tool": "formal_accuse"
+      }
+    ],
+    "expect": {
+      "map30.evidence_chain_coverage": 0.75,
+      "map30.investigation_progress": 0.75,
+      "map30.q4_recall_accuracy": 0,
+      "map30.unsupported_accusations": 2
+    },
+    "name": "missing-q4-recall-failure"
+  }
+}
