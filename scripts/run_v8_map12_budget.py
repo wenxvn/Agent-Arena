@@ -17,9 +17,10 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import run_v8_90 as base  # noqa: E402
+
+from agent_arena.llm.openai import OpenAIDecisionProvider  # noqa: E402
 from agent_arena.v8.budget import V8BudgetClosed, V8BudgetLedger  # noqa: E402
 from agent_arena.v8.runner import V8EpisodeSpec, V8Runner  # noqa: E402
-from agent_arena.llm.openai import OpenAIDecisionProvider  # noqa: E402
 
 
 def main() -> int:

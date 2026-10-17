@@ -31,7 +31,6 @@ from agent_arena.v8.budget import V8BudgetClosed, V8BudgetLedger  # noqa: E402
 from agent_arena.v8.metrics import metric_schema_hash  # noqa: E402
 from agent_arena.v8.prompts import system_prompt  # noqa: E402
 from agent_arena.v8.runner import (  # noqa: E402
-    DECISION_BUDGETS,
     V8EpisodeSpec,
     V8Runner,
     registered_specs,
@@ -141,7 +140,6 @@ def verify_freeze(freeze: dict[str, Any]) -> None:
         raise SystemExit("冻结清单不是完整的 30 图。")
     for map_id in MAP_IDS:
         entry = maps[map_id]
-        level = entry["difficulty"]
         environment = create_environment(map_id, step_limit=160)
         prompt = system_prompt(environment, decision_budget=entry["decision_budget"])
         if entry["rule_hash"] != rule_hash(map_id):
