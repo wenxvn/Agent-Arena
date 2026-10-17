@@ -67,18 +67,25 @@
 | lunar | 0/3 | 0/3 | 0/3 | MAP-25:29.7, MAP-26:38.0, MAP-27:8.0 |
 | castle | 0/3 | 0/3 | 0/3 | MAP-28:30.0, MAP-29:38.0, MAP-30:46.0 |
 
-## 5. 资源与费用
+## 5. 难度构念检查
+
+- 简单：3/30；中等：3/30；困难：11/30。
+- 成功率不随难度单调上升，反而是困难组更高。n=3 且每图独立，不能据此断言“困难更容易”；这也不是调整规则的依据。
+- 但轨迹显示难度标签混合了不同构念：MAP-21 只需 1–2 个动作立即撤离，MAP-06 只需 2–3 个动作修复，MAP-15 需 11–14 个动作；而若干“简单”图（MAP-01 供氧、MAP-07 阀门、MAP-10 燃料、MAP-25 EVA、MAP-28 证据）有更紧的早期资源/证据陷阱。
+- 结论：V8 的“简单/中等/困难”不是单一序数构念，而是规则复杂度、资源压力、接口负担与一次性策略的混合。V9 必须先做构念审计，不得按本次结果直接调难度。
+
+## 6. 资源与费用
 
 - 总费用 ¥1.27464628；单局均值 ¥0.014163。
 - 输入 token 1599077，输出 token 105944。
 - 请求 1944，平均每局 21.6。
 - 费用按供应商 usage 结算；未知消费会立即封账，不用估算值替代。
 
-## 6. Provider / schema 异常
+## 7. Provider / schema 异常
 
 - provider_error：0 局；unknown_spend：0 局。
 
-## 7. 部分能力差异示例
+## 8. 部分能力差异示例
 
 同样未通关的局在部分指标上仍可能不同。以下按图列出未成功局的主指标/护栏值，用于说明“失败”不是单一能力标签：
 
@@ -110,7 +117,7 @@
 - **MAP-29**：R0: contradiction_detection_rate=0.0, query_budget_overruns=0；R1: contradiction_detection_rate=0.0, query_budget_overruns=0；R2: contradiction_detection_rate=0.0, query_budget_overruns=0
 - **MAP-30**：R0: evidence_chain_coverage=0.0, unsupported_accusations=0；R1: evidence_chain_coverage=0.0, unsupported_accusations=0；R2: accusation_claim_precision=0.666667, evidence_chain_coverage=0.0, q4_recall_accuracy=0
 
-## 8. 解释边界
+## 9. 解释边界
 
 - 0/3 只说明这三次重复未成功，不说明地图不可解；每图都有真实 Oracle 回放。
 - 3/3 也不说明能力普遍化；样本只有三次同图重复。

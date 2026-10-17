@@ -96,6 +96,13 @@ def main() -> int:
         for map_id, item in maps.items()
         if item["statuses"].get("missing", 0) == 0 and item["successes"] == 0
     ]
+    difficulty_counts = {
+        level: (
+            sum(1 for row in rows if row["difficulty"] == level and row["success"]),
+            sum(1 for row in rows if row["difficulty"] == level),
+        )
+        for level in ("简单", "中等", "困难")
+    }
 
     # ---------------------------------------------------------- mimo-90-results
     lines = [
@@ -255,14 +262,28 @@ def main() -> int:
     fail_lines.extend(
         [
             "",
-            "## 5. 资源与费用",
+            "## 5. 难度构念检查",
+            "",
+            f"- 简单：{difficulty_counts['简单'][0]}/{difficulty_counts['简单'][1]}；"
+            f"中等：{difficulty_counts['中等'][0]}/{difficulty_counts['中等'][1]}；"
+            f"困难：{difficulty_counts['困难'][0]}/{difficulty_counts['困难'][1]}。",
+            "- 成功率不随难度单调上升，反而是困难组更高。n=3 且每图独立，"
+            "不能据此断言“困难更容易”；这也不是调整规则的依据。",
+            "- 但轨迹显示难度标签混合了不同构念：MAP-21 只需 1–2 个动作立即撤离，"
+            "MAP-06 只需 2–3 个动作修复，MAP-15 需 11–14 个动作；而若干“简单”图"
+            "（MAP-01 供氧、MAP-07 阀门、MAP-10 燃料、MAP-25 EVA、MAP-28 证据）"
+            "有更紧的早期资源/证据陷阱。",
+            "- 结论：V8 的“简单/中等/困难”不是单一序数构念，而是规则复杂度、资源压力、"
+            "接口负担与一次性策略的混合。V9 必须先做构念审计，不得按本次结果直接调难度。",
+            "",
+            "## 6. 资源与费用",
             "",
             f"- 总费用 ¥{total_cost}；单局均值 ¥{(total_cost / max(1, completed)):.6f}。",
             f"- 输入 token {total_input}，输出 token {total_output}。",
             f"- 请求 {total_requests}，平均每局 {total_requests / max(1, completed):.1f}。",
             "- 费用按供应商 usage 结算；未知消费会立即封账，不用估算值替代。",
             "",
-            "## 6. Provider / schema 异常",
+            "## 7. Provider / schema 异常",
             "",
             f"- provider_error：{len(provider_errors)} 局；unknown_spend：{len(unknown)} 局。",
         ]
@@ -276,7 +297,7 @@ def main() -> int:
     fail_lines.extend(
         [
             "",
-            "## 7. 部分能力差异示例",
+            "## 8. 部分能力差异示例",
             "",
             "同样未通关的局在部分指标上仍可能不同。以下按图列出未成功局的主指标/护栏值，"
             "用于说明“失败”不是单一能力标签：",
@@ -298,7 +319,7 @@ def main() -> int:
     fail_lines.extend(
         [
             "",
-            "## 8. 解释边界",
+            "## 9. 解释边界",
             "",
             "- 0/3 只说明这三次重复未成功，不说明地图不可解；每图都有真实 Oracle 回放。",
             "- 3/3 也不说明能力普遍化；样本只有三次同图重复。",
@@ -367,6 +388,8 @@ def main() -> int:
             "- 独立第二路径核对：MAP-01–06 的 Oracle 来自 V4 论文轨迹，六张适配图使用 V7 已发布手算值；"
             "其余 18 图的 fixture 与 extractor 同源，尚未建立完全独立的第二实现，列为 V9 改进项。",
             "- 三次重复不是独立场景 seed；不能外推为总体成功率。",
+            "- 难度标签不是单一序数：本次简单 3/30、中等 3/30、困难 11/30，且 MAP-06/15/21 "
+            "的轨迹很短；这是构念/接口问题，V9 应先审计，不得按结果直接调难度。",
             "- MAP-08/16/18/22/26/30 的条件含公开先验/后验或案卷，属于信息可用性条件，"
             "不宣称纯推断能力。",
             "- 全仓仍有 676 条历史 Ruff 问题（冻结的 `worlds/v4` 与旧脚本），V8 作用域已通过。",
