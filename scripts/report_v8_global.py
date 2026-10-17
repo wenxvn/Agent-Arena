@@ -327,6 +327,10 @@ def main() -> int:
             "- three_valid_mimo_runs：三次正式运行均有 trace/judge/V8 metrics/usage，"
             "且不是接口误导或无效 schema 导致的无效轨迹。",
             "",
+            "正式运行前有两次预跑作废：`pre_timeout_001`（wall-clock 上限过紧）与"
+            "`pre_vocab_001`（交互词表缺失）。两者均归档在 `runs/v8/aborted/`，"
+            "不计入正式 90 局；修复后已重新冻结。",
+            "",
             "## 3. 未解决风险",
             "",
             "- 0/3 地图的真实原因是模型策略、机制陷阱还是接口负担，需要逐 trace 归因；"

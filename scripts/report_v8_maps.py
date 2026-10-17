@@ -309,6 +309,10 @@ def main() -> int:
             "",
             "字段组合必须精确匹配；多字段、少字段或同义字段都会被拒绝为 `INVALID_ACTION_SCHEMA`。",
             "",
+            "对 `target`/`choice`/`operation` 这类字符串动作，系统 prompt 公开静态词表"
+            "（见 `mimo-preregistration.md` §2）：只列可尝试的动作名，不表示当前位置可执行、"
+            "前置条件已满足或顺序正确；隐藏真值不进入词表。",
+            "",
             "## 5. 结算顺序、胜负与失败码",
             "",
             "统一顺序：形状校验 → `_apply` 提交动作效果 → 按 `_action_cost` 推进 tick → "
