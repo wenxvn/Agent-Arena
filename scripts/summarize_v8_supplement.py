@@ -70,8 +70,12 @@ def main() -> int:
     registry = read_json(V8 / "registry.json")
     experiment_ids = []
     for event in merged_events():
-        if event.get("event") == "experiment_created" and event.get("experiment_id") not in experiment_ids:
-            experiment_ids.append(event.get("experiment_id"))
+        experiment_id = event.get("experiment_id")
+        if (
+            event.get("event") == "experiment_created"
+            and experiment_id not in experiment_ids
+        ):
+            experiment_ids.append(experiment_id)
     registry["experiment_ids"] = experiment_ids
     registry["ledgers"] = {
         "original": {
