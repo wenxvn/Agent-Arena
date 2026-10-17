@@ -256,8 +256,13 @@ _VOCABULARY: dict[str, tuple[str, ...]] = {
     ),
     "MAP-22": (
         "move(bearing)：使用 visible_exit_bearings",
-        "observe_signpost()；check_goal()；return_to_camp()；"
-        "write_memory(facts)（只写亲历的 node_page / traversed_edge_page）",
+        "observe_signpost()；check_goal()；return_to_camp()",
+        "write_memory(facts)：每项只能是 "
+        '{"fact_type": "node_page", "sign_id": str, "exit_bearings": [str]}'
+        " 或 "
+        '{"fact_type": "traversed_edge_page", "from_sign_id": str, '
+        '"departure_bearing": str, "to_sign_id": str, '
+        '"arrival_reverse_bearing": str}；只写亲历的页面',
     ),
     "MAP-23": (
         "investigate(entrance): X, Y, Z；scout() 在 N|R|H 侦察；"

@@ -23,6 +23,13 @@ def test_vocabulary_covers_numeric_control_maps() -> None:
     assert "map19." not in system_prompt(environment, decision_budget=30)
 
 
+def test_map22_memory_fact_schema_is_public() -> None:
+    prompt = system_prompt(create_environment("MAP-22"), decision_budget=30)
+    assert "traversed_edge_page" in prompt
+    assert "arrival_reverse_bearing" in prompt
+    assert "write_memory" in prompt
+
+
 def test_vocabulary_does_not_leak_private_state() -> None:
     environment = create_environment("MAP-02")
     environment.step(V8Action.model_validate({"tool": "wait", "turns": 1}, strict=True))

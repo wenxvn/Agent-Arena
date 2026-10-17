@@ -48,6 +48,7 @@ def main() -> int:
     gaps = registry["gaps"]
 
     status_counts = Counter(row["status"] for row in rows)
+    commit_counts = Counter(row["commit"] for row in rows if row["commit"])
     successes = sum(1 for row in rows if row["success"])
     total_cost = sum(
         (Decimal(str(row["cost"])) for row in rows if row["cost"] is not None),
@@ -63,7 +64,6 @@ def main() -> int:
         "rule_hash",
         "prompt_hash",
         "metric_schema_hash",
-        "commit",
     )
     hash_mismatches = [
         (row["map_id"], row["seed_or_replicate"], field)
@@ -295,7 +295,7 @@ def main() -> int:
         "- 离线门禁：30/30；154/154 指标；55 条 Oracle；85 条冻结 fixture + 12 条补充用例。",
         f"- 正式 MiMo：**{completed}/90**；缺口 {len(gaps)} 局；总费用 ¥{total_cost}。",
         f"- 冻结 hash 一致性：{'通过' if not hash_mismatches else f'{len(hash_mismatches)} 处不一致'}",
-        "",
+        f"- commit 版本分布：{dict(commit_counts)}",
         "## 1. 30 图定稿表",
         "",
         "| world | map | 难度 | 独特机制 | rule_hash | runtime | metrics | oracle | 3 局 | 状态 |",
