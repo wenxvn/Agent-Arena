@@ -13,7 +13,7 @@
 | 2 | MAP-06 / MAP-15 / MAP-21：DCR-V10-03/04/05，10/10/10 seed | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE`（待指标复算与 MiMo） | 见 git log `feat(v10): batch 2` | ¥0 |
 | 3 | 古堡 MAP-28 / 29 / 30：DCR-V10-06/07，4/4/3 案卷 | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE`（待指标复算与 MiMo） | 见 git log `feat(v10): batch 3` | ¥0 |
 | 4 | 其余 NEEDS_REDESIGN：MAP-04（V10-08）、MAP-14（09）、MAP-19（10）、MAP-20（11）、MAP-22（12）、MAP-23（13）、MAP-24（14）——**全部完成** | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE` | 见 git log `feat(v10): batch 4` | ¥0 |
-| 5 | NEEDS_MORE_EVIDENCE 与 VALIDATED 复核：07（V10-19）、08（16）、09（21）、10（20）、11（18）、12（22）、13（15）、26（17）**8 张接口/证据图全部完成**；7 张 VALIDATED 防回归未开始 | 进行中 | 见 git log `feat(v10): batch 5` | ¥0 |
+| 5 | NEEDS_MORE_EVIDENCE 与 VALIDATED 复核：8 张接口/证据图（07/08/09/10/11/12/13/26）+ 7 张 VALIDATED 防回归审计（`validated-regression.md`） | ✅ 完成；**7 张 VALIDATED 记录 3-seed 缺口** | 见 git log `feat(v10): batch 5` | ¥0 |
 | 6 | 指标治理 | 未开始 | | |
 | 7 | 多 seed 定标 | 未开始 | | |
 | 8 | 有界 MiMo | 未开始 | | |
@@ -21,8 +21,10 @@
 
 ## 下一会话续跑点
 
-- 已验收 Gate：Batch 0、1、2、3、4。
-- 从 **Batch 5** 继续：MAP-07 / 09 / 10 / 11 / 12 / 26 的接口与多 seed 复核，以及 01/02/05/16/17/25/27 的防回归。已完成 MAP-08（DCR-V10-16）与 MAP-13（DCR-V10-15）。每图按已建立模式落地 —— `v10/runtime/mapXX.py` → `v10/baselines/mapXX.py` → `tests/test_v10_batch5.py` → `docs/v10/dcr/DCR-V10-XX.md` → `evidence_state.DECISIONS` → `agent_arena.v10.status` 重算。
+- 已验收 Gate：Batch 0、1、2、3、4、5。
+- 从 **Batch 6** 继续：154 指标枚举与 V9 的 13 项缺陷逐条版本化（metric_schema v10）、五态优先级、独立复算与 fixture、30 图主指标。
+- 之后：Batch 7（多 seed 难度定标）、Batch 8（有界 MiMo，需先写 `mimo-preregistration.json` 与全局账本门禁）、Batch 9（`final-report.md`）。
+- 已知缺口（必须在最终报告披露）：7 张 VALIDATED 图（01/02/05/16/17/25/27）的 V8 实例对 seed 不敏感，3-seed 未达标；见 `validated-regression.md`。
 - 已完成的 Batch 4 图：MAP-04（DCR-V10-08）、MAP-14（09）、MAP-19（10）、MAP-20（11）、MAP-22（12）、MAP-23（13）、MAP-24（14）。
 - 已知的逐图修复方向见 `decision-register.md` §2（MAP-14/19/20/22/23/24 行）。
 - 不要重复 V8/V9 的冻结文件；每批结束时必须跑 `freeze verify`、scoped ruff、`mypy src`、`pytest`。

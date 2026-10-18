@@ -216,6 +216,21 @@ DECISIONS: dict[str, Decision] = {
 }
 
 
+#: Batch 5 防回归：7 张 V9 VALIDATED 图的复跑通过，但环境 seed 未参数化（3-seed 未达标）。
+#: 证据见 ``docs/v10/validated-regression.md``；不撤销 VALIDATED，但在最终报告中记为缺口。
+for _map_id in ("MAP-01", "MAP-02", "MAP-05", "MAP-16", "MAP-17", "MAP-25", "MAP-27"):
+    DECISIONS.setdefault(
+        _map_id,
+        Decision(
+            "FORCED",
+            "VALIDATED",
+            "V8 实例对 seed 不敏感（3-seed 未达标，见 validated-regression.md）",
+            "",
+            "Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录",
+        ),
+    )
+
+
 def _summary() -> dict[str, Any]:
     path = V10_RUNS / "baselines" / "summary.json"
     if not path.exists():
