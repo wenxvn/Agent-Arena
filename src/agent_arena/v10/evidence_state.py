@@ -71,6 +71,15 @@ DECISIONS: dict[str, Decision] = {
         "Batch 4：盲撞计 3 tick 代价；绕行保留但余量恒 ≤ Oracle；"
         "blind_retry 1/6（仅开局安全相位的对照实例），excess_wait/fixed_phase_script 0/6",
     ),
+    "MAP-13": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；4 道不同约束题；方向钉仍为 OPTIONAL（质量 4/5）；待 MiMo 复测",
+        "DCR-V10-15",
+        "Batch 5：记录成为出手前提（试排需 ≥1 条、验证需 ≥4 条）；"
+        "no_record 0/4（V9 为 15 步满分）、blind_guess/record_only_nail 0/4；"
+        "no_direction_nail 4/4 但 ratio 恒 0.8",
+    ),
     "MAP-14": Decision(
         "FORCED",
         "NEEDS_MORE_EVIDENCE",

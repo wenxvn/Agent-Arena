@@ -13,7 +13,7 @@
 | 2 | MAP-06 / MAP-15 / MAP-21：DCR-V10-03/04/05，10/10/10 seed | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE`（待指标复算与 MiMo） | 见 git log `feat(v10): batch 2` | ¥0 |
 | 3 | 古堡 MAP-28 / 29 / 30：DCR-V10-06/07，4/4/3 案卷 | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE`（待指标复算与 MiMo） | 见 git log `feat(v10): batch 3` | ¥0 |
 | 4 | 其余 NEEDS_REDESIGN：MAP-04（V10-08）、MAP-14（09）、MAP-19（10）、MAP-20（11）、MAP-22（12）、MAP-23（13）、MAP-24（14）——**全部完成** | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE` | 见 git log `feat(v10): batch 4` | ¥0 |
-| 5 | NEEDS_MORE_EVIDENCE 与 VALIDATED 复核 | 未开始 | | |
+| 5 | NEEDS_MORE_EVIDENCE 与 VALIDATED 复核：MAP-13（DCR-V10-15）完成；07/08/09/10/11/12/26 与 7 张 VALIDATED 未开始 | 进行中 | 见 git log `feat(v10): batch 5` | ¥0 |
 | 6 | 指标治理 | 未开始 | | |
 | 7 | 多 seed 定标 | 未开始 | | |
 | 8 | 有界 MiMo | 未开始 | | |
@@ -22,7 +22,7 @@
 ## 下一会话续跑点
 
 - 已验收 Gate：Batch 0、1、2、3、4。
-- 从 **Batch 5** 继续：MAP-07 / 08 / 09 / 10 / 11 / 12 / 13 / 26 的接口与多 seed 复核，以及 01/02/05/16/17/25/27 的防回归。每图按已建立模式落地 —— `v10/runtime/mapXX.py` → `v10/baselines/mapXX.py` → `tests/test_v10_batch5.py` → `docs/v10/dcr/DCR-V10-XX.md` → `evidence_state.DECISIONS` → `agent_arena.v10.status` 重算。
+- 从 **Batch 5** 继续：MAP-07 / 08 / 09 / 10 / 11 / 12 / 26 的接口与多 seed 复核，以及 01/02/05/16/17/25/27 的防回归。已完成 MAP-13（DCR-V10-15）。每图按已建立模式落地 —— `v10/runtime/mapXX.py` → `v10/baselines/mapXX.py` → `tests/test_v10_batch5.py` → `docs/v10/dcr/DCR-V10-XX.md` → `evidence_state.DECISIONS` → `agent_arena.v10.status` 重算。
 - 已完成的 Batch 4 图：MAP-04（DCR-V10-08）、MAP-14（09）、MAP-19（10）、MAP-20（11）、MAP-22（12）、MAP-23（13）、MAP-24（14）。
 - 已知的逐图修复方向见 `decision-register.md` §2（MAP-14/19/20/22/23/24 行）。
 - 不要重复 V8/V9 的冻结文件；每批结束时必须跑 `freeze verify`、scoped ruff、`mypy src`、`pytest`。
