@@ -31,11 +31,13 @@ from agent_arena.v10.runtime.catalog import (
 )
 
 BUDGETS = {"简单": 30, "中等": 38, "困难": 46}
+#: 每 tick 需要多条控制指令的地图使用更大的决策预算。
+BUDGET_OVERRIDES = {"MAP-12": 60, "MAP-19": 60}
 RANDOM_POLICY_SEEDS = tuple(range(20))
 
 
 def decision_budget(map_id: str) -> int:
-    return 60 if map_id == "MAP-12" else BUDGETS[LEVEL_OF[map_id]]
+    return BUDGET_OVERRIDES.get(map_id, BUDGETS[LEVEL_OF[map_id]])
 
 
 def baseline_module(map_id: str) -> Any:

@@ -252,18 +252,18 @@
   "validity_status": "NEEDS_MORE_EVIDENCE"
  },
  "MAP-19": {
-  "ablation": "V9 seed0",
-  "baseline": "V9 seed0",
-  "construct_status": "OPTIONAL",
-  "dcr_id": "",
-  "decision": "Batch 0 继承 V9，待 V10 证据",
-  "defect": "forecast 无反馈/指标",
-  "environment_seeds": "0（V8/V9 仅 seed0；见 baseline-audit §5）",
+  "ablation": "fixed_vector_no_lag 0/4；max_loads_no_cooling 0/4；naive_forecast 1/4；no_forecast 0/4",
+  "baseline": "启发式 4/4；随机 0/80",
+  "construct_status": "FORCED",
+  "dcr_id": "DCR-V10-10",
+  "decision": "Batch 4：预测成为产能的必要条件；精确温度与误差反馈公开；no_forecast 0/4、fixed_vector_no_lag 0/4、naive_forecast 1/4（容差 2 对照实例）",
+  "defect": "离线门禁通过；4 实例；待 V10 指标独立复算与 MiMo 复测",
+  "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V8 3 rep / V9 pilot",
-  "oracle": "V9 seed0",
+  "mimo": "V10 未运行",
+  "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
-  "validity_status": "NEEDS_REDESIGN"
+  "validity_status": "NEEDS_MORE_EVIDENCE"
  },
  "MAP-20": {
   "ablation": "V9 seed0",

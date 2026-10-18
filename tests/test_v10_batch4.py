@@ -10,6 +10,7 @@ import pytest
 
 from agent_arena.v10.baselines import map04 as b04
 from agent_arena.v10.baselines import map14 as b14
+from agent_arena.v10.baselines import map19 as b19
 from agent_arena.v10.baselines.runner import run_actions, run_policy
 from agent_arena.v10.runtime.catalog import scenario_hash
 from agent_arena.v10.runtime.map04 import (
@@ -21,6 +22,9 @@ from agent_arena.v10.runtime.map04 import (
 from agent_arena.v10.runtime.map14 import VARIANTS as VARIANTS14
 from agent_arena.v10.runtime.map14 import Map14V10Environment
 from agent_arena.v10.runtime.map14 import oracle_actions as oracle14
+from agent_arena.v10.runtime.map19 import VARIANTS as VARIANTS19
+from agent_arena.v10.runtime.map19 import Map19V10Environment
+from agent_arena.v10.runtime.map19 import oracle_actions as oracle19
 from agent_arena.worlds.scenario_v8.models import V8Action
 
 
@@ -114,6 +118,70 @@ def test_map04_other_ablations_fail(name: str) -> None:
         for seed in VARIANTS
     ]
     assert sum(run.success for run in runs) == 0
+
+
+# --------------------------------------------------------------------------- MAP-19
+def _step19(environment: Map19V10Environment, payload: dict[str, object]) -> str:
+    return environment.step(V8Action.model_validate(payload, strict=True)).result
+
+
+def test_v8_map19_rule_file_matches_freeze_manifest() -> None:
+    manifest = json.loads(Path("docs/v10/freeze-manifest.json").read_text(encoding="utf-8"))
+    path = "src/agent_arena/worlds/scenario_v8/maps/map19.py"
+    files = manifest["roots"]["src/agent_arena/worlds/scenario_v8"]["files"]
+    assert sha256(Path(path).read_bytes()).hexdigest() == files[path]
+
+
+def test_map19_seeds_differ_and_publish_exact_temperatures() -> None:
+    assert len(VARIANTS19) == 4
+    assert len({scenario_hash("MAP-19", seed) for seed in VARIANTS19}) == 4
+    assert len({variant.tolerance for variant in VARIANTS19.values()}) >= 2
+    observation = Map19V10Environment(seed=0).observe()
+    assert observation["current_temperatures"] == dict(VARIANTS19[0].temperatures)
+    assert observation["forecast_tolerance"] == VARIANTS19[0].tolerance
+    assert observation["cooling_budget"] == VARIANTS19[0].cooling_budget
+
+
+def test_map19_unpredicted_tick_voids_production() -> None:
+    environment = Map19V10Environment(seed=0)
+    before = environment.production
+    _step19(environment, {"tool": "wait"})
+    assert environment.production == before
+    assert environment.unpredicted_ticks == 1
+    assert environment.rejected_ticks == 1
+
+
+def test_map19_wrong_forecast_is_rejected_and_visible() -> None:
+    environment = Map19V10Environment(seed=0)
+    _step19(environment, {"tool": "forecast_next", "forecast_next": [0, 0, 0]})
+    _step19(environment, {"tool": "wait"})
+    assert environment.rejected_ticks == 1
+    assert environment.production == 0
+    assert environment.last_error is not None and environment.last_error > VARIANTS19[0].tolerance
+
+
+def test_map19_oracle_heuristic_and_ablations() -> None:
+    for seed in VARIANTS19:
+        oracle = run_actions("MAP-19", oracle19(seed), environment_seed=seed, name="oracle")
+        assert oracle.success and oracle.mechanism_triggered
+        assert oracle.metrics["map19.v10.production_credit"]["value"] == 1.0
+        assert oracle.metrics["map19.v10.rejected_ticks"]["value"] == 0
+        heuristic = run_policy("MAP-19", b19.HEURISTIC(), environment_seed=seed, decision_budget=60)
+        assert heuristic.success
+        assert heuristic.metrics["map19.v10.mean_forecast_error"]["value"] == 0.0
+    for name in ("no_forecast", "fixed_vector_no_lag", "max_loads_no_cooling"):
+        runs = [
+            run_policy("MAP-19", b19.ABLATIONS[name](), environment_seed=seed, decision_budget=60)
+            for seed in VARIANTS19
+        ]
+        assert sum(run.success for run in runs) == 0, name
+    naive = [
+        run_policy(
+            "MAP-19", b19.ABLATIONS["naive_forecast"](), environment_seed=seed, decision_budget=60
+        )
+        for seed in VARIANTS19
+    ]
+    assert sum(run.success for run in naive) <= 1
 
 
 # --------------------------------------------------------------------------- MAP-14

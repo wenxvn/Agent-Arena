@@ -24,7 +24,7 @@
 | MAP-16 | 地铁简单 | 会车/侧线/死锁 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-07 | Batch 0 继承 V9，待 V10 证据 |
 | MAP-17 | 地铁中等 | 瓶颈下的四车多目标排程 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
 | MAP-18 | 地铁困难 | 封锁后的在线恢复 | BYPASS/BLOCKED | FORCED | NEEDS_MORE_EVIDENCE | 5（0,1,2,3,4） | 5/5（机制触发 5/5） | 启发式 5/5；随机 0/100 | greedy_dispatch 3/5；ignore_windows 0/5；no_replan 1/5 | V10 未运行 | DCR-V10-02 | Batch 1：时钟分离、发车窗口强制、5 个故障变体；抢跑 0/5，no_replan 1/5，greedy 3/5，启发式 5/5 |
-| MAP-19 | 火山简单 | 2 tick 时滞热控 + 预测 | OPTIONAL/NEEDS_REDESIGN | OPTIONAL | NEEDS_REDESIGN | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
+| MAP-19 | 火山简单 | 2 tick 时滞热控 + 预测 | OPTIONAL/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | fixed_vector_no_lag 0/4；max_loads_no_cooling 0/4；naive_forecast 1/4；no_forecast 0/4 | V10 未运行 | DCR-V10-10 | Batch 4：预测成为产能的必要条件；精确温度与误差反馈公开；no_forecast 0/4、fixed_vector_no_lag 0/4、naive_forecast 1/4（容差 2 对照实例） |
 | MAP-20 | 火山中等 | 多区热上限 + 有损旁路分配 | OPTIONAL/NEEDS_REDESIGN | OPTIONAL | NEEDS_REDESIGN | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
 | MAP-21 | 火山困难 | 隐藏喷发时刻下的停手决策 | BYPASS/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 10（0,1,2,3,4,5,6,7,8,9） | 10/10（机制触发 10/10） | 启发式 10/10；随机 0/200 | always_collect 7/10；always_evac 10/10；measure_then_evac 10/10 | V10 未运行 | DCR-V10-05 | Batch 2：safety_science 分离；10 seed 覆盖三种喷发时刻；always_evac 0.5（科研 0）、always_collect 3 灾难、risk_aware 0 灾难且均值 0.6886 最高 |
 | MAP-22 | 丛林简单 | 无地图空间记忆与返程 | BYPASS/NEEDS_REDESIGN | BYPASS | NEEDS_REDESIGN | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
@@ -42,10 +42,10 @@
 | 维度 | 状态 | 图数 | 地图 |
 |---|---|---:|---|
 | 效度 | VALIDATED | 7 | 01、02、05、16、17、25、27 |
-| 效度 | NEEDS_MORE_EVIDENCE | 18 | 03、04、06、07、08、09、10、11、12、13、14、15、18、21、26、28、29、30 |
-| 效度 | NEEDS_REDESIGN | 5 | 19、20、22、23、24 |
+| 效度 | NEEDS_MORE_EVIDENCE | 19 | 03、04、06、07、08、09、10、11、12、13、14、15、18、19、21、26、28、29、30 |
+| 效度 | NEEDS_REDESIGN | 4 | 20、22、23、24 |
 | 效度 | BLOCKED | 0 |  |
-| 构念 | FORCED | 17 | 01、02、03、04、05、06、14、15、16、17、18、21、25、27、28、29、30 |
-| 构念 | OPTIONAL | 5 | 13、19、20、23、26 |
+| 构念 | FORCED | 18 | 01、02、03、04、05、06、14、15、16、17、18、19、21、25、27、28、29、30 |
+| 构念 | OPTIONAL | 4 | 13、20、23、26 |
 | 构念 | BYPASS | 4 | 08、11、22、24 |
 | 构念 | BLOCKED | 4 | 07、09、10、12 |
