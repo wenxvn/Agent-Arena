@@ -13,6 +13,7 @@ from agent_arena.v10.baselines import map08 as b08
 from agent_arena.v10.baselines import map09 as b09
 from agent_arena.v10.baselines import map10 as b10
 from agent_arena.v10.baselines import map11 as b11
+from agent_arena.v10.baselines import map12 as b12
 from agent_arena.v10.baselines import map13 as b13
 from agent_arena.v10.baselines import map26 as b26
 from agent_arena.v10.baselines.runner import run_actions, run_policy
@@ -33,11 +34,43 @@ from agent_arena.v10.runtime.map10 import oracle_actions as oracle10
 from agent_arena.v10.runtime.map11 import VARIANTS as VARIANTS11
 from agent_arena.v10.runtime.map11 import Map11V10Environment
 from agent_arena.v10.runtime.map11 import oracle_actions as oracle11
+from agent_arena.v10.runtime.map12 import VARIANTS as VARIANTS12
+from agent_arena.v10.runtime.map12 import Map12V10Environment
+from agent_arena.v10.runtime.map12 import oracle_actions as oracle12
 from agent_arena.v10.runtime.map13 import SLOTS, VARIANTS, Map13V10Environment, oracle_actions
 from agent_arena.v10.runtime.map26 import VARIANTS as VARIANTS26
 from agent_arena.v10.runtime.map26 import Map26V10Environment
 from agent_arena.v10.runtime.map26 import oracle_actions as oracle26
 from agent_arena.worlds.scenario_v8.models import V8Action
+
+
+# --------------------------------------------------------------------------- MAP-12
+def test_map12_slot_and_stock_rules() -> None:
+    assert len(VARIANTS12) == 4
+    assert len({scenario_hash("MAP-12", seed) for seed in VARIANTS12}) == 4
+    environment = Map12V10Environment(seed=0)
+    refused = environment.step(
+        V8Action.model_validate(
+            {"tool": "assign", "plan": ["research"] * 9}, strict=True
+        )
+    )
+    assert refused.result == "TOO_MANY_SLOTS"
+
+
+def test_map12_oracle_heuristic_and_ablations() -> None:
+    for seed in VARIANTS12:
+        oracle = run_actions("MAP-12", oracle12(seed), environment_seed=seed, name="oracle")
+        assert oracle.success and oracle.mechanism_triggered
+        heuristic = run_policy("MAP-12", b12.HEURISTIC(), environment_seed=seed, decision_budget=60)
+        assert heuristic.success
+        assert heuristic.metrics["map12.v10.research_points"]["value"] >= VARIANTS12[seed].target
+        assert heuristic.metrics["map12.v10.min_food"]["value"] > 0
+    for name, factory in b12.ABLATIONS.items():
+        runs = [
+            run_policy("MAP-12", factory(), environment_seed=seed, decision_budget=60)
+            for seed in VARIANTS12
+        ]
+        assert sum(run.success for run in runs) == 0, name
 
 
 # --------------------------------------------------------------------------- MAP-09

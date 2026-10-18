@@ -113,6 +113,14 @@ DECISIONS: dict[str, Decision] = {
         "blind_rescue 0/4（V9 旁路）、storm_search 有风暴搜索但合法、"
         "single_search_giveup/waste_window 2/4；启发式风暴搜索 0 次",
     ),
+    "MAP-12": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；4 实例；补上 V9 缺失的离线跨期证据；待 MiMo 复测",
+        "DCR-V10-22",
+        "Batch 5：30 天 × 槽位排班、每日双结算、双归零失败；"
+        "all_research/all_forage/no_research/waste_slots 全 0/4；启发式研究 38/35/40/75",
+    ),
     "MAP-13": Decision(
         "FORCED",
         "NEEDS_MORE_EVIDENCE",
