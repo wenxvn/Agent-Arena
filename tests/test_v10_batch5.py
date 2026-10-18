@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 from agent_arena.v10.baselines import map08 as b08
+from agent_arena.v10.baselines import map11 as b11
 from agent_arena.v10.baselines import map13 as b13
 from agent_arena.v10.baselines import map26 as b26
 from agent_arena.v10.baselines.runner import run_actions, run_policy
@@ -17,11 +18,61 @@ from agent_arena.v10.runtime.map08 import SITES as SITES08
 from agent_arena.v10.runtime.map08 import VARIANTS as VARIANTS08
 from agent_arena.v10.runtime.map08 import Map08V10Environment
 from agent_arena.v10.runtime.map08 import oracle_actions as oracle08
+from agent_arena.v10.runtime.map11 import VARIANTS as VARIANTS11
+from agent_arena.v10.runtime.map11 import Map11V10Environment
+from agent_arena.v10.runtime.map11 import oracle_actions as oracle11
 from agent_arena.v10.runtime.map13 import SLOTS, VARIANTS, Map13V10Environment, oracle_actions
 from agent_arena.v10.runtime.map26 import VARIANTS as VARIANTS26
 from agent_arena.v10.runtime.map26 import Map26V10Environment
 from agent_arena.v10.runtime.map26 import oracle_actions as oracle26
 from agent_arena.worlds.scenario_v8.models import V8Action
+
+
+# --------------------------------------------------------------------------- MAP-11
+def test_map11_signals_gate_rescue_and_storms_are_public() -> None:
+    assert len(VARIANTS11) == 4
+    assert len({scenario_hash("MAP-11", seed) for seed in VARIANTS11}) == 4
+    assert any(not variant.storm_windows for variant in VARIANTS11.values())
+    assert any(len(variant.storm_windows) >= 2 for variant in VARIANTS11.values())
+    environment = Map11V10Environment(seed=1)
+    refused = environment.step(
+        V8Action.model_validate({"tool": "rescue", "area": "Z2"}, strict=True)
+    )
+    assert refused.result == "NO_SIGNAL_TO_RESCUE"
+
+
+def test_map11_oracle_and_ablations() -> None:
+    for seed in VARIANTS11:
+        oracle = run_actions("MAP-11", oracle11(seed), environment_seed=seed, name="oracle")
+        assert oracle.success
+        assert oracle.metrics["map11.v10.mission_success"]["value"] == 1
+        heuristic = run_policy("MAP-11", b11.HEURISTIC(), environment_seed=seed, decision_budget=38)
+        assert heuristic.success
+        assert heuristic.metrics["map11.v10.storm_searches"]["value"] == 0
+    blind = [
+        run_policy(
+            "MAP-11", b11.ABLATIONS["blind_rescue"](), environment_seed=seed, decision_budget=38
+        )
+        for seed in VARIANTS11
+    ]
+    assert sum(run.success for run in blind) == 0
+    stormy = [
+        run_policy(
+            "MAP-11", b11.ABLATIONS["storm_search"](), environment_seed=seed, decision_budget=38
+        )
+        for seed in VARIANTS11
+    ]
+    assert any(run.metrics["map11.v10.storm_searches"]["value"] >= 1 for run in stormy)
+    single = [
+        run_policy(
+            "MAP-11",
+            b11.ABLATIONS["single_search_giveup"](),
+            environment_seed=seed,
+            decision_budget=38,
+        )
+        for seed in VARIANTS11
+    ]
+    assert sum(run.success for run in single) <= 2
 
 
 # --------------------------------------------------------------------------- MAP-26

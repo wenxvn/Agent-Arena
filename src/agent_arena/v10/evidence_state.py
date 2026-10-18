@@ -80,6 +80,15 @@ DECISIONS: dict[str, Decision] = {
         "no_hypothesis 0/4（V9 旁路）、blind_repairs 0/4、single_test 1/4；"
         "over_testing 4/4 但 tests_used 3（合法但更慢）",
     ),
+    "MAP-11": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；4 实例（含晴稳对照）；待 MiMo 复测",
+        "DCR-V10-18",
+        "Batch 5：救援需先有信号、风暴窗口公开且漏检 0.5–0.7、生命窗；"
+        "blind_rescue 0/4（V9 旁路）、storm_search 有风暴搜索但合法、"
+        "single_search_giveup/waste_window 2/4；启发式风暴搜索 0 次",
+    ),
     "MAP-13": Decision(
         "FORCED",
         "NEEDS_MORE_EVIDENCE",
