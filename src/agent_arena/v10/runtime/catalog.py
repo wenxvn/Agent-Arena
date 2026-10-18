@@ -30,6 +30,7 @@ V10_MAPS: dict[str, tuple[str, str]] = {
     "MAP-03": ("agent_arena.v10.runtime.map03", "Map03V10Environment"),
     "MAP-06": ("agent_arena.v10.runtime.map06", "Map06V10Environment"),
     "MAP-08": ("agent_arena.v10.runtime.map08", "Map08V10Environment"),
+    "MAP-09": ("agent_arena.v10.runtime.map09", "Map09V10Environment"),
     "MAP-10": ("agent_arena.v10.runtime.map10", "Map10V10Environment"),
     "MAP-11": ("agent_arena.v10.runtime.map11", "Map11V10Environment"),
     "MAP-13": ("agent_arena.v10.runtime.map13", "Map13V10Environment"),

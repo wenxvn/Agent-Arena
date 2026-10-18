@@ -88,6 +88,14 @@ DECISIONS: dict[str, Decision] = {
         "no_hypothesis 0/4（V9 旁路）、blind_repairs 0/4、single_test 1/4；"
         "over_testing 4/4 但 tests_used 3（合法但更慢）",
     ),
+    "MAP-09": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；4 实例；待 MiMo 复测",
+        "DCR-V10-21",
+        "Batch 5：修复需水位与供氧双门槛、三链同时结算、漏速递增；"
+        "skip_pump 0/4（FLOODED）、skip_vent 1/4（LOST_POWER）、seal_only 0/4（LOST_OXYGEN）",
+    ),
     "MAP-10": Decision(
         "FORCED",
         "NEEDS_MORE_EVIDENCE",

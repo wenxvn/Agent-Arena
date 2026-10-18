@@ -13,7 +13,7 @@
 | 2 | MAP-06 / MAP-15 / MAP-21：DCR-V10-03/04/05，10/10/10 seed | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE`（待指标复算与 MiMo） | 见 git log `feat(v10): batch 2` | ¥0 |
 | 3 | 古堡 MAP-28 / 29 / 30：DCR-V10-06/07，4/4/3 案卷 | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE`（待指标复算与 MiMo） | 见 git log `feat(v10): batch 3` | ¥0 |
 | 4 | 其余 NEEDS_REDESIGN：MAP-04（V10-08）、MAP-14（09）、MAP-19（10）、MAP-20（11）、MAP-22（12）、MAP-23（13）、MAP-24（14）——**全部完成** | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE` | 见 git log `feat(v10): batch 4` | ¥0 |
-| 5 | NEEDS_MORE_EVIDENCE 与 VALIDATED 复核：MAP-07（V10-19）、08（16）、10（20）、11（18）、13（15）、26（17）完成；09/12 与 7 张 VALIDATED 未开始 | 进行中 | 见 git log `feat(v10): batch 5` | ¥0 |
+| 5 | NEEDS_MORE_EVIDENCE 与 VALIDATED 复核：07（V10-19）、08（16）、09（21）、10（20）、11（18）、13（15）、26（17）完成；**MAP-12** 与 7 张 VALIDATED 未开始 | 进行中 | 见 git log `feat(v10): batch 5` | ¥0 |
 | 6 | 指标治理 | 未开始 | | |
 | 7 | 多 seed 定标 | 未开始 | | |
 | 8 | 有界 MiMo | 未开始 | | |

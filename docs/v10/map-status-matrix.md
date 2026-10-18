@@ -14,7 +14,7 @@
 | MAP-06 | 灯塔困难 | 80% 条件预报 + 风险预算 | BYPASS/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 10（0,1,2,3,4,5,6,7,8,9） | 10/10（机制触发 9/10） | 启发式 9/10；随机 0/200 | always_direct 5/10；always_reinforce 9/10；forecast_always 8/10 | V10 未运行 | DCR-V10-03 | Batch 2：10-seed 分层天气 cohort；短风暴计入风险；截止随 seed 公开；always_direct 5/10（长风暴全死），启发式 9/10 且效用均值 0.4228 > 三条固定策略 |
 | MAP-07 | 深海简单 | 阀门方向与水位预判 | BLOCKED/NEEDS_MORE_EVIDENCE | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | fixed_clockwise 2/4；late_open 0/4；never_open 0/4；turn_both 2/4 | V10 未运行 | DCR-V10-19 | Batch 5：面板只公开因果不公开开向、拧错进水 +1、水位预测进入成败；fixed_clockwise 2/4（固定脚本假设被证伪）、never_open/late_open 0/4 |
 | MAP-08 | 深海中等 | 主动测试缩小漏点假设集 | BYPASS/NEEDS_MORE_EVIDENCE | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | blind_repairs 0/4；no_hypothesis 0/4；over_testing 4/4；single_test 1/4 | V10 未运行 | DCR-V10-16 | Batch 5：封存诊断成为修复前提、测试必须缩小假设集；no_hypothesis 0/4（V9 旁路）、blind_repairs 0/4、single_test 1/4；over_testing 4/4 但 tests_used 3（合法但更慢） |
-| MAP-09 | 深海困难 | 漏水-电力-供氧-通信连锁 | BLOCKED/NEEDS_MORE_EVIDENCE | BLOCKED | NEEDS_MORE_EVIDENCE | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-03 | Batch 0 继承 V9，待 V10 证据 |
+| MAP-09 | 深海困难 | 漏水-电力-供氧-通信连锁 | BLOCKED/NEEDS_MORE_EVIDENCE | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | seal_only 0/4；skip_pump 0/4；skip_vent 1/4 | V10 未运行 | DCR-V10-21 | Batch 5：修复需水位与供氧双门槛、三链同时结算、漏速递增；skip_pump 0/4（FLOODED）、skip_vent 1/4（LOST_POWER）、seal_only 0/4（LOST_OXYGEN） |
 | MAP-10 | 极地简单 | 双仓燃料运输与时间成本 | BLOCKED/NEEDS_MORE_EVIDENCE | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | max_load 1/4；no_move 0/4；underload 0/4 | V10 未运行 | DCR-V10-20 | Batch 5：油耗 = burn_base + ceil(cargo/2)、容量与库存双约束；max_load 1/4（烧光油）、underload 0/4（货不够）、no_move 0/4 |
 | MAP-11 | 极地中等 | 风暴/噪声下的搜索与生命窗 | BYPASS/NEEDS_MORE_EVIDENCE | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 3/4） | 启发式 4/4；随机 0/80 | blind_rescue 0/4；single_search_giveup 2/4；storm_search 4/4；waste_window 2/4 | V10 未运行 | DCR-V10-18 | Batch 5：救援需先有信号、风暴窗口公开且漏检 0.5–0.7、生命窗；blind_rescue 0/4（V9 旁路）、storm_search 有风暴搜索但合法、single_search_giveup/waste_window 2/4；启发式风暴搜索 0 次 |
 | MAP-12 | 极地困难 | 30 天跨期库存与劳动槽 | BLOCKED/NEEDS_MORE_EVIDENCE | BLOCKED | NEEDS_MORE_EVIDENCE | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-06 | Batch 0 继承 V9，待 V10 证据 |
@@ -45,7 +45,7 @@
 | 效度 | NEEDS_MORE_EVIDENCE | 23 | 03、04、06、07、08、09、10、11、12、13、14、15、18、19、20、21、22、23、24、26、28、29、30 |
 | 效度 | NEEDS_REDESIGN | 0 |  |
 | 效度 | BLOCKED | 0 |  |
-| 构念 | FORCED | 27 | 01、02、03、04、05、06、07、08、10、11、13、14、15、16、17、18、19、20、21、22、23、24、25、27、28、29、30 |
+| 构念 | FORCED | 28 | 01、02、03、04、05、06、07、08、09、10、11、13、14、15、16、17、18、19、20、21、22、23、24、25、27、28、29、30 |
 | 构念 | OPTIONAL | 1 | 26 |
 | 构念 | BYPASS | 0 |  |
-| 构念 | BLOCKED | 2 | 09、12 |
+| 构念 | BLOCKED | 1 | 12 |

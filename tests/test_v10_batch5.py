@@ -10,6 +10,7 @@ import pytest
 
 from agent_arena.v10.baselines import map07 as b07
 from agent_arena.v10.baselines import map08 as b08
+from agent_arena.v10.baselines import map09 as b09
 from agent_arena.v10.baselines import map10 as b10
 from agent_arena.v10.baselines import map11 as b11
 from agent_arena.v10.baselines import map13 as b13
@@ -23,6 +24,9 @@ from agent_arena.v10.runtime.map08 import SITES as SITES08
 from agent_arena.v10.runtime.map08 import VARIANTS as VARIANTS08
 from agent_arena.v10.runtime.map08 import Map08V10Environment
 from agent_arena.v10.runtime.map08 import oracle_actions as oracle08
+from agent_arena.v10.runtime.map09 import VARIANTS as VARIANTS09
+from agent_arena.v10.runtime.map09 import Map09V10Environment
+from agent_arena.v10.runtime.map09 import oracle_actions as oracle09
 from agent_arena.v10.runtime.map10 import VARIANTS as VARIANTS10
 from agent_arena.v10.runtime.map10 import Map10V10Environment
 from agent_arena.v10.runtime.map10 import oracle_actions as oracle10
@@ -34,6 +38,41 @@ from agent_arena.v10.runtime.map26 import VARIANTS as VARIANTS26
 from agent_arena.v10.runtime.map26 import Map26V10Environment
 from agent_arena.v10.runtime.map26 import oracle_actions as oracle26
 from agent_arena.worlds.scenario_v8.models import V8Action
+
+
+# --------------------------------------------------------------------------- MAP-09
+def test_map09_repair_needs_both_gates() -> None:
+    assert len(VARIANTS09) == 4
+    assert len({scenario_hash("MAP-09", seed) for seed in VARIANTS09}) == 4
+    environment = Map09V10Environment(seed=0)
+    refused = environment.step(V8Action.model_validate({"tool": "repair"}, strict=True))
+    assert refused.result == "TOO_MUCH_WATER"
+
+
+def test_map09_oracle_heuristic_and_ablations() -> None:
+    for seed in VARIANTS09:
+        oracle = run_actions("MAP-09", oracle09(seed), environment_seed=seed, name="oracle")
+        assert oracle.success and oracle.mechanism_triggered
+        heuristic = run_policy("MAP-09", b09.HEURISTIC(), environment_seed=seed, decision_budget=46)
+        assert heuristic.success
+        assert heuristic.metrics["map09.v10.min_oxygen"]["value"] > 0
+        assert heuristic.metrics["map09.v10.min_power"]["value"] > 0
+    for name in ("skip_pump", "seal_only"):
+        runs = [
+            run_policy("MAP-09", b09.ABLATIONS[name](), environment_seed=seed, decision_budget=46)
+            for seed in VARIANTS09
+        ]
+        assert sum(run.success for run in runs) == 0, name
+    skip_vent = [
+        run_policy(
+            "MAP-09",
+            b09.ABLATIONS["skip_vent"](),
+            environment_seed=seed,
+            decision_budget=46,
+        )
+        for seed in VARIANTS09
+    ]
+    assert sum(run.success for run in skip_vent) <= 1
 
 
 # --------------------------------------------------------------------------- MAP-10
