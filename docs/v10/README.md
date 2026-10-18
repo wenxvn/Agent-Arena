@@ -9,7 +9,7 @@
 | Batch | 内容 | 状态 | commit | 费用 |
 |---|---|---|---|---|
 | 0 | 基线审计、冻结清单、状态矩阵、决策登记 | 完成 | 见 git log `feat(v10): batch 0` | ¥0 |
-| 1 | MAP-03 / MAP-18 | 未开始 | | |
+| 1 | MAP-03 / MAP-18：DCR-V10-01/02，V10 运行时、Oracle、启发式、消融、6/5 seed | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE`（待指标复算与 MiMo） | 见 git log `feat(v10): batch 1` | ¥0 |
 | 2 | MAP-06 / MAP-15 / MAP-21 | 未开始 | | |
 | 3 | 古堡 28–30 | 未开始 | | |
 | 4 | 其余 NEEDS_REDESIGN | 未开始 | | |
@@ -27,12 +27,23 @@
 | `decision-register.md` | 规则变更 vs 接口/指标修复的逐图登记 |
 | `freeze-manifest.json` | V8/V9 逐文件 sha256 与树 hash |
 | `map-status-matrix.csv/.md/.json` | 30 图状态矩阵（字段见提纲 §2.4） |
+| `dcr/DCR-V10-XX.md` | V10 规则变更记录（新旧 hash 并列、对照与反例测试） |
+
+## 代码
+
+| 路径 | 内容 |
+|---|---|
+| `src/agent_arena/v10/runtime/` | `base.py` V10 地图协议；`catalog.py` 目录（V10 优先、V8 回退）与 hash；`mapXX.py` 逐图新规则 |
+| `src/agent_arena/v10/baselines/` | `runner.py` 执行器（环境 seed / policy seed 分离、5 条 history 窗口）；`mapXX.py` Oracle、启发式、消融；`suite.py` 多 seed 套件 |
+| `src/agent_arena/v10/metrics/schema.py` | `metric_schema_version=v10`、五态与优先级 |
+| `src/agent_arena/v10/evidence_state.py` | 逐图裁定，驱动状态矩阵 |
 
 ## 复现
 
 ```powershell
 .\.venv\Scripts\python.exe -m agent_arena.v10.freeze verify      # 冻结校验
 .\.venv\Scripts\python.exe -m agent_arena.v10.baseline_audit     # V8/V9 只读复算
+.\.venv\Scripts\python.exe -m agent_arena.v10.baselines.suite    # V10 多 seed 基线 → runs/v10/baselines
 .\.venv\Scripts\python.exe -m agent_arena.v10.status             # 生成状态矩阵
 .\.venv\Scripts\python.exe -m pytest tests/test_v10_*.py -q
 ```

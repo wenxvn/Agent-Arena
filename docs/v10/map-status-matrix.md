@@ -8,7 +8,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | MAP-01 | 飞船简单 | 生命支持优先 + 互斥支路依赖链 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
 | MAP-02 | 飞船中等 | 事件触发的双目标重排 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-09 | Batch 0 继承 V9，待 V10 证据 |
-| MAP-03 | 飞船困难 | 五阶段里程碑 + 远期代码召回 | BYPASS/BLOCKED | BYPASS | BLOCKED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-12 | Batch 0 继承 V9，待 V10 证据 |
+| MAP-03 | 飞船困难 | 五阶段里程碑 + 远期代码召回 | BYPASS/BLOCKED | FORCED | NEEDS_MORE_EVIDENCE | 6（0,1,2,3,4,5） | 6/6（机制触发 6/6） | 启发式 6/6；随机 0/120 | late_read 0/6；no_memory 0/6；random_guess 0/6 | V10 未运行 | DCR-V10-01 | Batch 1：码 seed 化、goal 去泄露、清单封存、write_memory、EVA 对齐；三消融 0/6，启发式 6/6 |
 | MAP-04 | 灯塔简单 | 潮汐相位预测 + 回程时机 | BYPASS/NEEDS_REDESIGN | BYPASS | NEEDS_REDESIGN | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-09 | Batch 0 继承 V9，待 V10 证据 |
 | MAP-05 | 灯塔中等 | 三窗口共享供电排程 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-02 | Batch 0 继承 V9，待 V10 证据 |
 | MAP-06 | 灯塔困难 | 80% 条件预报 + 风险预算 | BYPASS/NEEDS_REDESIGN | BYPASS | NEEDS_REDESIGN | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-10 | Batch 0 继承 V9，待 V10 证据 |
@@ -23,7 +23,7 @@
 | MAP-15 | 金字塔困难 | 从训练样例归纳变化规则 | BYPASS/NEEDS_REDESIGN | BYPASS | NEEDS_REDESIGN | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-11 | Batch 0 继承 V9，待 V10 证据 |
 | MAP-16 | 地铁简单 | 会车/侧线/死锁 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-07 | Batch 0 继承 V9，待 V10 证据 |
 | MAP-17 | 地铁中等 | 瓶颈下的四车多目标排程 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
-| MAP-18 | 地铁困难 | 封锁后的在线恢复 | BYPASS/BLOCKED | BYPASS | BLOCKED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
+| MAP-18 | 地铁困难 | 封锁后的在线恢复 | BYPASS/BLOCKED | FORCED | NEEDS_MORE_EVIDENCE | 5（0,1,2,3,4） | 5/5（机制触发 5/5） | 启发式 5/5；随机 0/100 | greedy_dispatch 3/5；ignore_windows 0/5；no_replan 1/5 | V10 未运行 | DCR-V10-02 | Batch 1：时钟分离、发车窗口强制、5 个故障变体；抢跑 0/5，no_replan 1/5，greedy 3/5，启发式 5/5 |
 | MAP-19 | 火山简单 | 2 tick 时滞热控 + 预测 | OPTIONAL/NEEDS_REDESIGN | OPTIONAL | NEEDS_REDESIGN | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
 | MAP-20 | 火山中等 | 多区热上限 + 有损旁路分配 | OPTIONAL/NEEDS_REDESIGN | OPTIONAL | NEEDS_REDESIGN | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
 | MAP-21 | 火山困难 | 隐藏喷发时刻下的停手决策 | BYPASS/NEEDS_REDESIGN | BYPASS | NEEDS_REDESIGN | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-13 | Batch 0 继承 V9，待 V10 证据 |
@@ -42,10 +42,10 @@
 | 维度 | 状态 | 图数 | 地图 |
 |---|---|---:|---|
 | 效度 | VALIDATED | 7 | 01、02、05、16、17、25、27 |
-| 效度 | NEEDS_MORE_EVIDENCE | 8 | 07、08、09、10、11、12、13、26 |
+| 效度 | NEEDS_MORE_EVIDENCE | 10 | 03、07、08、09、10、11、12、13、18、26 |
 | 效度 | NEEDS_REDESIGN | 13 | 04、06、14、15、19、20、21、22、23、24、28、29、30 |
-| 效度 | BLOCKED | 2 | 03、18 |
-| 构念 | FORCED | 8 | 01、02、05、16、17、25、27、28 |
+| 效度 | BLOCKED | 0 |  |
+| 构念 | FORCED | 10 | 01、02、03、05、16、17、18、25、27、28 |
 | 构念 | OPTIONAL | 5 | 13、19、20、23、26 |
-| 构念 | BYPASS | 11 | 03、04、06、08、11、14、15、18、21、22、24 |
+| 构念 | BYPASS | 9 | 04、06、08、11、14、15、21、22、24 |
 | 构念 | BLOCKED | 6 | 07、09、10、12、29、30 |

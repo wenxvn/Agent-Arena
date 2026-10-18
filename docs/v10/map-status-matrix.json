@@ -28,18 +28,18 @@
   "validity_status": "VALIDATED"
  },
  "MAP-03": {
-  "ablation": "V9 seed0",
-  "baseline": "V9 seed0",
-  "construct_status": "BYPASS",
-  "dcr_id": "DCR-12",
-  "decision": "Batch 0 继承 V9，待 V10 证据",
-  "defect": "tag 可最后读；无记忆通道；EVA 退出不扣氧",
-  "environment_seeds": "0（V8/V9 仅 seed0；见 baseline-audit §5）",
+  "ablation": "late_read 0/6；no_memory 0/6；random_guess 0/6",
+  "baseline": "启发式 6/6；随机 0/120",
+  "construct_status": "FORCED",
+  "dcr_id": "DCR-V10-01",
+  "decision": "Batch 1：码 seed 化、goal 去泄露、清单封存、write_memory、EVA 对齐；三消融 0/6，启发式 6/6",
+  "defect": "离线门禁通过；待 V10 指标独立复算与 MiMo 复测",
+  "environment_seeds": "6（0,1,2,3,4,5）",
   "extra": {},
-  "mimo": "V8 3 rep / V9 pilot",
-  "oracle": "V9 seed0",
+  "mimo": "V10 未运行",
+  "oracle": "6/6（机制触发 6/6）",
   "review": "agent_reviewed",
-  "validity_status": "BLOCKED"
+  "validity_status": "NEEDS_MORE_EVIDENCE"
  },
  "MAP-04": {
   "ablation": "V9 seed0",
@@ -238,18 +238,18 @@
   "validity_status": "VALIDATED"
  },
  "MAP-18": {
-  "ablation": "V9 seed0",
-  "baseline": "V9 seed0",
-  "construct_status": "BYPASS",
-  "dcr_id": "",
-  "decision": "Batch 0 继承 V9，待 V10 证据",
-  "defect": "step_limit=min(.,12)；抢跑旁路",
-  "environment_seeds": "0（V8/V9 仅 seed0；见 baseline-audit §5）",
+  "ablation": "greedy_dispatch 3/5；ignore_windows 0/5；no_replan 1/5",
+  "baseline": "启发式 5/5；随机 0/100",
+  "construct_status": "FORCED",
+  "dcr_id": "DCR-V10-02",
+  "decision": "Batch 1：时钟分离、发车窗口强制、5 个故障变体；抢跑 0/5，no_replan 1/5，greedy 3/5，启发式 5/5",
+  "defect": "离线门禁通过；待 V10 指标独立复算与 MiMo 复测",
+  "environment_seeds": "5（0,1,2,3,4）",
   "extra": {},
-  "mimo": "V8 3 rep / V9 pilot",
-  "oracle": "V9 seed0",
+  "mimo": "V10 未运行",
+  "oracle": "5/5（机制触发 5/5）",
   "review": "agent_reviewed",
-  "validity_status": "BLOCKED"
+  "validity_status": "NEEDS_MORE_EVIDENCE"
  },
  "MAP-19": {
   "ablation": "V9 seed0",

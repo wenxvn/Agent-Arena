@@ -60,3 +60,4 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 | Batch | 内容 | 状态 | commit |
 |---|---|---|---|
 | 0 | 基线审计、冻结、状态矩阵、本表 | 完成 | 见 README |
+| 1 | MAP-03 DCR-V10-01、MAP-18 DCR-V10-02 | `accepted_by_agent`，离线 Gate 通过 | 见 README |
