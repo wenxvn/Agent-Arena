@@ -12,7 +12,7 @@
 | 1 | MAP-03 / MAP-18：DCR-V10-01/02，V10 运行时、Oracle、启发式、消融、6/5 seed | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE`（待指标复算与 MiMo） | 见 git log `feat(v10): batch 1` | ¥0 |
 | 2 | MAP-06 / MAP-15 / MAP-21：DCR-V10-03/04/05，10/10/10 seed | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE`（待指标复算与 MiMo） | 见 git log `feat(v10): batch 2` | ¥0 |
 | 3 | 古堡 MAP-28 / 29 / 30：DCR-V10-06/07，4/4/3 案卷 | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE`（待指标复算与 MiMo） | 见 git log `feat(v10): batch 3` | ¥0 |
-| 4 | 其余 NEEDS_REDESIGN | 未开始 | | |
+| 4 | 其余 NEEDS_REDESIGN：MAP-04 完成（DCR-V10-08，6 seed）；MAP-14/19/20/22/23/24 未开始 | 进行中 | 见 git log `feat(v10): batch 4` | ¥0 |
 | 5 | NEEDS_MORE_EVIDENCE 与 VALIDATED 复核 | 未开始 | | |
 | 6 | 指标治理 | 未开始 | | |
 | 7 | 多 seed 定标 | 未开始 | | |

@@ -63,6 +63,14 @@ DECISIONS: dict[str, Decision] = {
         "Batch 2：safety_science 分离；10 seed 覆盖三种喷发时刻；always_evac 0.5（科研 0）、"
         "always_collect 3 灾难、risk_aware 0 灾难且均值 0.6886 最高",
     ),
+    "MAP-04": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；6 seed；待 V10 指标独立复算与 MiMo 复测",
+        "DCR-V10-08",
+        "Batch 4：盲撞计 3 tick 代价；绕行保留但余量恒 ≤ Oracle；"
+        "blind_retry 1/6（仅开局安全相位的对照实例），excess_wait/fixed_phase_script 0/6",
+    ),
     "MAP-28": Decision(
         "FORCED",
         "NEEDS_MORE_EVIDENCE",
