@@ -10,6 +10,7 @@ import pytest
 
 from agent_arena.v10.baselines import map08 as b08
 from agent_arena.v10.baselines import map13 as b13
+from agent_arena.v10.baselines import map26 as b26
 from agent_arena.v10.baselines.runner import run_actions, run_policy
 from agent_arena.v10.runtime.catalog import scenario_hash
 from agent_arena.v10.runtime.map08 import SITES as SITES08
@@ -17,7 +18,63 @@ from agent_arena.v10.runtime.map08 import VARIANTS as VARIANTS08
 from agent_arena.v10.runtime.map08 import Map08V10Environment
 from agent_arena.v10.runtime.map08 import oracle_actions as oracle08
 from agent_arena.v10.runtime.map13 import SLOTS, VARIANTS, Map13V10Environment, oracle_actions
+from agent_arena.v10.runtime.map26 import VARIANTS as VARIANTS26
+from agent_arena.v10.runtime.map26 import Map26V10Environment
+from agent_arena.v10.runtime.map26 import oracle_actions as oracle26
 from agent_arena.worlds.scenario_v8.models import V8Action
+
+
+# --------------------------------------------------------------------------- MAP-26
+def test_map26_seeds_differ_and_publish_partitions() -> None:
+    assert len(VARIANTS26) == 4
+    assert len({scenario_hash("MAP-26", seed) for seed in VARIANTS26}) == 4
+    assert len({variant.fault for variant in VARIANTS26.values()}) >= 2
+    observation = Map26V10Environment(seed=3).observe()
+    assert observation["spares"]["P3"] == 0
+    assert observation["test_partitions"]
+
+
+def test_map26_wrong_swap_costs_wear_and_rollback_keeps_spare_spent() -> None:
+    environment = Map26V10Environment(seed=0)
+    environment.step(V8Action.model_validate({"tool": "replace", "part_id": "P1"}, strict=True))
+    assert environment.wear == 1
+    assert environment.spares["P1"] == 0
+    environment.step(V8Action.model_validate({"tool": "rollback"}, strict=True))
+    assert environment.installed is None
+    assert environment.spares["P1"] == 0
+    environment.step(V8Action.model_validate({"tool": "replace", "part_id": "P3"}, strict=True))
+    assert environment.is_terminal
+    assert environment.terminal_reason == "UNIT_UNRECOVERABLE"
+
+
+def test_map26_oracle_heuristic_and_ablations() -> None:
+    for seed in VARIANTS26:
+        oracle = run_actions("MAP-26", oracle26(seed), environment_seed=seed, name="oracle")
+        assert oracle.success and oracle.mechanism_triggered
+        assert oracle.metrics["map26.v10.spares_used"]["value"] == 1
+        assert oracle.metrics["map26.v10.wrong_swaps"]["value"] == 0
+        heuristic = run_policy("MAP-26", b26.HEURISTIC(), environment_seed=seed, decision_budget=38)
+        assert heuristic.success
+        assert heuristic.metrics["map26.v10.diagnosis_precision"]["value"] == 1
+    blind = [
+        run_policy(
+            "MAP-26", b26.ABLATIONS["no_diagnosis"](), environment_seed=seed, decision_budget=38
+        )
+        for seed in VARIANTS26
+    ]
+    assert sum(run.success for run in blind) <= 3
+    assert max(
+        run.metrics["map26.v10.spares_used"]["value"]
+        for run in blind
+        if run.success
+    ) >= 2
+    ignore = [
+        run_policy(
+            "MAP-26", b26.ABLATIONS["test_but_ignore"](), environment_seed=seed, decision_budget=38
+        )
+        for seed in VARIANTS26
+    ]
+    assert sum(run.success for run in ignore) == 0
 
 
 # --------------------------------------------------------------------------- MAP-08

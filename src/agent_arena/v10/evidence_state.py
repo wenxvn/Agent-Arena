@@ -139,6 +139,15 @@ DECISIONS: dict[str, Decision] = {
         "Batch 4：山路拉长、封路时刻隐藏且不瞬杀、公开 collapse_observed；"
         "两条 primary 重定义；no_replan 0/4（replan_success 0）、mountain_only 记为 N/A 合法替代",
     ),
+    "MAP-26": Decision(
+        "OPTIONAL",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；诊断 OPTIONAL 但质量可区分；待 MiMo 复测",
+        "DCR-V10-17",
+        "Batch 5：换错耗备件并 +1 磨损（达 2 即不可恢复）、rollback 不返还备件；"
+        "no_diagnosis 3/4 但备件 2/2/1/2 且均有换错、test_but_ignore 0/4；"
+        "启发式 4/4 且 spares 恒 1、precision 1",
+    ),
     "MAP-28": Decision(
         "FORCED",
         "NEEDS_MORE_EVIDENCE",
