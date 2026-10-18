@@ -33,19 +33,19 @@
 | MAP-25 | 月球简单 | 出舱依赖顺序 + 工具匹配 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-08/25 | Batch 0 继承 V9，待 V10 证据 |
 | MAP-26 | 月球中等 | 诊断→修复→回滚 | OPTIONAL/NEEDS_MORE_EVIDENCE | OPTIONAL | NEEDS_MORE_EVIDENCE | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-14/26 | Batch 0 继承 V9，待 V10 证据 |
 | MAP-27 | 月球困难 | 电量/氧气/多目标协调 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-27 | Batch 0 继承 V9，待 V10 证据 |
-| MAP-28 | 古堡简单 | 证据收集 + 时间线 | FORCED/NEEDS_REDESIGN | FORCED | NEEDS_REDESIGN | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
-| MAP-29 | 古堡中等 | 证词可靠性分诊 | BLOCKED/NEEDS_REDESIGN | BLOCKED | NEEDS_REDESIGN | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
-| MAP-30 | 古堡困难 | 跨阶段案卷推理 | BLOCKED/NEEDS_REDESIGN | BLOCKED | NEEDS_REDESIGN | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
+| MAP-28 | 古堡简单 | 证据收集 + 时间线 | FORCED/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | blind_submit 0/4；cite_all 3/4；no_record 0/4；single_source 0/4 | V10 未运行 | DCR-V10-06 | Batch 3：公开 person/path 枚举；4 案卷依赖图不同；引用自洽规则；no_record 0/4、single_source 0/4、blind_submit 0/4、cite_all 3/4 |
+| MAP-29 | 古堡中等 | 证词可靠性分诊 | BLOCKED/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | blind_accuse 0/4；no_compare 0/4；skip_archive 0/4；trust_first 0/4 | V10 未运行 | DCR-V10-06 | Batch 3：公开 compare 语义；角色分配随 seed 轮换且不公开；部分真实证人；四消融 0/4，启发式 8–9 问 4/4 |
+| MAP-30 | 古堡困难 | 跨阶段案卷推理 | BLOCKED/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 3（0,1,2） | 3/3（机制触发 3/3） | 启发式 3/3；随机 0/60 | evidence_shuffle 0/3；late_guess 0/3；no_casebook 0/3；window_delay 0/3 | V10 未运行 | DCR-V10-07 | Batch 3：公开条目 ID/成对规则/法庭节点/窗口语义；诱饵事件；两处指标偏置纠正；四消融 0/3，window_delay 触发 window_pressure |
 
 ## 汇总
 
 | 维度 | 状态 | 图数 | 地图 |
 |---|---|---:|---|
 | 效度 | VALIDATED | 7 | 01、02、05、16、17、25、27 |
-| 效度 | NEEDS_MORE_EVIDENCE | 13 | 03、06、07、08、09、10、11、12、13、15、18、21、26 |
-| 效度 | NEEDS_REDESIGN | 10 | 04、14、19、20、22、23、24、28、29、30 |
+| 效度 | NEEDS_MORE_EVIDENCE | 16 | 03、06、07、08、09、10、11、12、13、15、18、21、26、28、29、30 |
+| 效度 | NEEDS_REDESIGN | 7 | 04、14、19、20、22、23、24 |
 | 效度 | BLOCKED | 0 |  |
-| 构念 | FORCED | 13 | 01、02、03、05、06、15、16、17、18、21、25、27、28 |
+| 构念 | FORCED | 15 | 01、02、03、05、06、15、16、17、18、21、25、27、28、29、30 |
 | 构念 | OPTIONAL | 5 | 13、19、20、23、26 |
 | 构念 | BYPASS | 6 | 04、08、11、14、22、24 |
-| 构念 | BLOCKED | 6 | 07、09、10、12、29、30 |
+| 构念 | BLOCKED | 4 | 07、09、10、12 |

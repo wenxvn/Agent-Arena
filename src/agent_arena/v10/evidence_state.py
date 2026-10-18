@@ -63,6 +63,30 @@ DECISIONS: dict[str, Decision] = {
         "Batch 2：safety_science 分离；10 seed 覆盖三种喷发时刻；always_evac 0.5（科研 0）、"
         "always_collect 3 灾难、risk_aware 0 灾难且均值 0.6886 最高",
     ),
+    "MAP-28": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；4 案卷；待 V10 指标独立复算与 MiMo 复测",
+        "DCR-V10-06",
+        "Batch 3：公开 person/path 枚举；4 案卷依赖图不同；引用自洽规则；"
+        "no_record 0/4、single_source 0/4、blind_submit 0/4、cite_all 3/4",
+    ),
+    "MAP-29": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；4 案卷；待 V10 指标独立复算与 MiMo 复测",
+        "DCR-V10-06",
+        "Batch 3：公开 compare 语义；角色分配随 seed 轮换且不公开；部分真实证人；"
+        "四消融 0/4，启发式 8–9 问 4/4",
+    ),
+    "MAP-30": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；3 案卷含诱饵；指标偏置已纠；待 V10 指标独立复算与 MiMo 复测",
+        "DCR-V10-07",
+        "Batch 3：公开条目 ID/成对规则/法庭节点/窗口语义；诱饵事件；"
+        "两处指标偏置纠正；四消融 0/3，window_delay 触发 window_pressure",
+    ),
 }
 
 
