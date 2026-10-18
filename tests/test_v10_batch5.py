@@ -10,6 +10,7 @@ import pytest
 
 from agent_arena.v10.baselines import map07 as b07
 from agent_arena.v10.baselines import map08 as b08
+from agent_arena.v10.baselines import map10 as b10
 from agent_arena.v10.baselines import map11 as b11
 from agent_arena.v10.baselines import map13 as b13
 from agent_arena.v10.baselines import map26 as b26
@@ -22,6 +23,9 @@ from agent_arena.v10.runtime.map08 import SITES as SITES08
 from agent_arena.v10.runtime.map08 import VARIANTS as VARIANTS08
 from agent_arena.v10.runtime.map08 import Map08V10Environment
 from agent_arena.v10.runtime.map08 import oracle_actions as oracle08
+from agent_arena.v10.runtime.map10 import VARIANTS as VARIANTS10
+from agent_arena.v10.runtime.map10 import Map10V10Environment
+from agent_arena.v10.runtime.map10 import oracle_actions as oracle10
 from agent_arena.v10.runtime.map11 import VARIANTS as VARIANTS11
 from agent_arena.v10.runtime.map11 import Map11V10Environment
 from agent_arena.v10.runtime.map11 import oracle_actions as oracle11
@@ -30,6 +34,37 @@ from agent_arena.v10.runtime.map26 import VARIANTS as VARIANTS26
 from agent_arena.v10.runtime.map26 import Map26V10Environment
 from agent_arena.v10.runtime.map26 import oracle_actions as oracle26
 from agent_arena.worlds.scenario_v8.models import V8Action
+
+
+# --------------------------------------------------------------------------- MAP-10
+def test_map10_load_and_burn_are_coupled() -> None:
+    assert len(VARIANTS10) == 4
+    assert len({scenario_hash("MAP-10", seed) for seed in VARIANTS10}) == 4
+    assert all(variant.burn(10) > variant.burn(1) for variant in VARIANTS10.values())
+    environment = Map10V10Environment(seed=0)
+    refused = environment.step(
+        V8Action.model_validate({"tool": "load", "quantity": 99}, strict=True)
+    )
+    assert refused.result == "CAPACITY_EXCEEDED"
+
+
+def test_map10_oracle_heuristic_and_ablations() -> None:
+    for seed in VARIANTS10:
+        oracle = run_actions("MAP-10", oracle10(seed), environment_seed=seed, name="oracle")
+        assert oracle.success and oracle.mechanism_triggered
+        heuristic = run_policy("MAP-10", b10.HEURISTIC(), environment_seed=seed, decision_budget=30)
+        assert heuristic.success
+    heavy = [
+        run_policy("MAP-10", b10.ABLATIONS["max_load"](), environment_seed=seed, decision_budget=30)
+        for seed in VARIANTS10
+    ]
+    assert sum(run.success for run in heavy) <= 1
+    for name in ("underload", "no_move"):
+        runs = [
+            run_policy("MAP-10", b10.ABLATIONS[name](), environment_seed=seed, decision_budget=30)
+            for seed in VARIANTS10
+        ]
+        assert sum(run.success for run in runs) == 0, name
 
 
 # --------------------------------------------------------------------------- MAP-07

@@ -15,7 +15,7 @@
 | MAP-07 | 深海简单 | 阀门方向与水位预判 | BLOCKED/NEEDS_MORE_EVIDENCE | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | fixed_clockwise 2/4；late_open 0/4；never_open 0/4；turn_both 2/4 | V10 未运行 | DCR-V10-19 | Batch 5：面板只公开因果不公开开向、拧错进水 +1、水位预测进入成败；fixed_clockwise 2/4（固定脚本假设被证伪）、never_open/late_open 0/4 |
 | MAP-08 | 深海中等 | 主动测试缩小漏点假设集 | BYPASS/NEEDS_MORE_EVIDENCE | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | blind_repairs 0/4；no_hypothesis 0/4；over_testing 4/4；single_test 1/4 | V10 未运行 | DCR-V10-16 | Batch 5：封存诊断成为修复前提、测试必须缩小假设集；no_hypothesis 0/4（V9 旁路）、blind_repairs 0/4、single_test 1/4；over_testing 4/4 但 tests_used 3（合法但更慢） |
 | MAP-09 | 深海困难 | 漏水-电力-供氧-通信连锁 | BLOCKED/NEEDS_MORE_EVIDENCE | BLOCKED | NEEDS_MORE_EVIDENCE | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-03 | Batch 0 继承 V9，待 V10 证据 |
-| MAP-10 | 极地简单 | 双仓燃料运输与时间成本 | BLOCKED/NEEDS_MORE_EVIDENCE | BLOCKED | NEEDS_MORE_EVIDENCE | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-04 | Batch 0 继承 V9，待 V10 证据 |
+| MAP-10 | 极地简单 | 双仓燃料运输与时间成本 | BLOCKED/NEEDS_MORE_EVIDENCE | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | max_load 1/4；no_move 0/4；underload 0/4 | V10 未运行 | DCR-V10-20 | Batch 5：油耗 = burn_base + ceil(cargo/2)、容量与库存双约束；max_load 1/4（烧光油）、underload 0/4（货不够）、no_move 0/4 |
 | MAP-11 | 极地中等 | 风暴/噪声下的搜索与生命窗 | BYPASS/NEEDS_MORE_EVIDENCE | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 3/4） | 启发式 4/4；随机 0/80 | blind_rescue 0/4；single_search_giveup 2/4；storm_search 4/4；waste_window 2/4 | V10 未运行 | DCR-V10-18 | Batch 5：救援需先有信号、风暴窗口公开且漏检 0.5–0.7、生命窗；blind_rescue 0/4（V9 旁路）、storm_search 有风暴搜索但合法、single_search_giveup/waste_window 2/4；启发式风暴搜索 0 次 |
 | MAP-12 | 极地困难 | 30 天跨期库存与劳动槽 | BLOCKED/NEEDS_MORE_EVIDENCE | BLOCKED | NEEDS_MORE_EVIDENCE | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-06 | Batch 0 继承 V9，待 V10 证据 |
 | MAP-13 | 金字塔简单 | 约束满足 + 唯一序列 | OPTIONAL/NEEDS_MORE_EVIDENCE | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | blind_guess 0/4；no_direction_nail 4/4；no_record 0/4；record_only_nail 0/4 | V10 未运行 | DCR-V10-15 | Batch 5：记录成为出手前提（试排需 ≥1 条、验证需 ≥4 条）；no_record 0/4（V9 为 15 步满分）、blind_guess/record_only_nail 0/4；no_direction_nail 4/4 但 ratio 恒 0.8 |
@@ -45,7 +45,7 @@
 | 效度 | NEEDS_MORE_EVIDENCE | 23 | 03、04、06、07、08、09、10、11、12、13、14、15、18、19、20、21、22、23、24、26、28、29、30 |
 | 效度 | NEEDS_REDESIGN | 0 |  |
 | 效度 | BLOCKED | 0 |  |
-| 构念 | FORCED | 26 | 01、02、03、04、05、06、07、08、11、13、14、15、16、17、18、19、20、21、22、23、24、25、27、28、29、30 |
+| 构念 | FORCED | 27 | 01、02、03、04、05、06、07、08、10、11、13、14、15、16、17、18、19、20、21、22、23、24、25、27、28、29、30 |
 | 构念 | OPTIONAL | 1 | 26 |
 | 构念 | BYPASS | 0 |  |
-| 构念 | BLOCKED | 3 | 09、10、12 |
+| 构念 | BLOCKED | 2 | 09、12 |
