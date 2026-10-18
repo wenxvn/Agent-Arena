@@ -294,18 +294,18 @@
   "validity_status": "NEEDS_MORE_EVIDENCE"
  },
  "MAP-22": {
-  "ablation": "V9 seed0",
-  "baseline": "V9 seed0",
-  "construct_status": "BYPASS",
-  "dcr_id": "",
-  "decision": "Batch 0 继承 V9，待 V10 证据",
-  "defect": "无记忆策略 12 步成功",
-  "environment_seeds": "0（V8/V9 仅 seed0；见 baseline-audit §5）",
+  "ablation": "fixed_bearings 0/4；no_memory_write 0/4；no_return 0/4；random_walk 0/4",
+  "baseline": "启发式 3/4；随机 0/80",
+  "construct_status": "FORCED",
+  "dcr_id": "DCR-V10-12",
+  "decision": "Batch 4：遮蔽（只给当前路标与方位）+ 死胡同分岔 + 跨阶段返程；no_memory_write 0/4（V9 为 12 决策成功）、fixed_bearings/no_return/random_walk 0/4；公开记忆 DFS 3/4（seed 1 因贪心方位顺序超预算，属策略弱点）",
+  "defect": "离线门禁通过；4 迷宫；待 V10 指标独立复算与 MiMo 复测",
+  "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V8 3 rep / V9 pilot",
-  "oracle": "V9 seed0",
+  "mimo": "V10 未运行",
+  "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
-  "validity_status": "NEEDS_REDESIGN"
+  "validity_status": "NEEDS_MORE_EVIDENCE"
  },
  "MAP-23": {
   "ablation": "ignore_counterevidence 0/4；no_scout 0/4；scout_everything 0/4；single_clue 2/4",

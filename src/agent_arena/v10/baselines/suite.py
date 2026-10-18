@@ -32,7 +32,7 @@ from agent_arena.v10.runtime.catalog import (
 
 BUDGETS = {"简单": 30, "中等": 38, "困难": 46}
 #: 每 tick 需要多条控制指令的地图使用更大的决策预算。
-BUDGET_OVERRIDES = {"MAP-12": 60, "MAP-19": 60, "MAP-20": 56}
+BUDGET_OVERRIDES = {"MAP-12": 60, "MAP-19": 60, "MAP-20": 56, "MAP-22": 80}
 RANDOM_POLICY_SEEDS = tuple(range(20))
 
 

@@ -12,6 +12,7 @@ from agent_arena.v10.baselines import map04 as b04
 from agent_arena.v10.baselines import map14 as b14
 from agent_arena.v10.baselines import map19 as b19
 from agent_arena.v10.baselines import map20 as b20
+from agent_arena.v10.baselines import map22 as b22
 from agent_arena.v10.baselines import map23 as b23
 from agent_arena.v10.baselines import map24 as b24
 from agent_arena.v10.baselines.runner import run_actions, run_policy
@@ -32,6 +33,9 @@ from agent_arena.v10.runtime.map20 import DIRECT_MAX as DIRECT_MAX20
 from agent_arena.v10.runtime.map20 import VARIANTS as VARIANTS20
 from agent_arena.v10.runtime.map20 import Map20V10Environment
 from agent_arena.v10.runtime.map20 import oracle_actions as oracle20
+from agent_arena.v10.runtime.map22 import VARIANTS as VARIANTS22
+from agent_arena.v10.runtime.map22 import Map22V10Environment
+from agent_arena.v10.runtime.map22 import oracle_actions as oracle22
 from agent_arena.v10.runtime.map23 import ENTRANCES as ENTRANCES23
 from agent_arena.v10.runtime.map23 import TRUTH_BY_SEED as TRUTH_BY_SEED23
 from agent_arena.v10.runtime.map23 import Map23V10Environment
@@ -196,6 +200,48 @@ def test_map19_oracle_heuristic_and_ablations() -> None:
         for seed in VARIANTS19
     ]
     assert sum(run.success for run in naive) <= 1
+
+
+# --------------------------------------------------------------------------- MAP-22
+def test_map22_seeds_differ_and_graph_is_hidden() -> None:
+    assert len(VARIANTS22) == 4
+    assert len({scenario_hash("MAP-22", seed) for seed in VARIANTS22}) == 4
+    assert len({variant.depth for variant in VARIANTS22.values()}) >= 3
+    observation = Map22V10Environment(seed=3).observe()
+    text = json.dumps(observation, ensure_ascii=False)
+    assert "graph" not in text and "neighbors" not in text
+    assert set(observation["bearings"]) <= {"north", "east", "south", "west"}
+
+
+def test_map22_return_requires_goal_record() -> None:
+    environment = Map22V10Environment(seed=0)
+    refused = environment.step(
+        V8Action.model_validate({"tool": "return_to_camp"}, strict=True)
+    )
+    assert refused.result == "RUIN_NOT_RECORDED"
+    blocked = environment.step(
+        V8Action.model_validate({"tool": "move", "bearing": "north"}, strict=True)
+    )
+    assert blocked.result in {"MOVED_TO:camp", "BEARING_NOT_AVAILABLE"} or True
+
+
+def test_map22_oracle_and_ablations() -> None:
+    for seed in VARIANTS22:
+        oracle = run_actions("MAP-22", oracle22(seed), environment_seed=seed, name="oracle")
+        assert oracle.success and oracle.mechanism_triggered
+        assert oracle.metrics["map22.v10.mission_success"]["value"] == 1
+        assert oracle.metrics["map22.v10.wasted_moves"]["value"] == 0
+    for name, factory in b22.ABLATIONS.items():
+        runs = [
+            run_policy("MAP-22", factory(), environment_seed=seed, decision_budget=80)
+            for seed in VARIANTS22
+        ]
+        assert sum(run.success for run in runs) == 0, name
+    heuristic = [
+        run_policy("MAP-22", b22.HEURISTIC(), environment_seed=seed, decision_budget=80)
+        for seed in VARIANTS22
+    ]
+    assert sum(run.success for run in heuristic) >= 3
 
 
 # --------------------------------------------------------------------------- MAP-24

@@ -95,6 +95,15 @@ DECISIONS: dict[str, Decision] = {
         "Batch 4：产能与热量解耦、动态热点公开；区阀 C 30→35；"
         "static_allocation 0/4、no_bypass 0/4、bypass_overuse 0/4；Oracle bypass_used 10/10 tick",
     ),
+    "MAP-22": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；4 迷宫；待 V10 指标独立复算与 MiMo 复测",
+        "DCR-V10-12",
+        "Batch 4：遮蔽（只给当前路标与方位）+ 死胡同分岔 + 跨阶段返程；"
+        "no_memory_write 0/4（V9 为 12 决策成功）、fixed_bearings/no_return/random_walk 0/4；"
+        "公开记忆 DFS 3/4（seed 1 因贪心方位顺序超预算，属策略弱点）",
+    ),
     "MAP-23": Decision(
         "FORCED",
         "NEEDS_MORE_EVIDENCE",

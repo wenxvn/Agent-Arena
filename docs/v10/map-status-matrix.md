@@ -27,7 +27,7 @@
 | MAP-19 | 火山简单 | 2 tick 时滞热控 + 预测 | OPTIONAL/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | fixed_vector_no_lag 0/4；max_loads_no_cooling 0/4；naive_forecast 1/4；no_forecast 0/4 | V10 未运行 | DCR-V10-10 | Batch 4：预测成为产能的必要条件；精确温度与误差反馈公开；no_forecast 0/4、fixed_vector_no_lag 0/4、naive_forecast 1/4（容差 2 对照实例） |
 | MAP-20 | 火山中等 | 多区热上限 + 有损旁路分配 | OPTIONAL/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | bypass_overuse 0/4；no_bypass 0/4；static_allocation 0/4；zero_flow 0/4 | V10 未运行 | DCR-V10-11 | Batch 4：产能与热量解耦、动态热点公开；区阀 C 30→35；static_allocation 0/4、no_bypass 0/4、bypass_overuse 0/4；Oracle bypass_used 10/10 tick |
 | MAP-21 | 火山困难 | 隐藏喷发时刻下的停手决策 | BYPASS/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 10（0,1,2,3,4,5,6,7,8,9） | 10/10（机制触发 10/10） | 启发式 10/10；随机 0/200 | always_collect 7/10；always_evac 10/10；measure_then_evac 10/10 | V10 未运行 | DCR-V10-05 | Batch 2：safety_science 分离；10 seed 覆盖三种喷发时刻；always_evac 0.5（科研 0）、always_collect 3 灾难、risk_aware 0 灾难且均值 0.6886 最高 |
-| MAP-22 | 丛林简单 | 无地图空间记忆与返程 | BYPASS/NEEDS_REDESIGN | BYPASS | NEEDS_REDESIGN | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
+| MAP-22 | 丛林简单 | 无地图空间记忆与返程 | BYPASS/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 3/4；随机 0/80 | fixed_bearings 0/4；no_memory_write 0/4；no_return 0/4；random_walk 0/4 | V10 未运行 | DCR-V10-12 | Batch 4：遮蔽（只给当前路标与方位）+ 死胡同分岔 + 跨阶段返程；no_memory_write 0/4（V9 为 12 决策成功）、fixed_bearings/no_return/random_walk 0/4；公开记忆 DFS 3/4（seed 1 因贪心方位顺序超预算，属策略弱点） |
 | MAP-23 | 丛林中等 | 线索推断真入口 + 补给 | OPTIONAL/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | ignore_counterevidence 0/4；no_scout 0/4；scout_everything 0/4；single_clue 2/4 | V10 未运行 | DCR-V10-13 | Batch 4：出手需要已购线索 + 相容 mark；4 入口 × 3 侦察站使线索价格与信息量错开；no_scout 0/4（V9 为 12 决策成功）、ignore_counterevidence 0/4、scout_everything 0/4、single_clue 2/4 |
 | MAP-24 | 丛林困难 | 坍塌后重规划 | BYPASS/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | mountain_only 4/4；no_replan 0/4；waste_opening 2/4 | V10 未运行 | DCR-V10-14 | Batch 4：山路拉长、封路时刻隐藏且不瞬杀、公开 collapse_observed；两条 primary 重定义；no_replan 0/4（replan_success 0）、mountain_only 记为 N/A 合法替代 |
 | MAP-25 | 月球简单 | 出舱依赖顺序 + 工具匹配 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-08/25 | Batch 0 继承 V9，待 V10 证据 |
@@ -42,10 +42,10 @@
 | 维度 | 状态 | 图数 | 地图 |
 |---|---|---:|---|
 | 效度 | VALIDATED | 7 | 01、02、05、16、17、25、27 |
-| 效度 | NEEDS_MORE_EVIDENCE | 22 | 03、04、06、07、08、09、10、11、12、13、14、15、18、19、20、21、23、24、26、28、29、30 |
-| 效度 | NEEDS_REDESIGN | 1 | 22 |
+| 效度 | NEEDS_MORE_EVIDENCE | 23 | 03、04、06、07、08、09、10、11、12、13、14、15、18、19、20、21、22、23、24、26、28、29、30 |
+| 效度 | NEEDS_REDESIGN | 0 |  |
 | 效度 | BLOCKED | 0 |  |
-| 构念 | FORCED | 21 | 01、02、03、04、05、06、14、15、16、17、18、19、20、21、23、24、25、27、28、29、30 |
+| 构念 | FORCED | 22 | 01、02、03、04、05、06、14、15、16、17、18、19、20、21、22、23、24、25、27、28、29、30 |
 | 构念 | OPTIONAL | 2 | 13、26 |
-| 构念 | BYPASS | 3 | 08、11、22 |
+| 构念 | BYPASS | 2 | 08、11 |
 | 构念 | BLOCKED | 4 | 07、09、10、12 |
