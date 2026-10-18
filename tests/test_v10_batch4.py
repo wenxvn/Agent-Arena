@@ -12,6 +12,7 @@ from agent_arena.v10.baselines import map04 as b04
 from agent_arena.v10.baselines import map14 as b14
 from agent_arena.v10.baselines import map19 as b19
 from agent_arena.v10.baselines import map20 as b20
+from agent_arena.v10.baselines import map23 as b23
 from agent_arena.v10.baselines.runner import run_actions, run_policy
 from agent_arena.v10.runtime.catalog import scenario_hash
 from agent_arena.v10.runtime.map04 import (
@@ -30,6 +31,10 @@ from agent_arena.v10.runtime.map20 import DIRECT_MAX as DIRECT_MAX20
 from agent_arena.v10.runtime.map20 import VARIANTS as VARIANTS20
 from agent_arena.v10.runtime.map20 import Map20V10Environment
 from agent_arena.v10.runtime.map20 import oracle_actions as oracle20
+from agent_arena.v10.runtime.map23 import ENTRANCES as ENTRANCES23
+from agent_arena.v10.runtime.map23 import TRUTH_BY_SEED as TRUTH_BY_SEED23
+from agent_arena.v10.runtime.map23 import Map23V10Environment
+from agent_arena.v10.runtime.map23 import oracle_actions as oracle23
 from agent_arena.worlds.scenario_v8.models import V8Action
 
 
@@ -187,6 +192,61 @@ def test_map19_oracle_heuristic_and_ablations() -> None:
         for seed in VARIANTS19
     ]
     assert sum(run.success for run in naive) <= 1
+
+
+# --------------------------------------------------------------------------- MAP-23
+def test_map23_seeds_cover_all_four_entrances() -> None:
+    assert len(TRUTH_BY_SEED23) == 4
+    assert set(TRUTH_BY_SEED23.values()) == set(ENTRANCES23)
+    assert len({scenario_hash("MAP-23", seed) for seed in TRUTH_BY_SEED23}) == 4
+
+
+def test_map23_investigate_requires_a_purchased_clue() -> None:
+    environment = Map23V10Environment(seed=0)
+    target = ENTRANCES23[0]
+    environment.step(V8Action.model_validate({"tool": "move", "to": target}, strict=True))
+    refused = environment.step(
+        V8Action.model_validate({"tool": "investigate", "entrance": target}, strict=True)
+    )
+    assert refused.result == "CLUE_REQUIRED"
+    assert environment.unjustified == 1
+    environment.step(V8Action.model_validate({"tool": "move", "to": "A"}, strict=True))
+    environment.step(V8Action.model_validate({"tool": "move", "to": "N"}, strict=True))
+    environment.step(V8Action.model_validate({"tool": "scout"}, strict=True))
+    excluded = [entry for entry in ENTRANCES23 if entry not in environment.candidates()]
+    assert excluded
+    environment.step(
+        V8Action.model_validate({"tool": "mark", "choice": excluded[0]}, strict=True)
+    )
+    environment.step(V8Action.model_validate({"tool": "move", "to": "A"}, strict=True))
+    environment.step(V8Action.model_validate({"tool": "move", "to": excluded[0]}, strict=True))
+    blocked = environment.step(
+        V8Action.model_validate({"tool": "investigate", "entrance": excluded[0]}, strict=True)
+    )
+    assert blocked.result == "MARK_EXCLUDED_BY_CLUE"
+
+
+def test_map23_oracle_heuristic_and_ablations() -> None:
+    for seed in TRUTH_BY_SEED23:
+        oracle = run_actions("MAP-23", oracle23(seed), environment_seed=seed, name="oracle")
+        assert oracle.success and oracle.mechanism_triggered
+        assert oracle.metrics["map23.v10.clue_utilization"]["state"] == "VALID"
+        heuristic = run_policy("MAP-23", b23.HEURISTIC(), environment_seed=seed, decision_budget=38)
+        assert heuristic.success
+        assert heuristic.metrics["map23.v10.unjustified_investigations"]["value"] == 0
+    for name in ("no_scout", "ignore_counterevidence", "scout_everything"):
+        runs = [
+            run_policy("MAP-23", b23.ABLATIONS[name](), environment_seed=seed, decision_budget=38)
+            for seed in TRUTH_BY_SEED23
+        ]
+        assert sum(run.success for run in runs) == 0, name
+    single = [
+        run_policy(
+            "MAP-23", b23.ABLATIONS["single_clue"](), environment_seed=seed, decision_budget=38
+        )
+        for seed in TRUTH_BY_SEED23
+    ]
+    assert sum(run.success for run in single) <= 2
 
 
 # --------------------------------------------------------------------------- MAP-20

@@ -95,6 +95,15 @@ DECISIONS: dict[str, Decision] = {
         "Batch 4：产能与热量解耦、动态热点公开；区阀 C 30→35；"
         "static_allocation 0/4、no_bypass 0/4、bypass_overuse 0/4；Oracle bypass_used 10/10 tick",
     ),
+    "MAP-23": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；4 入口 4 真值；待 V10 指标独立复算与 MiMo 复测",
+        "DCR-V10-13",
+        "Batch 4：出手需要已购线索 + 相容 mark；4 入口 × 3 侦察站使线索价格与信息量错开；"
+        "no_scout 0/4（V9 为 12 决策成功）、ignore_counterevidence 0/4、"
+        "scout_everything 0/4、single_clue 2/4",
+    ),
     "MAP-28": Decision(
         "FORCED",
         "NEEDS_MORE_EVIDENCE",
