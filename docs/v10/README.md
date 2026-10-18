@@ -19,6 +19,14 @@
 | 8 | 有界 MiMo | 未开始 | | |
 | 9 | 最终报告 | 未开始 | | |
 
+## 下一会话续跑点
+
+- 已验收 Gate：Batch 0、1、2、3（Batch 4 进行中，仅 MAP-04 完成）。
+- 从 Batch 4 继续：**MAP-14 / MAP-19 / MAP-20 / MAP-22 / MAP-23 / MAP-24**。每图先写机制反例，再做最小变更；统一按已建立的模式落地 —— `v10/runtime/mapXX.py`（`V10Map` 子类、`SCENARIOS` 多实例、`METRIC_SPECS`、`oracle_actions`）→ `v10/baselines/mapXX.py`（`HEURISTIC` + `ABLATIONS`）→ `tests/test_v10_batch4.py` 追加 → `docs/v10/dcr/DCR-V10-XX.md` → `evidence_state.DECISIONS` → `agent_arena.v10.status` 重算。
+- 已知的逐图修复方向见 `decision-register.md` §2（MAP-14/19/20/22/23/24 行）。
+- 不要重复 V8/V9 的冻结文件；每批结束时必须跑 `freeze verify`、scoped ruff、`mypy src`、`pytest`。
+- Batch 8 之前必须先写 `docs/v10/mimo-preregistration.json` 并通过 ¥10 全局账本门禁；**本会话未发生任何付费调用**。
+
 ## 文件
 
 | 文件 | 内容 |
