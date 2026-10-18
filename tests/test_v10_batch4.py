@@ -11,6 +11,7 @@ import pytest
 from agent_arena.v10.baselines import map04 as b04
 from agent_arena.v10.baselines import map14 as b14
 from agent_arena.v10.baselines import map19 as b19
+from agent_arena.v10.baselines import map20 as b20
 from agent_arena.v10.baselines.runner import run_actions, run_policy
 from agent_arena.v10.runtime.catalog import scenario_hash
 from agent_arena.v10.runtime.map04 import (
@@ -25,6 +26,10 @@ from agent_arena.v10.runtime.map14 import oracle_actions as oracle14
 from agent_arena.v10.runtime.map19 import VARIANTS as VARIANTS19
 from agent_arena.v10.runtime.map19 import Map19V10Environment
 from agent_arena.v10.runtime.map19 import oracle_actions as oracle19
+from agent_arena.v10.runtime.map20 import DIRECT_MAX as DIRECT_MAX20
+from agent_arena.v10.runtime.map20 import VARIANTS as VARIANTS20
+from agent_arena.v10.runtime.map20 import Map20V10Environment
+from agent_arena.v10.runtime.map20 import oracle_actions as oracle20
 from agent_arena.worlds.scenario_v8.models import V8Action
 
 
@@ -182,6 +187,50 @@ def test_map19_oracle_heuristic_and_ablations() -> None:
         for seed in VARIANTS19
     ]
     assert sum(run.success for run in naive) <= 1
+
+
+# --------------------------------------------------------------------------- MAP-20
+def test_v8_map20_rule_file_matches_freeze_manifest() -> None:
+    manifest = json.loads(Path("docs/v10/freeze-manifest.json").read_text(encoding="utf-8"))
+    path = "src/agent_arena/worlds/scenario_v8/maps/map20.py"
+    files = manifest["roots"]["src/agent_arena/worlds/scenario_v8"]["files"]
+    assert sha256(Path(path).read_bytes()).hexdigest() == files[path]
+
+
+def test_map20_seeds_rotate_hot_zones_and_publish_heat_schedule() -> None:
+    assert len(VARIANTS20) == 4
+    assert len({scenario_hash("MAP-20", seed) for seed in VARIANTS20}) == 4
+    assert len({variant.hot_sequence for variant in VARIANTS20.values()}) == 4
+    observation = Map20V10Environment(seed=0).observe()
+    assert observation["heat_schedule"] == VARIANTS20[0].schedule
+    assert observation["production_base"] == {"A": 4, "B": 3, "C": 2}
+    assert max(max(values) for values in observation["heat_schedule"].values()) > 25
+
+
+def test_map20_hot_zone_exceeds_direct_capacity() -> None:
+    environment = Map20V10Environment(seed=1)
+    hot = VARIANTS20[1].hot_sequence[0]
+    assert environment.heat(hot) > DIRECT_MAX20
+    result = environment.step(
+        V8Action.model_validate({"tool": "wait"}, strict=True)
+    )
+    assert result.result != "THERMAL_OVERHEAT"
+
+
+def test_map20_oracle_heuristic_and_ablations() -> None:
+    for seed in VARIANTS20:
+        oracle = run_actions("MAP-20", oracle20(seed), environment_seed=seed, name="oracle")
+        assert oracle.success and oracle.mechanism_triggered
+        assert oracle.metrics["map20.v10.production_credit"]["value"] == 1.0
+        assert oracle.metrics["map20.v10.bypass_used_ticks"]["value"] > 0
+        heuristic = run_policy("MAP-20", b20.HEURISTIC(), environment_seed=seed, decision_budget=56)
+        assert heuristic.success
+    for name, factory in b20.ABLATIONS.items():
+        runs = [
+            run_policy("MAP-20", factory(), environment_seed=seed, decision_budget=56)
+            for seed in VARIANTS20
+        ]
+        assert sum(run.success for run in runs) == 0, name
 
 
 # --------------------------------------------------------------------------- MAP-14

@@ -266,18 +266,18 @@
   "validity_status": "NEEDS_MORE_EVIDENCE"
  },
  "MAP-20": {
-  "ablation": "V9 seed0",
-  "baseline": "V9 seed0",
-  "construct_status": "OPTIONAL",
-  "dcr_id": "",
-  "decision": "Batch 0 继承 V9，待 V10 证据",
-  "defect": "旁路被直供支配",
-  "environment_seeds": "0（V8/V9 仅 seed0；见 baseline-audit §5）",
+  "ablation": "bypass_overuse 0/4；no_bypass 0/4；static_allocation 0/4；zero_flow 0/4",
+  "baseline": "启发式 4/4；随机 0/80",
+  "construct_status": "FORCED",
+  "dcr_id": "DCR-V10-11",
+  "decision": "Batch 4：产能与热量解耦、动态热点公开；区阀 C 30→35；static_allocation 0/4、no_bypass 0/4、bypass_overuse 0/4；Oracle bypass_used 10/10 tick",
+  "defect": "离线门禁通过；4 实例；待 V10 指标独立复算与 MiMo 复测",
+  "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V8 3 rep / V9 pilot",
-  "oracle": "V9 seed0",
+  "mimo": "V10 未运行",
+  "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
-  "validity_status": "NEEDS_REDESIGN"
+  "validity_status": "NEEDS_MORE_EVIDENCE"
  },
  "MAP-21": {
   "ablation": "always_collect 7/10；always_evac 10/10；measure_then_evac 10/10",

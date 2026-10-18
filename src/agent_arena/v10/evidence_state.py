@@ -87,6 +87,14 @@ DECISIONS: dict[str, Decision] = {
         "Batch 4：预测成为产能的必要条件；精确温度与误差反馈公开；"
         "no_forecast 0/4、fixed_vector_no_lag 0/4、naive_forecast 1/4（容差 2 对照实例）",
     ),
+    "MAP-20": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；4 实例；待 V10 指标独立复算与 MiMo 复测",
+        "DCR-V10-11",
+        "Batch 4：产能与热量解耦、动态热点公开；区阀 C 30→35；"
+        "static_allocation 0/4、no_bypass 0/4、bypass_overuse 0/4；Oracle bypass_used 10/10 tick",
+    ),
     "MAP-28": Decision(
         "FORCED",
         "NEEDS_MORE_EVIDENCE",
