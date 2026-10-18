@@ -1,4 +1,4 @@
-"""Batch 5：MAP-13（DCR-V10-15）。"""
+"""Batch 5：MAP-08（DCR-V10-16）与 MAP-13（DCR-V10-15）。"""
 
 from __future__ import annotations
 
@@ -8,13 +8,66 @@ from pathlib import Path
 
 import pytest
 
+from agent_arena.v10.baselines import map08 as b08
 from agent_arena.v10.baselines import map13 as b13
 from agent_arena.v10.baselines.runner import run_actions, run_policy
 from agent_arena.v10.runtime.catalog import scenario_hash
+from agent_arena.v10.runtime.map08 import SITES as SITES08
+from agent_arena.v10.runtime.map08 import VARIANTS as VARIANTS08
+from agent_arena.v10.runtime.map08 import Map08V10Environment
+from agent_arena.v10.runtime.map08 import oracle_actions as oracle08
 from agent_arena.v10.runtime.map13 import SLOTS, VARIANTS, Map13V10Environment, oracle_actions
 from agent_arena.worlds.scenario_v8.models import V8Action
 
 
+# --------------------------------------------------------------------------- MAP-08
+def test_map08_seeds_differ_in_partitions_and_min_tests() -> None:
+    assert len(VARIANTS08) == 4
+    assert len({scenario_hash("MAP-08", seed) for seed in VARIANTS08}) == 4
+    assert len({variant.leak for variant in VARIANTS08.values()}) >= 3
+    assert len({variant.minimum_tests() for variant in VARIANTS08.values()}) >= 2
+    observation = Map08V10Environment(seed=0).observe()
+    assert sorted(observation["candidate_sites"]) == sorted(SITES08)
+    assert observation["test_partitions"]
+
+
+def test_map08_seal_requires_unique_candidate_and_repair_requires_seal() -> None:
+    environment = Map08V10Environment(seed=0)
+    refused = environment.step(
+        V8Action.model_validate({"tool": "seal_diagnosis", "diagnosis_code": "S1"}, strict=True)
+    )
+    assert refused.result == "DIAGNOSIS_INCOMPLETE"
+    blocked = environment.step(
+        V8Action.model_validate({"tool": "repair", "target_id": "S1"}, strict=True)
+    )
+    assert blocked.result == "DIAGNOSIS_REQUIRED"
+    assert environment.unjustified == 1
+
+
+def test_map08_oracle_and_ablations() -> None:
+    for seed in VARIANTS08:
+        oracle = run_actions("MAP-08", oracle08(seed), environment_seed=seed, name="oracle")
+        assert oracle.success and oracle.mechanism_triggered
+        assert oracle.metrics["map08.v10.hypothesis_reduction"]["value"] == 1.0
+        heuristic = run_policy("MAP-08", b08.HEURISTIC(), environment_seed=seed, decision_budget=20)
+        assert heuristic.success
+        assert heuristic.metrics["map08.v10.hypothesis_reduction"]["value"] == 1.0
+    for name in ("no_hypothesis", "blind_repairs"):
+        runs = [
+            run_policy("MAP-08", b08.ABLATIONS[name](), environment_seed=seed, decision_budget=20)
+            for seed in VARIANTS08
+        ]
+        assert sum(run.success for run in runs) == 0, name
+    single = [
+        run_policy(
+            "MAP-08", b08.ABLATIONS["single_test"](), environment_seed=seed, decision_budget=20
+        )
+        for seed in VARIANTS08
+    ]
+    assert sum(run.success for run in single) <= 1
+
+
+# --------------------------------------------------------------------------- MAP-13
 def _step(environment: Map13V10Environment, payload: dict[str, object]) -> str:
     return environment.step(V8Action.model_validate(payload, strict=True)).result
 
