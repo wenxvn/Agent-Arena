@@ -8,12 +8,16 @@ from pathlib import Path
 
 import pytest
 
+from agent_arena.v10.baselines import map07 as b07
 from agent_arena.v10.baselines import map08 as b08
 from agent_arena.v10.baselines import map11 as b11
 from agent_arena.v10.baselines import map13 as b13
 from agent_arena.v10.baselines import map26 as b26
 from agent_arena.v10.baselines.runner import run_actions, run_policy
 from agent_arena.v10.runtime.catalog import scenario_hash
+from agent_arena.v10.runtime.map07 import VARIANTS as VARIANTS07
+from agent_arena.v10.runtime.map07 import Map07V10Environment
+from agent_arena.v10.runtime.map07 import oracle_actions as oracle07
 from agent_arena.v10.runtime.map08 import SITES as SITES08
 from agent_arena.v10.runtime.map08 import VARIANTS as VARIANTS08
 from agent_arena.v10.runtime.map08 import Map08V10Environment
@@ -26,6 +30,40 @@ from agent_arena.v10.runtime.map26 import VARIANTS as VARIANTS26
 from agent_arena.v10.runtime.map26 import Map26V10Environment
 from agent_arena.v10.runtime.map26 import oracle_actions as oracle26
 from agent_arena.worlds.scenario_v8.models import V8Action
+
+
+# --------------------------------------------------------------------------- MAP-07
+def test_map07_direction_hidden_and_fixed_script_only_half() -> None:
+    assert len(VARIANTS07) == 4
+    assert len({scenario_hash("MAP-07", seed) for seed in VARIANTS07}) == 4
+    assert len({variant.open_direction for variant in VARIANTS07.values()}) == 2
+    environment = Map07V10Environment(seed=0)
+    text = json.dumps(environment.observe(), ensure_ascii=False)
+    assert "open_direction" not in text
+    runs = [
+        run_policy(
+            "MAP-07",
+            b07.ABLATIONS["fixed_clockwise"](),
+            environment_seed=seed,
+            decision_budget=30,
+        )
+        for seed in VARIANTS07
+    ]
+    assert sum(run.success for run in runs) <= 2
+
+
+def test_map07_oracle_heuristic_and_ablations() -> None:
+    for seed in VARIANTS07:
+        oracle = run_actions("MAP-07", oracle07(seed), environment_seed=seed, name="oracle")
+        assert oracle.success and oracle.mechanism_triggered
+        heuristic = run_policy("MAP-07", b07.HEURISTIC(), environment_seed=seed, decision_budget=30)
+        assert heuristic.success
+    for name in ("never_open", "late_open"):
+        runs = [
+            run_policy("MAP-07", b07.ABLATIONS[name](), environment_seed=seed, decision_budget=30)
+            for seed in VARIANTS07
+        ]
+        assert sum(run.success for run in runs) == 0, name
 
 
 # --------------------------------------------------------------------------- MAP-11

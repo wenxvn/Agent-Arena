@@ -12,7 +12,7 @@
 | MAP-04 | 灯塔简单 | 潮汐相位预测 + 回程时机 | BYPASS/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 6（0,1,2,3,4,5） | 6/6（机制触发 6/6） | 启发式 6/6；随机 0/120 | blind_retry 1/6；detour_only 6/6；excess_wait 0/6；fixed_phase_script 0/6 | V10 未运行 | DCR-V10-08 | Batch 4：盲撞计 3 tick 代价；绕行保留但余量恒 ≤ Oracle；blind_retry 1/6（仅开局安全相位的对照实例），excess_wait/fixed_phase_script 0/6 |
 | MAP-05 | 灯塔中等 | 三窗口共享供电排程 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-02 | Batch 0 继承 V9，待 V10 证据 |
 | MAP-06 | 灯塔困难 | 80% 条件预报 + 风险预算 | BYPASS/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 10（0,1,2,3,4,5,6,7,8,9） | 10/10（机制触发 9/10） | 启发式 9/10；随机 0/200 | always_direct 5/10；always_reinforce 9/10；forecast_always 8/10 | V10 未运行 | DCR-V10-03 | Batch 2：10-seed 分层天气 cohort；短风暴计入风险；截止随 seed 公开；always_direct 5/10（长风暴全死），启发式 9/10 且效用均值 0.4228 > 三条固定策略 |
-| MAP-07 | 深海简单 | 阀门方向与水位预判 | BLOCKED/NEEDS_MORE_EVIDENCE | BLOCKED | NEEDS_MORE_EVIDENCE | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-14 | Batch 0 继承 V9，待 V10 证据 |
+| MAP-07 | 深海简单 | 阀门方向与水位预判 | BLOCKED/NEEDS_MORE_EVIDENCE | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | fixed_clockwise 2/4；late_open 0/4；never_open 0/4；turn_both 2/4 | V10 未运行 | DCR-V10-19 | Batch 5：面板只公开因果不公开开向、拧错进水 +1、水位预测进入成败；fixed_clockwise 2/4（固定脚本假设被证伪）、never_open/late_open 0/4 |
 | MAP-08 | 深海中等 | 主动测试缩小漏点假设集 | BYPASS/NEEDS_MORE_EVIDENCE | FORCED | NEEDS_MORE_EVIDENCE | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | blind_repairs 0/4；no_hypothesis 0/4；over_testing 4/4；single_test 1/4 | V10 未运行 | DCR-V10-16 | Batch 5：封存诊断成为修复前提、测试必须缩小假设集；no_hypothesis 0/4（V9 旁路）、blind_repairs 0/4、single_test 1/4；over_testing 4/4 但 tests_used 3（合法但更慢） |
 | MAP-09 | 深海困难 | 漏水-电力-供氧-通信连锁 | BLOCKED/NEEDS_MORE_EVIDENCE | BLOCKED | NEEDS_MORE_EVIDENCE | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-03 | Batch 0 继承 V9，待 V10 证据 |
 | MAP-10 | 极地简单 | 双仓燃料运输与时间成本 | BLOCKED/NEEDS_MORE_EVIDENCE | BLOCKED | NEEDS_MORE_EVIDENCE | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-04 | Batch 0 继承 V9，待 V10 证据 |
@@ -45,7 +45,7 @@
 | 效度 | NEEDS_MORE_EVIDENCE | 23 | 03、04、06、07、08、09、10、11、12、13、14、15、18、19、20、21、22、23、24、26、28、29、30 |
 | 效度 | NEEDS_REDESIGN | 0 |  |
 | 效度 | BLOCKED | 0 |  |
-| 构念 | FORCED | 25 | 01、02、03、04、05、06、08、11、13、14、15、16、17、18、19、20、21、22、23、24、25、27、28、29、30 |
+| 构念 | FORCED | 26 | 01、02、03、04、05、06、07、08、11、13、14、15、16、17、18、19、20、21、22、23、24、25、27、28、29、30 |
 | 构念 | OPTIONAL | 1 | 26 |
 | 构念 | BYPASS | 0 |  |
-| 构念 | BLOCKED | 4 | 07、09、10、12 |
+| 构念 | BLOCKED | 3 | 09、10、12 |

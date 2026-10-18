@@ -26,6 +26,7 @@ LEVEL_OF = v8_catalog.LEVEL_OF
 #: 已有 V10 运行时的地图 -> (模块, 类名)。后续 Batch 追加。
 V10_MAPS: dict[str, tuple[str, str]] = {
     "MAP-04": ("agent_arena.v10.runtime.map04", "Map04V10Environment"),
+    "MAP-07": ("agent_arena.v10.runtime.map07", "Map07V10Environment"),
     "MAP-03": ("agent_arena.v10.runtime.map03", "Map03V10Environment"),
     "MAP-06": ("agent_arena.v10.runtime.map06", "Map06V10Environment"),
     "MAP-08": ("agent_arena.v10.runtime.map08", "Map08V10Environment"),
