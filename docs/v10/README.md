@@ -14,16 +14,16 @@
 | 3 | 古堡 MAP-28 / 29 / 30：DCR-V10-06/07，4/4/3 案卷 | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE`（待指标复算与 MiMo） | 见 git log `feat(v10): batch 3` | ¥0 |
 | 4 | 其余 NEEDS_REDESIGN：MAP-04（V10-08）、MAP-14（09）、MAP-19（10）、MAP-20（11）、MAP-22（12）、MAP-23（13）、MAP-24（14）——**全部完成** | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE` | 见 git log `feat(v10): batch 4` | ¥0 |
 | 5 | NEEDS_MORE_EVIDENCE 与 VALIDATED 复核：8 张接口/证据图（07/08/09/10/11/12/13/26）+ 7 张 VALIDATED 防回归审计（`validated-regression.md`） | ✅ 完成；**7 张 VALIDATED 记录 3-seed 缺口** | 见 git log `feat(v10): batch 5` | ¥0 |
-| 6 | 指标治理 | 未开始 | | |
+| 6 | 指标治理：154 枚举 + 128 项 V10 规格 + 20 项缺陷结论 + 五态核对 | ✅ 完成 | 见 git log `feat(v10): batch 6` | ¥0 |
 | 7 | 多 seed 定标 | 未开始 | | |
 | 8 | 有界 MiMo | 未开始 | | |
 | 9 | 最终报告 | 未开始 | | |
 
 ## 下一会话续跑点
 
-- 已验收 Gate：Batch 0、1、2、3、4、5。
-- 从 **Batch 6** 继续：154 指标枚举与 V9 的 13 项缺陷逐条版本化（metric_schema v10）、五态优先级、独立复算与 fixture、30 图主指标。
-- 之后：Batch 7（多 seed 难度定标）、Batch 8（有界 MiMo，需先写 `mimo-preregistration.json` 与全局账本门禁）、Batch 9（`final-report.md`）。
+- 已验收 Gate：Batch 0–6。
+- 从 **Batch 7** 继续：30 图 × 3 seed 的难度定标（必要推理深度、状态规模、不可逆风险、信息不确定性、最优操作下界、失败代价、预算余量、策略基线表现），区分“设计难度”与“经验难度”；复用 `agent_arena.v10.baselines.suite` 与状态矩阵。
+- 之后：Batch 8（有界 MiMo，需先写 `mimo-preregistration.json` 与全局账本门禁）、Batch 9（`final-report.md` + 30 张逐图审计卡）。
 - 已知缺口（必须在最终报告披露）：7 张 VALIDATED 图（01/02/05/16/17/25/27）的 V8 实例对 seed 不敏感，3-seed 未达标；见 `validated-regression.md`。
 - 已完成的 Batch 4 图：MAP-04（DCR-V10-08）、MAP-14（09）、MAP-19（10）、MAP-20（11）、MAP-22（12）、MAP-23（13）、MAP-24（14）。
 - 已知的逐图修复方向见 `decision-register.md` §2（MAP-14/19/20/22/23/24 行）。
