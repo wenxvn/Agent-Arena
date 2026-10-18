@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 from agent_arena.v10.baselines import map04 as b04
+from agent_arena.v10.baselines import map14 as b14
 from agent_arena.v10.baselines.runner import run_actions, run_policy
 from agent_arena.v10.runtime.catalog import scenario_hash
 from agent_arena.v10.runtime.map04 import (
@@ -17,6 +18,9 @@ from agent_arena.v10.runtime.map04 import (
     Map04V10Environment,
     oracle_actions,
 )
+from agent_arena.v10.runtime.map14 import VARIANTS as VARIANTS14
+from agent_arena.v10.runtime.map14 import Map14V10Environment
+from agent_arena.v10.runtime.map14 import oracle_actions as oracle14
 from agent_arena.worlds.scenario_v8.models import V8Action
 
 
@@ -110,3 +114,91 @@ def test_map04_other_ablations_fail(name: str) -> None:
         for seed in VARIANTS
     ]
     assert sum(run.success for run in runs) == 0
+
+
+# --------------------------------------------------------------------------- MAP-14
+def test_v8_map14_rule_file_matches_freeze_manifest() -> None:
+    manifest = json.loads(Path("docs/v10/freeze-manifest.json").read_text(encoding="utf-8"))
+    path = "src/agent_arena/worlds/scenario_v8/maps/map14.py"
+    files = manifest["roots"]["src/agent_arena/worlds/scenario_v8"]["files"]
+    assert sha256(Path(path).read_bytes()).hexdigest() == files[path]
+
+
+def test_map14_seeds_differ_in_shape_not_only_names() -> None:
+    assert len(VARIANTS14) == 6
+    assert len({scenario_hash("MAP-14", seed) for seed in VARIANTS14}) == 6
+    assert len({len(variant.configurations) for variant in VARIANTS14.values()}) >= 2
+    partitions = {
+        tuple(sorted(tuple(sorted(subset)) for _, subset in variant.claims.values()))
+        for variant in VARIANTS14.values()
+    }
+    assert len(partitions) >= 4
+
+
+def test_map14_rule_is_published_and_truth_is_not() -> None:
+    environment = Map14V10Environment(seed=0)
+    observation = environment.observe()
+    assert "恰一名祭司" in str(observation["truth_rule"])
+    assert any("恰有一人" in rule or "恰一名" in rule for rule in environment.public_rules())
+    text = json.dumps(observation, ensure_ascii=False)
+    assert "truth_seal" not in text
+    assert "truthful_priest" not in text
+    assert "minimum_queries" not in text
+
+
+def test_map14_blind_submission_cannot_open_the_gate() -> None:
+    environment = Map14V10Environment(seed=0)
+    moves = [
+        {"tool": "move", "edge_id": "P_A"},
+        {"tool": "move", "edge_id": "A_O"},
+        {"tool": "move", "edge_id": "O_J"},
+    ]
+    for payload in moves:
+        environment.step(V8Action.model_validate(payload, strict=True))
+    result = environment.step(
+        V8Action.model_validate(
+            {"tool": "submit_configuration", "choice": VARIANTS14[0].truth_configuration},
+            strict=True,
+        )
+    )
+    assert result.result == "NO_CONSISTENT_HYPOTHESIS"
+    assert not environment.gate_open
+
+
+def test_map14_oracle_heuristic_and_ablations() -> None:
+    for seed in VARIANTS14:
+        oracle = run_actions("MAP-14", oracle14(seed), environment_seed=seed)
+        assert oracle.success and oracle.mechanism_triggered
+        assert oracle.metrics["map14.v10.deduction_success"]["value"] == 1
+        heuristic = run_policy("MAP-14", b14.HEURISTIC(), environment_seed=seed, decision_budget=38)
+        assert heuristic.success
+    for name in ("blind_two_submissions", "no_seal"):
+        runs = [
+            run_policy("MAP-14", b14.ABLATIONS[name](), environment_seed=seed, decision_budget=38)
+            for seed in VARIANTS14
+        ]
+        assert sum(run.success for run in runs) == 0, name
+    runs = [
+        run_policy(
+            "MAP-14",
+            b14.ABLATIONS["one_question"](),
+            environment_seed=seed,
+            decision_budget=38,
+        )
+        for seed in VARIANTS14
+    ]
+    assert sum(run.success for run in runs) <= 2
+
+
+def test_map14_waste_questions_opens_gate_but_scores_zero() -> None:
+    runs = [
+        run_policy(
+            "MAP-14",
+            b14.ABLATIONS["waste_questions"](),
+            environment_seed=seed,
+            decision_budget=38,
+        )
+        for seed in VARIANTS14
+    ]
+    assert all(run.metrics["map14.v10.queries_used"]["value"] >= 3 for run in runs)
+    assert sum(run.metrics["map14.v10.deduction_success"]["value"] for run in runs) < len(runs)

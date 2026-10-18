@@ -19,7 +19,7 @@
 | MAP-11 | 极地中等 | 风暴/噪声下的搜索与生命窗 | BYPASS/NEEDS_MORE_EVIDENCE | BYPASS | NEEDS_MORE_EVIDENCE | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-05 | Batch 0 继承 V9，待 V10 证据 |
 | MAP-12 | 极地困难 | 30 天跨期库存与劳动槽 | BLOCKED/NEEDS_MORE_EVIDENCE | BLOCKED | NEEDS_MORE_EVIDENCE | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-06 | Batch 0 继承 V9，待 V10 证据 |
 | MAP-13 | 金字塔简单 | 约束满足 + 唯一序列 | OPTIONAL/NEEDS_MORE_EVIDENCE | OPTIONAL | NEEDS_MORE_EVIDENCE | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
-| MAP-14 | 金字塔中等 | 真假证词推理 | BYPASS/NEEDS_REDESIGN | BYPASS | NEEDS_REDESIGN | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
+| MAP-14 | 金字塔中等 | 真假证词推理 | BYPASS/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 6（0,1,2,3,4,5） | 6/6（机制触发 6/6） | 启发式 6/6；随机 0/120 | blind_two_submissions 0/6；no_seal 0/6；one_question 2/6；waste_questions 6/6 | V10 未运行 | DCR-V10-09 | Batch 4：公开推理规则；开门需要相容封存假设；6 实例；blind_two_submissions 0/6（V9 为 2/3 开门）、no_seal 0/6、one_question 2/6 |
 | MAP-15 | 金字塔困难 | 从训练样例归纳变化规则 | BYPASS/NEEDS_REDESIGN | FORCED | NEEDS_MORE_EVIDENCE | 10（0,1,2,3,4,5,6,7,8,9） | 10/10（机制触发 10/10） | 启发式 10/10；随机 0/200 | fixed_route 1/10；no_probe 0/10；no_transfer 0/10；random_rule 0/10 | V10 未运行 | DCR-V10-04 | Batch 2：删除 goal 泄露；6 规律家族；训练/测试墙色分离；record_rule 提交假设；消除相位自愈；四消融均 ≤1/10，启发式 10/10 |
 | MAP-16 | 地铁简单 | 会车/侧线/死锁 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot | DCR-07 | Batch 0 继承 V9，待 V10 证据 |
 | MAP-17 | 地铁中等 | 瓶颈下的四车多目标排程 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V8 3 rep / V9 pilot |  | Batch 0 继承 V9，待 V10 证据 |
@@ -42,10 +42,10 @@
 | 维度 | 状态 | 图数 | 地图 |
 |---|---|---:|---|
 | 效度 | VALIDATED | 7 | 01、02、05、16、17、25、27 |
-| 效度 | NEEDS_MORE_EVIDENCE | 17 | 03、04、06、07、08、09、10、11、12、13、15、18、21、26、28、29、30 |
-| 效度 | NEEDS_REDESIGN | 6 | 14、19、20、22、23、24 |
+| 效度 | NEEDS_MORE_EVIDENCE | 18 | 03、04、06、07、08、09、10、11、12、13、14、15、18、21、26、28、29、30 |
+| 效度 | NEEDS_REDESIGN | 5 | 19、20、22、23、24 |
 | 效度 | BLOCKED | 0 |  |
-| 构念 | FORCED | 16 | 01、02、03、04、05、06、15、16、17、18、21、25、27、28、29、30 |
+| 构念 | FORCED | 17 | 01、02、03、04、05、06、14、15、16、17、18、21、25、27、28、29、30 |
 | 构念 | OPTIONAL | 5 | 13、19、20、23、26 |
-| 构念 | BYPASS | 5 | 08、11、14、22、24 |
+| 构念 | BYPASS | 4 | 08、11、22、24 |
 | 构念 | BLOCKED | 4 | 07、09、10、12 |

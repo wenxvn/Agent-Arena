@@ -182,18 +182,18 @@
   "validity_status": "NEEDS_MORE_EVIDENCE"
  },
  "MAP-14": {
-  "ablation": "V9 seed0",
-  "baseline": "V9 seed0",
-  "construct_status": "BYPASS",
-  "dcr_id": "",
-  "decision": "Batch 0 继承 V9，待 V10 证据",
-  "defect": "盲交 2/3 通关",
-  "environment_seeds": "0（V8/V9 仅 seed0；见 baseline-audit §5）",
+  "ablation": "blind_two_submissions 0/6；no_seal 0/6；one_question 2/6；waste_questions 6/6",
+  "baseline": "启发式 6/6；随机 0/120",
+  "construct_status": "FORCED",
+  "dcr_id": "DCR-V10-09",
+  "decision": "Batch 4：公开推理规则；开门需要相容封存假设；6 实例；blind_two_submissions 0/6（V9 为 2/3 开门）、no_seal 0/6、one_question 2/6",
+  "defect": "离线门禁通过；6 实例；待 V10 指标独立复算与 MiMo 复测",
+  "environment_seeds": "6（0,1,2,3,4,5）",
   "extra": {},
-  "mimo": "V8 3 rep / V9 pilot",
-  "oracle": "V9 seed0",
+  "mimo": "V10 未运行",
+  "oracle": "6/6（机制触发 6/6）",
   "review": "agent_reviewed",
-  "validity_status": "NEEDS_REDESIGN"
+  "validity_status": "NEEDS_MORE_EVIDENCE"
  },
  "MAP-15": {
   "ablation": "fixed_route 1/10；no_probe 0/10；no_transfer 0/10；random_rule 0/10",
