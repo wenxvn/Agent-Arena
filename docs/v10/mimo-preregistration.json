@@ -1,0 +1,55 @@
+{
+  "schema": "v10-mimo-preregistration-1",
+  "status": "declared_not_executed",
+  "note": "本文件在 V10 中只做预登记，未发起任何付费调用；累计结算 CNY 0。",
+  "budget": {
+    "global_cap_cny": 10.0,
+    "settled_cny": 0.0,
+    "reserved_cny": 0.0,
+    "ledger_root": "runs/v10/mimo",
+    "shared_across_all_ledgers": true,
+    "on_unknown_provider_spend": "seal_ledger_and_stop_paid_calls",
+    "on_repeated_5xx_or_rate_limit": "pause_paid_calls_keep_ledger"
+  },
+  "model": {
+    "provider": "openai_compatible_relay",
+    "model_id_from_env": "OPENAI_MODEL",
+    "endpoint_from_env": "OPENAI_BASE_URL",
+    "temperature": 0.2,
+    "max_tokens": 512,
+    "decision_budget_source": "agent_arena.v10.baselines.suite.decision_budget",
+    "timeout_seconds": 60,
+    "api_seed_supported": false,
+    "note": "若 provider 不支持生成 seed，报告中只写环境 seed 与 replicate，不写“模型随机种子”。"
+  },
+  "prompt": {
+    "template": "public_rules() + observation + last 5 actions",
+    "history_window": 5,
+    "contains_hidden_truth": false,
+    "frozen_until": "first paid call"
+  },
+  "matrix": {
+    "p0_maps": ["MAP-03", "MAP-06", "MAP-15", "MAP-18", "MAP-21"],
+    "castle_maps": ["MAP-28", "MAP-29", "MAP-30"],
+    "interface_maps": ["MAP-07", "MAP-08", "MAP-09", "MAP-10", "MAP-11", "MAP-12", "MAP-26"],
+    "environment_seeds_per_map": [0, 1, 2],
+    "replicates": 1,
+    "target_episodes_upper_bound": 90,
+    "priority": ["p0_maps", "castle_maps", "interface_maps", "remaining_by_stratified_sample"]
+  },
+  "stop_rules": [
+    "达到全局 CNY 10 上限（含预留）立即停止",
+    "出现 UNKNOWN_PROVIDER_SPEND 立即封账并停止自动调用",
+    "同图连续 3 次 5xx / 限流暂停该批",
+    "不因失败而重试；补跑必须新 run_id 并记录原因"
+  ],
+  "per_episode_fields": [
+    "run_id", "map_id", "world", "difficulty", "environment_seed", "replicate",
+    "model_id", "model_version", "temperature", "scenario_hash", "rule_hash",
+    "prompt_hash", "metric_schema_hash", "code_commit", "termination", "success",
+    "decision_count", "mechanism_triggered", "primary_metric_state",
+    "primary_metric_value", "token_input", "token_output", "cost_settled",
+    "cost_unknown", "trace_path", "judge_path"
+  ],
+  "manifest_hash_note": "首个付费调用前，用 agent_arena.v10.metrics.governance.schema_hash() 与 run 的 scenario_hash 一起计算 manifest hash 并写回本文件。"
+}

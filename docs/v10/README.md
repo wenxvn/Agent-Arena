@@ -16,8 +16,8 @@
 | 5 | NEEDS_MORE_EVIDENCE 与 VALIDATED 复核：8 张接口/证据图（07/08/09/10/11/12/13/26）+ 7 张 VALIDATED 防回归审计（`validated-regression.md`） | ✅ 完成；**7 张 VALIDATED 记录 3-seed 缺口** | 见 git log `feat(v10): batch 5` | ¥0 |
 | 6 | 指标治理：154 枚举 + 128 项 V10 规格 + 20 项缺陷结论 + 五态核对 | ✅ 完成 | 见 git log `feat(v10): batch 6` | ¥0 |
 | 7 | 多 seed 难度定标：`difficulty.py` + `difficulty-calibration.md`（10 世界 × 23 图） | ✅ 完成 | 见 git log `feat(v10): batch 7` | ¥0 |
-| 8 | 有界 MiMo | 未开始（未发生付费调用） | | ¥0 |
-| 9 | 最终报告 | 未开始 | | |
+| 8 | 有界 MiMo | ⏸ 预登记已写（`mimo-preregistration.json`），**未执行** | — | ¥0 |
+| 9 | 最终报告：`final-report.md`（8 问 + 剩余风险 + V11 建议） | ✅ 报告已写；30 张逐图审计卡未建 | 见 git log `feat(v10): batch 9` | ¥0 |
 
 ## 下一会话续跑点
 
