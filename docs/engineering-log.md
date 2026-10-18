@@ -1384,3 +1384,21 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 下一步：先处理 MAP-18 horizon、MAP-03 记忆通道、MAP-06 cohort、MAP-15 goal、MAP-21 判据；再对 07/08/09/10/11/12/26 做多 seed 复核；把 9 条 overlay 指标提升为 V10 正式指标。
 
 关联提交：本次提交。
+
+## 2026-10-19 V10 Batch 8/9 有界 MiMo 复测、8 Gate 验收与 30 张逐图审计卡
+
+事件：按用户授权完成 V10 剩余批次——Batch 8（有界 MiMo 复测）与 Batch 9（最终验收）。V8/V9 全部文件只读，`freeze verify` 每次 9/9 `unchanged`。
+
+原因：Batch 0–7 只完成离线 Gate；30 张 V10 原生图缺真实模型证据，30 张逐图审计卡与成本账本审计也缺失，无法回答“MiMo 的失败来自策略、接口、预算、资源还是随机场景”。
+
+改动：新增 `src/agent_arena/v10/ledger.py`（V10 独立 append-only 账本，登记输入上限 16384、`prior_spend` 全局共享、未知消费立即封账）、`contract.py`（按 `V8Action` 注解渲染公开动作契约类型）、`validation.py`（8 项 Gate 机器判定）、`map_cards.py` / `mimo_report.py` / `construct_validity.py` / `independent_check.py`，重写 `scripts/run_v10_mimo.py`（幂等续跑、逐局 trace/judge/manifest），新增 `tests/test_v10_batch8*.py`、`tests/test_v10_batch9*.py`，新增 `docs/v10/` 下 30 张 `maps/MAP-XX.md`、`validation-gates.md`、`mimo-results.md`、`cost-ledger-audit.md`、`baseline-results.md`、`construct-validity.md`、`design-principles.md`、`independent-metric-check.md`、`DCR-V10-23/24` 与重写的 `final-report.md`、`README.md`。
+
+结果：MiMo 23 张原生图 × 3 环境 seed，82 局记录（77 有效 + 5 中断保留），成功 36/77；结算 CNY `1.74110332` + 未知预留 `0.11468800` = `1.85579132`（上限 ¥10，剩余 `8.14420868`），1886 次请求预留，11 个账本一个未删未改。发现并修复**一类系统性接口假象**：契约只列字段名不列类型，模型把 `operations`/`claims`/`forecast_next`/`set_flow_tenths` 写成错误形状被判非法动作（DCR-V10-24）；修复后 MAP-18 非法动作 20/20→0、MAP-28 seed0 由“从未提交”变为成功、MAP-19 非法 121/180→0。指标独立复核 23 图 × 116 seed 实例：状态-取值违规 4→0（DCR-V10-23 修复 MAP-12 `research_completion` 取值域）、回放确定性 23/23、seed 互异 23/23。30 图状态：**29 VALIDATED**（22 张原生图 8 Gate 全过 + 7 张 V8 回退图沿用 V9 并记 3-seed 缺口）、**1 NEEDS_MORE_EVIDENCE（MAP-20）**、0 NEEDS_REDESIGN、0 BLOCKED；构念 FORCED 28 / OPTIONAL 2（MAP-04 依证据改判）/ BYPASS 0 / BLOCKED 0。
+
+验证：`pytest` 1070 passed；`mypy src` 236 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged；真实数字全部由 `runs/v10/` 复算（`mimo_report`、`validation`、`difficulty`、`status`、`map_cards`）。
+
+边界：MiMo 单模型、单 replicate、3 环境 seed，只作描述，不作显著性断言与跨模型排名；Batch 8 的 `metric_schema_hash` 为 `b3fc3317…`（DCR-V10-23 之前），逐局 manifest 已固化，不得与新值混算；MAP-20 的接口结构只由 runner 提示补全、未写进地图 `public_rules()`，阶段 3b 补跑因 provider 退化未完成，维持 `NEEDS_MORE_EVIDENCE`；全部结论为 `agent_reviewed`，无 `human_approved`。
+
+下一步（V11）：先修 MAP-20 的公开接口并补 3 seed MiMo；把 7 张 V8 回退图参数化为 V10 原生运行时；补比值类主指标的公式级独立复算；对 MAP-14/19/22/29 的“未触发机制”做 trace 级归因；再评估古堡三图决策预算。
+
+关联提交：`ed063de`（分支 `v10-validity`，已推送）。
