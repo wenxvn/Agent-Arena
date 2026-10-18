@@ -322,18 +322,18 @@
   "validity_status": "NEEDS_MORE_EVIDENCE"
  },
  "MAP-24": {
-  "ablation": "V9 seed0",
-  "baseline": "V9 seed0",
-  "construct_status": "BYPASS",
-  "dcr_id": "",
-  "decision": "Batch 0 继承 V9，待 V10 证据",
-  "defect": "成功轨迹未改路；replanning_latency 反向",
-  "environment_seeds": "0（V8/V9 仅 seed0；见 baseline-audit §5）",
+  "ablation": "mountain_only 4/4；no_replan 0/4；waste_opening 2/4",
+  "baseline": "启发式 4/4；随机 0/80",
+  "construct_status": "FORCED",
+  "dcr_id": "DCR-V10-14",
+  "decision": "Batch 4：山路拉长、封路时刻隐藏且不瞬杀、公开 collapse_observed；两条 primary 重定义；no_replan 0/4（replan_success 0）、mountain_only 记为 N/A 合法替代",
+  "defect": "离线门禁通过；4 实例；待 V10 指标独立复算与 MiMo 复测",
+  "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V8 3 rep / V9 pilot",
-  "oracle": "V9 seed0",
+  "mimo": "V10 未运行",
+  "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
-  "validity_status": "NEEDS_REDESIGN"
+  "validity_status": "NEEDS_MORE_EVIDENCE"
  },
  "MAP-25": {
   "ablation": "V9 seed0",

@@ -104,6 +104,14 @@ DECISIONS: dict[str, Decision] = {
         "no_scout 0/4（V9 为 12 决策成功）、ignore_counterevidence 0/4、"
         "scout_everything 0/4、single_clue 2/4",
     ),
+    "MAP-24": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；4 实例；待 V10 指标独立复算与 MiMo 复测",
+        "DCR-V10-14",
+        "Batch 4：山路拉长、封路时刻隐藏且不瞬杀、公开 collapse_observed；"
+        "两条 primary 重定义；no_replan 0/4（replan_success 0）、mountain_only 记为 N/A 合法替代",
+    ),
     "MAP-28": Decision(
         "FORCED",
         "NEEDS_MORE_EVIDENCE",

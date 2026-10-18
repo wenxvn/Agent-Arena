@@ -13,6 +13,7 @@ from agent_arena.v10.baselines import map14 as b14
 from agent_arena.v10.baselines import map19 as b19
 from agent_arena.v10.baselines import map20 as b20
 from agent_arena.v10.baselines import map23 as b23
+from agent_arena.v10.baselines import map24 as b24
 from agent_arena.v10.baselines.runner import run_actions, run_policy
 from agent_arena.v10.runtime.catalog import scenario_hash
 from agent_arena.v10.runtime.map04 import (
@@ -35,6 +36,9 @@ from agent_arena.v10.runtime.map23 import ENTRANCES as ENTRANCES23
 from agent_arena.v10.runtime.map23 import TRUTH_BY_SEED as TRUTH_BY_SEED23
 from agent_arena.v10.runtime.map23 import Map23V10Environment
 from agent_arena.v10.runtime.map23 import oracle_actions as oracle23
+from agent_arena.v10.runtime.map24 import VARIANTS as VARIANTS24
+from agent_arena.v10.runtime.map24 import Map24V10Environment
+from agent_arena.v10.runtime.map24 import oracle_actions as oracle24
 from agent_arena.worlds.scenario_v8.models import V8Action
 
 
@@ -192,6 +196,59 @@ def test_map19_oracle_heuristic_and_ablations() -> None:
         for seed in VARIANTS19
     ]
     assert sum(run.success for run in naive) <= 1
+
+
+# --------------------------------------------------------------------------- MAP-24
+def test_map24_seeds_hide_collapse_tick_and_publish_observation_flag() -> None:
+    assert len(VARIANTS24) == 4
+    assert len({scenario_hash("MAP-24", seed) for seed in VARIANTS24}) == 4
+    assert len({variant.collapse_tick for variant in VARIANTS24.values()}) >= 3
+    observation = Map24V10Environment(seed=0).observe()
+    assert observation["collapse_observed"] is False
+    text = json.dumps(observation, ensure_ascii=False)
+    assert "collapse_tick" not in text
+
+
+def test_map24_collapse_pushes_back_instead_of_killing() -> None:
+    environment = Map24V10Environment(seed=0)
+    environment.step(V8Action.model_validate({"tool": "move", "to": "B"}, strict=True))
+    for _ in range(6):
+        if environment.is_terminal:
+            break
+        environment.step(V8Action.model_validate({"tool": "wait"}, strict=True))
+    assert environment.collapsed
+    assert environment.node != "B" or environment.is_terminal
+
+
+def test_map24_oracle_heuristic_and_ablations() -> None:
+    for seed in VARIANTS24:
+        oracle = run_actions("MAP-24", oracle24(seed), environment_seed=seed, name="oracle")
+        assert oracle.success and oracle.mechanism_triggered
+        heuristic = run_policy("MAP-24", b24.HEURISTIC(), environment_seed=seed, decision_budget=46)
+        assert heuristic.success
+        assert heuristic.metrics["map24.v10.replan_success"]["value"] == 1
+        assert heuristic.metrics["map24.v10.replan_latency"]["value"] == 0
+        assert (
+            heuristic.metrics["map24.v10.collapsed_edge_attempts_after_observation"]["value"] == 0
+        )
+    no_replan = [
+        run_policy(
+            "MAP-24", b24.ABLATIONS["no_replan"](), environment_seed=seed, decision_budget=46
+        )
+        for seed in VARIANTS24
+    ]
+    assert sum(run.success for run in no_replan) == 0
+    assert all(run.metrics["map24.v10.replan_success"]["value"] == 0 for run in no_replan)
+    mountain = [
+        run_policy(
+            "MAP-24", b24.ABLATIONS["mountain_only"](), environment_seed=seed, decision_budget=46
+        )
+        for seed in VARIANTS24
+    ]
+    assert all(
+        run.metrics["map24.v10.replan_success"]["state"] == "NOT_APPLICABLE"
+        for run in mountain
+    )
 
 
 # --------------------------------------------------------------------------- MAP-23
