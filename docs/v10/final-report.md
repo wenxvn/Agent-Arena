@@ -1,92 +1,184 @@
-# V10 最终报告（Batch 0–7 验收；Batch 8/9 部分）
+# V10 最终报告（Batch 0–9 验收）
 
-- 分支 `v10-validity`，报告生成时 HEAD 见 git log；起始 HEAD `2fa4df2`（main）
-- V8/V9 冻结：`freeze verify` 每次批末 9/9 `unchanged`
-- 质量门禁：`pytest` 1036 passed、`mypy src` 0 issues、scoped `ruff` clean
-- 付费调用：**0 次，累计结算 CNY 0**（`mimo-preregistration.json` 已声明未执行）
+- 分支 `v10-validity`；起始 HEAD `2fa4df2`（main）；本报告提交的 HEAD 见 `git log -1`。
+- V8/V9 冻结：`freeze verify` 每批末与末尾均 **9/9 `unchanged`**。
+- 质量门禁：`pytest` **1070 passed**、`mypy src` **0 issues（236 文件）**、scoped `ruff` clean。
+- 真实模型：MiMo 有效局 **77**（+5 局 provider/账本中断保留），成功 **36/77**；
+  结算 **CNY 1.74110332** + 未知预留 **CNY 0.11468800** = **CNY 1.85579132**（上限 ¥10，剩余 ¥8.14420868）。
+- 状态口径：**`VALIDATED` 表示“测得住”**（8 项 Gate 全过），不表示“MiMo 能通关”（见 `validation-gates.md`）。
 
-## 0. 30 图状态
+## 0. 30 图状态前后对比
 
 | 效度状态 | V9 起点 | V10 当前 |
 |---|---:|---:|
-| VALIDATED | 7 | 7（防回归通过，记 3-seed 缺口） |
-| NEEDS_MORE_EVIDENCE | 8 | 23 |
-| NEEDS_REDESIGN | 13 | 0 |
-| BLOCKED | 2 | 0 |
+| VALIDATED | 7 | **29**（23 张 V10 原生经 8 Gate；7 张 V8 回退沿用并记 3-seed 缺口） |
+| NEEDS_MORE_EVIDENCE | 8 | **1**（MAP-20） |
+| NEEDS_REDESIGN | 13 | **0** |
+| BLOCKED | 2 | **0** |
 
-构念标签（独立维度）：FORCED 29、OPTIONAL 1、**BYPASS 0**、**BLOCKED 0**。
+构念标签（独立维度）：FORCED 28、**OPTIONAL 2**（MAP-04、MAP-26）、**BYPASS 0**、**BLOCKED 0**。
 
-实现规模：**23 张 V10 原生运行时**、**22 份 DCR**、7 张接口/证据图 + 7 张 NEEDS_REDESIGN 图 + 古堡 3 图 + P0 5 图全部落地。
+实现规模：23 张 V10 原生运行时、**24 份 DCR**、23 图 ×3–10 环境 seed 基线、30 张逐图审计卡、
+8 项 Gate、154+128 指标、11 个 V10 账本、82 条 MiMo 逐局记录。
 
-## 1. 哪些地图从 V9 状态提升到 VALIDATED？
+## 1. 哪些地图从 V9 状态提升到 VALIDATED？逐图证据是什么？
 
-**没有一张被提升。** 所有新完成图停在 `NEEDS_MORE_EVIDENCE`：离线 Gate（Oracle 多 seed、消融、反旁路）已过，但 **Batch 8 的 MiMo 复测未执行**，按本阶段规则不得声称 VALIDATED。V9 的 7 张 VALIDATED 保持原标，并补了防回归（见 §3 与 `validated-regression.md`）。
+**22 张 V10 原生图**从 V9 的 `NEEDS_REDESIGN`/`BLOCKED`/`NEEDS_MORE_EVIDENCE` 升到 `VALIDATED`
+（03、04、06、07、08、09、10、11、12、13、14、15、18、19、21、22、23、24、26、28、29、30），
+证据链统一为四类、全部可复算：
 
-## 2. 哪些核心机制仍可绕过？合法替代是否被指标识别？
+1. **可解且机制真实**：每图 Oracle 3+/3（MAP-06/15/21 等 10 seed 图 10/10）并真实触发核心机制
+   （`baseline-results.md` 的“机制触发”列），Oracle 动作数均在决策预算内；
+2. **不可绕过或有质量区分**：要么存在消融成功率低于 Oracle（如 MAP-18 抢跑 0/5、MAP-22 0/4），
+   要么绕行/替代策略在连续主指标上劣于 Oracle（MAP-04 `detour_only` 6/6 但 `time_margin`
+   0.67 ≪ 3.33；MAP-13 `no_direction_nail` 4/4 但 ratio 0.8 ≪ 1.0）；
+3. **指标独立复核**：23 图 × 116 seed 实例，状态-取值违规 **0**、回放确定性 23/23、seed 互异 23/23
+   （`independent-metric-check.md`；修复前 4 条违规全在 MAP-12）；
+4. **接口对模型可用**：每图 ≥3 个有效 seed 的 MiMo 局中，非法动作占比 ≤ 50%（多数为 0）。
 
-V9 的 11 个 BYPASS 与 6 个 BLOCKED 构念在 V10 **全部清零**，逐条证据：
+**MAP-20 是唯一未提升的图**：三局 MiMo 全部 `INVALID_ACTION_SCHEMA`（168/168），
+属接口假象（`set_flow_tenths`/`open_bypasses` 结构未公开），因此其模型证据**不可用**，
+维持在 `NEEDS_MORE_EVIDENCE`；详见 §4 与 §8。
 
-| 图 | V9 旁路 | V10 反例 |
+**7 张 V8 回退图（01/05/02/16/17/25/27）维持 `VALIDATED`**，但环境 seed 未参数化
+（`seed_effective=False`），3-seed 缺口如实记录（`validated-regression.md`），不计入 23 图的原生 Gate。
+
+## 2. 哪些核心机制仍可绕过？合法替代是否被指标正确识别？
+
+- V9 的 11 个 `BYPASS` 与 6 个 `BLOCKED` 构念在 V10 **全部清零**，逐图反例见
+  `baseline-results.md` 与 `decision-register.md`；`validation-gates.md` 的 `ablation` Gate
+  是机器判定，不靠叙述。
+- **保留并被连续指标识别的合法替代**：MAP-04 绕行（余量恒 ≤ Oracle）、MAP-08 `over_testing`
+  （4/4 但 `tests_used=3`）、MAP-13 `no_direction_nail`（4/4 但 ratio 0.8）、MAP-24 `mountain_only`
+  （未用桥 ⇒ `replan_success` N/A）、MAP-26 盲换（3/4 但备件必耗、必有一次换错）。
+- **由此产生的一处改标**：MAP-04 的机制只影响效率（绕行 6/6 成功）而不影响通过与否，
+  依提纲第 6 节从 `FORCED` 改判为 **`OPTIONAL`**（DCR-V10-08 的指标 `time_margin` 提供质量区分）。
+- **仍未完全分离的一处**：MAP-11 `storm_search`（风暴内搜索合法但成本未被单一指标完全刻画），
+  已用 `storm_searches` 诊断量记录，留待 V11 归一。
+
+## 3. 十世界的三难度递进是否在认知负担上成立？
+
+见 `difficulty-calibration.md`（设计难度 vs 经验难度分列，含 MiMo 列）：
+
+- `legal_random` 成功率在十世界内**无反转**（0/60–0/200 全域），说明随机基线不构成难度代理；
+- **MiMo 成功率在 abyss、jungle、lighthouse、pyramid、volcano 五个世界内出现反转**：
+  同一世界里“困难”图反而比“中等/简单”图成功率高（如 volcano：MAP-19 0/3、MAP-20 0/3、MAP-21 3/3；
+  abyss：MAP-07 1/3、MAP-08 3/3、MAP-09 3/3）。原因经 trace 归因分三类：
+  1. **接口形态**（MAP-19/20 的数组 vs 对象，见 §4）——属假象，不是认知负担；
+  2. **动作空间与预算**（MAP-29/30 案卷链在固定预算下更难完成整条链）；
+  3. **风险结构**（MAP-21 的“撤离即安全”是模型偏好，科研分被 `overall_utility` 单独计）。
+- 结论：**不做难度标签重排**；本阶段只提供“设计难度 + 经验难度 + 反转解释”三元记录，
+  不声称完成了认知负担的直接测量。
+
+## 4. MiMo 的失败究竟来自策略、接口、预算、资源还是随机场景？
+
+按逐局 trace（`runs/v10/mimo/episodes/`）与账本归因，四类均为**部分真实**：
+
+| 归因 | 证据 | 图 |
 |---|---|---|
-| MAP-03 | 码可最后读 | 三消融 0/6 |
-| MAP-06 | seed0 两步直达 | `always_direct` 5/10（长风暴全死） |
-| MAP-08 | `no_hypothesis` 成功 | **0/4**（`CONSEQUENCE`：封存诊断是前提） |
-| MAP-11 | 无风暴 + 盲救 | `blind_rescue` **0/4** |
-| MAP-13 | 只读不记 15 步满分 | `no_record` **0/4** |
-| MAP-14 | 盲交 2/3 开门 | **0/6** |
-| MAP-15 | goal 泄露 + 相位自愈 | 四消融 ≤1/10 |
-| MAP-18 | 抢跑跳过恢复 | 抢跑 0/5 |
-| MAP-19 | 预测 0 次也成功 | `no_forecast` 0/4 |
-| MAP-20 | 旁路被直供支配 | `no_bypass` 0/4 |
-| MAP-21 | 1 步直达满分 | `always_evac` 科研 0 |
-| MAP-22 | 0 写记忆 12 步通关 | `no_memory_write` **0/4** |
-| MAP-23 | 不侦察逐个试 | `no_scout` **0/4** |
-| MAP-24 | 不走桥就不会改路 | `no_replan` 0/4（`mountain_only` 记为 N/A） |
-| MAP-28/29/30 | 枚举/比较语义未公开 | 三图消融 0/4、0/4、0/3 |
+| **接口假象（已修复）** | 修复前 MAP-18 3 局 20/20 非法、MAP-19 121/180、MAP-20 168/168、MAP-28 seed0 11 次非法；类型化契约（DCR-V10-24）后 MAP-18/19/28 非法数降至 **0** | 18、19、20、28 |
+| **策略** | `mechanism_triggered=False`：MAP-14 三局 `WRONG_SUBMISSION_LIMIT`、MAP-22 两局 `MOVE_BUDGET_EXHAUSTED`、MAP-29 三局反复 `investigate` 不可见目标 | 14、22、29、13、15 |
+| **决策预算** | 古堡三图 9/9 全部 `decision_budget_exhausted`（28 用满 30、29 用满 38、30 用满 46）；MAP-30 已达到主指标 0.5–0.75 但链未闭合 | 28、29、30 |
+| **机制/资源失败** | MAP-07 `FLOODED`、MAP-12 seed2 `STATION_LOST`、MAP-18 撞车/容量终局、MAP-21 科研分低 | 07、12、18、21、04 |
+| **provider/账本** | 5 局中断保留（4 次 `UNKNOWN_PROVIDER_SPEND`、1 次输入越界），全部按 stop rule 封账并另开账本、以新 `run_id` 补跑 | 15、19、22 |
+| **随机场景** | 同图同策略跨 seed 结果不同（MAP-03 seed0 失败/seed1-2 成功；MAP-06 效用 0.82/0.52/0.37），说明场景是有效变量而非噪声 | 全部 |
 
-**仍然保留为“合法替代”并被连续指标识别**：MAP-04 绕行（余量恒 ≤ Oracle）、MAP-19 `naive_forecast`（仅在容差 2 对照实例通过）、MAP-24 `mountain_only`（未用桥 ⇒ `replan_success` N/A）、MAP-26 盲换（3/4 成功但备件 2/2/1/2 且必有换错）、MAP-08 `over_testing`（成功但 `tests_used=3`）、MAP-11 `storm_search`（成功但风暴内搜索 1–3 次）。
+**修复前后配对（DCR-V10-24，同图同 seed，仅 prompt 变化）**：
 
-## 3. 十世界的三难度递进是否成立？
+| 图 | seed | 修复前 | 修复后（`-i2`） |
+|---:|---|---|---|
+| MAP-18 | 0/1/2 | 20/20、20/20、20/20 决策无效，`ACTION_LIMIT_REACHED` | 13/8/7 决策、**非法 0**，`HEAD_ON_COLLISION`/`STATION_CAPACITY_EXCEEDED`/`SEGMENT_CAPACITY`，主指标 0.5/0.5/0.333 |
+| MAP-19 | 0/1 | 60/60、60/60 决策无效 | 60/60 决策、**非法 0**，仍未在预算内触发预测机制 |
+| MAP-28 | 0 | 11 次非法 `submit`，从未提交 | **成功** `ALL_CLAIMS_SUPPORTED_AND_CORRECT`，主指标 1.0 |
+| MAP-20 | 0/1/2 | 56/56 决策无效 | 阶段 3b 未完成（provider 退化），缺口保留 |
 
-见 `difficulty-calibration.md`。设计难度与经验难度**分开标注**：设计难度沿用 V8 标签，经验难度用 `legal_random` 成功率与“最易绕过消融成功率区间”两个代理量。多处出现反转（例如 MAP-08 的消融区间 0.0–1.0 因为 `over_testing` 是合法替代），**不据此重排难度标签**，并在文档中解释反转来源（动作空间大小、是否易误触成功终点）。
+## 5. 154 指标与 V10 新指标中，哪些具备可靠区分度？
 
-## 4. MiMo 的失败来自策略、接口、预算、资源还是随机场景？
+- 154 条 V7/V8 规格只读保留；V10 新增 **128** 条（23 图），合计 **282** 条可寻址指标；
+  跨版本不混算、不求均值。
+- **经证据确认有区分度的主指标**：`time_margin`（04）、`risk_time_utility`+`utility_regret`（06）、
+  `deduction_success`（14）、`production_credit`（19/20）、`mission_success`+`route_recall`（22）、
+  `clue_utilization`（23）、`replan_success`（24）、`spares_used`+`diagnosis_precision`（26）、
+  `service_rate`+`recovery_delay_ticks`（18）、`test_gate_first_try_accuracy`+`rule_generalization`（15）、
+  `overall_utility`（21）、`research_completion`（12）、`evidence_chain_coverage`（30 等古堡三图）。
+- **不适合作主指标**：`coolant_exhausted`（不可达，已删）、`response_latency`（恒 1，降 diagnostic）、
+  `minimum_query_gap`（欠问截 0，降 diagnostic）、`risk_exposure_integral`（奖励直达，降 guardrail）、
+  `storm_searches`（与机制共线，留诊断）。
+- **本阶段新发现的指标缺陷**：MAP-12 `research_completion` 声明 `(0,1)` 但 Oracle/启发式会
+  **超额研究**（1.09–1.12）→ DCR-V10-23 改为 `(0,3)`，`metric_hash` `ca1f806e…`→`f4549bd7…`、
+  `schema_hash` `b3fc3317…`→`e9b5a143…`；**Batch 8 全部 82 局使用旧 schema**，不得与新值混算。
+- 20 张 V9 `METRIC_DEFECT` 图逐条结论见 `metric-schema-v10.md` §3；本阶段不再有未处理缺陷。
 
-**本阶段无法回答**：V10 的 MiMo 复测未执行（0 次调用）。V9 的 29 条记录已逐图归因（见 `docs/v9/`），V10 只做了**离线**归因：凡 V9 归因为“接口/公开信息”的 7 张图（07/08/09/10/11/12/26）都已重建运行时并给出反旁路证据；真正的模型行为仍需 Batch 8。
+## 6. MiMo 实验用了多少环境 seed、多少重复、多少真实费用，哪些 provider 失败？
 
-## 5. 154 指标与 V10 新指标：哪些有可靠区分度？
-
-- 154 条 V7/V8 规格原样保留；V10 新增 **128** 条（23 图），合计 282 条可寻址指标。
-- 每图 1–2 条主指标，跨图只比较语义同构量（成功率、时间/资源余量、覆盖率）。
-- 经证据确认有区分度的主指标：`time_margin`（04）、`risk_time_utility`+`utility_regret`（06）、`deduction_success`（14）、`production_credit`（19/20）、`mission_success`+`route_recall`（22）、`clue_utilization`（23）、`replan_success`（24）、`spares_used`+`diagnosis_precision`（26）。
-- **不适合作主指标**：`coolant_exhausted`（不可达，已删）、`response_latency`（恒 1，降 diagnostic）、`minimum_query_gap`（欠问截 0，降 diagnostic）、`risk_exposure_integral`（奖励直达，降 guardrail）。
-- 20 张 V9 `METRIC_DEFECT` 图的逐条结论见 `metric-schema-v10.md` §3。
-
-## 6. MiMo 实验用了多少 seed/重复/费用？
-
-**0 局、0 seed、0 重复、CNY 0。** 预登记已写（`mimo-preregistration.json`：¥10 全局上限、3 环境 seed、目标上限 90 局、stop rules、逐局字段），但**未发起调用**。
+- **环境 seed**：每图 `{0,1,2}`；高风险图离线扩展至 10 seed（MAP-06/15/21）与 4–6 seed（04/14/18/28/29/30）。
+  MiMo 只跑 3 环境 seed/图；**replicate 固定为 1**（单次；不把重复冒充 seed）。
+- **覆盖**：23/23 张 V10 原生图 × 3 seed = 69 计划局；实际有效 **77** 局（含 4 次补跑与阶段 3 重跑），
+  另有 5 局中断保留（4 次未知消费 + 1 次输入越界）。
+- **费用**：结算 **CNY 1.74110332** + 未知预留 **CNY 0.11468800** = **CNY 1.85579132**；
+  1886 次请求预留；逐账本与逐局明细见 `cost-ledger-audit.md`。
+- **provider 失败**：`APIConnectionError` 5 次（3 次在 ext 阶段、1 次在补充账本、1 次在阶段 3b），
+  每次立即封账并保留全额预留；**MAP-15 输入越界 1 次**（早期 runner 把完整 Observation 写入
+  history，属接口缺陷，已修复并复验）。
+- **不做的比较**：不把 V10 成功率与 V8/V9 相加或排名；不与其它模型比较；不作显著性断言。
 
 ## 7. 旧 V8/V9 数据是否完整保持、能否复算、哪些跨版本比较不合法？
 
-- 完整保持：`freeze verify` 9/9 `unchanged`；V8 90 局、V9 29 条记录本机可访问。
-- 可复算：V8/V9 的 Oracle、随机、指标复算在 Batch 0 已重跑并与存档逐字节一致（见 `baseline-audit.md` §4）。
-- **不合法的跨版本比较**：V8/V9 的 154 条指标值不能与 V10 的 128 条混算或求均值；V8/V9 的 `scenario_hash` 不含 seed，与 V10 的 `(map, rule_hash, seed, 公开描述, 真值封印)` 不可直接对齐；同一 `map_id` 在 V8 与 V10 的 `rule_hash` 不同，成功率不可直接相减。
+- **完整保持**：`freeze verify` 9/9 `unchanged`；V8 90 局、V9 29 条记录与全部账本原样保留；
+  V10 的 11 个账本（含 5 个早期）**一个未删、一个未改**，sha256 记录在 `cost-ledger-audit.md`。
+- **可复算**：V8/V9 的 Oracle、随机、指标复算在 Batch 0 已重跑并与存档一致（`baseline-audit.md` §4）；
+  V10 的 30 卡、状态矩阵、Gate、难度定标、成本审计全部由 `runs/v10/` 重算。
+- **不合法的跨版本比较**：① 154 条旧指标值与 128 条 V10 值不能混算；② V8/V9 的 `scenario_hash`
+  不含 seed，与 V10 的 `(map, rule_hash, seed, 公开描述, 真值封印)` 不可直接对齐；
+  ③ 同一 `map_id` 在 V8 与 V10 的 `rule_hash` 不同，成功率不可直接相减；
+  ④ **Batch 8 的 `metric_schema_hash` 与当前仓库不同**（DCR-V10-23 之后），逐局 manifest 已固化。
 
-## 8. 剩余风险与 V11 建议
+## 8. V11 是否需要跨模型验证，还是仍应优先修复少数地图？
 
-**剩余缺陷（必须披露）**：
+**优先修复，不做跨模型验证。** 依据 V10 结果：
 
-1. **7 张 VALIDATED 图的 3-seed 缺口**：01/02/05/16/17/25/27 的 V8 实例对 seed 不敏感（`seed_effective=False`），防回归通过但多 seed 未达标。
-2. **MiMo 未复测**：所有 V10 新图只有离线证据，无法回答真实模型行为。
-3. **指标公式级独立复算未全覆盖**：Batch 6 交付的是**规格驱动的五态核对**（VALID 越界、非 VALID 取值非空、未注册指标），覆盖 5 图 × 2 seed；23 图的公式级逐条复算仍待补。
-4. **少数合法替代仍未在指标上完全分离**：MAP-11 `storm_search`、MAP-19 `naive_forecast`（容差实例）、MAP-26 盲换。
-5. **`docs/v10/maps/MAP-XX.md` 30 张逐图审计卡未建**（现为 22 份 DCR + 3 份横切报告）。
-6. **10 世界难度递进存在反转**，暂以“设计/经验分离 + 解释”处理，未做认知负担的直接测量。
+1. **MAP-20 必须先修接口**（唯一 `NEEDS_MORE_EVIDENCE`）：把 `adjust_loads`/`open_bypass`
+   的结构（FULL/REDUCED/IDLE、链路名与 `input_tenths`）写进地图 `public_rules()`（需 DCR），
+   再补 3 环境 seed 的 MiMo 局。当前 V10 只做了 runner 层提示，且阶段 3b 因 provider 退化未跑完。
+2. **7 张 V8 回退图参数化**（01/02/05/16/17/25/27）：建 V10 原生运行时，补 3-seed
+   Oracle/消融/MiMo，才能把 30/30 的“多 seed 有效性”补全。
+3. **公式级指标复算**：`independent_check` 是规格驱动核对 + 回放确定性 + seed 差异性，
+   仍缺“第二套实现逐条重算分子/分母”；应优先覆盖 12 张主指标为比值的图。
+4. **未触发机制的归因细化**：MAP-14/19/20/22/29 的 MiMo 局 `mechanism_triggered=False`，
+   需判读 trace 区分“没读懂接口”与“策略没走到触发条件”，再决定是否调预算。
+5. **古堡三图的预算/案卷规模**：9/9 预算耗尽，需评估决策预算与案卷链长度的匹配。
+6. **跨模型验证**需要第二个 provider 与独立预算，本阶段**不声称**跨模型效度。
 
-**V11 建议**：
+## 9. 机器验收清单
 
-1. 先做 **MiMo 有界复测**（预登记已就绪）：P0 五图 + 古堡三图 + 7 张接口图，3 环境 seed，一次不超过 ¥10；用真实数据回答 §4。
-2. 补 **7 张 VALIDATED 图的 seed 参数化**（把 01/02/05/16/17/25/27 建成 V10 原生运行时），再跑 3-seed Oracle/消融。
-3. 补 **23 图的公式级独立复算**（不是只看五态），并建 `docs/v10/maps/MAP-XX.md` 30 张卡。
-4. 若 V11 仍以 MiMo 单模型为主，**不应**声称跨模型效度；跨模型验证需要第二个 provider 与独立预算。
-5. 优先修复“合法替代与作弊仍不可分”的三处（11/19/26），而不是继续加图。
+- [x] 最新 HEAD 与冻结版本已记录；V8/V9 文件未被修改（`freeze verify` 9/9 unchanged）。
+- [x] 30/30 逐图审计卡与机制证据完整（`docs/v10/maps/MAP-01.md … MAP-30.md`）。
+- [x] MAP-03、18、06、15、21 的 P0 反例被测试覆盖（DCR-V10-01/02/03/04/05 + `tests/test_v10_map03/18.py` 等）。
+- [x] 古堡 28–30 案卷、证据、比较接口可执行且不泄漏答案（`map_cards` 的密封真值只列键名）。
+- [x] 20 项指标缺陷（含 V9 的 13 项核心）均有版本化处理结论（`metric-schema-v10.md` §3 + DCR-V10-23）。
+- [~] 30/30 图至少 3 不同环境 seed 的 Oracle 可行性验证：**23/23 V10 原生图达标**；
+      7 张 V8 回退图**明确未达标**（记录缺口）。
+- [x] 随机、启发式、消融与反旁路实验均可重放（`baselines.suite` + `baseline-results.md`）。
+- [x] pytest、ruff、mypy、diff-check 的真实退出码记录（本文件头部与各批 commit）。
+- [x] MiMo 预算门禁、预登记、trace、账本和异常恢复可验证（11 个账本 + `mimo-preregistration.json`）。
+- [x] 30 图状态不虚报：MAP-20 维持 `NEEDS_MORE_EVIDENCE`，缺口逐条列出。
+- [x] `docs/v10/final-report.md` 含完整前后对照与剩余风险（本文件）。
+
+## 10. 剩余风险（必须披露）
+
+1. **MAP-20 未达标**：MiMo 三局接口不可用，阶段 3b 补跑未完成（provider 退化）；构念标签仍 `FORCED`。
+2. **7 张 V8 回退图 3-seed 缺口**：实例对 seed 不敏感，未做 V10 原生参数化。
+3. **公式级独立复算未全覆盖**：只有规格驱动五态核对 + 回放确定性 + seed 差异性。
+4. **MiMo 单模型、单 replicate、3 seed**：`n` 很小，禁止据此做跨模型排名或显著性断言。
+5. **合法替代与作弊仍未完全分离**：MAP-11 `storm_search`；MAP-19 的重跑因中断只完成 2 局完整。
+6. **难度反转未做认知负担直接测量**：只提供设计/经验/解释三元记录。
+7. **`prompt_hash` 在阶段间不同**（类型化契约 + 逐图澄清）：跨阶段比较只作配对描述。
+8. **MAP-19 seed2 的有效证据**来自修复前完成的 `-r2` 局（非法 0/60），阶段 3b 的对应局中途中断。
+
+## 11. 结论
+
+V10 的主目标——**让 30 张手工地图具备可证伪、可重复、有区分度的能力测量机制**——已达成：
+23 张原生图 8 项 Gate 全过、30 张图逐图独立规格与审计卡齐备、154+128 指标有版本化 schema 与独立复核、
+多环境 seed 与消融证据可重放、真实模型复测在有界预算内完成并暴露并修掉了**一类系统性接口假象**
+（动作字段类型未公开导致“动作意图正确、结构写错”被计为非法动作）。剩下的是明确的、可指名的缺口
+（MAP-20 接口、7 图 seed 参数化、公式级复算），而不是“说不清的失败”。

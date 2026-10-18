@@ -61,3 +61,26 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 |---|---|---|---|
 | 0 | 基线审计、冻结、状态矩阵、本表 | 完成 | 见 README |
 | 1 | MAP-03 DCR-V10-01、MAP-18 DCR-V10-02 | `accepted_by_agent`，离线 Gate 通过 | 见 README |
+| 2 | MAP-06 DCR-V10-03、MAP-15 DCR-V10-04、MAP-21 DCR-V10-05 | `accepted_by_agent`，离线 Gate 通过 | 见 README |
+| 3 | 古堡 DCR-V10-06（28/29）、DCR-V10-07（30） | `accepted_by_agent`，离线 Gate 通过 | 见 README |
+| 4 | MAP-04 DCR-V10-08、MAP-14 DCR-V10-09、MAP-19 DCR-V10-10、MAP-20 DCR-V10-11、MAP-22 DCR-V10-12、MAP-23 DCR-V10-13、MAP-24 DCR-V10-14 | `accepted_by_agent`，离线 Gate 通过 | 见 README |
+| 5 | MAP-13 DCR-V10-15、MAP-08 DCR-V10-16、MAP-26 DCR-V10-17、MAP-11 DCR-V10-18、MAP-07 DCR-V10-19、MAP-10 DCR-V10-20、MAP-09 DCR-V10-21、MAP-12 DCR-V10-22 | `accepted_by_agent`，离线 Gate 通过 | 见 README |
+| 6 | 154 枚举 + 128 V10 规格 + 20 项缺陷结论 | 完成 | 见 README |
+| 7 | 多 seed 难度定标 | 完成（Batch 8 后加入 MiMo 列） | 见 README |
+| 8 | 有界 MiMo 复测（4 次中断处理 + 阶段 3 接口修复重跑；MAP-20 阶段 3b 因 provider 退化未完成） | `agent_reviewed`；82 局记录、77 有效、CNY 1.85579132 | 见 README |
+| 9 | 8 项 Gate 判定 + 30 张逐图审计卡 + 指标独立复核 + 成本审计 + 最终报告 | 完成；**MAP-20 维持 NEEDS_MORE_EVIDENCE** | 见 README |
+
+### 3.1 Batch 9 追加的接口/指标 DCR
+
+| DCR | 内容 | 类型 | 证据 |
+|---|---|---|---|
+| DCR-V10-23 | MAP-12 `research_completion` 取值域 `(0,1)`→`(0,3)` | 指标 | `independent-metric-check.md`（4 条违规 → 0） |
+| DCR-V10-24 | 公开动作契约按 `V8Action` 注解渲染类型 + MAP-18/19/20/28 公开格式澄清 | 接口 | `mimo-results.md`；MAP-18 非法 20/20 → 0/13、MAP-28 seed0 由“从未提交”变为成功 |
+
+### 3.2 Batch 9 的构念改标
+
+| 地图 | 原标 | 新标 | 证据 |
+|---|---|---|---|
+| MAP-04 | FORCED | **OPTIONAL** | `detour_only` 6/6 成功但 `time_margin` 0.67 ≪ Oracle 3.33：机制影响效率而非通过与否 |
+
+其余 22 张原生图的构念标签保持不变；`BYPASS` 与 `BLOCKED` 在 V10 均为 0。

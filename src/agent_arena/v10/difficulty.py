@@ -32,6 +32,27 @@ def _baseline(map_id: str) -> dict[str, Any]:
     return dict(json.loads(path.read_text(encoding="utf-8")))
 
 
+def _mimo(map_id: str) -> dict[str, Any]:
+    """Batch 8 的 MiMo 逐图结果；每个 seed 只取最新一局（``-i2`` > ``-r2`` > 首跑）。"""
+
+    from agent_arena.v10.evidence_state import effective_mimo_rows, mimo_summary
+
+    summary = mimo_summary().get(map_id)
+    chosen = effective_mimo_rows().get(map_id, [])
+    if not summary or not chosen:
+        return {}
+    decisions = [int(row.get("decision_count") or 0) for row in chosen]
+    successes = summary["successes"]
+    return {
+        "runs": summary["runs"],
+        "successes": successes,
+        "rate": round(successes / summary["runs"], 4) if summary["runs"] else None,
+        "mean_decisions": round(sum(decisions) / len(decisions), 1),
+        "interrupted": summary["superseded"],
+        "seeds": [int(row.get("environment_seed", 0)) for row in chosen],
+    }
+
+
 def _rate(rows: list[dict[str, Any]]) -> tuple[int, int]:
     return sum(1 for row in rows if row.get("success")), len(rows)
 
@@ -63,6 +84,7 @@ def summarize(map_id: str) -> dict[str, Any]:
             (len(row.get("actions", [])) for row in oracle if row.get("actions")), default=None
         )
     budget = decision_budget(map_id)
+    mimo = _mimo(map_id)
     return {
         "map_id": map_id,
         "world": WORLD_OF[map_id],
@@ -71,12 +93,21 @@ def summarize(map_id: str) -> dict[str, Any]:
         "environment_seeds": actions,
         "unique_scenarios": data.get("unique_scenario_hashes"),
         "oracle": f"{oracle_success}/{oracle_total}",
+        "oracle_mechanism_triggered": (
+            f"{sum(1 for row in oracle if row.get('mechanism_triggered'))}/{oracle_total}"
+            if oracle_total
+            else "—"
+        ),
         "oracle_actions": oracle_actions,
         "decision_budget": budget,
         "budget_margin": (budget - oracle_actions) if oracle_actions else None,
         "public_heuristic": f"{heuristic_success}/{heuristic_total}",
         "legal_random": f"{random_success}/{random_total}",
         "legal_random_rate": round(random_success / random_total, 4) if random_total else None,
+        "mimo": f"{mimo['successes']}/{mimo['runs']}" if mimo else "—",
+        "mimo_rate": mimo.get("rate"),
+        "mimo_mean_decisions": mimo.get("mean_decisions"),
+        "mimo_interrupted": mimo.get("interrupted", 0),
         "ablations": {
             name: f"{success}/{total}" for name, (success, total) in ablation_rates.items()
         },
@@ -121,13 +152,13 @@ def render(payload: dict[str, Any]) -> str:
         lines.append("")
         lines.append(
             "| 图 | 设计难度 | seed 数 | Oracle | Oracle 动作 | 预算余量 | 启发式 "
-            "| legal_random | 最易绕过消融 | 主指标 |"
+            "| legal_random | 最易绕过消融 | MiMo | MiMo 决策数 | 主指标 |"
         )
-        lines.append("|---|---|---:|---|---:|---:|---|---:|---:|---|")
+        lines.append("|---|---|---:|---|---:|---:|---|---:|---:|---|---:|---|")
         for row in rows:
             lines.append(
                 "| {map_id} | {design_level} | {environment_seeds} | {oracle} | {acts} | {margin} "
-                "| {heur} | {rand} | {worst} | `{primary}` |".format(
+                "| {heur} | {rand} | {worst} | {mimo} | {mimo_dec} | `{primary}` |".format(
                     map_id=row["map_id"],
                     design_level=row["design_level"],
                     environment_seeds=row["environment_seeds"],
@@ -137,11 +168,24 @@ def render(payload: dict[str, Any]) -> str:
                     heur=row["public_heuristic"],
                     rand=f"{row['legal_random']} ({row['legal_random_rate']})",
                     worst=f"{row['ablation_min_rate']}–{row['worst_ablation_rate']}",
+                    mimo=f"{row['mimo']}"
+                    + (f" ({row['mimo_rate']})" if row.get("mimo_rate") is not None else "")
+                    + (
+                        f" +{row['mimo_interrupted']} 中断"
+                        if row.get("mimo_interrupted")
+                        else ""
+                    ),
+                    mimo_dec=(
+                        row["mimo_mean_decisions"]
+                        if row.get("mimo_mean_decisions") is not None
+                        else "—"
+                    ),
                     primary=row["primary"],
                 )
             )
         lines.append("")
     reversals = []
+    mimo_reversals = []
     for world in sorted(payload["worlds"]):
         rows = sorted(payload["worlds"][world], key=lambda item: item["design_rank"])
         rates = [
@@ -150,19 +194,75 @@ def render(payload: dict[str, Any]) -> str:
         ]
         if any(rates[index] < rates[index + 1] for index in range(len(rates) - 1)):
             reversals.append(world)
+        mimo_rows = [row for row in rows if row.get("mimo_rate") is not None]
+        if len(mimo_rows) < 2:
+            continue
+        mimo_rates = [item["mimo_rate"] for item in mimo_rows]
+        if any(
+            mimo_rates[index] < mimo_rates[index + 1] for index in range(len(mimo_rates) - 1)
+        ):
+            mimo_reversals.append(world)
+    missing = [row["map_id"] for row in payload["maps"] if row.get("mimo_rate") is None]
     lines += [
         "## 2. 反转与解释",
         "",
         f"- `legal_random` 成功率随设计难度递进出现反转的世界：{'、'.join(reversals) or '无'}",
+        f"- MiMo（单 replicate、每图 3 环境 seed）出现反转的世界："
+        f"{'、'.join(mimo_reversals) or '无'}",
         "- 反转不等于设计错误：随机基线的成功率受“动作空间大小”和“是否容易误触成功终点”影响，",
         "  与认知负担不是同一维度；本表同时给出 `worst_ablation_rate`（机制被绕过的难易）供对照。",
-        "- 设计难度与经验难度分开标注，不据单一模型成功率重排难度标签。",
+        "- 设计难度与经验难度分开标注，**不据单一模型成功率重排难度标签**；MiMo 列只是",
+        "  “经验难度”的一个描述性代理量。",
         "",
         "## 3. 缺口",
         "",
-        "- 6 张未进入 V10 原生运行时的图（01/02/05/16/17/25/27 中的一部分）不在本表；",
-        "  它们的 3-seed 缺口见 `validated-regression.md`。",
-        "- 每图只登记 3–10 个环境 seed，`n` 很小，禁止据此做跨模型排名。",
+        "- 7 张 V8 回退图（01/02/05/16/17/25/27）不在本表：它们在 V10 没有原生运行时，",
+        "  实例对 seed 不敏感，3-seed 缺口见 `validated-regression.md`。",
+        f"- 本表内尚无 MiMo 结果的图：{'、'.join(missing) or '无'}"
+        "（Batch 8 覆盖范围见 `mimo-results.md`）。",
+        "- 每图只登记 3–10 个环境 seed、单一模型、单 replicate，`n` 很小，禁止据此做跨模型排名。",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def render_baselines(payload: dict[str, Any]) -> str:
+    """对照实验表：逐图逐策略的成功率与机制触发（来自逐局基线产物）。"""
+
+    lines = [
+        "# V10 基线对照表（Oracle / 启发式 / 随机 / 消融）",
+        "",
+        "- 由 `python -m agent_arena.v10.difficulty` 从 `runs/v10/baselines/MAP-XX.json` 重算。",
+        "- `legal_random` = 每环境 seed × 20 个 policy seed；`机制触发` 只对 Oracle 有定义。",
+        "- 消融率越高说明核心机制越容易被绕过；但“合法替代策略”也会表现为消融成功",
+        "  （见 final-report §2）。",
+        "",
+        "| 图 | seed 数 | Oracle | 机制触发 | 启发式 | 随机 | 消融（成功率） | 最易绕过 |",
+        "|---|---:|---|---|---|---:|---|---:|",
+    ]
+    for row in payload["maps"]:
+        lines.append(
+            "| {map_id} | {seeds} | {oracle} | {triggered} | {heur} | {rand} | {abl} | {worst} "
+            "|".format(
+                map_id=row["map_id"],
+                seeds=row["environment_seeds"],
+                oracle=row["oracle"],
+                triggered=row.get("oracle_mechanism_triggered", "—"),
+                heur=row["public_heuristic"],
+                rand=row["legal_random"],
+                abl="；".join(
+                    f"`{name}` {rate}" for name, rate in sorted(row["ablations"].items())
+                ),
+                worst=row["worst_ablation_rate"],
+            )
+        )
+    lines += [
+        "",
+        "## 复算",
+        "",
+        "```powershell",
+        ".venv\\Scripts\\python.exe -m agent_arena.v10.baselines.suite",
+        ".venv\\Scripts\\python.exe -m agent_arena.v10.difficulty",
+        "```",
     ]
     return "\n".join(lines) + "\n"
 
@@ -175,6 +275,7 @@ def main() -> None:
         json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=1) + "\n", encoding="utf-8"
     )
     (V10_DOCS / "difficulty-calibration.md").write_text(render(payload), encoding="utf-8")
+    (V10_DOCS / "baseline-results.md").write_text(render_baselines(payload), encoding="utf-8")
     print(json.dumps([row["map_id"] for row in payload["maps"]], ensure_ascii=False))
 
 

@@ -102,8 +102,9 @@ class Map12V10Environment(V10Map):
             "map12.v10.research_completion",
             "secondary",
             "higher",
-            "研究积分 / 目标",
+            "研究积分 / 目标（可 >1：超额研究计入）",
             "目标积分",
+            valid_range=(0.0, 3.0),
         ),
         MetricSpec(
             "map12.v10.min_food",

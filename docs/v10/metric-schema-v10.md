@@ -45,6 +45,7 @@ V9 `failure-taxonomy.md` 中带 `METRIC_DEFECT` 标签的地图实测为 **20 �
 | MAP-05 | `missed_windows` 与 `effective_signals` 重叠 | 前者降 diagnostic | V9 metric-check §3 |
 | MAP-06 | `info_value_of_observation` 恒 None | 改用 `risk_time_utility` + `utility_regret` | DCR-V10-03 §7 |
 | MAP-12 | `survival_days` 与 `fuel_consumed` 混用 | 改用 `research_completion` + `min_food` | DCR-V10-22 §7 |
+| MAP-12 | `research_completion` 声明 `(0,1)` 但 Oracle 会超额研究（1.09–1.12） | 范围改 `(0,3)`、公式注明“可 >1”；新 `metric_hash` `f4549bd7…`、新 `schema_hash` `e9b5a143…` | DCR-V10-23 + `independent-metric-check.md` |
 | MAP-13 | `illegal_door_attempts` 混合未成型与错排 | 拆两计数；未试排 → N/A | DCR-V10-15 §7 |
 | MAP-14 | `minimum_query_gap` 欠问截 0；`queries_used` 反向 | 改用 `deduction_success` + `consistent_hypothesis_rate` | DCR-V10-09 §7 |
 | MAP-15 | `unseen_transition_accuracy` 与成功共线 | 改用 `test_gate_first_try_accuracy` + `rule_generalization` | DCR-V10-04 §7 |
