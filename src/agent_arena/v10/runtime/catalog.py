@@ -26,10 +26,14 @@ LEVEL_OF = v8_catalog.LEVEL_OF
 #: 已有 V10 运行时的地图 -> (模块, 类名)。后续 Batch 追加。
 V10_MAPS: dict[str, tuple[str, str]] = {
     "MAP-03": ("agent_arena.v10.runtime.map03", "Map03V10Environment"),
+    "MAP-06": ("agent_arena.v10.runtime.map06", "Map06V10Environment"),
+    "MAP-15": ("agent_arena.v10.runtime.map15", "Map15V10Environment"),
+    "MAP-21": ("agent_arena.v10.runtime.map21", "Map21V10Environment"),
     "MAP-18": ("agent_arena.v10.runtime.map18", "Map18V10Environment"),
 }
 
 _RUNTIME_DIR = Path(__file__).resolve().parent
+_REPO_ROOT = _RUNTIME_DIR.parents[3]
 
 
 def is_v10(map_id: str) -> bool:
@@ -76,7 +80,14 @@ def rule_hash(map_id: str) -> str:
     if is_v10(map_id):
         module_name, _ = V10_MAPS[map_id]
         path = _RUNTIME_DIR / f"{module_name.rsplit('.', 1)[1]}.py"
-        return sha256(path.read_bytes()).hexdigest()
+        sources = v10_class(map_id).RULE_SOURCES
+        if not sources:
+            return sha256(path.read_bytes()).hexdigest()
+        digest = sha256(path.read_bytes())
+        for relative in sources:
+            digest.update(b"\0" + relative.encode("utf-8") + b"\0")
+            digest.update((_REPO_ROOT / relative).read_bytes())
+        return digest.hexdigest()
     return "v8:" + v8_catalog.rule_hash(map_id)
 
 

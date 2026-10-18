@@ -10,7 +10,7 @@
 |---|---|---|---|---|
 | 0 | 基线审计、冻结清单、状态矩阵、决策登记 | 完成 | 见 git log `feat(v10): batch 0` | ¥0 |
 | 1 | MAP-03 / MAP-18：DCR-V10-01/02，V10 运行时、Oracle、启发式、消融、6/5 seed | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE`（待指标复算与 MiMo） | 见 git log `feat(v10): batch 1` | ¥0 |
-| 2 | MAP-06 / MAP-15 / MAP-21 | 未开始 | | |
+| 2 | MAP-06 / MAP-15 / MAP-21：DCR-V10-03/04/05，10/10/10 seed | 离线 Gate 通过；状态 `NEEDS_MORE_EVIDENCE`（待指标复算与 MiMo） | 见 git log `feat(v10): batch 2` | ¥0 |
 | 3 | 古堡 28–30 | 未开始 | | |
 | 4 | 其余 NEEDS_REDESIGN | 未开始 | | |
 | 5 | NEEDS_MORE_EVIDENCE 与 VALIDATED 复核 | 未开始 | | |

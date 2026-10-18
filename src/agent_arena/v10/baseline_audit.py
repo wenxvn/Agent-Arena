@@ -29,9 +29,7 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 def _jsonl(path: Path) -> list[dict[str, Any]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 
@@ -192,9 +190,10 @@ def rerun_v9_baselines() -> dict[str, Any]:
         }
         stored_path = V9_RUNS / "baselines" / f"{map_id}.json"
         stored = _read_json(stored_path) if stored_path.is_file() else None
-        identical = stored is not None and json.loads(
-            json.dumps(current, ensure_ascii=False, sort_keys=True)
-        ) == stored
+        identical = (
+            stored is not None
+            and json.loads(json.dumps(current, ensure_ascii=False, sort_keys=True)) == stored
+        )
         per_map[map_id] = {
             "identical_to_v9": identical,
             "oracle_ok": sum(1 for item in current["oracle"] if item["ok"]),
@@ -208,8 +207,7 @@ def rerun_v9_baselines() -> dict[str, Any]:
                 current["public_heuristic"] and current["public_heuristic"].get("success")
             ),
             "ablations": {
-                name: bool(record.get("success"))
-                for name, record in current["ablations"].items()
+                name: bool(record.get("success")) for name, record in current["ablations"].items()
             },
         }
     return {

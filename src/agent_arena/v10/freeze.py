@@ -25,9 +25,7 @@ def _files(root: Path) -> list[Path]:
     if not root.exists():
         return []
     return sorted(
-        path
-        for path in root.rglob("*")
-        if path.is_file() and "__pycache__" not in path.parts
+        path for path in root.rglob("*") if path.is_file() and "__pycache__" not in path.parts
     )
 
 
@@ -39,9 +37,7 @@ def snapshot() -> dict[str, Any]:
     roots: dict[str, Any] = {}
     for relative in FROZEN_ROOTS:
         root = REPO_ROOT / relative
-        files = {
-            path.relative_to(REPO_ROOT).as_posix(): _sha(path) for path in _files(root)
-        }
+        files = {path.relative_to(REPO_ROOT).as_posix(): _sha(path) for path in _files(root)}
         tree = sha256()
         for name, digest in sorted(files.items()):
             tree.update(name.encode("utf-8"))

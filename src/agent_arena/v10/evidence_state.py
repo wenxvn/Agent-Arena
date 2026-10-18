@@ -39,6 +39,30 @@ DECISIONS: dict[str, Decision] = {
         "Batch 1：时钟分离、发车窗口强制、5 个故障变体；抢跑 0/5，no_replan 1/5，"
         "greedy 3/5，启发式 5/5",
     ),
+    "MAP-06": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；10 seed cohort；待 V10 指标独立复算与 MiMo 复测",
+        "DCR-V10-03",
+        "Batch 2：10-seed 分层天气 cohort；短风暴计入风险；截止随 seed 公开；"
+        "always_direct 5/10（长风暴全死），启发式 9/10 且效用均值 0.4228 > 三条固定策略",
+    ),
+    "MAP-15": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；6 家族 10 seed；待 V10 指标独立复算与 MiMo 复测",
+        "DCR-V10-04",
+        "Batch 2：删除 goal 泄露；6 规律家族；训练/测试墙色分离；record_rule 提交假设；"
+        "消除相位自愈；四消融均 ≤1/10，启发式 10/10",
+    ),
+    "MAP-21": Decision(
+        "FORCED",
+        "NEEDS_MORE_EVIDENCE",
+        "离线门禁通过；安全/科研分离评分；待 V10 指标独立复算与 MiMo 复测",
+        "DCR-V10-05",
+        "Batch 2：safety_science 分离；10 seed 覆盖三种喷发时刻；always_evac 0.5（科研 0）、"
+        "always_collect 3 灾难、risk_aware 0 灾难且均值 0.6886 最高",
+    ),
 }
 
 

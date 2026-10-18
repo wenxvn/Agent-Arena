@@ -37,6 +37,8 @@ class V10Map(MapEnvironment):
     """V10 地图共同协议。"""
 
     RULE_VERSION: ClassVar[str] = ""
+    #: 子类化只读 V8/V4 运行时时，父规则文件（仓库相对路径）也计入 rule_hash。
+    RULE_SOURCES: ClassVar[tuple[str, ...]] = ()
     SEED_SPACE: ClassVar[tuple[int, ...]] = (0, 1, 2)
     METRIC_SPECS: ClassVar[tuple[MetricSpec, ...]] = ()
     PRIMARY_METRIC: ClassVar[str] = ""
