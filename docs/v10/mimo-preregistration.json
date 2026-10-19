@@ -14,10 +14,9 @@
   "shared_across_all_ledgers": true
  },
  "cost_so_far_cny": {
-  "remaining_before_supplement": 8.64450944,
-  "settled": 1.29609856,
-  "total": 1.35549056,
-  "unknown_reserved": 0.059392
+  "settled": 2.02861492,
+  "total": 2.16173492,
+  "unknown_reserved": 0.13312
  },
  "history": [
   {
@@ -56,6 +55,18 @@
    "root_cause": "早期 runner 把完整 Observation 写进最近 5 条 history，使输入随步数线性增长；已改为 history 只含 action+result",
    "settled_cny": 0.5881186,
    "status": "executed_partial_early_ledgers"
+  },
+  {
+   "at": "2026-10-19",
+   "episodes": [
+    "V10-MAP-16-S0-r2",
+    "V10-MAP-16-S1-r2",
+    "V10-MAP-16-S2-r2"
+   ],
+   "ledger": "runs/v10/mimo/ledger_v10_018.jsonl",
+   "note": "阶段 12：MAP-16 原生 seed 化后首测 3 局；1 成功、非法动作 0/0/0；结算 CNY 0.01593856，无未知消费",
+   "settled_cny": 0.01593856,
+   "status": "completed"
   }
  ],
  "manifest_hash": "a5326bc5178a2133ffac4602fff085a7f581616345ed82e88ed9ea7707bb5684",
@@ -526,7 +537,7 @@
   "template": "system=public_rules() + action contract; user=observation + last 5 actions(action+result)"
  },
  "schema": "v10-mimo-preregistration-2",
- "status": "executing",
+ "status": "completed",
  "stop_rules": [
   "达到全局 CNY 10 上限（含未知预留）立即停止",
   "出现 UNKNOWN_PROVIDER_SPEND 立即封账并停止自动调用",
