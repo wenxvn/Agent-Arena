@@ -1466,3 +1466,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：MAP-02 的 MiMo 0/3 是能力结果（模型 6 步内未固定导航核心），不说明地图无效；剩余 5 张回退图仍未参数化；`schema_hash` 再次变化，Batch 8 的旧局保持原记录。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 5：MAP-27 原生 seed 化（DCR-V10-30）
+
+事件：第三张回退图 MAP-27 改造为 V10 原生运行时（4 个预登记实例），补公开规则并完成真实模型首测；一轮 provider 中断后按规则补跑。
+
+原因：MAP-27 是 `seed_effective=False` 的 5 图之一，且月球世界已有 25/26 为原生图，补齐后 lunar 全部原生。
+
+改动：新增 `src/agent_arena/v10/runtime/map27.py`（子类化 V8 规则，只把电量容量/货舱容量/充电增益/余氧按 seed 实例化；7 条 METRIC_SPECS：mission_success / joint_task_completion_rate / completion_ticks / resource_conflicts / cargo_errors / blackout_ticks / charge_cells_used；`public_rules()` 公开拓扑、三资源耦合、充电桩、中继/伤员/样本依赖与提交判据）、`src/agent_arena/v10/baselines/map27.py`（按实例选 relay-first 或 stabilize-first 的 Oracle、Observation 驱动的 stabilize-first 启发式、skip_sample/skip_relay/skip_rescue/overload 四消融）、`tests/test_v10_map27.py`（9 条）；`validation`/`attribution`/`recompute`/`mimo_report`/`evidence_state`/`regression` 适配 26 图；新增 `DCR-V10-30`。
+
+结果：MAP-27 `seed_effective=True`、4 个不同 `scenario_hash`；Oracle 4/4（机制触发 4/4）、启发式 4/4、三个 skip 消融 0/4、overload 1/4、`legal_random` 0/80。**电量收紧到 12 的实例上 V8 的 relay-first 会抛锚**——实例难度真实变化，Oracle 因此按实例选方案。真实 MiMo（阶段 8）：seed 0/1 `VEHICLE_STRANDED`、seed 2 第 21 步 `APIConnectionError` 封账；按规则用新账本、新 run_id 补跑 seed 2（46 决策预算耗尽），三局非法动作 0/0/1。指标规格 140→147（26 图）；独立核对 26 图 × 128 seed 实例 0 违规；公式级复算 20/26 图、729 次检查全一致。累计费用：结算 CNY `1.92771036` + 未知预留 `0.13312000` = `2.06083036`（上限 ¥10）。
+
+验证：`pytest` 1110 passed；`mypy src` 244 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged；全部生成文档重算。
+
+边界：MAP-27 的 MiMo 0/3 是能力结果（电量规划失败），不说明地图无效；剩余 4 张回退图（01/16/17/25）仍未参数化；阶段 8 的 seed 2 使用补跑局作为有效证据。
+
+关联提交：本次提交（分支 `v10-validity`）。

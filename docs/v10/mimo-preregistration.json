@@ -1,20 +1,34 @@
 {
-  "schema": "v10-mimo-preregistration-2",
-  "status": "executing",
-  "note": "Batch 8 预登记。声明阶段（status=declared_not_executed、0 次调用）见 history[0]；2026-10-18 开始执行：先由早期 runner 跑完 MAP-03/06/15 的 9 局，触发 2 次 UNKNOWN_PROVIDER_SPEND 与 1 次 usage 越界后停；修复后按本预登记用 V10 独立账本续跑剩余矩阵。",
+  "budget": {
+    "active_ledger": "runs/v10/mimo/ledger_v10_001.jsonl",
+    "global_cap_cny": 10.0,
+    "ledger_root": "runs/v10/mimo",
+    "on_repeated_5xx_or_rate_limit": "three_consecutive_provider_errors_pause_batch_keep_ledger",
+    "on_unknown_provider_spend": "retain_reservation_seal_ledger_stop_paid_calls",
+    "on_usage_above_registered_cap": "seal_ledger_stop_audit_then_retry_with_new_run_id",
+    "pending_unknown_cny": 0.04096,
+    "prior_ledgers_glob": "runs/v10/mimo/ledger*.jsonl",
+    "prior_spend_cny": 0.6290786,
+    "remaining_cny": 9.3709214,
+    "settled_cny": 0.5881186,
+    "shared_across_all_ledgers": true
+  },
+  "cost_so_far_cny": {
+    "remaining_before_supplement": 8.64450944,
+    "settled": 1.29609856,
+    "total": 1.35549056,
+    "unknown_reserved": 0.059392
+  },
   "history": [
     {
       "at": "2026-10-17",
-      "status": "declared_not_executed",
+      "note": "只写预登记，未发起任何调用。",
       "settled_cny": 0.0,
-      "note": "只写预登记，未发起任何调用。"
+      "status": "declared_not_executed"
     },
     {
+      "action": "保留旧局与旧账本不覆盖；用 V10 独立账本（登记输入上限 16384）续跑，并对 MAP-15 seed2 使用新 run_id 补跑",
       "at": "2026-10-18",
-      "status": "executed_partial_early_ledgers",
-      "settled_cny": 0.5881186,
-      "pending_unknown_cny": 0.04096,
-      "episodes_completed": 9,
       "episodes": [
         "V10-MAP-03-S0-p0",
         "V10-MAP-03-S1-p0",
@@ -26,6 +40,11 @@
         "V10-MAP-15-S1-p0",
         "V10-MAP-15-S2-p0"
       ],
+      "episodes_completed": 9,
+      "issues": [
+        "ledger.jsonl / ledger_supplement_001.jsonl：首次请求 APIConnectionError，按 UNKNOWN_PROVIDER_SPEND 封账",
+        "ledger_supplement_004.jsonl：MAP-15 seed2 第 31 步输入 8136 token 触发 V9 账本 8192 登记上限，封账"
+      ],
       "ledgers": [
         "runs/v10/mimo/ledger.jsonl",
         "runs/v10/mimo/ledger_supplement_001.jsonl",
@@ -33,245 +52,373 @@
         "runs/v10/mimo/ledger_supplement_003.jsonl",
         "runs/v10/mimo/ledger_supplement_004.jsonl"
       ],
-      "issues": [
-        "ledger.jsonl / ledger_supplement_001.jsonl：首次请求 APIConnectionError，按 UNKNOWN_PROVIDER_SPEND 封账",
-        "ledger_supplement_004.jsonl：MAP-15 seed2 第 31 步输入 8136 token 触发 V9 账本 8192 登记上限，封账"
-      ],
+      "pending_unknown_cny": 0.04096,
       "root_cause": "早期 runner 把完整 Observation 写进最近 5 条 history，使输入随步数线性增长；已改为 history 只含 action+result",
-      "action": "保留旧局与旧账本不覆盖；用 V10 独立账本（登记输入上限 16384）续跑，并对 MAP-15 seed2 使用新 run_id 补跑"
+      "settled_cny": 0.5881186,
+      "status": "executed_partial_early_ledgers"
     }
   ],
-  "budget": {
-    "global_cap_cny": 10.0,
-    "settled_cny": 0.5881186,
-    "pending_unknown_cny": 0.04096,
-    "prior_spend_cny": 0.6290786,
-    "remaining_cny": 9.3709214,
-    "ledger_root": "runs/v10/mimo",
-    "active_ledger": "runs/v10/mimo/ledger_v10_001.jsonl",
-    "shared_across_all_ledgers": true,
-    "prior_ledgers_glob": "runs/v10/mimo/ledger*.jsonl",
-    "on_unknown_provider_spend": "retain_reservation_seal_ledger_stop_paid_calls",
-    "on_repeated_5xx_or_rate_limit": "three_consecutive_provider_errors_pause_batch_keep_ledger",
-    "on_usage_above_registered_cap": "seal_ledger_stop_audit_then_retry_with_new_run_id"
-  },
-  "model": {
-    "provider": "openai_compatible_relay",
-    "model_id_from_env": "OPENAI_MODEL",
-    "model_name_expected": "mimo-v2.6-flash",
-    "endpoint_from_env": "OPENAI_BASE_URL",
-    "temperature": 0,
-    "temperature_note": "provider 适配器固定 temperature=0；声明阶段的 0.2 从未生效",
-    "reasoning": "disabled (effort=none) for action_contract_version=scenario_v4",
-    "max_output_tokens": 700,
-    "registered_input_cap": 16384,
-    "registered_output_cap": 1024,
-    "decision_budget_source": "agent_arena.v10.baselines.suite.decision_budget",
-    "timeout_seconds_from_env": "OPENAI/request_timeout_seconds",
-    "api_seed_supported": false,
-    "note": "provider 不支持生成 seed：只记录 environment_seed 与 replicate，不写“模型随机种子”。"
-  },
-  "prompt": {
-    "template": "system=public_rules() + action contract; user=observation + last 5 actions(action+result)",
-    "history_window": 5,
-    "observation_fields": "仅 Observation 公开字段",
-    "contains_hidden_truth": false,
-    "frozen_until": "first paid call",
-    "frozen_hash_note": "prompt_hash 逐局记录在 trace header 与 manifest"
-  },
+  "manifest_hash": "a5326bc5178a2133ffac4602fff085a7f581616345ed82e88ed9ea7707bb5684",
   "matrix": {
-    "p0_maps": ["MAP-03", "MAP-06", "MAP-15", "MAP-18", "MAP-21"],
-    "castle_maps": ["MAP-28", "MAP-29", "MAP-30"],
-    "interface_maps": ["MAP-07", "MAP-08", "MAP-09", "MAP-10", "MAP-11", "MAP-12", "MAP-26"],
-    "environment_seeds_per_map": [0, 1, 2],
-    "replicates": 1,
+    "castle_maps": [
+      "MAP-28",
+      "MAP-29",
+      "MAP-30"
+    ],
+    "environment_seeds_per_map": [
+      0,
+      1,
+      2
+    ],
+    "interface_maps": [
+      "MAP-07",
+      "MAP-08",
+      "MAP-09",
+      "MAP-10",
+      "MAP-11",
+      "MAP-12",
+      "MAP-26"
+    ],
+    "p0_maps": [
+      "MAP-03",
+      "MAP-06",
+      "MAP-15",
+      "MAP-18",
+      "MAP-21"
+    ],
     "planned_episodes": 45,
-    "retries": [
-      {
-        "run_id": "V10-MAP-15-S2-p0-r2",
-        "map_id": "MAP-15",
-        "environment_seed": 2,
-        "reason": "早期 runner history 携带完整 Observation 造成输入越界，属接口缺陷；按补跑规则新 run_id"
-      }
+    "priority": [
+      "p0_maps",
+      "castle_maps",
+      "interface_maps"
     ],
     "remaining_episodes_after_early_phase": 37,
-    "priority": ["p0_maps", "castle_maps", "interface_maps"]
+    "replicates": 1,
+    "retries": [
+      {
+        "environment_seed": 2,
+        "map_id": "MAP-15",
+        "reason": "早期 runner history 携带完整 Observation 造成输入越界，属接口缺陷；按补跑规则新 run_id",
+        "run_id": "V10-MAP-15-S2-p0-r2"
+      }
+    ]
   },
+  "metric_schema_hash_source": "agent_arena.v10.metrics.governance.schema_hash()",
+  "model": {
+    "api_seed_supported": false,
+    "decision_budget_source": "agent_arena.v10.baselines.suite.decision_budget",
+    "endpoint_from_env": "OPENAI_BASE_URL",
+    "max_output_tokens": 700,
+    "model_id_from_env": "OPENAI_MODEL",
+    "model_name_expected": "mimo-v2.6-flash",
+    "note": "provider 不支持生成 seed：只记录 environment_seed 与 replicate，不写“模型随机种子”。",
+    "provider": "openai_compatible_relay",
+    "reasoning": "disabled (effort=none) for action_contract_version=scenario_v4",
+    "registered_input_cap": 16384,
+    "registered_output_cap": 1024,
+    "temperature": 0,
+    "temperature_note": "provider 适配器固定 temperature=0；声明阶段的 0.2 从未生效",
+    "timeout_seconds_from_env": "OPENAI/request_timeout_seconds"
+  },
+  "note": "Batch 8 预登记。声明阶段（status=declared_not_executed、0 次调用）见 history[0]；2026-10-18 开始执行：先由早期 runner 跑完 MAP-03/06/15 的 9 局，触发 2 次 UNKNOWN_PROVIDER_SPEND 与 1 次 usage 越界后停；修复后按本预登记用 V10 独立账本续跑剩余矩阵。",
+  "per_episode_artifacts": {
+    "aggregate": "runs/v10/mimo/results.json",
+    "judge": "runs/v10/mimo/episodes/<run_id>/judge.json",
+    "manifest": "runs/v10/mimo/episodes/<run_id>/manifest.json",
+    "trace": "runs/v10/mimo/episodes/<run_id>/agent_trace.jsonl"
+  },
+  "per_episode_fields": [
+    "run_id",
+    "map_id",
+    "world",
+    "difficulty",
+    "environment_seed",
+    "replicate",
+    "model_id",
+    "temperature",
+    "scenario_hash",
+    "rule_hash",
+    "metric_hash",
+    "metric_schema_hash",
+    "prompt_hash",
+    "preregistration_hash",
+    "manifest_hash",
+    "code_commit",
+    "termination",
+    "outcome",
+    "success",
+    "decision_count",
+    "invalid_actions",
+    "rejected_actions",
+    "mechanism_triggered",
+    "primary_metric",
+    "primary_metric_state",
+    "primary_metric_value",
+    "cost_settled",
+    "cost_unknown",
+    "trace_path",
+    "judge_path"
+  ],
   "phase_2_extension": {
+    "budget_gate": "阶段 2 开跑前必须重新读取全部账本，剩余额度不足即不启动",
+    "completed_in_phase_2_before_interruption": [
+      "V10-MAP-04-S0-ext",
+      "V10-MAP-04-S1-ext",
+      "V10-MAP-04-S2-ext",
+      "V10-MAP-13-S0-ext",
+      "V10-MAP-13-S1-ext",
+      "V10-MAP-13-S2-ext",
+      "V10-MAP-14-S0-ext",
+      "V10-MAP-14-S1-ext",
+      "V10-MAP-14-S2-ext",
+      "V10-MAP-19-S0-ext",
+      "V10-MAP-19-S1-ext"
+    ],
     "declared_at": "2026-10-18（阶段 1 运行中登记，运行前生效）",
-    "rationale": "阶段 1 的 45 局只覆盖 15 张 V10 原生图；把其余 **全部 8 张 V10 原生图**（不是按成败挑选）各补 3 环境 seed，使 MiMo 覆盖达到 23/23 张 V10 原生图。7 张 V8 回退图不跑：它们的实例对 seed 不敏感，再跑只是同一实例的重复，不能冒充多 seed；其覆盖缺口在 validated-regression.md 记录。",
-    "maps": ["MAP-04", "MAP-13", "MAP-14", "MAP-19", "MAP-20", "MAP-22", "MAP-23", "MAP-24"],
-    "group_tag": "ext",
-    "run_id_pattern": "V10-<map_id>-S<seed>-ext",
     "episodes": 24,
+    "group_tag": "ext",
+    "interruption": {
+      "at": "2026-10-18T14:11:45Z",
+      "decision_index": 2,
+      "episode": "V10-MAP-19-S2-ext",
+      "error": "APIConnectionError（结果未确认 → UNKNOWN_PROVIDER_SPEND）",
+      "handling": "按 stop rule 立即封账 ledger_v10_002.jsonl（保留全额预留 0.018432）；已完成 12 局保留；剩余 13 局在新账本 ledger_v10_003.jsonl 继续，用新 run_id 补跑被打断的一局"
+    },
     "ledger": "runs/v10/mimo/ledger_v10_002.jsonl",
     "ledger_note": "与阶段 1 共享全局 ¥10；新账本通过 prior_spend 计入阶段 1 全部已结算与预留",
     "manifest_file": "runs/v10/mimo/manifest_ext.json",
     "manifest_hash": "f21f6aee7610668335fefb6dbbfdb119f717550d5c4ead90383f55d3f87f4075",
-    "budget_gate": "阶段 2 开跑前必须重新读取全部账本，剩余额度不足即不启动",
-    "interruption": {
-      "at": "2026-10-18T14:11:45Z",
-      "episode": "V10-MAP-19-S2-ext",
-      "decision_index": 2,
-      "error": "APIConnectionError（结果未确认 → UNKNOWN_PROVIDER_SPEND）",
-      "handling": "按 stop rule 立即封账 ledger_v10_002.jsonl（保留全额预留 0.018432）；已完成 12 局保留；剩余 13 局在新账本 ledger_v10_003.jsonl 继续，用新 run_id 补跑被打断的一局"
-    },
+    "maps": [
+      "MAP-04",
+      "MAP-13",
+      "MAP-14",
+      "MAP-19",
+      "MAP-20",
+      "MAP-22",
+      "MAP-23",
+      "MAP-24"
+    ],
+    "rationale": "阶段 1 的 45 局只覆盖 15 张 V10 原生图；把其余 **全部 8 张 V10 原生图**（不是按成败挑选）各补 3 环境 seed，使 MiMo 覆盖达到 23/23 张 V10 原生图。7 张 V8 回退图不跑：它们的实例对 seed 不敏感，再跑只是同一实例的重复，不能冒充多 seed；其覆盖缺口在 validated-regression.md 记录。",
+    "run_id_pattern": "V10-<map_id>-S<seed>-ext",
     "supplement_ledger": "runs/v10/mimo/ledger_v10_003.jsonl",
-    "supplement_retries": ["V10-MAP-19-S2-ext-r2"],
-    "completed_in_phase_2_before_interruption": [
-      "V10-MAP-04-S0-ext", "V10-MAP-04-S1-ext", "V10-MAP-04-S2-ext",
-      "V10-MAP-13-S0-ext", "V10-MAP-13-S1-ext", "V10-MAP-13-S2-ext",
-      "V10-MAP-14-S0-ext", "V10-MAP-14-S1-ext", "V10-MAP-14-S2-ext",
-      "V10-MAP-19-S0-ext", "V10-MAP-19-S1-ext"
+    "supplement_retries": [
+      "V10-MAP-19-S2-ext-r2"
     ]
   },
-  "cost_so_far_cny": {
-    "settled": 1.29609856,
-    "unknown_reserved": 0.059392,
-    "total": 1.35549056,
-    "remaining_before_supplement": 8.64450944
-  },
   "phase_3_interface_fix": {
-    "declared_at": "2026-10-18（阶段 2 运行中登记；开跑前生效）",
-    "rationale": "Batch 8 证据显示 MAP-18 的 3 局全部因动作**形状**被误解而 INVALID_ACTION_SCHEMA（模型把 operations 写成数组，契约要求对象），MAP-28 seed0 同类（claims 写成对象映射，契约要求对象数组）。这是接口假象，不是能力差异。修复方式：公开动作契约改为按 V8Action 注解渲染**类型形状**，并对确有证据的两图追加公开格式澄清；随后整图全 seed 重跑，不按单局成败挑选。",
-    "dcr": "DCR-V10-24",
-    "maps": ["MAP-18", "MAP-28"],
-    "group_tag": "i2",
-    "run_id_pattern": "V10-<map_id>-S<seed>-i2",
-    "episodes": 6,
-    "ledger": "runs/v10/mimo/ledger_v10_004.jsonl",
-    "manifest_file": "runs/v10/mimo/manifest_i2.json",
-    "manifest_hash": "bf98b443762c88b8c2f5b7f8f9d78b4c6ea1e2e0e7b6e9a13a2a5dbc3a1b8a98",
-    "comparison_rule": "i2 与 main/castle 的同图同 seed 只作“接口修复前后”的配对描述，不称严格同条件 A/B（prompt 已变）",
-    "hint_disclosure": "澄清只写公开结构（字段名与对象/数组形状），不含答案、最优动作或隐藏真值",
     "amendment_3b": {
       "declared_at": "2026-10-18（阶段 3 首批完成后、第 2 批开跑前登记）",
-      "trigger": "阶段 2 全量结束后审计发现 MAP-19（invalid/decisions=122/182）与 MAP-20（168/168）也是同一类接口假象：模型把 forecast_next（应为 [int] 长度 3）与 set_flow_tenths（应为 [int] 长度 3）写成以区名为键的对象。",
-      "maps_added": ["MAP-19", "MAP-20"],
       "episodes_added": 6,
       "ledger": "runs/v10/mimo/ledger_v10_007.jsonl",
       "manifest_hash": "23d09d42a359d6c06bd0600c2ccca73e8e1e8fc33f348b6098ed6e41dd95bc79",
+      "maps_added": [
+        "MAP-19",
+        "MAP-20"
+      ],
       "note": "阶段 3 计划哈希因地图集合扩大而更新；首批 6 局（MAP-18/28）用旧清单哈希 bf98b443… 运行，逐局 manifest 已固化，无需也不应重跑",
       "outcome": {
-        "status": "stopped_early_by_provider",
-        "completed": ["V10-MAP-19-S0-i2", "V10-MAP-19-S1-i2"],
-        "interrupted": ["V10-MAP-19-S2-i2（第 43 步 APIConnectionError → UNKNOWN_PROVIDER_SPEND，封账保留）"],
-        "not_run": ["V10-MAP-20-S0-i2", "V10-MAP-20-S1-i2", "V10-MAP-20-S2-i2"],
+        "completed": [
+          "V10-MAP-19-S0-i2",
+          "V10-MAP-19-S1-i2"
+        ],
+        "evidence_gained": "MAP-19 修复后 3 局非法动作均为 0（修复前 121/180），接口假象确认消除；MAP-19 seed2 的有效证据使用修复前已完成的 V10-MAP-19-S2-ext-r2（非法 0/60）",
+        "interrupted": [
+          "V10-MAP-19-S2-i2（第 43 步 APIConnectionError → UNKNOWN_PROVIDER_SPEND，封账保留）"
+        ],
+        "not_run": [
+          "V10-MAP-20-S0-i2",
+          "V10-MAP-20-S1-i2",
+          "V10-MAP-20-S2-i2"
+        ],
         "reason": "当日第 6 次 provider 异常（单请求延迟升至 45–66 秒后 APIConnectionError）；按 stop rule 停止自动调用，剩余局不再补跑，MAP-20 的 MiMo 证据缺口如实保留",
-        "evidence_gained": "MAP-19 修复后 3 局非法动作均为 0（修复前 121/180），接口假象确认消除；MAP-19 seed2 的有效证据使用修复前已完成的 V10-MAP-19-S2-ext-r2（非法 0/60）"
-      }
-    }
+        "status": "stopped_early_by_provider"
+      },
+      "trigger": "阶段 2 全量结束后审计发现 MAP-19（invalid/decisions=122/182）与 MAP-20（168/168）也是同一类接口假象：模型把 forecast_next（应为 [int] 长度 3）与 set_flow_tenths（应为 [int] 长度 3）写成以区名为键的对象。"
+    },
+    "comparison_rule": "i2 与 main/castle 的同图同 seed 只作“接口修复前后”的配对描述，不称严格同条件 A/B（prompt 已变）",
+    "dcr": "DCR-V10-24",
+    "declared_at": "2026-10-18（阶段 2 运行中登记；开跑前生效）",
+    "episodes": 6,
+    "group_tag": "i2",
+    "hint_disclosure": "澄清只写公开结构（字段名与对象/数组形状），不含答案、最优动作或隐藏真值",
+    "ledger": "runs/v10/mimo/ledger_v10_004.jsonl",
+    "manifest_file": "runs/v10/mimo/manifest_i2.json",
+    "manifest_hash": "bf98b443762c88b8c2f5b7f8f9d78b4c6ea1e2e0e7b6e9a13a2a5dbc3a1b8a98",
+    "maps": [
+      "MAP-18",
+      "MAP-28"
+    ],
+    "rationale": "Batch 8 证据显示 MAP-18 的 3 局全部因动作**形状**被误解而 INVALID_ACTION_SCHEMA（模型把 operations 写成数组，契约要求对象），MAP-28 seed0 同类（claims 写成对象映射，契约要求对象数组）。这是接口假象，不是能力差异。修复方式：公开动作契约改为按 V8Action 注解渲染**类型形状**，并对确有证据的两图追加公开格式澄清；随后整图全 seed 重跑，不按单局成败挑选。",
+    "run_id_pattern": "V10-<map_id>-S<seed>-i2"
   },
   "phase_4_map20_interface": {
-    "declared_at": "2026-10-19（开跑前登记）",
-    "rationale": "MAP-20 是唯一未过 `mimo` Gate 的图：Batch 8 三局 168/168 非法动作，根因是 set_flow_tenths / adjust_loads / open_bypasses 的**结构与取值集合**只存在于代码、未写进地图公开规则。DCR-V10-25 把三条结构写进 `public_rules()`（rule_hash 81eb7439… → e677a0ac…），并删除 runner 对该图的临时提示，使接口修复来自地图自身。",
+    "comparison_rule": "与 Batch 8 的 V10-MAP-20-S*-ext 只作“接口补全前后”配对描述：rule_hash、prompt 与 scenario_hash 均已变化，不称严格 A/B",
     "dcr": "DCR-V10-25",
-    "maps": ["MAP-20"],
-    "group_tag": "j2",
-    "run_id_pattern": "V10-MAP-20-S<seed>-j2",
+    "declared_at": "2026-10-19（开跑前登记）",
     "episodes": 3,
+    "group_tag": "j2",
     "ledger": "runs/v10/mimo/ledger_v10_008.jsonl",
     "manifest_file": "runs/v10/mimo/manifest_j2.json",
     "manifest_hash": "84fb07190f105e2eb72e2f8df364b08de7752ff0beff718c461ac59dbcf2897f",
-    "comparison_rule": "与 Batch 8 的 V10-MAP-20-S*-ext 只作“接口补全前后”配对描述：rule_hash、prompt 与 scenario_hash 均已变化，不称严格 A/B",
-    "stop_rule_note": "若再次出现 UNKNOWN_PROVIDER_SPEND / 连续 3 次 provider 错误，立即封账停止，不再补跑",
+    "maps": [
+      "MAP-20"
+    ],
     "outcome": {
-      "status": "completed",
-      "episodes": 3,
       "all_valid": true,
-      "result": "三局非法动作均为 0（修复前 168/168）；主指标恒 0、均 decision_budget_exhausted ⇒ 接口问题消除，剩余为策略/难度结论",
       "cost_settled_cny": 0.03032488,
-      "ledger_closed": false
-    }
+      "episodes": 3,
+      "ledger_closed": false,
+      "result": "三局非法动作均为 0（修复前 168/168）；主指标恒 0、均 decision_budget_exhausted ⇒ 接口问题消除，剩余为策略/难度结论",
+      "status": "completed"
+    },
+    "rationale": "MAP-20 是唯一未过 `mimo` Gate 的图：Batch 8 三局 168/168 非法动作，根因是 set_flow_tenths / adjust_loads / open_bypasses 的**结构与取值集合**只存在于代码、未写进地图公开规则。DCR-V10-25 把三条结构写进 `public_rules()`（rule_hash 81eb7439… → e677a0ac…），并删除 runner 对该图的临时提示，使接口修复来自地图自身。",
+    "run_id_pattern": "V10-MAP-20-S<seed>-j2",
+    "stop_rule_note": "若再次出现 UNKNOWN_PROVIDER_SPEND / 连续 3 次 provider 错误，立即封账停止，不再补跑"
   },
   "phase_5_map05_native": {
-    "declared_at": "2026-10-19（开跑前登记）",
-    "rationale": "MAP-05 原先只有 V8 固定实例（seed_effective=False，3-seed 缺口）。DCR-V10-27 把它参数化为 4 个预登记实例（窗口时刻与通道耗时不同，规则/契约/成功条件不变），Oracle 4/4、启发式 4/4、四消融 0/4、legal_random 0/80。为满足 8 项 Gate 的 `mimo` 条件（≥3 有效 seed 且接口可用），补跑 3 个环境 seed。",
+    "comparison_rule": "MAP-05 此前无 MiMo 局，本阶段是首次真实模型证据，不与 V8/V9 成功率比较",
     "dcr": "DCR-V10-27",
-    "maps": ["MAP-05"],
-    "group_tag": "k2",
-    "run_id_pattern": "V10-MAP-05-S<seed>-k2",
+    "declared_at": "2026-10-19（开跑前登记）",
+    "environment_seeds": [
+      0,
+      1,
+      2
+    ],
     "episodes": 3,
-    "environment_seeds": [0, 1, 2],
+    "group_tag": "k2",
     "ledger": "runs/v10/mimo/ledger_v10_009.jsonl",
     "manifest_file": "runs/v10/mimo/manifest_k2.json",
     "manifest_hash": "e8edb7d833123cf76a6dd544d1f5d8f3c329a5265bcbe5c0194cb32be07b5dc4",
-    "comparison_rule": "MAP-05 此前无 MiMo 局，本阶段是首次真实模型证据，不与 V8/V9 成功率比较",
-    "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑",
+    "maps": [
+      "MAP-05"
+    ],
     "outcome": {
-      "status": "completed",
-      "episodes": 3,
-      "result": "三局均 SIGNAL_WINDOW_MISSED（12/6/13 决策）；非法动作 5/12、0/6、9/13——全部是 wait.ticks 超出公开的 1..8 区间（契约未写区间）",
       "cost_settled_cny": 0.01543524,
-      "ledger_closed": false
-    }
+      "episodes": 3,
+      "ledger_closed": false,
+      "result": "三局均 SIGNAL_WINDOW_MISSED（12/6/13 决策）；非法动作 5/12、0/6、9/13——全部是 wait.ticks 超出公开的 1..8 区间（契约未写区间）",
+      "status": "completed"
+    },
+    "rationale": "MAP-05 原先只有 V8 固定实例（seed_effective=False，3-seed 缺口）。DCR-V10-27 把它参数化为 4 个预登记实例（窗口时刻与通道耗时不同，规则/契约/成功条件不变），Oracle 4/4、启发式 4/4、四消融 0/4、legal_random 0/80。为满足 8 项 Gate 的 `mimo` 条件（≥3 有效 seed 且接口可用），补跑 3 个环境 seed。",
+    "run_id_pattern": "V10-MAP-05-S<seed>-k2",
+    "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
   },
   "phase_5b_contract_bounds": {
-    "declared_at": "2026-10-19（开跑前登记）",
-    "rationale": "阶段 5 暴露第三类接口假象：契约渲染了字段类型却没有渲染 `ge`/`le` 区间，模型给 `wait.ticks` 17/16/…/9 被判非法（三局合计 14/31 决策）。DCR-V10-28 把区间写进契约（`ticks: <int> (1..8)` 等），对 MAP-05 全 3 seed 重跑验证。",
+    "comparison_rule": "与阶段 5 的同图同 seed 只作“契约补区间前后”的配对描述；prompt 已变，不称严格 A/B",
     "dcr": "DCR-V10-28",
-    "maps": ["MAP-05"],
-    "group_tag": "k2b",
-    "run_id_pattern": "V10-MAP-05-S<seed>-k2b",
+    "declared_at": "2026-10-19（开跑前登记）",
+    "environment_seeds": [
+      0,
+      1,
+      2
+    ],
     "episodes": 3,
-    "environment_seeds": [0, 1, 2],
+    "group_tag": "k2b",
     "ledger": "runs/v10/mimo/ledger_v10_010.jsonl",
     "manifest_file": "runs/v10/mimo/manifest_k2b.json",
     "manifest_hash": "a67078e76f47b1fd624910289d3b8400959fdc0f8c28c1cc9cc0a0b3de120fe4",
-    "comparison_rule": "与阶段 5 的同图同 seed 只作“契约补区间前后”的配对描述；prompt 已变，不称严格 A/B",
+    "maps": [
+      "MAP-05"
+    ],
+    "rationale": "阶段 5 暴露第三类接口假象：契约渲染了字段类型却没有渲染 `ge`/`le` 区间，模型给 `wait.ticks` 17/16/…/9 被判非法（三局合计 14/31 决策）。DCR-V10-28 把区间写进契约（`ticks: <int> (1..8)` 等），对 MAP-05 全 3 seed 重跑验证。",
+    "run_id_pattern": "V10-MAP-05-S<seed>-k2b",
     "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
   },
   "phase_6_map02_native": {
-    "declared_at": "2026-10-19（开跑前登记）",
-    "rationale": "MAP-02 原先只有 V8 固定实例（seed_effective=False）。DCR-V10-29 把泄漏触发动作序、扩散窗口、乘员压力与 deadline 按 seed 实例化（规则/契约/成功条件不变），Oracle 4/4、启发式 4/4、消融最高 1/4、legal_random 0/80。补跑 3 个环境 seed 以满足 `mimo` Gate。",
+    "comparison_rule": "MAP-02 此前无 MiMo 局，本阶段是首次真实模型证据",
     "dcr": "DCR-V10-29",
-    "maps": ["MAP-02"],
-    "group_tag": "l2",
-    "run_id_pattern": "V10-MAP-02-S<seed>-l2",
+    "declared_at": "2026-10-19（开跑前登记）",
+    "environment_seeds": [
+      0,
+      1,
+      2
+    ],
     "episodes": 3,
-    "environment_seeds": [0, 1, 2],
+    "group_tag": "l2",
     "ledger": "runs/v10/mimo/ledger_v10_011.jsonl",
     "manifest_file": "runs/v10/mimo/manifest_l2.json",
     "manifest_hash": "a59cfa30b01b9d05f3619d957f9b35be7fa869d987e744d581a7c216e68a3305",
-    "comparison_rule": "MAP-02 此前无 MiMo 局，本阶段是首次真实模型证据",
+    "maps": [
+      "MAP-02"
+    ],
+    "rationale": "MAP-02 原先只有 V8 固定实例（seed_effective=False）。DCR-V10-29 把泄漏触发动作序、扩散窗口、乘员压力与 deadline 按 seed 实例化（规则/契约/成功条件不变），Oracle 4/4、启发式 4/4、消融最高 1/4、legal_random 0/80。补跑 3 个环境 seed 以满足 `mimo` Gate。",
+    "run_id_pattern": "V10-MAP-02-S<seed>-l2",
     "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
   },
   "phase_7_public_rules_rerun": {
-    "declared_at": "2026-10-19（开跑前登记）",
-    "rationale": "MAP-02 / MAP-05 成为原生图后才发现它们**没有 `public_rules()`**：阶段 5b/6 的模型只看到动作契约与 Observation，看不到机制说明（供电单目标、校准前置、泄漏公告与隔离、双目标判据）。这是接口透明度的缺口。本阶段给两图补公开规则（DCR-V10-27/29 修订），并对两图各 3 个环境 seed 重跑。",
+    "comparison_rule": "与阶段 5b/6 只作“补公开规则前后”的配对描述；rule_hash 与 prompt 均已变",
     "dcr": "DCR-V10-27 / DCR-V10-29（公开规则补充）",
-    "maps": ["MAP-02", "MAP-05"],
-    "group_tag": "m2",
-    "run_id_pattern": "V10-<map>-S<seed>-m2",
+    "declared_at": "2026-10-19（开跑前登记）",
+    "environment_seeds": [
+      0,
+      1,
+      2
+    ],
     "episodes": 6,
-    "environment_seeds": [0, 1, 2],
+    "group_tag": "m2",
     "ledger": "runs/v10/mimo/ledger_v10_012.jsonl",
     "manifest_file": "runs/v10/mimo/manifest_m2.json",
     "manifest_hash": "45b77850387438e0a1a0a4eac4e7011fc1deecc42a174448e2d811449e2cb9c2",
-    "comparison_rule": "与阶段 5b/6 只作“补公开规则前后”的配对描述；rule_hash 与 prompt 均已变",
+    "maps": [
+      "MAP-02",
+      "MAP-05"
+    ],
+    "rationale": "MAP-02 / MAP-05 成为原生图后才发现它们**没有 `public_rules()`**：阶段 5b/6 的模型只看到动作契约与 Observation，看不到机制说明（供电单目标、校准前置、泄漏公告与隔离、双目标判据）。这是接口透明度的缺口。本阶段给两图补公开规则（DCR-V10-27/29 修订），并对两图各 3 个环境 seed 重跑。",
+    "run_id_pattern": "V10-<map>-S<seed>-m2",
     "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
   },
+  "phase_8_map27_native": {
+    "comparison_rule": "MAP-27 此前无 MiMo 局，本阶段是首次真实模型证据",
+    "dcr": "DCR-V10-30",
+    "declared_at": "2026-10-19（开跑前登记）",
+    "environment_seeds": [
+      0,
+      1,
+      2
+    ],
+    "episodes": 3,
+    "group_tag": "n2",
+    "ledger": "runs/v10/mimo/ledger_v10_013.jsonl",
+    "manifest_file": "runs/v10/mimo/manifest_n2.json",
+    "manifest_hash": "06e5f933b5cc0717a159f7d73ae13fd055c0b35f3714b648d71834a9e0a6589f",
+    "maps": [
+      "MAP-27"
+    ],
+    "outcome": {
+      "completed": [
+        "V10-MAP-27-S0-n2",
+        "V10-MAP-27-S1-n2"
+      ],
+      "cost_settled_cny": 0.06148672,
+      "interrupted": [
+        "V10-MAP-27-S2-n2（第 21 步 APIConnectionError → UNKNOWN_PROVIDER_SPEND，封账保留）"
+      ],
+      "result": "三局非法动作 0/0/1（0.02 占比），均未完成多目标；两局 VEHICLE_STRANDED、一局预算耗尽",
+      "retry": {
+        "ledger": "runs/v10/mimo/ledger_v10_014.jsonl",
+        "outcome": "decision_budget_exhausted（46 决策）",
+        "run_id": "V10-MAP-27-S2-n2-r2"
+      },
+      "status": "completed_with_one_retry"
+    },
+    "rationale": "MAP-27 原先只有 V8 固定实例（seed_effective=False）。DCR-V10-30 把电量容量、货舱容量、充电增益与余氧按 seed 实例化（规则/契约/成功条件不变）；电量收紧的实例只允许 stabilize-first 方案，属实例难度变化。Oracle 4/4、启发式 4/4、跳过目标的消融 0/4、overload 1/4、legal_random 0/80。补跑 3 个环境 seed 以满足 `mimo` Gate。",
+    "run_id_pattern": "V10-MAP-27-S<seed>-n2",
+    "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
+  },
+  "prompt": {
+    "contains_hidden_truth": false,
+    "frozen_hash_note": "prompt_hash 逐局记录在 trace header 与 manifest",
+    "frozen_until": "first paid call",
+    "history_window": 5,
+    "observation_fields": "仅 Observation 公开字段",
+    "template": "system=public_rules() + action contract; user=observation + last 5 actions(action+result)"
+  },
+  "schema": "v10-mimo-preregistration-2",
+  "status": "executing",
   "stop_rules": [
     "达到全局 CNY 10 上限（含未知预留）立即停止",
     "出现 UNKNOWN_PROVIDER_SPEND 立即封账并停止自动调用",
     "同批连续 3 次 provider 错误暂停该批并保留账本",
     "不因失败而重试；补跑必须新 run_id 并记录原因"
-  ],
-  "per_episode_artifacts": {
-    "trace": "runs/v10/mimo/episodes/<run_id>/agent_trace.jsonl",
-    "judge": "runs/v10/mimo/episodes/<run_id>/judge.json",
-    "manifest": "runs/v10/mimo/episodes/<run_id>/manifest.json",
-    "aggregate": "runs/v10/mimo/results.json"
-  },
-  "per_episode_fields": [
-    "run_id", "map_id", "world", "difficulty", "environment_seed", "replicate",
-    "model_id", "temperature", "scenario_hash", "rule_hash", "metric_hash",
-    "metric_schema_hash", "prompt_hash", "preregistration_hash", "manifest_hash",
-    "code_commit", "termination", "outcome", "success", "decision_count",
-    "invalid_actions", "rejected_actions", "mechanism_triggered",
-    "primary_metric", "primary_metric_state", "primary_metric_value",
-    "cost_settled", "cost_unknown", "trace_path", "judge_path"
-  ],
-  "manifest_hash": "a5326bc5178a2133ffac4602fff085a7f581616345ed82e88ed9ea7707bb5684",
-  "metric_schema_hash_source": "agent_arena.v10.metrics.governance.schema_hash()"
+  ]
 }

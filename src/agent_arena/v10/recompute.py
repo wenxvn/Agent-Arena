@@ -240,6 +240,20 @@ def _f23(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[s
     return _v(max(reductions))
 
 
+def _f27(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
+    del obs
+    if truncated:
+        return _censored("截尾")
+    ok = (
+        judge.get("sample_state") == "SEALED"
+        and judge.get("survivor_state") == "RESCUED"
+        and judge.get("relay_state") == "ONLINE"
+        and bool(judge.get("crew_alive"))
+        and int(judge.get("oxygen") or 0) > 0
+    )
+    return _v(1 if ok else 0)
+
+
 def _f28(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
     del obs
     if judge.get("submitted") is True:
@@ -285,6 +299,7 @@ FORMULAS: dict[str, Formula] = {
     "MAP-20": _f20,
     "MAP-22": _f22,
     "MAP-23": _f23,
+    "MAP-27": _f27,
     "MAP-28": _f28,
     "MAP-29": _f29,
     "MAP-30": _f30,

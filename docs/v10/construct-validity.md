@@ -43,7 +43,7 @@
 | MAP-24 | jungle | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `mountain_only` 4/4；`no_replan` 0/4；`waste_opening` 2/4 | 0.00–1.00 | 3/3 | Batch 4：山路拉长、封路时刻隐藏且不瞬杀、公开 collapse_observed；两条 primary 重定义；no_replan 0/4（replan_success 0）、mountain_only 记为 N/A 合法替代 |
 | MAP-25 | lunar | FORCED | VALIDATED | `v8` | — | — | 未运行 | Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录 |
 | MAP-26 | lunar | OPTIONAL | NEEDS_MORE_EVIDENCE | `v10` | `no_diagnosis` 3/4；`test_but_ignore` 0/4 | 0.00–0.75 | 3/3 | Batch 5：换错耗备件并 +1 磨损（达 2 即不可恢复）、rollback 不返还备件；no_diagnosis 3/4 但备件 2/2/1/2 且均有换错、test_but_ignore 0/4；启发式 4/4 且 spares 恒 1、precision 1 |
-| MAP-27 | lunar | FORCED | VALIDATED | `v8` | — | — | 未运行 | Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录 |
+| MAP-27 | lunar | FORCED | VALIDATED | `v10` | `overload` 1/4；`skip_relay` 0/4；`skip_rescue` 0/4；`skip_sample` 0/4 | 0.00–0.25 | 0/3 | Batch 9d：Oracle 4/4、启发式 4/4、跳过目标消融 0/4、overload 1/4；公开规则含电量/货舱/充电/中继/伤员判据 |
 | MAP-28 | castle | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `blind_submit` 0/4；`cite_all` 3/4；`no_record` 0/4；`single_source` 0/4 | 0.00–0.75 | 1/3 | Batch 3：公开 person/path 枚举；4 案卷依赖图不同；引用自洽规则；no_record 0/4、single_source 0/4、blind_submit 0/4、cite_all 3/4 |
 | MAP-29 | castle | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `blind_accuse` 0/4；`no_compare` 0/4；`skip_archive` 0/4；`trust_first` 0/4 | 0.00–0.00 | 0/3 | Batch 3：公开 compare 语义；角色分配随 seed 轮换且不公开；部分真实证人；四消融 0/4，启发式 8–9 问 4/4 |
 | MAP-30 | castle | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `evidence_shuffle` 0/3；`late_guess` 0/3；`no_casebook` 0/3；`window_delay` 0/3 | 0.00–0.00 | 0/3 | Batch 3：公开条目 ID/成对规则/法庭节点/窗口语义；诱饵事件；两处指标偏置纠正；四消融 0/3，window_delay 触发 window_pressure |

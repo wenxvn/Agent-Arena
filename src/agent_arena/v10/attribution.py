@@ -79,7 +79,7 @@ MECHANISM_TOOLS: dict[str, tuple[str, ...]] = {
     "MAP-23": ("scout", "mark"),
     "MAP-24": ("probe_bridge", "record_route", "measure_tide"),
     "MAP-26": ("run_test", "replace", "rollback"),
-    "MAP-27": ("submit", "sample", "repair_relay"),
+    "MAP-27": ("load", "repair_relay", "rescue", "sample", "submit"),
     "MAP-28": ("record", "read_record", "submit"),
     "MAP-29": ("ask", "compare_testimony", "submit"),
     "MAP-30": ("record", "compare_records", "formal_accuse"),

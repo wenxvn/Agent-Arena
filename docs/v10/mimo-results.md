@@ -3,7 +3,7 @@
 - 由 `python -m agent_arena.v10.mimo_report` 从 `runs/v10/mimo/` 逐字重算，禁止手填。
 - 模型：`mimo-v2.6-flash`；temperature=0；reasoning 关闭；每次请求先前预留、按供应商
   usage 结算；未知消费立即封账（保留预留，**不按 0 计**）。
-- 全局上限 CNY 10；已结算 **CNY 1.86622364**；未知/未结预留 **CNY 0.11468800**；合计占用 **CNY 1.98091164**。
+- 全局上限 CNY 10；已结算 **CNY 1.92771036**；未知/未结预留 **CNY 0.13312000**；合计占用 **CNY 2.06083036**。
 - 每图 3 个环境 seed、单一 replicate；`n=3` 只作描述，不作显著性断言，也不做跨模型排名。
 
 ## 1. 覆盖与账本
@@ -27,6 +27,8 @@
 | `ledger_v10_010.jsonl` | 25 | 0.01239556 | 0.00000000 | — | `be2d6c90a9c5` |
 | `ledger_v10_011.jsonl` | 18 | 0.00781520 | 0.00000000 | — | `adddbf99fb2a` |
 | `ledger_v10_012.jsonl` | 96 | 0.05914944 | 0.00000000 | — | `50bee897baf0` |
+| `ledger_v10_013.jsonl` | 69 | 0.04294572 | 0.01843200 | UNKNOWN_PROVIDER_SPEND | `7dbec2ed074c` |
+| `ledger_v10_014.jsonl` | 46 | 0.01854100 | 0.00000000 | — | `4ff6517334e4` |
 
 ## 2. 分组结果（仅统计有效局）
 
@@ -42,6 +44,7 @@
 | MAP-05 契约补区间重跑 | 3 | 0 | 0.000 | 0 | 0.01239556 |
 | MAP-02 原生首测 | 3 | 0 | 0.000 | 0 | 0.00781520 |
 | 补公开规则后重跑（MAP-02/05） | 6 | 0 | 0.000 | 0 | 0.05914944 |
+| MAP-27 原生首测 | 3 | 0 | 0.000 | 1 | 0.06148672 |
 
 ## 3. 逐图逐 seed
 
@@ -135,6 +138,10 @@
 | MAP-26 | lunar | 中等 | 0 | `V10-MAP-26-S0-interface` | UNIT_RESTORED | 3 | 1 | True | 0.00183600 | 是 |
 | MAP-26 | lunar | 中等 | 1 | `V10-MAP-26-S1-interface` | UNIT_RESTORED | 3 | 1 | True | 0.00121080 | 是 |
 | MAP-26 | lunar | 中等 | 2 | `V10-MAP-26-S2-interface` | UNIT_RESTORED | 3 | 1 | True | 0.00152040 | 是 |
+| MAP-27 | lunar | 困难 | 0 | `V10-MAP-27-S0-n2` | VEHICLE_STRANDED | 20 | 0 | False | 0.01471032 | 是 |
+| MAP-27 | lunar | 困难 | 1 | `V10-MAP-27-S1-n2` | VEHICLE_STRANDED | 27 | 0 | False | 0.01751156 | 是 |
+| MAP-27 | lunar | 困难 | 2 | `V10-MAP-27-S2-n2` | unknown_provider_spend | 21 | None | False | 0.01072384 | 否 |
+| MAP-27 | lunar | 困难 | 2 | `V10-MAP-27-S2-n2-r2` | decision_budget_exhausted | 46 | None | False | 0.01854100 | 是 |
 | MAP-28 | castle | 简单 | 0 | `V10-MAP-28-S0-castle` | decision_budget_exhausted | 30 | None | False | 0.03482488 | 是 |
 | MAP-28 | castle | 简单 | 0 | `V10-MAP-28-S0-i2` | ALL_CLAIMS_SUPPORTED_AND_CORRECT | 20 | 1.0 | True | 0.01538112 | 是 |
 | MAP-28 | castle | 简单 | 1 | `V10-MAP-28-S1-castle` | decision_budget_exhausted | 30 | None | False | 0.02478312 | 是 |
@@ -152,15 +159,15 @@
 
 | outcome | 局数 |
 |---|---:|
-| `decision_budget_exhausted` | 31 |
-| `failure` | 34 |
+| `decision_budget_exhausted` | 32 |
+| `failure` | 36 |
 | `settle_closed:供应商 usage 超出登记上限。` | 1 |
 | `success` | 30 |
-| `unknown_provider_spend` | 4 |
+| `unknown_provider_spend` | 5 |
 
-- 有效局成功 **36/95**；其余为机制失败/决策预算耗尽。
-- 结论范围：本矩阵只覆盖 V10 原生图；5 张 V8 回退图
-  （MAP-01、MAP-16、MAP-17、MAP-25、MAP-27）仍有 3-seed 缺口，见 `validated-regression.md`，
+- 有效局成功 **36/98**；其余为机制失败/决策预算耗尽。
+- 结论范围：本矩阵只覆盖 V10 原生图；4 张 V8 回退图
+  （MAP-01、MAP-16、MAP-17、MAP-25）仍有 3-seed 缺口，见 `validated-regression.md`，
   不得据此声称 30/30 的 MiMo 多 seed 覆盖。
 
 ## 5. 中断与补跑（全部保留，不覆盖）
@@ -172,6 +179,7 @@
 | `V10-MAP-19-S2-i2` | MAP-19 | 2 | unknown_provider_spend | 43 | 保留记录，不计入该 seed 有效证据；按预登记规则另开账本、以新 run_id 补跑 |
 | `V10-MAP-22-S0-ext` | MAP-22 | 0 | unknown_provider_spend | 34 | 保留记录，不计入该 seed 有效证据；按预登记规则另开账本、以新 run_id 补跑 |
 | `V10-MAP-22-S2-ext` | MAP-22 | 2 | unknown_provider_spend | 10 | 保留记录，不计入该 seed 有效证据；按预登记规则另开账本、以新 run_id 补跑 |
+| `V10-MAP-27-S2-n2` | MAP-27 | 2 | unknown_provider_spend | 21 | 保留记录，不计入该 seed 有效证据；按预登记规则另开账本、以新 run_id 补跑 |
 
 补跑局（`-r2`，新 run_id + 原因已在 `mimo-preregistration.json` 登记）：
 
@@ -181,6 +189,7 @@
 | `V10-MAP-19-S2-ext-r2` | MAP-19 | 2 | decision_budget_exhausted | 60 |
 | `V10-MAP-22-S0-ext-r2` | MAP-22 | 0 | MOVE_BUDGET_EXHAUSTED | 59 |
 | `V10-MAP-22-S2-ext-r2` | MAP-22 | 2 | RETURNED_TO_CAMP_WITH_RUIN_RECORD | 28 |
+| `V10-MAP-27-S2-n2-r2` | MAP-27 | 2 | decision_budget_exhausted | 46 |
 
 另有阶段 3（`-i2`）接口修复后的同图全 seed 重跑：见 DCR-V10-24 与 `mimo-preregistration.json` 的 `phase_3_interface_fix`。
 阶段 3 与阶段 1/2 的同图同 seed 只作“接口修复前后”的配对描述，不称严格同条件 A/B。

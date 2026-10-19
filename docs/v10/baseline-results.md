@@ -29,6 +29,7 @@
 | MAP-23 | 4 | 4/4 | 4/4 | 4/4 | 0/80 | `ignore_counterevidence` 0/4；`no_scout` 0/4；`scout_everything` 0/4；`single_clue` 2/4 | 0.5 |
 | MAP-24 | 4 | 4/4 | 4/4 | 4/4 | 0/80 | `mountain_only` 4/4；`no_replan` 0/4；`waste_opening` 2/4 | 1.0 |
 | MAP-26 | 4 | 4/4 | 4/4 | 4/4 | 1/80 | `no_diagnosis` 3/4；`test_but_ignore` 0/4 | 0.75 |
+| MAP-27 | 4 | 4/4 | 4/4 | 4/4 | 0/80 | `overload` 1/4；`skip_relay` 0/4；`skip_rescue` 0/4；`skip_sample` 0/4 | 0.25 |
 | MAP-28 | 4 | 4/4 | 4/4 | 4/4 | 0/80 | `blind_submit` 0/4；`cite_all` 3/4；`no_record` 0/4；`single_source` 0/4 | 0.75 |
 | MAP-29 | 4 | 4/4 | 4/4 | 4/4 | 0/80 | `blind_accuse` 0/4；`no_compare` 0/4；`skip_archive` 0/4；`trust_first` 0/4 | 0.0 |
 | MAP-30 | 3 | 3/3 | 3/3 | 3/3 | 0/60 | `evidence_shuffle` 0/3；`late_guess` 0/3；`no_casebook` 0/3；`window_delay` 0/3 | 0.0 |

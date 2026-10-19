@@ -64,6 +64,7 @@ LEDGER_K2_PATH = MIMO_ROOT / "ledger_v10_009.jsonl"
 LEDGER_K2B_PATH = MIMO_ROOT / "ledger_v10_010.jsonl"
 LEDGER_L2_PATH = MIMO_ROOT / "ledger_v10_011.jsonl"
 LEDGER_M2_PATH = MIMO_ROOT / "ledger_v10_012.jsonl"
+LEDGER_N2_PATH = MIMO_ROOT / "ledger_v10_013.jsonl"
 PHASE_LEDGERS = {
     "main": LEDGER_PATH,
     "ext": LEDGER_EXT_PATH,
@@ -73,6 +74,7 @@ PHASE_LEDGERS = {
     "k2b": LEDGER_K2B_PATH,
     "l2": LEDGER_L2_PATH,
     "m2": LEDGER_M2_PATH,
+    "n2": LEDGER_N2_PATH,
 }
 MODEL_NAME = "mimo-v2.6-flash"
 MAX_CONSECUTIVE = 3
@@ -108,6 +110,8 @@ PHASE_GROUPS: dict[str, tuple[tuple[str, tuple[str, ...]], ...]] = {
     "l2": (("l2", ("MAP-02",)),),
     #: 阶段 7：MAP-02/05 补公开规则（DCR-V10-27/29 修订）后的重跑。
     "m2": (("m2", ("MAP-02", "MAP-05")),),
+    #: 阶段 8：MAP-27 原生 seed 化（DCR-V10-30）后的首轮真实模型证据。
+    "n2": (("n2", ("MAP-27",)),),
 }
 
 #: 逐图格式澄清（只写公开结构，不含真值/答案）；随 prompt_hash 一起冻结。
@@ -174,6 +178,17 @@ RETRIES: tuple[dict[str, Any], ...] = (
         "reason": (
             "第 34 步 provider APIConnectionError（结果未确认）按规则封账止损；补跑新 run_id，"
             "旧局 V10-MAP-22-S0-ext 原样保留"
+        ),
+    },
+    {
+        "run_id": "V10-MAP-27-S2-n2-r2",
+        "phase": "n2",
+        "map_id": "MAP-27",
+        "environment_seed": 2,
+        "group": "n2",
+        "reason": (
+            "第 21 步 provider APIConnectionError（结果未确认）按规则封账止损；补跑新 run_id，"
+            "旧局 V10-MAP-27-S2-n2 原样保留"
         ),
     },
     {
