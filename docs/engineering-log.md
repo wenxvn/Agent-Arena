@@ -1530,3 +1530,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：judge 字段暴露不改变 Observation/prompt，但历史 MiMo 局对应旧 `rule_hash`，引用需注明；13/14/21 仍未覆盖，不计入“全覆盖”。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 9：MAP-25 原生 seed 化（DCR-V10-33）
+
+事件：第五张回退图 MAP-25 改造为 V10 原生运行时（4 个预登记实例），补公开规则并完成真实模型首测。
+
+原因：MAP-25 是 `seed_effective=False` 的 3 图之一；月球世界已有 26/27 原生，补齐后 lunar 全部原生。
+
+改动：新增 `src/agent_arena/v10/runtime/map25.py`（子类化 V8 规则，只把起始位置 H/T 与氧气 12/10 按 seed 实例化；6 条 METRIC_SPECS；`public_rules()` 公开出舱依赖链、工具组合与诊断码要求）、`src/agent_arena/v10/baselines/map25.py`（按起始位置展开的 Oracle、Observation 驱动状态机、四消融 no_tether/no_diagnosis/wrong_tools/skip_array_inspection）、`tests/test_v10_map25.py`（8 条）；`validation`/`attribution`/`recompute`/`mimo_report`/`evidence_state`/`regression` 适配 28 图；新增 `DCR-V10-33`。
+
+结果：MAP-25 `seed_effective=True`、4 个不同 `scenario_hash`；Oracle 4/4（机制触发 4/4）、启发式 4/4、四消融全部 0/4、`legal_random` 0/80。真实 MiMo（阶段 10）：三局均 30/30 决策预算耗尽，非法动作 0/0/0，机制未触发——模型没走完出舱依赖链。指标规格 153→159（28 图）；独立核对 28 图 × 136 seed 实例 0 违规；公式级复算 25/28 图、887 次检查全一致。累计费用：结算 CNY `1.97614864` + 未知预留 `0.13312000` = `2.10926864`。
+
+验证：`pytest` 通过（含新增 8 条）；`mypy src` 249 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged；全部生成文档重算。
+
+边界：MAP-25 的 MiMo 0/3 是能力结果（依赖链执行失败），不说明地图无效；剩余 2 张回退图（16/17）仍未参数化；MAP-25 的实例差异主要在起始位置与氧气预算。
+
+关联提交：本次提交（分支 `v10-validity`）。

@@ -2,7 +2,7 @@
 
 - 由 `python -m agent_arena.v10.attribution` 生成；逐局回放 `runs/v10/mimo/`
   `episodes/` 的动作序列。
-- 覆盖 **107** 局（其中有效局 81）；机制动作集见模块
+- 覆盖 **110** 局（其中有效局 84）；机制动作集见模块
   `MECHANISM_TOOLS`。
 - 标签含义：`CONTRACT_ARTIFACT`（接口假象）｜`KEY_ACTION_NEVER_ATTEMPTED`｜`KEY_ACTION_ATTEMPTED_REJECTED`｜`KEY_ACTION_USED_NO_TRIGGER`｜`TRIGGERED`。
 
@@ -13,7 +13,7 @@
 | `CONTRACT_ARTIFACT` | 10 |
 | `KEY_ACTION_ATTEMPTED_REJECTED` | 2 |
 | `KEY_ACTION_NEVER_ATTEMPTED` | 8 |
-| `KEY_ACTION_USED_NO_TRIGGER` | 33 |
+| `KEY_ACTION_USED_NO_TRIGGER` | 36 |
 | `TRIGGERED` | 54 |
 
 ## 2. 逐局归因（有效局）
@@ -86,6 +86,9 @@
 | MAP-24 | 0 | `V10-MAP-24-S0-ext` | `TRIGGERED` | 9 | 0.0 | `probe_bridge` 1/0、`record_route` 0/0、`measure_tide` 0/0 | ALL_ITEMS_DELIVERED | 1 |
 | MAP-24 | 1 | `V10-MAP-24-S1-ext` | `TRIGGERED` | 9 | 0.0 | `probe_bridge` 1/0、`record_route` 0/0、`measure_tide` 0/0 | ALL_ITEMS_DELIVERED | 1 |
 | MAP-24 | 2 | `V10-MAP-24-S2-ext` | `TRIGGERED` | 9 | 0.0 | `probe_bridge` 1/0、`record_route` 0/0、`measure_tide` 0/0 | ALL_ITEMS_DELIVERED | 1 |
+| MAP-25 | 0 | `V10-MAP-25-S0-p2` | `KEY_ACTION_USED_NO_TRIGGER` | 30 | 0.0 | `equip` 5/1、`eva_exit` 1/0、`diagnose` 2/1、`repair` 15/15、`return_to_A` 0/0 | decision_budget_exhausted | None |
+| MAP-25 | 1 | `V10-MAP-25-S1-p2` | `KEY_ACTION_USED_NO_TRIGGER` | 30 | 0.0 | `equip` 4/0、`eva_exit` 1/0、`diagnose` 5/4、`repair` 15/15、`return_to_A` 0/0 | decision_budget_exhausted | None |
+| MAP-25 | 2 | `V10-MAP-25-S2-p2` | `KEY_ACTION_USED_NO_TRIGGER` | 30 | 0.0 | `equip` 5/1、`eva_exit` 1/0、`diagnose` 3/2、`repair` 14/14、`return_to_A` 0/0 | decision_budget_exhausted | None |
 | MAP-26 | 0 | `V10-MAP-26-S0-interface` | `TRIGGERED` | 3 | 0.0 | `run_test` 1/0、`replace` 1/0、`rollback` 0/0 | UNIT_RESTORED | 1 |
 | MAP-26 | 1 | `V10-MAP-26-S1-interface` | `TRIGGERED` | 3 | 0.0 | `run_test` 1/0、`replace` 1/0、`rollback` 0/0 | UNIT_RESTORED | 1 |
 | MAP-26 | 2 | `V10-MAP-26-S2-interface` | `TRIGGERED` | 3 | 0.0 | `run_test` 1/0、`replace` 1/0、`rollback` 0/0 | UNIT_RESTORED | 1 |
@@ -116,6 +119,7 @@
 | MAP-19 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×3 |
 | MAP-20 | 3/3 | `KEY_ACTION_NEVER_ATTEMPTED` | KEY_ACTION_NEVER_ATTEMPTED×3 |
 | MAP-22 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×2；KEY_ACTION_ATTEMPTED_REJECTED×1 |
+| MAP-25 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×3 |
 | MAP-27 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×3 |
 | MAP-28 | 2/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×2 |
 | MAP-29 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×3 |

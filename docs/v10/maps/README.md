@@ -31,7 +31,7 @@
 | [MAP-22](MAP-22.md) | 丛林 | 简单 | FORCED | NEEDS_MORE_EVIDENCE | `v10` |
 | [MAP-23](MAP-23.md) | 丛林 | 中等 | FORCED | NEEDS_MORE_EVIDENCE | `v10` |
 | [MAP-24](MAP-24.md) | 丛林 | 困难 | FORCED | NEEDS_MORE_EVIDENCE | `v10` |
-| [MAP-25](MAP-25.md) | 月球 | 简单 | FORCED | VALIDATED | `v8` |
+| [MAP-25](MAP-25.md) | 月球 | 简单 | FORCED | VALIDATED | `v10` |
 | [MAP-26](MAP-26.md) | 月球 | 中等 | OPTIONAL | NEEDS_MORE_EVIDENCE | `v10` |
 | [MAP-27](MAP-27.md) | 月球 | 困难 | FORCED | VALIDATED | `v10` |
 | [MAP-28](MAP-28.md) | 古堡 | 简单 | FORCED | NEEDS_MORE_EVIDENCE | `v10` |
@@ -40,4 +40,4 @@
 
 ## 覆盖说明
 
-- V10 原生运行时：27 张；V8 回退：3 张（01/02/05/16/17/25/27，3-seed 缺口见 `validated-regression.md`）。
+- V10 原生运行时：28 张；V8 回退：2 张（01/02/05/16/17/25/27，3-seed 缺口见 `validated-regression.md`）。

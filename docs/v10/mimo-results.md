@@ -3,7 +3,7 @@
 - 由 `python -m agent_arena.v10.mimo_report` 从 `runs/v10/mimo/` 逐字重算，禁止手填。
 - 模型：`mimo-v2.6-flash`；temperature=0；reasoning 关闭；每次请求先前预留、按供应商
   usage 结算；未知消费立即封账（保留预留，**不按 0 计**）。
-- 全局上限 CNY 10；已结算 **CNY 1.93401916**；未知/未结预留 **CNY 0.13312000**；合计占用 **CNY 2.06713916**。
+- 全局上限 CNY 10；已结算 **CNY 1.97614864**；未知/未结预留 **CNY 0.13312000**；合计占用 **CNY 2.10926864**。
 - 每图 3 个环境 seed、单一 replicate；`n=3` 只作描述，不作显著性断言，也不做跨模型排名。
 
 ## 1. 覆盖与账本
@@ -30,6 +30,7 @@
 | `ledger_v10_013.jsonl` | 69 | 0.04294572 | 0.01843200 | UNKNOWN_PROVIDER_SPEND | `7dbec2ed074c` |
 | `ledger_v10_014.jsonl` | 46 | 0.01854100 | 0.00000000 | — | `4ff6517334e4` |
 | `ledger_v10_015.jsonl` | 13 | 0.00630880 | 0.00000000 | — | `f4c764deb13c` |
+| `ledger_v10_016.jsonl` | 90 | 0.04212948 | 0.00000000 | — | `2719d2b6934f` |
 
 ## 2. 分组结果（仅统计有效局）
 
@@ -140,6 +141,9 @@
 | MAP-24 | jungle | 困难 | 0 | `V10-MAP-24-S0-ext` | ALL_ITEMS_DELIVERED | 9 | 1 | True | 0.00637100 | 是 |
 | MAP-24 | jungle | 困难 | 1 | `V10-MAP-24-S1-ext` | ALL_ITEMS_DELIVERED | 9 | 1 | True | 0.00286568 | 是 |
 | MAP-24 | jungle | 困难 | 2 | `V10-MAP-24-S2-ext` | ALL_ITEMS_DELIVERED | 9 | 1 | True | 0.00282396 | 是 |
+| MAP-25 | lunar | 简单 | 0 | `V10-MAP-25-S0-p2` | decision_budget_exhausted | 30 | None | False | 0.01587828 | 是 |
+| MAP-25 | lunar | 简单 | 1 | `V10-MAP-25-S1-p2` | decision_budget_exhausted | 30 | None | False | 0.01240108 | 是 |
+| MAP-25 | lunar | 简单 | 2 | `V10-MAP-25-S2-p2` | decision_budget_exhausted | 30 | None | False | 0.01385012 | 是 |
 | MAP-26 | lunar | 中等 | 0 | `V10-MAP-26-S0-interface` | UNIT_RESTORED | 3 | 1 | True | 0.00183600 | 是 |
 | MAP-26 | lunar | 中等 | 1 | `V10-MAP-26-S1-interface` | UNIT_RESTORED | 3 | 1 | True | 0.00121080 | 是 |
 | MAP-26 | lunar | 中等 | 2 | `V10-MAP-26-S2-interface` | UNIT_RESTORED | 3 | 1 | True | 0.00152040 | 是 |
@@ -164,15 +168,15 @@
 
 | outcome | 局数 |
 |---|---:|
-| `decision_budget_exhausted` | 32 |
+| `decision_budget_exhausted` | 35 |
 | `failure` | 39 |
 | `settle_closed:供应商 usage 超出登记上限。` | 1 |
 | `success` | 30 |
 | `unknown_provider_spend` | 5 |
 
-- 有效局成功 **36/101**；其余为机制失败/决策预算耗尽。
-- 结论范围：本矩阵只覆盖 V10 原生图；3 张 V8 回退图
-  （MAP-16、MAP-17、MAP-25）仍有 3-seed 缺口，见 `validated-regression.md`，
+- 有效局成功 **36/104**；其余为机制失败/决策预算耗尽。
+- 结论范围：本矩阵只覆盖 V10 原生图；2 张 V8 回退图
+  （MAP-16、MAP-17）仍有 3-seed 缺口，见 `validated-regression.md`，
   不得据此声称 30/30 的 MiMo 多 seed 覆盖。
 
 ## 5. 中断与补跑（全部保留，不覆盖）

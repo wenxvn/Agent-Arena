@@ -33,7 +33,7 @@
 | MAP-22 | v10 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | `VALIDATED` |
 | MAP-23 | v10 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | `VALIDATED` |
 | MAP-24 | v10 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | `VALIDATED` |
-| MAP-25 | v8 | — | — | — | — | — | — | — | — | `VALIDATED`（V8 回退，3-seed 缺口） |
+| MAP-25 | v10 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | `VALIDATED` |
 | MAP-26 | v10 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | `VALIDATED` |
 | MAP-27 | v10 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | `VALIDATED` |
 | MAP-28 | v10 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | `VALIDATED` |
@@ -42,9 +42,9 @@
 
 ## 汇总
 
-- `VALIDATED`（V10 原生，8 Gate 全过）：27 图 —— MAP-01、MAP-02、MAP-03、MAP-04、MAP-05、MAP-06、MAP-07、MAP-08、MAP-09、MAP-10、MAP-11、MAP-12、MAP-13、MAP-14、MAP-15、MAP-18、MAP-19、MAP-20、MAP-21、MAP-22、MAP-23、MAP-24、MAP-26、MAP-27、MAP-28、MAP-29、MAP-30
+- `VALIDATED`（V10 原生，8 Gate 全过）：28 图 —— MAP-01、MAP-02、MAP-03、MAP-04、MAP-05、MAP-06、MAP-07、MAP-08、MAP-09、MAP-10、MAP-11、MAP-12、MAP-13、MAP-14、MAP-15、MAP-18、MAP-19、MAP-20、MAP-21、MAP-22、MAP-23、MAP-24、MAP-25、MAP-26、MAP-27、MAP-28、MAP-29、MAP-30
 - `NEEDS_MORE_EVIDENCE`：0 图 —— 无
-- V8 回退维持 `VALIDATED`（记 3-seed 缺口）：3 图 —— MAP-16、MAP-17、MAP-25
+- V8 回退维持 `VALIDATED`（记 3-seed 缺口）：2 图 —— MAP-16、MAP-17
 
 ## 未通过项明细
 

@@ -264,6 +264,14 @@ def _f24(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[s
     return _v(1 if ok else 0)
 
 
+def _f25(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
+    del obs
+    if truncated:
+        return _censored("截尾")
+    ok = judge.get("repaired") is True and judge.get("location") == "H"
+    return _v(1 if ok else 0)
+
+
 def _f26(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
     del obs
     if truncated:
@@ -336,6 +344,7 @@ FORMULAS: dict[str, Formula] = {
     "MAP-22": _f22,
     "MAP-23": _f23,
     "MAP-24": _f24,
+    "MAP-25": _f25,
     "MAP-26": _f26,
     "MAP-27": _f27,
     "MAP-28": _f28,

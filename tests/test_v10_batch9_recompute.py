@@ -6,9 +6,9 @@ from agent_arena.v10 import recompute
 from agent_arena.v10.runtime.catalog import V10_MAPS
 
 
-def test_formulas_cover_24_of_27_native_maps() -> None:
+def test_formulas_cover_25_of_28_native_maps() -> None:
     assert set(recompute.FORMULAS) <= set(V10_MAPS)
-    assert len(recompute.FORMULAS) == 24
+    assert len(recompute.FORMULAS) == 25
     assert set(recompute.SKIP_REASONS) == {"MAP-13", "MAP-14", "MAP-21"}
 
 

@@ -43,6 +43,7 @@
 
 | 图 | 设计难度 | seed 数 | Oracle | Oracle 动作 | 预算余量 | 启发式 | legal_random | 最易绕过消融 | MiMo | MiMo 决策数 | 主指标 |
 |---|---|---:|---|---:|---:|---|---:|---:|---|---:|---|
+| MAP-25 | 简单 | 4 | 4/4 | 16 | 14 | 4/4 | 0/80 (0.0) | 0.0–0.0 | 0/3 (0.0) | 30.0 | `map25.v10.mission_success` |
 | MAP-26 | 中等 | 4 | 4/4 | 4 | 34 | 4/4 | 1/80 (0.0125) | 0.0–0.75 | 3/3 (1.0) | 3.0 | `map26.v10.mission_success` |
 | MAP-27 | 困难 | 4 | 4/4 | 17 | 29 | 4/4 | 0/80 (0.0) | 0.0–0.25 | 0/3 (0.0) +1 中断 | 31.0 | `map27.v10.mission_success` |
 
@@ -86,8 +87,8 @@
 
 ## 2. 反转与解释
 
-- `legal_random` 成功率随设计难度递进出现反转的世界：无
-- MiMo（单 replicate、每图 3 环境 seed）出现反转的世界：abyss、jungle、lighthouse、pyramid、spaceship、volcano
+- `legal_random` 成功率随设计难度递进出现反转的世界：lunar
+- MiMo（单 replicate、每图 3 环境 seed）出现反转的世界：abyss、jungle、lighthouse、lunar、pyramid、spaceship、volcano
 - 反转不等于设计错误：随机基线的成功率受“动作空间大小”和“是否容易误触成功终点”影响，
   与认知负担不是同一维度；本表同时给出 `worst_ablation_rate`（机制被绕过的难易）供对照。
 - 设计难度与经验难度分开标注，**不据单一模型成功率重排难度标签**；MiMo 列只是

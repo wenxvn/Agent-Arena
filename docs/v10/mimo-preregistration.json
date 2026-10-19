@@ -159,6 +159,34 @@
     "trace_path",
     "judge_path"
   ],
+  "phase_10_map25_native": {
+    "comparison_rule": "MAP-25 此前无 MiMo 局，本阶段是首次真实模型证据",
+    "dcr": "DCR-V10-33",
+    "declared_at": "2026-10-19（开跑前登记）",
+    "environment_seeds": [
+      0,
+      1,
+      2
+    ],
+    "episodes": 3,
+    "group_tag": "p2",
+    "ledger": "runs/v10/mimo/ledger_v10_016.jsonl",
+    "manifest_file": "runs/v10/mimo/manifest_p2.json",
+    "manifest_hash": "cdb1e741f2bda734504610a8f76c9e88775634ef2b20819ecaf4d0c2707d4a38",
+    "maps": [
+      "MAP-25"
+    ],
+    "outcome": {
+      "all_valid": true,
+      "cost_settled_cny": 0.04212948,
+      "episodes": 3,
+      "result": "三局均 decision_budget_exhausted（30/30），非法动作 0/0/0；模型未走完出舱依赖链（机制未触发）",
+      "status": "completed"
+    },
+    "rationale": "MAP-25 原先只有 V8 固定实例（seed_effective=False）。DCR-V10-33 把起始位置（H/T）与氧气预算（12/10）按 seed 实例化（规则/契约/成功条件不变）；起始在装备间省一次移动，氧气收紧使舱外动作更贵。Oracle 4/4、启发式 4/4、四消融 0/4、legal_random 0/80。补跑 3 个环境 seed 以满足 mimo Gate。",
+    "run_id_pattern": "V10-MAP-25-S<seed>-p2",
+    "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
+  },
   "phase_2_extension": {
     "budget_gate": "阶段 2 开跑前必须重新读取全部账本，剩余额度不足即不启动",
     "completed_in_phase_2_before_interruption": [

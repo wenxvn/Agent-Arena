@@ -1,7 +1,7 @@
 # V10 未触发机制局的逐局判读
 
 - 由 `python -m agent_arena.v10.trigger_gap` 生成；只读既有 MiMo trace 与基线产物。
-- 覆盖 **29** 局（13 张图），
+- 覆盖 **32** 局（14 张图），
   全部是“有效但 `mechanism_triggered=False`”。
 - 判读规则：`BUDGET`（预算用尽）｜`THRESHOLD`（撞规则阈值）｜
 `ENTRY_NOT_ATTEMPTED`（没尝试机制动作）｜`ENTRY_REJECTED`（机制动作全被拒）｜
@@ -11,7 +11,7 @@
 
 | 判读 | 局数 |
 |---|---:|
-| `BUDGET` | 12 |
+| `BUDGET` | 15 |
 | `ENTRY_REJECTED` | 1 |
 | `THRESHOLD` | 13 |
 | `USED_NO_THRESHOLD` | 3 |
@@ -30,6 +30,7 @@
 | MAP-19 | 3 | `BUDGET`×3 | 60 | 38 | 22 | 60, 60, 60 |
 | MAP-20 | 3 | `BUDGET`×3 | 56 | 40 | 16 | 56, 56, 56 |
 | MAP-22 | 3 | `ENTRY_REJECTED`×1；`THRESHOLD`×1；`USED_NO_THRESHOLD`×1 | 80 | 24 | 56 | 28, 58, 59 |
+| MAP-25 | 3 | `BUDGET`×3 | 30 | 16 | 14 | 30, 30, 30 |
 | MAP-27 | 3 | `BUDGET`×1；`THRESHOLD`×2 | 46 | 17 | 29 | 20, 27, 46 |
 | MAP-28 | 2 | `BUDGET`×2 | 30 | 18 | 12 | 30, 30 |
 | MAP-29 | 3 | `BUDGET`×3 | 38 | 22 | 16 | 38, 38, 38 |
@@ -60,6 +61,9 @@
 | MAP-22 | 0 | `V10-MAP-22-S0-ext-r2` | `USED_NO_THRESHOLD` | 59/80 | MOVE_BUDGET_EXHAUSTED | `write_memory` 6/4、`return_to_camp` 5/5 | `move` → MOVE_BUDGET_EXHAUSTED |
 | MAP-22 | 1 | `V10-MAP-22-S1-ext` | `ENTRY_REJECTED` | 58/80 | MOVE_BUDGET_EXHAUSTED | `write_memory` 0/0、`return_to_camp` 5/5 | `move` → MOVE_BUDGET_EXHAUSTED |
 | MAP-22 | 2 | `V10-MAP-22-S2-ext-r2` | `THRESHOLD` | 28/80 | RETURNED_TO_CAMP_WITH_RUIN_RECORD | `write_memory` 2/0、`return_to_camp` 1/0 | `return_to_camp` → RETURNED_TO_CAMP_WITH_RUIN_RECORD |
+| MAP-25 | 0 | `V10-MAP-25-S0-p2` | `BUDGET` | 30/30 | decision_budget_exhausted | `equip` 5/1、`eva_exit` 1/0、`diagnose` 2/1、`repair` 15/15、`return_to_A` 0/0 | `repair` → INVALID_TARGET_ID |
+| MAP-25 | 1 | `V10-MAP-25-S1-p2` | `BUDGET` | 30/30 | decision_budget_exhausted | `equip` 4/0、`eva_exit` 1/0、`diagnose` 5/4、`repair` 15/15、`return_to_A` 0/0 | `diagnose` → INVALID_TOOL_ID |
+| MAP-25 | 2 | `V10-MAP-25-S2-p2` | `BUDGET` | 30/30 | decision_budget_exhausted | `equip` 5/1、`eva_exit` 1/0、`diagnose` 3/2、`repair` 14/14、`return_to_A` 0/0 | `repair` → INVALID_TARGET_ID |
 | MAP-27 | 0 | `V10-MAP-27-S0-n2` | `THRESHOLD` | 20/46 | VEHICLE_STRANDED | `load` 3/0、`repair_relay` 1/0、`rescue` 7/0、`sample` 1/0、`submit` 0/0 | `drive` → VEHICLE_STRANDED |
 | MAP-27 | 1 | `V10-MAP-27-S1-n2` | `THRESHOLD` | 27/46 | VEHICLE_STRANDED | `load` 11/0、`repair_relay` 1/0、`rescue` 0/0、`sample` 0/0、`submit` 0/0 | `drive` → VEHICLE_STRANDED |
 | MAP-27 | 2 | `V10-MAP-27-S2-n2-r2` | `BUDGET` | 46/46 | decision_budget_exhausted | `load` 3/0、`repair_relay` 1/0、`rescue` 36/0、`sample` 1/0、`submit` 0/0 | `rescue` → ACTION_NOT_ALLOWED |
