@@ -1606,3 +1606,17 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：只改实例参数，不改 V4 规则与动作契约；MAP-16 的 `rule_hash`/`scenario_hash` 是新值，不能与 V8 适配器值直接对齐；4 实例只改起点/终点，MiMo 仅 3 局，不作能力上限断言。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 14：CI 门禁修复与 V10 有效性检查接入
+
+事件：确认 `v10-validity` 最近几次 push 的 GitHub Actions 在“检查代码规范”步骤失败，修复后把 V10 的三项有效性检查接入 CI。
+
+原因：`ruff check .` 在 `worlds/v4/*/planning/` 的手写离线审计脚本上报告 653 条告警（601 条 E501），而 CI 跑的是全仓 lint；这些脚本按 `worlds/v4/AGENTS.md` 属于设计阶段的离线材料，不在 `src/agent_arena` 包内，也不被包代码导入。
+
+改动：`pyproject.toml` 增加 `extend-exclude = ["worlds/v4/**/planning"]`（保留包级全仓 lint）；`recompute.py` 与 `independent_check.py` 增加 `--check` 退出码（覆盖不全或出现不一致/违规时返回 1）；`.github/workflows/ci.yml` 在 pytest 之后追加 `freeze verify`、`recompute --check`、`independent_check --check`。
+
+结果：本地 `ruff check .` 通过；`recompute --check` 30/30 图、1093 次检查、退出 0；`independent_check --check` 0 违规、30/30 回放确定与 seed 互异、退出 0；`freeze verify` 9/9 unchanged。
+
+边界：排除的是非包研究脚本，包代码、测试与脚本仍全量 lint；CI 的三项 V10 检查是只读/可重算的，不调用真实模型、不读取本地 `runs/` 历史局。
+
+关联提交：本次提交（分支 `v10-validity`）。

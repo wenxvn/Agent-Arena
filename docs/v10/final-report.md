@@ -170,6 +170,8 @@ V6 的 `map16_l1/l2` 场景仍按难度变体处理，不冒充 seed。
 - [x] 30/30 图至少 3 不同环境 seed 的 Oracle 可行性验证：**30/30 V10 原生图达标**。
 - [x] 随机、启发式、消融与反旁路实验均可重放（`baselines.suite` + `baseline-results.md`）。
 - [x] pytest、ruff、mypy、diff-check 的真实退出码记录（本文件头部与各批 commit）。
+- [x] CI 质量门禁：`ruff check .`、`mypy src`、`pytest`，以及 `freeze verify`、
+      `recompute --check`（30/30、0 不一致）、`independent_check --check`（0 违规）。
 - [x] MiMo 预算门禁、预登记、trace、账本和异常恢复可验证（23 个账本 + `mimo-preregistration.json`）。
 - [x] 30 图状态不虚报：30 张原生图 8 Gate 全过；模型失败的归因
       （接口/策略/预算/机制/provider/场景）见 §4、`failure-attribution.md`、

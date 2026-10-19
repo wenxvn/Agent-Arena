@@ -31,3 +31,9 @@ jobs:
         run: uv run mypy src
       - name: 运行离线测试
         run: uv run pytest -q
+      - name: V8/V9 冻结校验
+        run: uv run python -m agent_arena.v10.freeze verify
+      - name: V10 主指标公式级复算（30/30、0 不一致）
+        run: uv run python -m agent_arena.v10.recompute --check
+      - name: V10 指标独立复核（0 违规、回放确定、seed 互异）
+        run: uv run python -m agent_arena.v10.independent_check --check

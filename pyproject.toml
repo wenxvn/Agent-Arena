@@ -31,6 +31,9 @@ testpaths = ["tests"]
 [tool.ruff]
 target-version = "py313"
 line-length = 100
+# worlds/v4/*/planning 是手写离线审计脚本（见 worlds/v4/AGENTS.md），不属于
+# `src/agent_arena` 包；其行宽与写法按设计阶段约定保留，不纳入包级 lint。
+extend-exclude = ["worlds/v4/**/planning"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]

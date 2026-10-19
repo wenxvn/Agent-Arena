@@ -85,7 +85,8 @@
 .\.venv\Scripts\python.exe -m agent_arena.v10.freeze verify      # 冻结校验（9/9 unchanged）
 .\.venv\Scripts\python.exe -m agent_arena.v10.baseline_audit     # V8/V9 只读复算
 .\.venv\Scripts\python.exe -m agent_arena.v10.baselines.suite    # 多 seed 基线 → runs/v10/baselines
-.\.venv\Scripts\python.exe -m agent_arena.v10.independent_check  # 指标独立复核
+.\.venv\Scripts\python.exe -m agent_arena.v10.independent_check --check  # 指标独立复核（失败退出 1）
+.\.venv\Scripts\python.exe -m agent_arena.v10.recompute --check          # 公式级复算（30/30、0 不一致）
 .\.venv\Scripts\python.exe -m agent_arena.v10.validation         # 8 项 Gate 判定
 .\.venv\Scripts\python.exe -m agent_arena.v10.status             # 状态矩阵
 .\.venv\Scripts\python.exe -m agent_arena.v10.map_cards           # 30 张审计卡

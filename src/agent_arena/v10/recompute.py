@@ -19,6 +19,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from typing import Any
@@ -712,7 +713,9 @@ def render(payload: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> int:
+    args = list(sys.argv[1:] if argv is None else argv)
+    check = "--check" in args
     payload = audit()
     output = V10_RUNS / "recompute"
     output.mkdir(parents=True, exist_ok=True)
@@ -723,10 +726,16 @@ def main() -> None:
 )
     (V10_DOCS / "metric-recompute.md").write_text(render(payload), encoding="utf-8", newline="\n")
     print(json.dumps(payload["totals"], ensure_ascii=False))
+    if not check:
+        return 0
+    # CI 准入：全部原生图都必须有独立实现，且 0 不一致。
+    totals = payload["totals"]
+    complete = totals["maps_covered"] == len(V10_MAPS)
+    return 0 if complete and totals["mismatch"] == 0 else 1
 
 
 __all__ = ["FORMULAS", "SKIP_REASONS", "audit", "main", "render"]
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import inspect
 import json
+import sys
 from typing import Any
 
 from agent_arena.v10.baselines.runner import (
@@ -187,7 +188,9 @@ def render(payload: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> int:
+    args = list(sys.argv[1:] if argv is None else argv)
+    check = "--check" in args
     payload = audit()
     output = V10_RUNS / "independent_check.json"
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -201,7 +204,17 @@ def main() -> None:
         render(payload), encoding="utf-8", newline="\n"
     )
     print(json.dumps(payload["totals"], ensure_ascii=False))
+    if not check:
+        return 0
+    # CI 准入：0 违规，且每张图都通过回放确定性与 seed 互异检查。
+    totals = payload["totals"]
+    ok = (
+        totals["violations"] == 0
+        and totals["deterministic_ok"] == totals["maps"]
+        and totals["seed_distinct_ok"] == totals["maps"]
+    )
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
