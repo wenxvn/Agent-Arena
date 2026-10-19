@@ -3,7 +3,7 @@
 - 运行时：`v10 原生`
 - 构念标签：`FORCED`；效度状态：`NEEDS_MORE_EVIDENCE`（均为 `agent_reviewed`）
 - DCR：`DCR-V10-09`
-- `rule_hash`：`7ce632661aa645c64ead7ecfa6da2d7058b7717affc09b0fb77e3e1b3636d25f`
+- `rule_hash`：`03d82794ea57ca0509315a542683816fdf6772dbc649d433284d0983697d1b83`
 - `metric_hash`：`704e054d121a72a375bde7bad5c999597625839884bf9c98090301acea6897b2`
 
 ## 1. 目标构念与最小可观察行为
@@ -58,12 +58,12 @@ Oracle 各 seed 的触发率为 6/6。
 
 | seed | scenario_hash（前 16 位） |
 |---:|---|
-| 0 | `ffeba76984ba6617` |
-| 1 | `c9859f9dd6ca12b9` |
-| 2 | `e984974871207c29` |
-| 3 | `b19d7e1fe5dd247c` |
-| 4 | `fed967e70d942c6d` |
-| 5 | `a8b3d653c5a7df88` |
+| 0 | `806c816d8527965e` |
+| 1 | `6eeaae1ed09069df` |
+| 2 | `45c7eed6864a5f72` |
+| 3 | `6c717e1e70c961ed` |
+| 4 | `89743875d0bb36d0` |
+| 5 | `4e4ea0b22bbbd2b1` |
 
 ## 5. 主次指标（`METRIC_SPECS`）
 

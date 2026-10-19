@@ -53,7 +53,7 @@
 | `failure-attribution.md` | Batch 9：MiMo 逐局 trace 级失败归因（接口/策略/预算/阈值） |
 | `trigger-gap-analysis.md` | 未触发机制局的逐局判读（预算/阈值/入口） |
 | `castle-budget-analysis.md` | 古堡三图的决策预算剖面与最后动作 |
-| `metric-recompute.md` | Batch 9：主指标公式级第二套实现（26/29 图、915 次检查全一致） |
+| `metric-recompute.md` | Batch 9：主指标公式级第二套实现（29/29 图、1065 次检查全一致） |
 | `metric-schema-v10.md` | v10 指标 schema、五态语义、缺陷处理结论 |
 | `mimo-preregistration.json` | Batch 8 预登记（矩阵、预算、stop rule、补跑与阶段 3 登记） |
 | `mimo-results.md` | 逐图逐 seed 结果、结局分类、中断与补跑 |
@@ -72,7 +72,7 @@
 | `src/agent_arena/v10/ledger.py` | V10 独立 append-only 预算账本（¥10 全局共享、未知消费封账） |
 | `src/agent_arena/v10/contract.py` | 按类型渲染公开动作契约（DCR-V10-24） |
 | `src/agent_arena/v10/validation.py` | Batch 9 的 8 项 Gate 机器判定 |
-| `src/agent_arena/v10/recompute.py` | 主指标公式级第二套实现（26/29 图、915 次检查） |
+| `src/agent_arena/v10/recompute.py` | 主指标公式级第二套实现（29/29 图、1065 次检查） |
 | `src/agent_arena/v10/trigger_gap.py` | 未触发机制局判读与古堡预算剖面 |
 | `src/agent_arena/v10/attribution.py` | MiMo 逐局 trace 级失败归因（含早期单文件布局兼容） |
 | `src/agent_arena/v10/map_cards.py` / `mimo_report.py` / `construct_validity.py` / `difficulty.py` | 文档与状态矩阵生成器（禁止手填数字） |
@@ -103,7 +103,7 @@
 - **5 张 V8 回退图**（01/16/17/25/27）的 **seed 参数化**：参照 MAP-05（DCR-V10-27）与
   MAP-02（DCR-V10-29）的模板，建 V10 原生运行时后补 3-seed Oracle/消融/MiMo。
 - 未触发机制局的判读已落到 `trigger-gap-analysis.md`（29 局：THRESHOLD 13、BUDGET 12、USED_NO_THRESHOLD 3、ENTRY_REJECTED 1）与 `castle-budget-analysis.md`。
-- **公式级指标复算**：已完成 26/29 图（915 次检查全一致，DCR-V10-32 暴露了 03/24/26 的 judge 字段）；
+- **公式级指标复算**：已完成 29/29 图（1065 次检查全一致；DCR-V10-32 暴露 03/24/26 的 judge 字段，DCR-V10-35 暴露 13/14 的 roles/claims）；
   剩余 3 图（13/14/21）需实现独立的谓词求值 / 假设一致性 / 科学分重算。
 - 未触发机制局已逐局判读（`trigger-gap-analysis.md`）：29 局 = THRESHOLD 13 / BUDGET 12 /
   USED_NO_THRESHOLD 3 / ENTRY_REJECTED 1；古堡预算见 `castle-budget-analysis.md`。

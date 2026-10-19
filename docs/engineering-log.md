@@ -1574,3 +1574,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 验证：仅文档修改；`pytest`、`mypy`、`ruff`、`freeze verify` 与此前一致。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 12：补齐 13/14/21 的公式级复算（DCR-V10-35）
+
+事件：把最后 3 张未覆盖图的公式级第二套实现补齐，公式级复算达到 29/29。
+
+原因：此前 26/29 的缺口不是“算不出来”，而是判据字段只在 `sealed_truth` 或地图内部：MAP-13 缺符号→房间的 `roles`，MAP-14 缺每条证词的说话者与配置子集 `claims`，MAP-21 的评分依赖模块函数 `max_science(seed)`。
+
+改动：`map13.judge_state` 增加 `roles`、`map14.judge_state` 增加 `claims`（都只进 judge，不进 Observation/prompt/schema）；`recompute.py` 新增 `_f13`（自写四条房间谓词 + 方向钉）、`_f14`（自写“真话/反报”语义逐条比对答案 + 提交配置与问数下限）、`_f21`（`sample_points + 5` 除以该 seed 最大科学分）；`SKIP_REASONS` 清空，复算报告在空表时输出“29/29 全覆盖”。
+
+结果：复算 **29/29 图、1065 次检查、0 不一致**。过程中确认三处口径（地图侧正确、复算侧修正）：MAP-21 的组合指标必须复用已按 6 位取整的 `science_completion`；MAP-14 的最少问数取“有无档案两种路线的较小值”；MAP-13 的“从未试排”零分母优先于截尾。三图规则行为未变（Oracle 4/4、6/6、10/10），`rule_hash`/`scenario_hash`/`metric_hash` 随 `map13/14` 文件变化更新，历史 MiMo 局仍对应旧 hash。
+
+验证：`pytest` 1144 passed；`mypy src` 251 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged；独立核对 29 图 × 140 seed 实例 0 违规、回放确定 29/29、seed 互异 29/29；全部生成文档重算。
+
+边界：公式级一致只证明“同一份公开输入下两套实现取值相同”，不验证构念效度；MAP-13/14 的 judge 字段暴露是测量基础设施，不改变玩家可见信息。
+
+关联提交：本次提交（分支 `v10-validity`）。

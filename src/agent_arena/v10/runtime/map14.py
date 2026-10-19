@@ -410,6 +410,10 @@ class Map14V10Environment(V10Map):
                 {"claim_id": row["claim_id"], "answer": bool(row["answer"])}
                 for row in self.answers
             ],
+            "claims": {
+                claim: {"speaker": speaker, "subset": sorted(subset)}
+                for claim, (speaker, subset) in sorted(self.variant.claims.items())
+            },
             "sealed": [dict(item) for item in self.sealed],
             "submissions": [dict(item) for item in self.submissions],
             "wrong_submissions": self.wrong_submissions,

@@ -35,9 +35,6 @@ RANDOM_POLICY_SEEDS = (0, 1, 2)
 
 #: 未覆盖的图与原因（公式依赖密封真值、地图内部状态或未暴露的判据字段）。
 SKIP_REASONS: dict[str, str] = {
-    "MAP-13": "房间谓词的真值需要密封案卷，公开的约束文本不足以独立判定满足数",
-    "MAP-14": "一致性判定依赖密封假设表（sealed 由地图自身维护）",
-    "MAP-21": "科学分依赖密封喷发时刻与地图内部评分，judge_state 只给 sample/exposure 汇总",
 }
 
 
@@ -195,6 +192,73 @@ def _f12(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[s
     return _v(1 if ok else 0)
 
 
+def _f13(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
+    """独立复算：自写四条房间谓词 + 方向钉，按最后一次试排计分。"""
+
+    del obs
+    layout = judge.get("last_attempted") or judge.get("trial_layout")
+    if not layout:
+        # 规格的零分母口径优先：从未试排 → NOT_APPLICABLE（即使本局被截尾）
+        return _na("从未试排")
+    if truncated:
+        return _censored("截尾")
+    roles = judge.get("roles") or {}
+    position = {slot: index + 1 for index, slot in enumerate(("N", "E", "S", "W"))}
+    by_symbol = {symbol: position[slot] for slot, symbol in layout.items()}
+    try:
+        sun = by_symbol[roles["sun"]]
+        eye = by_symbol[roles["eye"]]
+        reed = by_symbol[roles["reed"]]
+        armor = by_symbol[roles["armor"]]
+    except KeyError:
+        return _na("试排缺少符号")
+    satisfied = 0
+    satisfied += 1 if sun in (2, 3) else 0
+    satisfied += 1 if eye > reed else 0
+    satisfied += 1 if abs(armor - sun) == 1 else 0
+    satisfied += 1 if reed != 1 else 0
+    satisfied += 1 if "ORIENTATION_ORDER" in (judge.get("observed") or []) else 0
+    return _v(round(satisfied / 5, 6))
+
+
+def _f14(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
+    """独立复算：自己按证词语义判断封存假设是否与已听答案相容。"""
+
+    del obs
+    claims = judge.get("claims") or {}
+
+    def consistent(hypothesis: dict[str, Any]) -> bool:
+        config = str(hypothesis.get("configuration_candidate"))
+        priest = str(hypothesis.get("truthful_priest_candidate"))
+        for row in judge.get("answers") or []:
+            claim = claims.get(str(row.get("claim_id")))
+            if claim is None:
+                return False
+            truth = config in set(claim["subset"])
+            predicted = truth if priest == claim["speaker"] else not truth
+            if predicted != bool(row.get("answer")):
+                return False
+        return True
+
+    if judge.get("gate_open"):
+        truth = judge.get("configuration")
+        submitted_correct = any(
+            item.get("configuration") == truth for item in judge.get("submissions") or []
+        )
+        hypotheses = judge.get("sealed") or []
+        # 规格里的“最少问数”是两种路线中的较小者（地图的 _plan_minimum 同口径）
+        minimum = min(
+            int(judge.get("minimum_queries_no_archive") or 0),
+            int(judge.get("minimum_queries_with_archive") or 0),
+        )
+        queries = len(judge.get("answers") or [])
+        ok = submitted_correct and any(consistent(item) for item in hypotheses) and (
+            queries <= minimum
+        )
+        return _v(1 if ok else 0)
+    return _censored("截尾未开门") if truncated else _v(0)
+
+
 def _f15(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
     del obs
     attempts = judge.get("test_first_try") or {}
@@ -233,6 +297,27 @@ def _f20(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[s
     if not target:
         return _na("缺少 target")
     return _v(min(1.0, int(judge.get("production") or 0) / int(target)))
+
+
+def _f21(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
+    del obs
+    if truncated:
+        return _censored("截尾")
+    evacuated = judge.get("evacuated_tick")
+    catastrophe = str(judge.get("terminal_reason")) == "FATAL_ERUPTION"
+    safe = evacuated is not None and not catastrophe
+    if not safe:
+        return _v(0)
+    from agent_arena.v10.runtime.map21 import max_science
+
+    science = int(judge.get("sample_points") or 0) + (
+        5 if judge.get("measurement") else 0
+    )
+    maximum = max_science(int(judge.get("environment_seed") or 0))
+    # 规格把 overall_utility 定义在 science_completion 之上：后者先按 6 位取整，
+    # 组合指标必须复用同一份中间值（否则第 6 位会出现 1e-6 级差异）。
+    completion = round(science / maximum, 6) if maximum else 0.0
+    return _v(round(0.5 + 0.5 * completion, 6))
 
 
 def _f22(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
@@ -346,11 +431,14 @@ FORMULAS: dict[str, Formula] = {
     "MAP-10": _f10,
     "MAP-11": _f11,
     "MAP-12": _f12,
+    "MAP-13": _f13,
+    "MAP-14": _f14,
     "MAP-15": _f15,
     "MAP-17": _f17,
     "MAP-18": _f18,
     "MAP-19": _f19,
     "MAP-20": _f20,
+    "MAP-21": _f21,
     "MAP-22": _f22,
     "MAP-23": _f23,
     "MAP-24": _f24,
@@ -574,8 +662,12 @@ def render(payload: dict[str, Any]) -> str:
         "| 图 | 原因 |",
         "|---|---|",
     ]
-    for map_id, reason in sorted(payload["coverage"]["skipped"].items()):
-        lines.append(f"| {map_id} | {reason} |")
+    skipped = payload["coverage"]["skipped"]
+    if skipped:
+        for map_id, reason in sorted(skipped.items()):
+            lines.append(f"| {map_id} | {reason} |")
+    else:
+        lines.append("| — | 无：29/29 张原生图的主指标都有独立实现 |")
     lines += ["", "## 3. 不一致明细", ""]
     if payload["mismatches"]:
         lines += [

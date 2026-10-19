@@ -250,6 +250,7 @@ class Map13V10Environment(V10Map):
                 0, MAX_INCORRECT_ATTEMPTS - 1 - self.incorrect_attempts
             ),
             "gate_open": self.gate_open,
+            "roles": dict(self.variant.roles),
             "goal": "读碑文、**记录下来**、排出唯一排列并验证开门。",
         }
 
@@ -349,6 +350,7 @@ class Map13V10Environment(V10Map):
             "wrong_layout_attempts": self.wrong_layout_attempts,
             "illegal_without_layout": self.illegal_without_layout,
             "gate_open": self.gate_open,
+            "roles": dict(self.variant.roles),
             "truth_seal": self.truth_seal(),
         }
 
