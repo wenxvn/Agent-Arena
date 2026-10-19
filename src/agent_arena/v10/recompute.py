@@ -8,10 +8,10 @@
 
 - `MATCH`：独立重算与地图自报取值一致（阈值 1e-6）；
 - `MISMATCH`：不一致，必须逐条解释（写进报告）；
-- `SKIPPED`：公式依赖密封真值或地图内部状态（如 MAP-03 的航线码、MAP-13 的密封案卷、
-  MAP-14 的假设表、MAP-21 的喷发时刻），在报告中如实标注“未覆盖”。
+- `SKIPPED`：公式依赖密封真值或地图内部状态；当前所有原生图都能从
+  「公开实例参数 + `judge_state()`」重算，因此没有跳过项。
 
-覆盖：24/27 张原生图；未覆盖 3 张（13/14/21）与原因见 `docs/v10/metric-recompute.md`。
+覆盖：30/30 张原生图；逐图结果见 `docs/v10/metric-recompute.md`。
 
 用法：``python -m agent_arena.v10.recompute``
 """
@@ -267,6 +267,13 @@ def _f15(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[s
     return _v(sum(1 for ok in attempts.values() if ok) / len(attempts))
 
 
+def _f16(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
+    del obs
+    if truncated:
+        return _censored("截尾")
+    return _v(1 if str(judge.get("status")) in {"success", "scenario_success"} else 0)
+
+
 def _f17(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
     del obs
     if truncated:
@@ -434,6 +441,7 @@ FORMULAS: dict[str, Formula] = {
     "MAP-13": _f13,
     "MAP-14": _f14,
     "MAP-15": _f15,
+    "MAP-16": _f16,
     "MAP-17": _f17,
     "MAP-18": _f18,
     "MAP-19": _f19,
@@ -667,7 +675,9 @@ def render(payload: dict[str, Any]) -> str:
         for map_id, reason in sorted(skipped.items()):
             lines.append(f"| {map_id} | {reason} |")
     else:
-        lines.append("| — | 无：29/29 张原生图的主指标都有独立实现 |")
+        lines.append(
+            f"| — | 无：{len(V10_MAPS)}/{len(V10_MAPS)} 张原生图的主指标都有独立实现 |"
+        )
     lines += ["", "## 3. 不一致明细", ""]
     if payload["mismatches"]:
         lines += [

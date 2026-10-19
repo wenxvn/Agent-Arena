@@ -68,6 +68,7 @@ LEDGER_N2_PATH = MIMO_ROOT / "ledger_v10_013.jsonl"
 LEDGER_O2_PATH = MIMO_ROOT / "ledger_v10_015.jsonl"
 LEDGER_P2_PATH = MIMO_ROOT / "ledger_v10_016.jsonl"
 LEDGER_Q2_PATH = MIMO_ROOT / "ledger_v10_017.jsonl"
+LEDGER_R2_PATH = MIMO_ROOT / "ledger_v10_018.jsonl"
 PHASE_LEDGERS = {
     "main": LEDGER_PATH,
     "ext": LEDGER_EXT_PATH,
@@ -81,6 +82,7 @@ PHASE_LEDGERS = {
     "o2": LEDGER_O2_PATH,
     "p2": LEDGER_P2_PATH,
     "q2": LEDGER_Q2_PATH,
+    "r2": LEDGER_R2_PATH,
 }
 MODEL_NAME = "mimo-v2.6-flash"
 MAX_CONSECUTIVE = 3
@@ -124,6 +126,8 @@ PHASE_GROUPS: dict[str, tuple[tuple[str, tuple[str, ...]], ...]] = {
     "p2": (("p2", ("MAP-25",)),),
     #: 阶段 11：MAP-17 原生 seed 化（DCR-V10-34）后的首轮真实模型证据。
     "q2": (("q2", ("MAP-17",)),),
+    #: 阶段 12：MAP-16 原生 seed 化（DCR-V10-36）后的首轮真实模型证据。
+    "r2": (("r2", ("MAP-16",)),),
 }
 
 #: 逐图格式澄清（只写公开结构，不含真值/答案）；随 prompt_hash 一起冻结。
@@ -141,6 +145,11 @@ CONTRACT_HINTS: dict[str, tuple[str, ...]] = {
     "MAP-19": (
         "forecast_next 与 set_cooling 都是长度为 3 的整数数组，顺序固定为区 A、B、C"
         "（不是以区名为键的对象）。",
+    ),
+    "MAP-16": (
+        "set_route/occupy_siding 只登记下一跳（train_id + next_node），不会移动列车；"
+        "必须再调用 move_train 才会把当前所有已登记路由作为一整帧提交并推进 1 tick。",
+        "section_id 接受 XY、YX 或 X_Y 三种写法（对应列车当前节点与已登记目标节点）。",
     ),
 }
 

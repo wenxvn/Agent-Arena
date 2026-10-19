@@ -43,9 +43,10 @@ def test_not_truncated_is_untouched() -> None:
     assert truncation_censored("MAP-10", metrics, truncated=False) is metrics
 
 
-def test_v8_fallback_maps_are_untouched() -> None:
-    metrics = _metrics(**{"legacy.metric": "VALID"})
-    assert truncation_censored("MAP-16", metrics, truncated=True) is metrics
+def test_all_maps_have_native_runtimes() -> None:
+    from agent_arena.v10.runtime.catalog import MAP_IDS, V10_MAPS
+
+    assert set(MAP_IDS) - set(V10_MAPS) == set()
 
 
 def test_unknown_metric_ids_pass_through() -> None:

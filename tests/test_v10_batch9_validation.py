@@ -120,11 +120,8 @@ def test_mimo_gate_passes_below_invalid_ratio(
     assert gate.passed["mimo"] is True
 
 
-def test_fallback_maps_keep_v8_validated() -> None:
-    gate = validation.evaluate_map("MAP-16", {}, {})
-    assert gate.native is False
-    assert gate.verdict == "VALIDATED_V8_FALLBACK"
-    assert "3-seed 缺口" in gate.reasons[0]
+def test_no_v8_fallback_maps_remain() -> None:
+    assert validation.FALLBACK_MAPS == ()
 
 
 def test_evaluate_covers_all_maps() -> None:

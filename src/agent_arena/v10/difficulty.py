@@ -216,8 +216,8 @@ def render(payload: dict[str, Any]) -> str:
         "",
         "## 3. 缺口",
         "",
-        "- 7 张 V8 回退图（01/02/05/16/17/25/27）不在本表：它们在 V10 没有原生运行时，",
-        "  实例对 seed 不敏感，3-seed 缺口见 `validated-regression.md`。",
+        "- 30 张图都已在 V10 原生运行时上做多 seed 基线（MAP-16 见 DCR-V10-36）；",
+        "  V8 回退数为 0。",
         f"- 本表内尚无 MiMo 结果的图：{'、'.join(missing) or '无'}"
         "（Batch 8 覆盖范围见 `mimo-results.md`）。",
         "- 每图只登记 3–10 个环境 seed、单一模型、单 replicate，`n` 很小，禁止据此做跨模型排名。",

@@ -75,6 +75,7 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 | 9e | MAP-01 原生 seed 化（DCR-V10-31）+ 阶段 9 复测 | 完成；MAP-01 8 Gate 全过 | 见 README |
 | 9f | MAP-25 原生 seed 化（DCR-V10-33）+ 阶段 10 复测 | 完成；MAP-25 8 Gate 全过 | 见 README |
 | 9g | MAP-17 原生 seed 化（DCR-V10-34）+ 阶段 11 复测 | 完成；MAP-17 8 Gate 全过 | 见 README |
+| 9h | MAP-16 原生 seed 化（DCR-V10-36）+ 阶段 12 复测 | 完成；MAP-16 8 Gate 全过；V8 回退归零 | 见 README |
 
 ### 3.1 Batch 9 追加的接口/指标 DCR
 
@@ -93,6 +94,7 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 | DCR-V10-33 | MAP-25 第一次出舱：V8 固定实例 → V10 原生 4 seed（起始位置 H/T + 氧气 12/10） | 实例采样 | `MAP-25.json`；Oracle 4/4、启发式 4/4、四消融 0/4 |
 | DCR-V10-34 | MAP-17 四车排程：V8 固定实例 → V10 原生 4 seed（服务阈值 8/9/10 + 时限 12/14） | 实例采样 | `MAP-17.json`；Oracle 4/4、启发式 4/4、三消融 0/4 |
 | DCR-V10-35 | 补齐 13/14/21 的公式级复算：MAP-13 暴露 `roles`、MAP-14 暴露 `claims`（均只进 judge），并确认三处口径（21 先取整中间值、14 取两路线最小问数、13 零分母优先于截尾） | judge 字段 | `metric-recompute.md`；复算 29/29 图、1065 次检查 0 不一致 |
+| DCR-V10-36 | MAP-16 单线预约：V8 固定实例 → V10 原生 4 seed（起点/终点四组实例，复用 `Map16Environment` 公开构造参数，不改 V4 规则）；同时补主指标公式级复算 | 实例采样 | `MAP-16.json`；Oracle 4/4、启发式 4/4、三消融 0/4；阶段 12 三局非法动作 0 |
 
 ### 3.2 Batch 9 的构念改标
 

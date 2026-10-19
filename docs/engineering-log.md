@@ -1590,3 +1590,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：公式级一致只证明“同一份公开输入下两套实现取值相同”，不验证构念效度；MAP-13/14 的 judge 字段暴露是测量基础设施，不改变玩家可见信息。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 13：MAP-16 原生 seed 化（DCR-V10-36）
+
+事件：最后一张 V8 回退图 MAP-16（单线预约与节点容量）改造为 V10 原生运行时，并完成真实模型首测。
+
+原因：`Map16Environment` 的 `_reset_state` 只接受 0/1/2 三个重复标签，V8 适配器绑定单一 V6 场景 `map16_l3_original`，导致 `seed_effective=False`、记 3-seed 缺口；V6 的 L1/L2 场景是难度变体，不能冒充 seed。
+
+改动：新增 `src/agent_arena/v10/runtime/map16.py`（复用 V4 已公开的 `start_positions`/`goals`/`sidings` 构造参数，登记 base / siding_goal / short_start / cross_start 四实例；6 条 METRIC_SPECS；`judge_state` 增加 seed、invalid、used_siding、最短排程；`RULE_SOURCES` 计入 V4 `map16.py`）、`src/agent_arena/v10/baselines/map16.py`（单列车联合状态 BFS Oracle、只读 Observation 的 BFS 启发式、no_siding/route_only/double_booking 三消融）、`tests/test_v10_map16.py`（7 条）；`recompute.py` 新增 `_f16`；`catalog`、`attribution`、`validation`/`status`/`map_cards`/`regression`/`mimo_report` 适配 30 图；新增 `DCR-V10-36`。
+
+结果：MAP-16 `seed_effective=True`、4 个不同 `scenario_hash`；Oracle 4/4（机制触发 4/4、动作 20/14/16/12 ≤ 预算 30）、启发式 4/4、三消融 0/4、`legal_random` 0/80。真实 MiMo（阶段 12，`ledger_v10_018.jsonl`）：三局非法动作 0/0/0，成功 1/3（seed 1，19 决策），seed 0/2 因 `NODE_CAPACITY_CONFLICT` 失败；结算 CNY `0.01593856`，无未知消费。公式级复算 30/30 图、1093 次检查全一致；独立核对 30 图 × 144 seed 实例 0 违规。累计费用：结算 CNY `2.02861492` + 未知预留 `0.13312000` = `2.16173492`。
+
+验证：`pytest` 1151 passed；`mypy src` 252 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged；全部生成文档重算。
+
+边界：只改实例参数，不改 V4 规则与动作契约；MAP-16 的 `rule_hash`/`scenario_hash` 是新值，不能与 V8 适配器值直接对齐；4 实例只改起点/终点，MiMo 仅 3 局，不作能力上限断言。
+
+关联提交：本次提交（分支 `v10-validity`）。

@@ -131,8 +131,8 @@ def render() -> str:
         "  等连续指标仍能区分盲换与真诊断。",
         "- `BYPASS` 标签在 V10 全部清零的依据是逐图消融成功率（见 `baseline-results.md`）与",
         "  `decision-register.md` 的反例测试，而不是通关率变化。",
-        "- 7 张 V8 回退图（`runtime=v8`）的构念证据沿用 V9；其环境 seed 未参数化，",
-        "  3-seed 缺口见 `validated-regression.md`。",
+        "- 30 张图都已有 V10 原生运行时（含 MAP-16，DCR-V10-36），V8 回退数为 0；",
+        "  环境 seed 与实例差异见 `validated-regression.md`。",
     ]
     return "\n".join(lines) + "\n"
 

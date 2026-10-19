@@ -247,6 +247,13 @@ DECISIONS["MAP-01"] = Decision(
     "DCR-V10-31",
     "Batch 9e：Oracle 4/4、启发式 4/4、四消融 0/4；公开规则含互斥供电与船壳依赖链",
 )
+DECISIONS["MAP-16"] = Decision(
+    "FORCED",
+    "VALIDATED",
+    "V10 原生 4 seed：起点/终点四组实例随 seed 变化（复用 V4 公开构造参数，不改规则）",
+    "DCR-V10-36",
+    "Batch 9h：Oracle 4/4、启发式 4/4、三消融 0/4；阶段 12 三局非法动作 0",
+)
 DECISIONS["MAP-17"] = Decision(
     "FORCED",
     "VALIDATED",

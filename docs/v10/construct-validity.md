@@ -32,7 +32,7 @@
 | MAP-13 | pyramid | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `blind_guess` 0/4；`no_direction_nail` 4/4；`no_record` 0/4；`record_only_nail` 0/4 | 0.00–1.00 | 0/3 | Batch 5：记录成为出手前提（试排需 ≥1 条、验证需 ≥4 条）；no_record 0/4（V9 为 15 步满分）、blind_guess/record_only_nail 0/4；no_direction_nail 4/4 但 ratio 恒 0.8 |
 | MAP-14 | pyramid | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `blind_two_submissions` 0/6；`no_seal` 0/6；`one_question` 2/6；`waste_questions` 6/6 | 0.00–1.00 | 0/3 | Batch 4：公开推理规则；开门需要相容封存假设；6 实例；blind_two_submissions 0/6（V9 为 2/3 开门）、no_seal 0/6、one_question 2/6 |
 | MAP-15 | pyramid | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `fixed_route` 1/10；`no_probe` 0/10；`no_transfer` 0/10；`random_rule` 0/10 | 0.00–0.10 | 2/3 | Batch 2：删除 goal 泄露；6 规律家族；训练/测试墙色分离；record_rule 提交假设；消除相位自愈；四消融均 ≤1/10，启发式 10/10 |
-| MAP-16 | subway | FORCED | VALIDATED | `v8` | — | — | 未运行 | Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录 |
+| MAP-16 | subway | FORCED | VALIDATED | `v10` | `double_booking` 0/4；`no_siding` 0/4；`route_only` 0/4 | 0.00–0.00 | 1/3 | Batch 9h：Oracle 4/4、启发式 4/4、三消融 0/4；阶段 12 三局非法动作 0 |
 | MAP-17 | subway | FORCED | VALIDATED | `v10` | `half_board` 0/4；`no_board` 0/4；`no_ring` 0/4 | 0.00–0.00 | 0/3 | Batch 9g：Oracle 4/4、启发式 4/4、三消融 0/4；公开规则含瓶颈共用与整帧提交语义 |
 | MAP-18 | subway | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `greedy_dispatch` 3/5；`ignore_windows` 0/5；`no_replan` 1/5 | 0.00–0.60 | 0/3 | Batch 1：时钟分离、发车窗口强制、5 个故障变体；抢跑 0/5，no_replan 1/5，greedy 3/5，启发式 5/5 |
 | MAP-19 | volcano | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `fixed_vector_no_lag` 0/4；`max_loads_no_cooling` 0/4；`naive_forecast` 1/4；`no_forecast` 0/4 | 0.00–0.25 | 0/3 | Batch 4：预测成为产能的必要条件；精确温度与误差反馈公开；no_forecast 0/4、fixed_vector_no_lag 0/4、naive_forecast 1/4（容差 2 对照实例） |
@@ -67,5 +67,5 @@
   等连续指标仍能区分盲换与真诊断。
 - `BYPASS` 标签在 V10 全部清零的依据是逐图消融成功率（见 `baseline-results.md`）与
   `decision-register.md` 的反例测试，而不是通关率变化。
-- 7 张 V8 回退图（`runtime=v8`）的构念证据沿用 V9；其环境 seed 未参数化，
-  3-seed 缺口见 `validated-regression.md`。
+- 30 张图都已有 V10 原生运行时（含 MAP-16，DCR-V10-36），V8 回退数为 0；
+  环境 seed 与实例差异见 `validated-regression.md`。

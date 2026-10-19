@@ -22,7 +22,7 @@
 | [MAP-13](MAP-13.md) | 金字塔 | 简单 | FORCED | NEEDS_MORE_EVIDENCE | `v10` |
 | [MAP-14](MAP-14.md) | 金字塔 | 中等 | FORCED | NEEDS_MORE_EVIDENCE | `v10` |
 | [MAP-15](MAP-15.md) | 金字塔 | 困难 | FORCED | NEEDS_MORE_EVIDENCE | `v10` |
-| [MAP-16](MAP-16.md) | 地铁 | 简单 | FORCED | VALIDATED | `v8` |
+| [MAP-16](MAP-16.md) | 地铁 | 简单 | FORCED | VALIDATED | `v10` |
 | [MAP-17](MAP-17.md) | 地铁 | 中等 | FORCED | VALIDATED | `v10` |
 | [MAP-18](MAP-18.md) | 地铁 | 困难 | FORCED | NEEDS_MORE_EVIDENCE | `v10` |
 | [MAP-19](MAP-19.md) | 火山 | 简单 | FORCED | NEEDS_MORE_EVIDENCE | `v10` |
@@ -40,4 +40,4 @@
 
 ## 覆盖说明
 
-- V10 原生运行时：29 张；V8 回退：1 张（01/02/05/16/17/25/27，3-seed 缺口见 `validated-regression.md`）。
+- V10 原生运行时：30 张；V8 回退：0 张（01/02/05/16/17/25/27，3-seed 缺口见 `validated-regression.md`）。

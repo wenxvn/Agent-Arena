@@ -72,6 +72,7 @@ MECHANISM_TOOLS: dict[str, tuple[str, ...]] = {
     "MAP-13": ("record_constraint", "set_trial_layout", "verify_layout"),
     "MAP-14": ("compare_evidence", "submit_configuration"),
     "MAP-15": ("record_rule", "predict_transition"),
+    "MAP-16": ("set_route", "move_train", "occupy_siding"),
     "MAP-17": ("set_timetable",),
     "MAP-18": ("set_timetable",),
     "MAP-19": ("forecast_next",),

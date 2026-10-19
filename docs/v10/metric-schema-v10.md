@@ -1,7 +1,7 @@
 # V10 指标 schema 与五态语义
 
 - 版本：`metric_schema_version = "v10"`；`schema_hash` 由 `agent_arena.v10.metrics.governance.schema_hash()` 实时计算
-- 当前 `schema_hash`：`0bf8121dc3b29b199d42afb20e02b93a34417d8929bc6524b1a1a3f15c35a273`（154 + 140 条规格、25 张原生图）
+- 当前 `schema_hash`：`cd5f3d6db40ae775c2928c817c475e05cda25d0e157b0632ba768772478dd102`（154 + 172 条规格、30 张原生图）
 - 旧值：V7/V8 的 154 条注册指标与 V8/V9 的投影值**原样保留**，不覆盖、不跨版本求均值
 - 生成：`python -c "from agent_arena.v10.metrics.governance import *; print(schema_hash())"`
 
@@ -15,8 +15,8 @@ V10 的处理：
 | 类别 | 数量 | 处理 |
 |---|---:|---|
 | V7/V8 注册规格 | 154 | 只读保留；`metric_id`、`formula`、`valid_range` 不改写 |
-| V10 新增规格 | **166** | 29 张 V10 原生图的 `METRIC_SPECS`，逐条带 `role/direction/formula/denominator/zero_denominator/censored_rule/unit/valid_range/event_source/comparable_scope` |
-| 合计可寻址指标 | 320 | 两套并列；跨版本只做“语义同构量”的定性对照 |
+| V10 新增规格 | **172** | 30 张 V10 原生图的 `METRIC_SPECS`，逐条带 `role/direction/formula/denominator/zero_denominator/censored_rule/unit/valid_range/event_source/comparable_scope` |
+| 合计可寻址指标 | 326 | 两套并列；跨版本只做“语义同构量”的定性对照 |
 
 ## 2. 五态与优先级
 
@@ -84,5 +84,5 @@ V9 `failure-taxonomy.md` 中带 `METRIC_DEFECT` 标签的地图实测为 **20 �
 ## 6. 血缘
 
 每条 V10 指标都可追溯到：`map_id` + `rule_hash` + `scenario_hash` + `metric_schema_hash` + `runner` 的 `V10PolicyRun.metrics`。
-`metric_hash(map_id)` 是该图 `METRIC_SPECS` 的哈希；`schema_hash()` 是 154 + 128 的整体身份。
+`metric_hash(map_id)` 是该图 `METRIC_SPECS` 的哈希；`schema_hash()` 是 154 + 172 的整体身份。
 旧数据重算只作为**历史再解释**，不写回 V8/V9 文件（`freeze verify` 每次批末校验 9/9 `unchanged`）。

@@ -231,8 +231,12 @@ def render(gates: dict[str, Gate]) -> str:
         f"- `VALIDATED`（V10 原生，8 Gate 全过）：{len(passed)} 图 —— "
         + ("、".join(passed) or "无"),
         f"- `NEEDS_MORE_EVIDENCE`：{len(failed)} 图 —— " + ("、".join(failed) or "无"),
-        f"- V8 回退维持 `VALIDATED`（记 3-seed 缺口）：{len(FALLBACK_MAPS)} 图 —— "
-        + "、".join(FALLBACK_MAPS),
+        (
+            "- V8 回退图：无（30/30 原生）"
+            if not FALLBACK_MAPS
+            else f"- V8 回退维持 `VALIDATED`（记 3-seed 缺口）：{len(FALLBACK_MAPS)} 图 —— "
+            + "、".join(FALLBACK_MAPS)
+        ),
         "",
         "## 未通过项明细",
         "",

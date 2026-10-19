@@ -231,8 +231,12 @@ def render_results() -> str:
     lines += [
         "",
         f"- 有效局成功 **{valid_successes}/{len(valid_rows)}**；其余为机制失败/决策预算耗尽。",
-        f"- 结论范围：本矩阵只覆盖 V10 原生图；{len(fallback)} 张 V8 回退图",
-        f"  （{'、'.join(fallback)}）仍有 3-seed 缺口，见 `validated-regression.md`，",
+        (
+            "- 结论范围：本矩阵覆盖全部 30 张 V10 原生图；V8 回退图为 0。"
+            if not fallback
+            else f"- 结论范围：本矩阵只覆盖 V10 原生图；{len(fallback)} 张 V8 回退图"
+            f"（{'、'.join(fallback)}）仍有 3-seed 缺口，见 `validated-regression.md`，"
+        ),
         "  不得据此声称 30/30 的 MiMo 多 seed 覆盖。",
         "",
         "## 5. 中断与补跑（全部保留，不覆盖）",

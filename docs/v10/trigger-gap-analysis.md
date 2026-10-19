@@ -1,7 +1,7 @@
 # V10 未触发机制局的逐局判读
 
 - 由 `python -m agent_arena.v10.trigger_gap` 生成；只读既有 MiMo trace 与基线产物。
-- 覆盖 **35** 局（15 张图），
+- 覆盖 **37** 局（16 张图），
   全部是“有效但 `mechanism_triggered=False`”。
 - 判读规则：`BUDGET`（预算用尽）｜`THRESHOLD`（撞规则阈值）｜
 `ENTRY_NOT_ATTEMPTED`（没尝试机制动作）｜`ENTRY_REJECTED`（机制动作全被拒）｜
@@ -13,7 +13,7 @@
 |---|---:|
 | `BUDGET` | 15 |
 | `ENTRY_REJECTED` | 1 |
-| `THRESHOLD` | 13 |
+| `THRESHOLD` | 15 |
 | `USED_NO_THRESHOLD` | 6 |
 
 ## 2. 逐图
@@ -27,6 +27,7 @@
 | MAP-07 | 2 | `THRESHOLD`×2 | 30 | 10 | 20 | 2, 4 |
 | MAP-11 | 1 | `USED_NO_THRESHOLD`×1 | 38 | 4 | 34 | 3 |
 | MAP-14 | 3 | `THRESHOLD`×3 | 38 | 12 | 26 | 24, 35, 35 |
+| MAP-16 | 2 | `THRESHOLD`×2 | 30 | 20 | 10 | 4, 7 |
 | MAP-17 | 3 | `USED_NO_THRESHOLD`×3 | 38 | 14 | 24 | 12, 12, 12 |
 | MAP-19 | 3 | `BUDGET`×3 | 60 | 38 | 22 | 60, 60, 60 |
 | MAP-20 | 3 | `BUDGET`×3 | 56 | 40 | 16 | 56, 56, 56 |
@@ -53,6 +54,8 @@
 | MAP-14 | 0 | `V10-MAP-14-S0-ext` | `THRESHOLD` | 35/38 | WRONG_SUBMISSION_LIMIT | `compare_evidence` 4/4、`submit_configuration` 5/4 | `submit_configuration` → WRONG_SUBMISSION_LIMIT |
 | MAP-14 | 1 | `V10-MAP-14-S1-ext` | `THRESHOLD` | 35/38 | WRONG_SUBMISSION_LIMIT | `compare_evidence` 4/4、`submit_configuration` 5/4 | `submit_configuration` → WRONG_SUBMISSION_LIMIT |
 | MAP-14 | 2 | `V10-MAP-14-S2-ext` | `THRESHOLD` | 24/38 | WRONG_SUBMISSION_LIMIT | `compare_evidence` 2/2、`submit_configuration` 5/4 | `submit_configuration` → WRONG_SUBMISSION_LIMIT |
+| MAP-16 | 0 | `V10-MAP-16-S0-r2` | `THRESHOLD` | 7/30 | NODE_CAPACITY_CONFLICT | `set_route` 4/0、`move_train` 3/1、`occupy_siding` 0/0 | `move_train` → NODE_CAPACITY_CONFLICT |
+| MAP-16 | 2 | `V10-MAP-16-S2-r2` | `THRESHOLD` | 4/30 | NODE_CAPACITY_CONFLICT | `set_route` 2/0、`move_train` 1/0、`occupy_siding` 0/0 | `move_train` → NODE_CAPACITY_CONFLICT |
 | MAP-17 | 0 | `V10-MAP-17-S0-q2` | `USED_NO_THRESHOLD` | 12/38 | DEADLINE_SERVICE_BELOW_THRESHOLD | `set_timetable` 12/0 | `set_timetable` → TICK_COMMITTED |
 | MAP-17 | 1 | `V10-MAP-17-S1-q2` | `USED_NO_THRESHOLD` | 12/38 | DEADLINE_SERVICE_BELOW_THRESHOLD | `set_timetable` 11/0 | `set_timetable` → TICK_COMMITTED |
 | MAP-17 | 2 | `V10-MAP-17-S2-q2` | `USED_NO_THRESHOLD` | 12/38 | DEADLINE_SERVICE_BELOW_THRESHOLD | `set_timetable` 11/0 | `set_timetable` → TICK_COMMITTED |

@@ -14,27 +14,27 @@
 | 2 | MAP-06 / MAP-15 / MAP-21：DCR-V10-03/04/05，10/10/10 seed | 离线 Gate 通过 | 见 git log `feat(v10): batch 2` | ¥0 |
 | 3 | 古堡 MAP-28 / 29 / 30：DCR-V10-06/07，4/4/3 案卷 | 离线 Gate 通过 | 见 git log `feat(v10): batch 3` | ¥0 |
 | 4 | 其余 NEEDS_REDESIGN：MAP-04（V10-08）、MAP-14（09）、MAP-19（10）、MAP-20（11）、MAP-22（12）、MAP-23（13）、MAP-24（14） | 离线 Gate 通过 | 见 git log `feat(v10): batch 4` | ¥0 |
-| 5 | NEEDS_MORE_EVIDENCE 与 VALIDATED 复核：8 张接口/证据图 + 7 张 VALIDATED 防回归 | 完成（7 张记 3-seed 缺口） | 见 git log `feat(v10): batch 5` | ¥0 |
+| 5 | NEEDS_MORE_EVIDENCE 与 VALIDATED 复核：8 张接口/证据图 + 7 张 VALIDATED 防回归 | 完成（当时 7 张记 3-seed 缺口；已由 DCR-V10-27/29/30/31/33/34/36 补齐） | 见 git log `feat(v10): batch 5` | ¥0 |
 | 6 | 指标治理：154 枚举 + 128 项 V10 规格 + 20 项缺陷结论 + 五态核对 | 完成 | 见 git log `feat(v10): batch 6` | ¥0 |
 | 7 | 多 seed 难度定标：`difficulty.py` + `difficulty-calibration.md` | 完成（Batch 8 后已加入 MiMo 列） | 见 git log `feat(v10): batch 7` | ¥0 |
-| 8 | 有界 MiMo 复测：29 张 V10 原生图 × 3 环境 seed + 中断补跑 + 接口修复重跑 + MAP-05/02/27/01/25/17 原生首测 | ✅ 完成（113 局记录：107 有效 + 6 中断保留） | 见 git log `feat(v10): batch 8/9` | **CNY 2.15** |
+| 8 | 有界 MiMo 复测：30 张 V10 原生图 × 3 环境 seed + 中断补跑 + 接口修复重跑 + MAP-05/02/27/01/25/17/16 原生首测 | ✅ 完成（116 局记录：110 有效 + 6 中断保留） | 见 git log `feat(v10): batch 8/9` | **CNY 2.16** |
 | 9 | 最终验收：8 Gate 判定、30 张逐图审计卡、指标独立复核、trace 级归因、成本审计、最终报告 | ✅ 完成 | 见 git log `feat(v10): batch 8/9` | ¥0 |
 
 ## 结论速览
 
-- **30 图状态**：**30 `VALIDATED`**（29 张 V10 原生图 8 项 Gate 全过 + 1 张 V8 回退图沿用 V9 并记
-  3-seed 缺口）；`NEEDS_MORE_EVIDENCE`、`NEEDS_REDESIGN`、`BLOCKED` 均为 **0**；
+- **30 图状态**：**30 `VALIDATED`**（30 张 V10 原生图 8 项 Gate 全过；V8 回退 0）；
+  `NEEDS_MORE_EVIDENCE`、`NEEDS_REDESIGN`、`BLOCKED` 均为 **0**；
   构念 `BYPASS` 为 **0**，`OPTIONAL` 2（MAP-04、MAP-26）。
 - **P0 五图**：MAP-03/06/15/21 机制有效；**MAP-18 的 0/3 是接口假象**——类型化动作契约修复后
   （DCR-V10-24）非法动作从 20/20 降到 0，失败转为真实调度冲突；MAP-28 seed0 同因从“从未提交”变为成功；
   MAP-20 经 DCR-V10-25 公开取值结构后非法动作 168/168 → 0/168；MAP-05 原生 seed 化（DCR-V10-27）
   并经 DCR-V10-28 补充整数区间后非法动作 14/31 → 0；MAP-02（DCR-V10-29）与 MAP-27（DCR-V10-30）
   原生 seed 化后 3 局非法动作均为 0。
-- **指标独立复核**：23 图 × 116 seed 实例，状态-取值违规从 4 条降到 **0**（MAP-12 取值域修复
-  DCR-V10-23），回放确定性与 seed 差异性 23/23；**主指标公式级第二套实现** 24/27 图、855 次检查
+- **指标独立复核**：30 图 × 144 seed 实例，状态-取值违规从 4 条降到 **0**（MAP-12 取值域修复
+  DCR-V10-23），回放确定性与 seed 差异性 30/30；**主指标公式级第二套实现** 30/30 图、1093 次检查
   全一致，并据此修掉“截断局漏判 `CENSORED`”的系统性口径缺陷（DCR-V10-26）。
-- **MiMo 事实**：有效局 **107**（+6 局中断保留），成功 **36/107**；结算 CNY 2.01267636 + 未知预留
-  CNY 0.13312000 = **CNY 2.14579636**，远低于 ¥10 上限；逐局失败归因见 `failure-attribution.md`。
+- **MiMo 事实**：有效局 **110**（+6 局中断保留），成功 **37/110**；结算 CNY 2.02861492 + 未知预留
+  CNY 0.13312000 = **CNY 2.16173492**，远低于 ¥10 上限；逐局失败归因见 `failure-attribution.md`。
 
 ## 文件
 
@@ -53,9 +53,9 @@
 | `failure-attribution.md` | Batch 9：MiMo 逐局 trace 级失败归因（接口/策略/预算/阈值） |
 | `trigger-gap-analysis.md` | 未触发机制局的逐局判读（预算/阈值/入口） |
 | `castle-budget-analysis.md` | 古堡三图的决策预算剖面与最后动作 |
-| `metric-recompute.md` | Batch 9：主指标公式级第二套实现（29/29 图、1065 次检查全一致） |
+| `metric-recompute.md` | Batch 9：主指标公式级第二套实现（30/30 图、1093 次检查全一致） |
 | `metric-schema-v10.md` | v10 指标 schema、五态语义、缺陷处理结论 |
-| `mimo-preregistration.json` | Batch 8 预登记（矩阵、预算、stop rule、补跑与阶段 3 登记） |
+| `mimo-preregistration.json` | Batch 8 预登记（矩阵、预算、stop rule、补跑与阶段 3–12 登记） |
 | `mimo-results.md` | 逐图逐 seed 结果、结局分类、中断与补跑 |
 | `cost-ledger-audit.md` | 逐账本与逐局成本、未知消费与封账审计 |
 | `maps/MAP-01.md … MAP-30.md` | 30 张逐图审计卡（含指标、消融、MiMo、证据索引） |
@@ -72,7 +72,7 @@
 | `src/agent_arena/v10/ledger.py` | V10 独立 append-only 预算账本（¥10 全局共享、未知消费封账） |
 | `src/agent_arena/v10/contract.py` | 按类型渲染公开动作契约（DCR-V10-24） |
 | `src/agent_arena/v10/validation.py` | Batch 9 的 8 项 Gate 机器判定 |
-| `src/agent_arena/v10/recompute.py` | 主指标公式级第二套实现（29/29 图、1065 次检查） |
+| `src/agent_arena/v10/recompute.py` | 主指标公式级第二套实现（30/30 图、1093 次检查） |
 | `src/agent_arena/v10/trigger_gap.py` | 未触发机制局判读与古堡预算剖面 |
 | `src/agent_arena/v10/attribution.py` | MiMo 逐局 trace 级失败归因（含早期单文件布局兼容） |
 | `src/agent_arena/v10/map_cards.py` / `mimo_report.py` / `construct_validity.py` / `difficulty.py` | 文档与状态矩阵生成器（禁止手填数字） |
@@ -100,11 +100,11 @@
 
 ## 下一会话续跑点（V11 候选）
 
-- **5 张 V8 回退图**（01/16/17/25/27）的 **seed 参数化**：参照 MAP-05（DCR-V10-27）与
-  MAP-02（DCR-V10-29）的模板，建 V10 原生运行时后补 3-seed Oracle/消融/MiMo。
+- **V8 回退图已归零**：MAP-01/02/05/16/17/25/27 全部完成原生 seed 化（DCR-V10-27/29/30/31/33/34/36）。
+  V11 可扩展 MAP-16 的实例空间（节点容量/侧线组合）或增加每图真实模型局数。
 - 未触发机制局的判读已落到 `trigger-gap-analysis.md`（29 局：THRESHOLD 13、BUDGET 12、USED_NO_THRESHOLD 3、ENTRY_REJECTED 1）与 `castle-budget-analysis.md`。
-- **公式级指标复算**：已完成 29/29 图（1065 次检查全一致；DCR-V10-32 暴露 03/24/26 的 judge 字段，DCR-V10-35 暴露 13/14 的 roles/claims）；
-  剩余 3 图（13/14/21）需实现独立的谓词求值 / 假设一致性 / 科学分重算。
+- **公式级指标复算**：已完成 30/30 图（1093 次检查全一致；DCR-V10-32 暴露 03/24/26 的 judge 字段，
+  DCR-V10-35 补齐 13/14/21，DCR-V10-36 补齐 MAP-16）。下一步是把它接入 CI。
 - 未触发机制局已逐局判读（`trigger-gap-analysis.md`）：29 局 = THRESHOLD 13 / BUDGET 12 /
   USED_NO_THRESHOLD 3 / ENTRY_REJECTED 1；古堡预算见 `castle-budget-analysis.md`。
   `CONTRACT_ARTIFACT` 10 局均为旧契约下的历史记录（DCR-V10-24/25/28 之前的重跑证据）。
