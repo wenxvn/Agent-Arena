@@ -15,6 +15,7 @@ import random
 from dataclasses import asdict, dataclass, field
 from typing import Any, Protocol
 
+from agent_arena.v10.metrics.governance import truncation_censored
 from agent_arena.v10.runtime.base import V10Map
 from agent_arena.v10.runtime.catalog import create_environment, scenario_hash
 from agent_arena.worlds.scenario_v8.models import V8Action
@@ -159,6 +160,9 @@ def run_policy(
         decisions += 1
     metrics = environment.metrics()
     if isinstance(environment, V10Map):
+        metrics = truncation_censored(
+            map_id, metrics, truncated=not environment.is_terminal
+        )
         primary = environment.PRIMARY_METRIC
         value = metrics.get(primary, {})
         primary_state = str(value.get("state"))

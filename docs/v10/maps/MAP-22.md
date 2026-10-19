@@ -78,12 +78,12 @@ Oracle 各 seed 的触发率为 4/4。
 |---|---|---|
 | `fixed_bearings` | 0/4 | 0.0 |
 | `no_memory_write` | 0/4 | 0.0 |
-| `no_return` | 0/4 | 0.0 |
+| `no_return` | 0/4 | — |
 | `random_walk` | 0/4 | 0.0 |
 
 - Oracle：4/4（机制触发 4/4）
-- 公开启发式：3/4（主指标均值 0.75）
-- legal_random：0/80（主指标均值 0.0）
+- 公开启发式：3/4（主指标均值 1.0）
+- legal_random：0/80（主指标均值 None）
 - Oracle 是否在决策预算内：`True`
 
 - 观测到的终止码：`MOVE_BUDGET_EXHAUSTED`、`RETURNED_TO_CAMP_WITH_RUIN_RECORD`

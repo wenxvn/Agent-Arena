@@ -73,12 +73,12 @@ Oracle 各 seed 的触发率为 4/4。
 | 消融 | 成功率 | 主指标均值 |
 |---|---|---|
 | `max_load` | 1/4 | 0.25 |
-| `no_move` | 0/4 | 0.0 |
+| `no_move` | 0/4 | — |
 | `underload` | 0/4 | 0.0 |
 
 - Oracle：4/4（机制触发 4/4）
 - 公开启发式：4/4（主指标均值 1.0）
-- legal_random：0/80（主指标均值 0.0）
+- legal_random：0/80（主指标均值 None）
 - Oracle 是否在决策预算内：`True`
 
 - 观测到的终止码：`DELIVERED_IN_FULL`、`DELIVERY_SHORT`、`OUT_OF_FUEL`

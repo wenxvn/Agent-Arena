@@ -77,6 +77,7 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 | DCR-V10-23 | MAP-12 `research_completion` 取值域 `(0,1)`→`(0,3)` | 指标 | `independent-metric-check.md`（4 条违规 → 0） |
 | DCR-V10-24 | 公开动作契约按 `V8Action` 注解渲染类型 + MAP-18/19/28 公开格式澄清 | 接口 | `mimo-results.md`；MAP-18 非法 20/20 → 0/13、MAP-28 seed0 由“从未提交”变为成功 |
 | DCR-V10-25 | MAP-20 `set_flow`/`adjust_loads`/`open_bypass` 结构与取值写进地图 `public_rules()`（`rule_hash` `81eb7439…`→`e677a0ac…`） | 接口 | `mimo-results.md`；MAP-20 非法 168/168 → 0/168，`mimo` Gate 通过 |
+| DCR-V10-26 | 截尾口径归一：被决策预算截断的局按规格文本改判 `CENSORED`（投影层，不动规格与地图） | 指标投影 | `metric-recompute.md`；公式级复算 53 处不一致 → 0（633 次检查） |
 
 ### 3.2 Batch 9 的构念改标
 

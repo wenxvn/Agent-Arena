@@ -227,12 +227,20 @@ def test_map30_oracle_heuristic_and_ablations() -> None:
 
 def test_map30_accusation_precision_is_not_awarded_for_rejected_accusations() -> None:
     seed = 0
-    run = run_policy(
+    # 终局失败（指控被拒）：该指标分母为 0 且不可能再发生 → NOT_APPLICABLE
+    rejected = run_policy(
+        "MAP-30", b30.ABLATIONS["evidence_shuffle"](), environment_seed=seed, decision_budget=46
+    )
+    assert not rejected.success
+    assert rejected.metrics["map30.v10.accusation_claim_precision"]["state"] == (
+        "NOT_APPLICABLE"
+    )
+    # 被决策预算截断：规格声明「截尾 → CENSORED」→ CENSORED（DCR-V10-26 归一，之前误报 VALID/N/A）
+    truncated = run_policy(
         "MAP-30", b30.ABLATIONS["late_guess"](), environment_seed=seed, decision_budget=46
     )
-    assert not run.success
-    state = run.metrics["map30.v10.accusation_claim_precision"]["state"]
-    assert state == "NOT_APPLICABLE"
+    assert truncated.status == "decision_budget_reached"
+    assert truncated.metrics["map30.v10.accusation_claim_precision"]["state"] == "CENSORED"
 
 
 def test_map30_window_delay_measures_long_interval_recall() -> None:

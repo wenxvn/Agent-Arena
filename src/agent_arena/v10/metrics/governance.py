@@ -100,6 +100,46 @@ def primary_policy() -> dict[str, list[str]]:
     return policy
 
 
+def truncation_censored(map_id: str, metrics: dict[str, Any], *, truncated: bool) -> dict[str, Any]:
+    """按各图**声明的**截尾口径，把被预算截断的局统一为 `CENSORED`（DCR-V10-26）。
+
+    背景：各图的 `v10_metrics()` 只检查环境的 `step_limit_reached`，而 V10 runner 的截断
+    来自**决策预算**（环境停在 `running`），于是 MAP-10/19/20/22/23 在被截断时仍报 `VALID`、
+    MAP-28 报 `NOT_APPLICABLE`，与其 `METRIC_SPECS` 声明的「截尾 → CENSORED」冲突。
+
+    规则（只用规格里已有的文本，不改任何指标定义）：
+
+    - 局被截断 **且** 指标规格的 `censored_rule` 含 `截尾 → CENSORED` **且** 未含
+      「部分进度保持 VALID」「仍 VALID」 → `VALID` 改判 `CENSORED`；
+    - 局被截断 **且** 规格的 `zero_denominator` 含 `截尾 → CENSORED` → `NOT_APPLICABLE`
+      改判 `CENSORED`。
+    """
+
+    if not truncated:
+        return metrics
+    if map_id not in V10_MAPS:
+        return metrics
+    specs = {spec.metric_id: spec for spec in v10_class(map_id).METRIC_SPECS}
+    output: dict[str, Any] = {}
+    for metric_id, item in metrics.items():
+        spec = specs.get(metric_id)
+        if spec is None or not isinstance(item, dict):
+            output[metric_id] = item
+            continue
+        rule = spec.censored_rule
+        partial_ok = "部分进度保持 VALID" in rule or "仍 VALID" in rule
+        valid_to_censored = "截尾 → CENSORED" in rule and not partial_ok
+        na_to_censored = "截尾 → CENSORED" in spec.zero_denominator
+        state = item.get("state")
+        if (state == "VALID" and valid_to_censored) or (
+            state == "NOT_APPLICABLE" and na_to_censored
+        ):
+            output[metric_id] = {"state": "CENSORED", "value": None, "note": "预算截尾"}
+        else:
+            output[metric_id] = item
+    return output
+
+
 def audit_states(map_id: str, seed: int, actions: list[dict[str, Any]]) -> dict[str, Any]:
     """规格驱动的五态核对（独立于各图内部计算）。"""
 
@@ -143,4 +183,5 @@ __all__ = [
     "enumerate_specs",
     "primary_policy",
     "schema_hash",
+    "truncation_censored",
 ]

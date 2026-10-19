@@ -475,6 +475,11 @@ def run_episode(
     if environment.is_terminal:
         outcome = "success" if environment.is_success else "failure"
     metrics = environment.metrics()
+    from agent_arena.v10.metrics.governance import truncation_censored
+
+    metrics = truncation_censored(
+        map_id, metrics, truncated=not environment.is_terminal
+    )
     judge = environment.judge_state()
     cost_settled, cost_unknown = _episode_costs(ledger, run_id)
     result_row = {

@@ -79,7 +79,7 @@ Oracle 各 seed 的触发率为 4/4。
 
 | 消融 | 成功率 | 主指标均值 |
 |---|---|---|
-| `bypass_overuse` | 0/4 | 0.4353 |
+| `bypass_overuse` | 0/4 | 0.451 |
 | `no_bypass` | 0/4 | 0.9412 |
 | `static_allocation` | 0/4 | 0.9118 |
 | `zero_flow` | 0/4 | 0.0 |

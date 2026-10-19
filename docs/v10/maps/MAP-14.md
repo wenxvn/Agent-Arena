@@ -86,7 +86,7 @@ Oracle 各 seed 的触发率为 6/6。
 
 - Oracle：6/6（机制触发 6/6）
 - 公开启发式：6/6（主指标均值 0.6667）
-- legal_random：0/120（主指标均值 0.0）
+- legal_random：0/120（主指标均值 None）
 - Oracle 是否在决策预算内：`True`
 
 - 观测到的终止码：`GATE_OPENED_WITH_CONSISTENT_HYPOTHESIS`、`WRONG_SUBMISSION_LIMIT`

@@ -1418,3 +1418,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：MAP-20 的 3 局仍不能说明能力高低（单模型、单 replicate、3 seed、主指标恒 0 只说明模型未产出产能）；`KEY_ACTION_USED_NO_TRIGGER` 的 22 局需逐图判读；早期 9 局的 trace 为单文件布局（归因器已兼容，引用时注明）。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 2：主指标公式级第二套实现（DCR-V10-26）
+
+事件：接续缺口清单第 2 项，为 23 张 V10 原生图的**主指标**写第二套独立实现并逐局比对；过程中查出并修复一处系统性五态口径缺陷。
+
+原因：此前只有「规格驱动五态核对 + 回放确定性 + seed 差异性」，没有用第二套实现重算分子/分母，无法证明指标数学本身正确。
+
+改动：新增 `src/agent_arena/v10/recompute.py`（只用「公开初始 Observation 的实例参数」+「`judge_state()` 原始计数器」重算，覆盖 17/23 图；6 图因依赖密封真值/未暴露字段列入 `SKIP_REASONS` 并逐条说明）、`v10/metrics/governance.py::truncation_censored`（按规格文本把被决策预算截断的局改判 `CENSORED`）、`tests/test_v10_batch9_truncation.py`（6 条）；`baselines/runner.py`、`scripts/run_v10_mimo.py`、`recompute._replay` 接入归一；新增 `docs/v10/dcr/DCR-V10-26.md`、`docs/v10/metric-recompute.md`；更新 `tests/test_v10_batch3.py` 的 MAP-30 断言（区分截断 `CENSORED` 与终局指控被拒 `NOT_APPLICABLE`）。
+
+结果：第一轮 633 次检查出现 **53 处不一致**，全部同一根因——各图 `v10_metrics()` 只检查环境的 `step_limit_reached`，而 V10 的真实截断来自 runner 决策预算（环境停在 `running`），于是截断局仍报 `VALID 0`（MAP-10 16、MAP-20 1、MAP-22 16、MAP-23 8）或 `NOT_APPLICABLE`（MAP-28 12），与规格声明的「截尾 → CENSORED」冲突；这同时解释了基线里 `legal_random` 主指标均值长期为 `0.0`。归一后重跑：**633 次检查全部一致（17 图、0 不一致）**。离线基线已重跑（23 图），截断局的 `VALID 0` 变为 `CENSORED`、相应均值变为 `null`/按已结算局计算。Batch 8 的 85 局 MiMo 记录**不回写**（历史证据，逐局 manifest 保留旧口径）。
+
+验证：`pytest` 1084 passed；`mypy src` 238 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged；`recompute`、`baselines.suite`、`validation`、`difficulty`、`map_cards`、`status`、`attribution`、`mimo_report` 全部重算。
+
+边界：复算仍是「同一套公开输入下两套实现一致」，不等于构念效度；剩余 6 图（03/13/14/21/24/26）需先把真值或判据字段纳入 `judge_state` 才能覆盖；截尾归一改变了 2026-10-19 之后的离线基线与新局记录，跨日比较需注明口径。
+
+关联提交：本次提交（分支 `v10-validity`）。
