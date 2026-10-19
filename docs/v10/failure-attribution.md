@@ -2,7 +2,7 @@
 
 - 由 `python -m agent_arena.v10.attribution` 生成；逐局回放 `runs/v10/mimo/`
   `episodes/` 的动作序列。
-- 覆盖 **91** 局（其中有效局 72）；机制动作集见模块
+- 覆盖 **94** 局（其中有效局 75）；机制动作集见模块
   `MECHANISM_TOOLS`。
 - 标签含义：`CONTRACT_ARTIFACT`（接口假象）｜`KEY_ACTION_NEVER_ATTEMPTED`｜`KEY_ACTION_ATTEMPTED_REJECTED`｜`KEY_ACTION_USED_NO_TRIGGER`｜`TRIGGERED`。
 
@@ -13,13 +13,16 @@
 | `CONTRACT_ARTIFACT` | 10 |
 | `KEY_ACTION_ATTEMPTED_REJECTED` | 2 |
 | `KEY_ACTION_NEVER_ATTEMPTED` | 8 |
-| `KEY_ACTION_USED_NO_TRIGGER` | 24 |
-| `TRIGGERED` | 47 |
+| `KEY_ACTION_USED_NO_TRIGGER` | 25 |
+| `TRIGGERED` | 49 |
 
 ## 2. 逐局归因（有效局）
 
 | 图 | seed | run_id | 标签 | 决策数 | 非法率 | 机制动作（尝试/被拒） | 终止 | 主指标 |
 |---|---:|---|---|---:|---:|---|---|---|
+| MAP-02 | 0 | `V10-MAP-02-S0-l2` | `TRIGGERED` | 6 | 0.0 | `pickup` 2/0、`interact` 0/0 | NAV_CORE_FLOODED | 0 |
+| MAP-02 | 1 | `V10-MAP-02-S1-l2` | `TRIGGERED` | 6 | 0.0 | `pickup` 2/0、`interact` 0/0 | NAV_CORE_FLOODED | 0 |
+| MAP-02 | 2 | `V10-MAP-02-S2-l2` | `KEY_ACTION_USED_NO_TRIGGER` | 6 | 0.0 | `pickup` 1/0、`interact` 0/0 | NAV_CORE_FLOODED | 0 |
 | MAP-03 | 0 | `V10-MAP-03-S0-p0` | `KEY_ACTION_USED_NO_TRIGGER` | 39 | 0.0 | `write_memory` 1/0、`submit` 0/0 | RETURN_WINDOW_EXPIRED | None |
 | MAP-03 | 1 | `V10-MAP-03-S1-p0` | `TRIGGERED` | 25 | 0.0 | `write_memory` 1/0、`submit` 1/0 | ROUTE_CALIBRATED | 1 |
 | MAP-03 | 2 | `V10-MAP-03-S2-p0` | `TRIGGERED` | 34 | 0.029 | `write_memory` 1/0、`submit` 1/0 | ROUTE_CALIBRATED | 1 |
@@ -97,6 +100,7 @@
 
 | 图 | 局数 | 主因 | 说明 |
 |---|---:|---|---|
+| MAP-02 | 1/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×1 |
 | MAP-03 | 1/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×1 |
 | MAP-05 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×2；KEY_ACTION_NEVER_ATTEMPTED×1 |
 | MAP-06 | 1/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×1 |

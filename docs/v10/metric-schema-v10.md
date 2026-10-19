@@ -1,6 +1,7 @@
 # V10 指标 schema 与五态语义
 
 - 版本：`metric_schema_version = "v10"`；`schema_hash` 由 `agent_arena.v10.metrics.governance.schema_hash()` 实时计算
+- 当前 `schema_hash`：`0bf8121dc3b29b199d42afb20e02b93a34417d8929bc6524b1a1a3f15c35a273`（154 + 140 条规格、25 张原生图）
 - 旧值：V7/V8 的 154 条注册指标与 V8/V9 的投影值**原样保留**，不覆盖、不跨版本求均值
 - 生成：`python -c "from agent_arena.v10.metrics.governance import *; print(schema_hash())"`
 
@@ -14,8 +15,8 @@ V10 的处理：
 | 类别 | 数量 | 处理 |
 |---|---:|---|
 | V7/V8 注册规格 | 154 | 只读保留；`metric_id`、`formula`、`valid_range` 不改写 |
-| V10 新增规格 | **128** | 23 张 V10 原生图的 `METRIC_SPECS`，逐条带 `role/direction/formula/denominator/zero_denominator/censored_rule/unit/valid_range/event_source/comparable_scope` |
-| 合计可寻址指标 | 282 | 两套并列；跨版本只做“语义同构量”的定性对照 |
+| V10 新增规格 | **140** | 25 张 V10 原生图的 `METRIC_SPECS`，逐条带 `role/direction/formula/denominator/zero_denominator/censored_rule/unit/valid_range/event_source/comparable_scope` |
+| 合计可寻址指标 | 294 | 两套并列；跨版本只做“语义同构量”的定性对照 |
 
 ## 2. 五态与优先级
 

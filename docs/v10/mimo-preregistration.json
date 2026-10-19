@@ -221,6 +221,21 @@
     "comparison_rule": "与阶段 5 的同图同 seed 只作“契约补区间前后”的配对描述；prompt 已变，不称严格 A/B",
     "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
   },
+  "phase_6_map02_native": {
+    "declared_at": "2026-10-19（开跑前登记）",
+    "rationale": "MAP-02 原先只有 V8 固定实例（seed_effective=False）。DCR-V10-29 把泄漏触发动作序、扩散窗口、乘员压力与 deadline 按 seed 实例化（规则/契约/成功条件不变），Oracle 4/4、启发式 4/4、消融最高 1/4、legal_random 0/80。补跑 3 个环境 seed 以满足 `mimo` Gate。",
+    "dcr": "DCR-V10-29",
+    "maps": ["MAP-02"],
+    "group_tag": "l2",
+    "run_id_pattern": "V10-MAP-02-S<seed>-l2",
+    "episodes": 3,
+    "environment_seeds": [0, 1, 2],
+    "ledger": "runs/v10/mimo/ledger_v10_011.jsonl",
+    "manifest_file": "runs/v10/mimo/manifest_l2.json",
+    "manifest_hash": "a59cfa30b01b9d05f3619d957f9b35be7fa869d987e744d581a7c216e68a3305",
+    "comparison_rule": "MAP-02 此前无 MiMo 局，本阶段是首次真实模型证据",
+    "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
+  },
   "stop_rules": [
     "达到全局 CNY 10 上限（含未知预留）立即停止",
     "出现 UNKNOWN_PROVIDER_SPEND 立即封账并停止自动调用",

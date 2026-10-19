@@ -14,16 +14,16 @@
   "validity_status": "VALIDATED"
  },
  "MAP-02": {
-  "ablation": "V9 seed0",
-  "baseline": "V9 seed0",
+  "ablation": "crew_only 0/4；late_react 0/4；nav_only 0/4；no_gate 1/4",
+  "baseline": "启发式 4/4；随机 0/80",
   "construct_status": "FORCED",
   "dcr_id": "",
   "decision": "Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录",
-  "defect": "V8 实例对 seed 不敏感（3-seed 未达标，见 validated-regression.md）",
-  "environment_seeds": "0（V8/V9 仅 seed0；见 baseline-audit §5）",
+  "defect": "V8 实例对 seed 不敏感（3-seed 未达标，见 validated-regression.md）；Batch 9：8 Gate 全过",
+  "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V10 未运行",
-  "oracle": "V9 seed0",
+  "mimo": "V10 0/3（seed 0,1,2；CNY 0.00781520）",
+  "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"
  },

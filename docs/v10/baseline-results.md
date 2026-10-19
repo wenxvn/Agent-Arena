@@ -7,6 +7,7 @@
 
 | 图 | seed 数 | Oracle | 机制触发 | 启发式 | 随机 | 消融（成功率） | 最易绕过 |
 |---|---:|---|---|---|---:|---|---:|
+| MAP-02 | 4 | 4/4 | 4/4 | 4/4 | 0/80 | `crew_only` 0/4；`late_react` 0/4；`nav_only` 0/4；`no_gate` 1/4 | 0.25 |
 | MAP-03 | 6 | 6/6 | 6/6 | 6/6 | 0/120 | `late_read` 0/6；`no_memory` 0/6；`random_guess` 0/6 | 0.0 |
 | MAP-04 | 6 | 6/6 | 6/6 | 6/6 | 0/120 | `blind_retry` 1/6；`detour_only` 6/6；`excess_wait` 0/6；`fixed_phase_script` 0/6 | 1.0 |
 | MAP-05 | 4 | 4/4 | 4/4 | 4/4 | 0/80 | `late_send` 0/4；`no_calibration` 0/4；`no_power_switch` 0/4；`wrong_order` 0/4 | 0.0 |

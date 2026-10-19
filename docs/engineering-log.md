@@ -1450,3 +1450,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：MAP-05 的 MiMo 0/3 只说明该模型未解出窗口排程，不说明地图无效；其余 6 张回退图仍未参数化；Batch 8 早期 MiMo 局按旧契约/旧口径记录，不回写。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 4：MAP-02 原生 seed 化（DCR-V10-29）
+
+事件：按 MAP-05 的模板把第二张回退图 MAP-02 改造成 V10 原生运行时（4 个预登记实例），并补跑真实模型。
+
+原因：MAP-02 是 `seed_effective=False` 的 6 图之一；同一模板已在 MAP-05 验证，可直接复用。
+
+改动：新增 `src/agent_arena/v10/runtime/map02.py`（子类化 V8 规则，只把 `leak_trigger_index`、`spread_ticks`、`crew_pressure_ticks`、`global_deadline` 按 seed 实例化；6 条 `METRIC_SPECS`：mission_success / event_response_latency / dual_objective_completion / stale_plan_actions_after_leak / crew_decompression / completion_ticks；机制=泄漏后做出有效响应）、`src/agent_arena/v10/baselines/map02.py`（V8 已验证的 9 动作 Oracle + Observation 驱动启发式 + 四消融 no_gate/nav_only/crew_only/late_react）、`tests/test_v10_map02.py`（8 条）；`validation`/`attribution`/`recompute`/`mimo_report`/`evidence_state` 适配 25 图；新增 `DCR-V10-29`。
+
+结果：MAP-02 `seed_effective=True`、4 个不同 `scenario_hash`；Oracle 4/4（机制触发 4/4）、启发式 4/4、消融 `no_gate` 1/4、`nav_only`/`crew_only`/`late_react` 0/4、`legal_random` 0/80（`no_gate` 的 1/4 是实例相关的合法发现：闸门并非每个实例的必要条件）。真实 MiMo（阶段 6，`-l2`）三局均 `NAV_CORE_FLOODED`（6 决策），**非法动作 0/0/0**，费用 CNY `0.00781520`。指标规格总数 128→140（25 图），`schema_hash` 更新为 `0bf8121d…`；独立核对 25 图 × 124 seed 实例 0 违规；公式级复算 19/25 图、697 次检查全一致。累计费用：结算 CNY `1.80707420` + 未知预留 `0.11468800` = `1.92176220`（上限 ¥10）。
+
+验证：`pytest` 1101 passed；`mypy src` 242 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged；`status`/`map_cards`/`validation`/`difficulty`/`construct_validity`/`attribution`/`mimo_report`/`regression`/`independent_check`/`recompute` 全部重算。
+
+边界：MAP-02 的 MiMo 0/3 是能力结果（模型 6 步内未固定导航核心），不说明地图无效；剩余 5 张回退图仍未参数化；`schema_hash` 再次变化，Batch 8 的旧局保持原记录。
+
+关联提交：本次提交（分支 `v10-validity`）。

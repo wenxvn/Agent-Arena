@@ -275,7 +275,9 @@ def _run_priority(row: dict[str, Any]) -> tuple[bool, int]:
     """
 
     run_id = str(row.get("run_id", ""))
-    if run_id.endswith("-k2b"):
+    if run_id.endswith("-l2"):
+        phase = 7
+    elif run_id.endswith("-k2b"):
         phase = 6
     elif run_id.endswith("-k2"):
         phase = 5

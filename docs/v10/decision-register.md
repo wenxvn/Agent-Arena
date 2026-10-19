@@ -70,6 +70,7 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 | 8 | 有界 MiMo 复测（4 次中断处理 + 阶段 3 接口修复重跑 + 阶段 4 MAP-20 公开规则重跑） | `agent_reviewed`；85 局记录、80 有效、CNY 1.88611620 | 见 README |
 | 9 | 8 项 Gate 判定 + 30 张逐图审计卡 + 指标独立复核 + 公式级复算 + trace 级归因 + 成本审计 + 最终报告 | 完成；**30/30 `VALIDATED`** | 见 README |
 | 9b | MAP-05 原生 seed 化（DCR-V10-27）+ 契约补整数区间（DCR-V10-28）+ 阶段 5/5b 复测 | 完成；MAP-05 8 Gate 全过 | 见 README |
+| 9c | MAP-02 原生 seed 化（DCR-V10-29）+ 阶段 6 复测 | 完成；MAP-02 8 Gate 全过 | 见 README |
 
 ### 3.1 Batch 9 追加的接口/指标 DCR
 
@@ -81,6 +82,7 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 | DCR-V10-26 | 截尾口径归一：被决策预算截断的局按规格文本改判 `CENSORED`（投影层，不动规格与地图） | 指标投影 | `metric-recompute.md`；公式级复算 53 处不一致 → 0（665 次检查） |
 | DCR-V10-27 | MAP-05 三束信号：V8 固定实例 → V10 原生 4 seed（窗口时刻与通道耗时随 seed） | 实例采样 | `MAP-05.json`；Oracle 4/4、四消融 0/4、`seed_effective=True` |
 | DCR-V10-28 | 公开动作契约补充整数字段区间（`ticks/turns/day/tick` 的 `ge/le`） | 接口 | `mimo-results.md`；MAP-05 阶段 5 非法 14/31 → 阶段 5b 0 |
+| DCR-V10-29 | MAP-02 双重警报：V8 固定实例 → V10 原生 4 seed（泄漏时序/扩散窗口/乘员压力/deadline） | 实例采样 | `MAP-02.json`；Oracle 4/4、消融最高 1/4、`seed_effective=True` |
 
 ### 3.2 Batch 9 的构念改标
 

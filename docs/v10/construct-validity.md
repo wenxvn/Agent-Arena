@@ -18,7 +18,7 @@
 | 图 | 世界 | 构念 | 效度 | 运行时 | 消融证据 | 消融率区间 | MiMo | 裁定 |
 |---|---|---|---|---|---|---|---|---|
 | MAP-01 | spaceship | FORCED | VALIDATED | `v8` | — | — | 未运行 | Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录 |
-| MAP-02 | spaceship | FORCED | VALIDATED | `v8` | — | — | 未运行 | Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录 |
+| MAP-02 | spaceship | FORCED | VALIDATED | `v10` | `crew_only` 0/4；`late_react` 0/4；`nav_only` 0/4；`no_gate` 1/4 | 0.00–0.25 | 0/3 | Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录 |
 | MAP-03 | spaceship | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `late_read` 0/6；`no_memory` 0/6；`random_guess` 0/6 | 0.00–0.00 | 2/3 | Batch 1：码 seed 化、goal 去泄露、清单封存、write_memory、EVA 对齐；三消融 0/6，启发式 6/6 |
 | MAP-04 | lighthouse | OPTIONAL | NEEDS_MORE_EVIDENCE | `v10` | `blind_retry` 1/6；`detour_only` 6/6；`excess_wait` 0/6；`fixed_phase_script` 0/6 | 0.00–1.00 | 0/3 | Batch 4：盲撞计 3 tick 代价；绕行保留但余量恒 ≤ Oracle；blind_retry 1/6（仅开局安全相位的对照实例），excess_wait/fixed_phase_script 0/6 |
 | MAP-05 | lighthouse | FORCED | VALIDATED | `v10` | `late_send` 0/4；`no_calibration` 0/4；`no_power_switch` 0/4；`wrong_order` 0/4 | 0.00–0.00 | 0/3 | Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录 |

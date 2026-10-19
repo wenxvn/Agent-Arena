@@ -7,7 +7,7 @@
 | map | 难度 | 构念 | V9 效度 | V10 构念 | V10 效度 | seeds | Oracle | 基线 | 消融 | MiMo | DCR | 结论 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | MAP-01 | 飞船简单 | 生命支持优先 + 互斥支路依赖链 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V10 未运行 |  | Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录 |
-| MAP-02 | 飞船中等 | 事件触发的双目标重排 | FORCED/VALIDATED | FORCED | VALIDATED | 0（V8/V9 仅 seed0；见 baseline-audit §5） | V9 seed0 | V9 seed0 | V9 seed0 | V10 未运行 |  | Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录 |
+| MAP-02 | 飞船中等 | 事件触发的双目标重排 | FORCED/VALIDATED | FORCED | VALIDATED | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | crew_only 0/4；late_react 0/4；nav_only 0/4；no_gate 1/4 | V10 0/3（seed 0,1,2；CNY 0.00781520） |  | Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录 |
 | MAP-03 | 飞船困难 | 五阶段里程碑 + 远期代码召回 | BYPASS/BLOCKED | FORCED | VALIDATED | 6（0,1,2,3,4,5） | 6/6（机制触发 6/6） | 启发式 6/6；随机 0/120 | late_read 0/6；no_memory 0/6；random_guess 0/6 | V10 2/3（seed 0,1,2；CNY 0.42543464） | DCR-V10-01 | Batch 1：码 seed 化、goal 去泄露、清单封存、write_memory、EVA 对齐；三消融 0/6，启发式 6/6 |
 | MAP-04 | 灯塔简单 | 潮汐相位预测 + 回程时机 | BYPASS/NEEDS_REDESIGN | OPTIONAL | VALIDATED | 6（0,1,2,3,4,5） | 6/6（机制触发 6/6） | 启发式 6/6；随机 0/120 | blind_retry 1/6；detour_only 6/6；excess_wait 0/6；fixed_phase_script 0/6 | V10 0/3（seed 0,1,2；CNY 0.01550636） | DCR-V10-08 | Batch 4：盲撞计 3 tick 代价；绕行保留但余量恒 ≤ Oracle；blind_retry 1/6（仅开局安全相位的对照实例），excess_wait/fixed_phase_script 0/6 |
 | MAP-05 | 灯塔中等 | 三窗口共享供电排程 | FORCED/VALIDATED | FORCED | VALIDATED | 4（0,1,2,3） | 4/4（机制触发 4/4） | 启发式 4/4；随机 0/80 | late_send 0/4；no_calibration 0/4；no_power_switch 0/4；wrong_order 0/4 | V10 0/3（seed 0,1,2；CNY 0.02783080；另有 3 局重跑/中断保留） |  | Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录 |

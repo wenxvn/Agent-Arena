@@ -78,6 +78,14 @@ def _v(value: float) -> tuple[str, float]:
 Formula = Callable[[dict[str, Any], dict[str, Any], bool], tuple[str, Any]]
 
 
+def _f02(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
+    del obs
+    if truncated:
+        return _censored("截尾")
+    ok = judge.get("nav_core_secured") is True and judge.get("crew_in_escape_pod") is True
+    return _v(1 if ok else 0)
+
+
 def _f04(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
     if truncated:
         return _censored("截尾")
@@ -261,6 +269,7 @@ def _f30(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[s
 
 
 FORMULAS: dict[str, Formula] = {
+    "MAP-02": _f02,
     "MAP-04": _f04,
     "MAP-05": _f05,
     "MAP-06": _f06,
