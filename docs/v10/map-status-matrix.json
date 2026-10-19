@@ -1,15 +1,15 @@
 {
  "MAP-01": {
-  "ablation": "V9 seed0",
-  "baseline": "V9 seed0",
+  "ablation": "arm_before_pickup 0/4；early_confirm 0/4；no_support_restore 0/4；skip_bus 0/4",
+  "baseline": "启发式 4/4；随机 0/80",
   "construct_status": "FORCED",
-  "dcr_id": "",
-  "decision": "Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录",
-  "defect": "V8 实例对 seed 不敏感（3-seed 未达标，见 validated-regression.md）",
-  "environment_seeds": "0（V8/V9 仅 seed0；见 baseline-audit §5）",
+  "dcr_id": "DCR-V10-31",
+  "decision": "Batch 9e：Oracle 4/4、启发式 4/4、四消融 0/4；公开规则含互斥供电与船壳依赖链",
+  "defect": "V10 原生 4 seed：氧气储备/断供容错/公开配电参数随 seed 变化；15 动作方案在四实例都可行；Batch 9：8 Gate 全过",
+  "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V10 未运行",
-  "oracle": "V9 seed0",
+  "mimo": "V10 0/3（seed 0,1,2；CNY 0.00630880）",
+  "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"
  },

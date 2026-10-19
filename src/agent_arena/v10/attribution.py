@@ -57,6 +57,7 @@ REJECT_PREFIXES = (
 
 #: 逐图机制动作集（成功使用 = 核心机制被触发的主要途径）。
 MECHANISM_TOOLS: dict[str, tuple[str, ...]] = {
+    "MAP-01": ("interact", "pickup", "move"),
     "MAP-03": ("write_memory", "submit"),
     "MAP-02": ("pickup", "interact"),
     "MAP-04": ("wait",),

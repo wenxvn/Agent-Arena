@@ -7,7 +7,6 @@
 
 | 图 | 运行时 | 3 seed 实例不同 | scenario_hash | V9 Oracle | 防回归复跑 | 结论 |
 |---|---|---|---|---|---|---|
-| MAP-01 | v8_fallback | **否** | c481427b85fca3f9 / 9039732a5bde4c36 / 2fcf352f970700ac | 1/1 | 通过 | **3-seed 未达标（保留 VALIDATED 但记缺口）** |
 | MAP-16 | v8_fallback | **否** | 2f25fdbd4bf599fb / 2d8480e21efa3919 / 221a96e8e7796745 | 1/1 | 通过 | **3-seed 未达标（保留 VALIDATED 但记缺口）** |
 | MAP-17 | v8_fallback | **否** | d58ab92b846182d5 / 314cae80157d8a14 / 33a129b0f15a2847 | 2/2 | 通过 | **3-seed 未达标（保留 VALIDATED 但记缺口）** |
 | MAP-25 | v8_fallback | **否** | ea0423c71c51c14a / 3fa3a282ce93d510 / 7856e47aee9ab627 | 2/2 | 通过 | **3-seed 未达标（保留 VALIDATED 但记缺口）** |
@@ -15,7 +14,7 @@
 ## 汇总
 
 - 3 seed 实例确实不同：无
-- 3 seed 未达标：MAP-01、MAP-16、MAP-17、MAP-25
+- 3 seed 未达标：MAP-16、MAP-17、MAP-25
 - 防回归失败：无
 
 3 seed 未达标的图**不撤销** V9 的 VALIDATED（它们的构念证据仍然成立），

@@ -405,6 +405,34 @@
     "run_id_pattern": "V10-MAP-27-S<seed>-n2",
     "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
   },
+  "phase_9_map01_native": {
+    "comparison_rule": "MAP-01 此前无 MiMo 局，本阶段是首次真实模型证据",
+    "dcr": "DCR-V10-31",
+    "declared_at": "2026-10-19（开跑前登记）",
+    "environment_seeds": [
+      0,
+      1,
+      2
+    ],
+    "episodes": 3,
+    "group_tag": "o2",
+    "ledger": "runs/v10/mimo/ledger_v10_015.jsonl",
+    "manifest_file": "runs/v10/mimo/manifest_o2.json",
+    "manifest_hash": "e4e0249f91bc7124261df4c2104e5c365ef5b3517db79de83372e6fafc50e4e7",
+    "maps": [
+      "MAP-01"
+    ],
+    "outcome": {
+      "all_valid": true,
+      "cost_settled_cny": 0.0063088,
+      "episodes": 3,
+      "result": "三局均 OXYGEN_SUPPLY_INTERRUPTION_LIMIT（4–5 决策），非法动作 0/0/0；模型启动/切换供氧的时序判断失败",
+      "status": "completed"
+    },
+    "rationale": "MAP-01 原先只有 V8 固定实例（seed_effective=False）。DCR-V10-31 把氧气储备、断供容错与公开配电参数按 seed 实例化（规则/契约/成功条件不变）；四个实例的差异在容错余量与公开配电参数，同一 15 动作方案在四个实例上都可行。补跑 3 个环境 seed 以满足 mimo Gate。",
+    "run_id_pattern": "V10-MAP-01-S<seed>-o2",
+    "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
+  },
   "prompt": {
     "contains_hidden_truth": false,
     "frozen_hash_note": "prompt_hash 逐局记录在 trace header 与 manifest",

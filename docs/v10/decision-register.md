@@ -72,6 +72,7 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 | 9b | MAP-05 原生 seed 化（DCR-V10-27）+ 契约补整数区间（DCR-V10-28）+ 阶段 5/5b 复测 | 完成；MAP-05 8 Gate 全过 | 见 README |
 | 9c | MAP-02 原生 seed 化（DCR-V10-29）+ 阶段 6 复测 | 完成；MAP-02 8 Gate 全过 | 见 README |
 | 9d | MAP-27 原生 seed 化（DCR-V10-30）+ 阶段 8 复测 | 完成；MAP-27 8 Gate 全过 | 见 README |
+| 9e | MAP-01 原生 seed 化（DCR-V10-31）+ 阶段 9 复测 | 完成；MAP-01 8 Gate 全过 | 见 README |
 
 ### 3.1 Batch 9 追加的接口/指标 DCR
 
@@ -85,6 +86,7 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 | DCR-V10-28 | 公开动作契约补充整数字段区间（`ticks/turns/day/tick` 的 `ge/le`） | 接口 | `mimo-results.md`；MAP-05 阶段 5 非法 14/31 → 阶段 5b 0 |
 | DCR-V10-29 | MAP-02 双重警报：V8 固定实例 → V10 原生 4 seed（泄漏时序/扩散窗口/乘员压力/deadline） | 实例采样 | `MAP-02.json`；Oracle 4/4、消融最高 1/4、`seed_effective=True` |
 | DCR-V10-30 | MAP-27 月球车：V8 固定实例 → V10 原生 4 seed（电量/货舱/充电增益/余氧） | 实例采样 | `MAP-27.json`；Oracle 4/4、启发式 4/4、skip 消融 0/4 |
+| DCR-V10-31 | MAP-01 破损的曙光号：V8 固定实例 → V10 原生 4 seed（氧气储备/断供容错/配电参数） | 实例采样 | `MAP-01.json`；Oracle 4/4、启发式 4/4、四消融 0/4 |
 
 ### 3.2 Batch 9 的构念改标
 

@@ -3,7 +3,7 @@
 - 由 `python -m agent_arena.v10.mimo_report` 从 `runs/v10/mimo/` 逐字重算，禁止手填。
 - 模型：`mimo-v2.6-flash`；temperature=0；reasoning 关闭；每次请求先前预留、按供应商
   usage 结算；未知消费立即封账（保留预留，**不按 0 计**）。
-- 全局上限 CNY 10；已结算 **CNY 1.92771036**；未知/未结预留 **CNY 0.13312000**；合计占用 **CNY 2.06083036**。
+- 全局上限 CNY 10；已结算 **CNY 1.93401916**；未知/未结预留 **CNY 0.13312000**；合计占用 **CNY 2.06713916**。
 - 每图 3 个环境 seed、单一 replicate；`n=3` 只作描述，不作显著性断言，也不做跨模型排名。
 
 ## 1. 覆盖与账本
@@ -29,6 +29,7 @@
 | `ledger_v10_012.jsonl` | 96 | 0.05914944 | 0.00000000 | — | `50bee897baf0` |
 | `ledger_v10_013.jsonl` | 69 | 0.04294572 | 0.01843200 | UNKNOWN_PROVIDER_SPEND | `7dbec2ed074c` |
 | `ledger_v10_014.jsonl` | 46 | 0.01854100 | 0.00000000 | — | `4ff6517334e4` |
+| `ledger_v10_015.jsonl` | 13 | 0.00630880 | 0.00000000 | — | `f4c764deb13c` |
 
 ## 2. 分组结果（仅统计有效局）
 
@@ -45,11 +46,15 @@
 | MAP-02 原生首测 | 3 | 0 | 0.000 | 0 | 0.00781520 |
 | 补公开规则后重跑（MAP-02/05） | 6 | 0 | 0.000 | 0 | 0.05914944 |
 | MAP-27 原生首测 | 3 | 0 | 0.000 | 1 | 0.06148672 |
+| MAP-01 原生首测 | 3 | 0 | 0.000 | 0 | 0.00630880 |
 
 ## 3. 逐图逐 seed
 
 | 图 | 世界 | 难度 | seed | run_id | 结局 | 决策数 | 主指标 | 机制触发 | CNY | 有效 |
 |---|---|---|---:|---|---|---:|---|---|---:|---|
+| MAP-01 | spaceship | 简单 | 0 | `V10-MAP-01-S0-o2` | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 4 | 0 | False | 0.00258500 | 是 |
+| MAP-01 | spaceship | 简单 | 1 | `V10-MAP-01-S1-o2` | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 4 | 0 | False | 0.00258200 | 是 |
+| MAP-01 | spaceship | 简单 | 2 | `V10-MAP-01-S2-o2` | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 5 | 0 | False | 0.00114180 | 是 |
 | MAP-02 | spaceship | 中等 | 0 | `V10-MAP-02-S0-l2` | NAV_CORE_FLOODED | 6 | 0 | True | 0.00291800 | 是 |
 | MAP-02 | spaceship | 中等 | 0 | `V10-MAP-02-S0-m2` | CREW_PRESSURE_LOST | 12 | 0 | True | 0.00912600 | 是 |
 | MAP-02 | spaceship | 中等 | 1 | `V10-MAP-02-S1-l2` | NAV_CORE_FLOODED | 6 | 0 | True | 0.00223008 | 是 |
@@ -160,14 +165,14 @@
 | outcome | 局数 |
 |---|---:|
 | `decision_budget_exhausted` | 32 |
-| `failure` | 36 |
+| `failure` | 39 |
 | `settle_closed:供应商 usage 超出登记上限。` | 1 |
 | `success` | 30 |
 | `unknown_provider_spend` | 5 |
 
-- 有效局成功 **36/98**；其余为机制失败/决策预算耗尽。
-- 结论范围：本矩阵只覆盖 V10 原生图；4 张 V8 回退图
-  （MAP-01、MAP-16、MAP-17、MAP-25）仍有 3-seed 缺口，见 `validated-regression.md`，
+- 有效局成功 **36/101**；其余为机制失败/决策预算耗尽。
+- 结论范围：本矩阵只覆盖 V10 原生图；3 张 V8 回退图
+  （MAP-16、MAP-17、MAP-25）仍有 3-seed 缺口，见 `validated-regression.md`，
   不得据此声称 30/30 的 MiMo 多 seed 覆盖。
 
 ## 5. 中断与补跑（全部保留，不覆盖）

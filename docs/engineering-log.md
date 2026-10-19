@@ -1482,3 +1482,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：MAP-27 的 MiMo 0/3 是能力结果（电量规划失败），不说明地图无效；剩余 4 张回退图（01/16/17/25）仍未参数化；阶段 8 的 seed 2 使用补跑局作为有效证据。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 6：MAP-01 原生 seed 化（DCR-V10-31）
+
+事件：第四张回退图 MAP-01 改造为 V10 原生运行时（4 个预登记实例），补公开规则并完成真实模型首测。
+
+原因：MAP-01 是 `seed_effective=False` 的 4 图之一；飞船世界已有 02/03 原生，补齐后飞船全部原生。
+
+改动：新增 `src/agent_arena/v10/runtime/map01.py`（子类化 V8 规则，只把氧气储备、断供容错与公开配电参数按 seed 实例化；6 条 METRIC_SPECS；`_after_tick` 只把常数 3 换成实例参数；`inspect(power_diagram)` 返回本实例参数；`public_rules()` 公开互斥供电与依赖链）、`src/agent_arena/v10/baselines/map01.py`（15 动作 Oracle、Observation 驱动启发式 + 公开拓扑 BFS、四消融）、`tests/test_v10_map01.py`（8 条）；`validation`/`attribution`/`recompute`/`mimo_report`/`evidence_state`/`regression` 适配 27 图；新增 `DCR-V10-31`。
+
+结果：MAP-01 `seed_effective=True`、4 个不同 `scenario_hash`；Oracle 4/4（机制触发 4/4）、启发式 4/4、四消融全部 0/4、`legal_random` 0/80。真实 MiMo（阶段 9）：三局均 `OXYGEN_SUPPLY_INTERRUPTION_LIMIT`（4–5 决策），非法动作 0/0/0——模型在供氧/维修臂切换上失败。指标规格 147→153（27 图）；独立核对 27 图 × 132 seed 实例 0 违规；公式级复算 21/27 图、761 次检查全一致。累计费用：结算 CNY `1.93401916` + 未知预留 `0.13312000` = `2.06713916`。
+
+验证：`pytest` 1118 passed；`mypy src` 246 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged；全部生成文档重算。
+
+边界：MAP-01 的 MiMo 0/3 是能力结果（供氧时序判断失败），不说明地图无效；剩余 3 张回退图（16/17/25）仍未参数化；MAP-01 的实例差异主要是容错余量，不是主路径变化。
+
+关联提交：本次提交（分支 `v10-validity`）。

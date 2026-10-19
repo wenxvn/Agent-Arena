@@ -78,6 +78,15 @@ def _v(value: float) -> tuple[str, float]:
 Formula = Callable[[dict[str, Any], dict[str, Any], bool], tuple[str, Any]]
 
 
+def _f01(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
+    del obs
+    if truncated:
+        return _censored("截尾")
+    deps = judge.get("dependencies") or {}
+    ok = bool(judge.get("confirmed")) and all(deps.values()) and bool(deps)
+    return _v(1 if ok else 0)
+
+
 def _f02(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
     del obs
     if truncated:
@@ -283,6 +292,7 @@ def _f30(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[s
 
 
 FORMULAS: dict[str, Formula] = {
+    "MAP-01": _f01,
     "MAP-02": _f02,
     "MAP-04": _f04,
     "MAP-05": _f05,

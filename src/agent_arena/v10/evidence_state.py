@@ -240,6 +240,13 @@ DECISIONS["MAP-05"] = Decision(
     "Batch 9b：4 实例各自可行；Oracle 4/4、启发式 4/4、四消融 0/4；"
     "阶段 5b 的 3 局 MiMo 非法动作 0",
 )
+DECISIONS["MAP-01"] = Decision(
+    "FORCED",
+    "VALIDATED",
+    "V10 原生 4 seed：氧气储备/断供容错/公开配电参数随 seed 变化；15 动作方案在四实例都可行",
+    "DCR-V10-31",
+    "Batch 9e：Oracle 4/4、启发式 4/4、四消融 0/4；公开规则含互斥供电与船壳依赖链",
+)
 DECISIONS["MAP-27"] = Decision(
     "FORCED",
     "VALIDATED",
@@ -301,7 +308,9 @@ def _run_priority(row: dict[str, Any]) -> tuple[bool, int]:
     """
 
     run_id = str(row.get("run_id", ""))
-    if run_id.endswith("-n2"):
+    if run_id.endswith("-o2"):
+        phase = 10
+    elif run_id.endswith("-n2"):
         phase = 9
     elif run_id.endswith("-m2"):
         phase = 8

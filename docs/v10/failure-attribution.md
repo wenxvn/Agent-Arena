@@ -2,7 +2,7 @@
 
 - 由 `python -m agent_arena.v10.attribution` 生成；逐局回放 `runs/v10/mimo/`
   `episodes/` 的动作序列。
-- 覆盖 **104** 局（其中有效局 78）；机制动作集见模块
+- 覆盖 **107** 局（其中有效局 81）；机制动作集见模块
   `MECHANISM_TOOLS`。
 - 标签含义：`CONTRACT_ARTIFACT`（接口假象）｜`KEY_ACTION_NEVER_ATTEMPTED`｜`KEY_ACTION_ATTEMPTED_REJECTED`｜`KEY_ACTION_USED_NO_TRIGGER`｜`TRIGGERED`。
 
@@ -13,13 +13,16 @@
 | `CONTRACT_ARTIFACT` | 10 |
 | `KEY_ACTION_ATTEMPTED_REJECTED` | 2 |
 | `KEY_ACTION_NEVER_ATTEMPTED` | 8 |
-| `KEY_ACTION_USED_NO_TRIGGER` | 30 |
+| `KEY_ACTION_USED_NO_TRIGGER` | 33 |
 | `TRIGGERED` | 54 |
 
 ## 2. 逐局归因（有效局）
 
 | 图 | seed | run_id | 标签 | 决策数 | 非法率 | 机制动作（尝试/被拒） | 终止 | 主指标 |
 |---|---:|---|---|---:|---:|---|---|---|
+| MAP-01 | 0 | `V10-MAP-01-S0-o2` | `KEY_ACTION_USED_NO_TRIGGER` | 4 | 0.0 | — | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 0 |
+| MAP-01 | 1 | `V10-MAP-01-S1-o2` | `KEY_ACTION_USED_NO_TRIGGER` | 4 | 0.0 | — | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 0 |
+| MAP-01 | 2 | `V10-MAP-01-S2-o2` | `KEY_ACTION_USED_NO_TRIGGER` | 5 | 0.0 | — | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 0 |
 | MAP-02 | 0 | `V10-MAP-02-S0-m2` | `TRIGGERED` | 12 | 0.0 | `pickup` 1/0、`interact` 3/1 | CREW_PRESSURE_LOST | 0 |
 | MAP-02 | 1 | `V10-MAP-02-S1-m2` | `TRIGGERED` | 10 | 0.0 | `pickup` 1/0、`interact` 1/0 | CREW_PRESSURE_LOST | 0 |
 | MAP-02 | 2 | `V10-MAP-02-S2-m2` | `TRIGGERED` | 10 | 0.0 | `pickup` 1/0、`interact` 3/1 | CREW_PRESSURE_LOST | 0 |
@@ -103,6 +106,7 @@
 
 | 图 | 局数 | 主因 | 说明 |
 |---|---:|---|---|
+| MAP-01 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×3 |
 | MAP-03 | 1/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×1 |
 | MAP-05 | 1/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×1 |
 | MAP-06 | 1/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×1 |

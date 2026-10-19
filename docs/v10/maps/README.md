@@ -7,7 +7,7 @@
 
 | 图 | 世界 | 难度 | 构念 | 效度状态 | 运行时 |
 |---|---|---|---|---|---|
-| [MAP-01](MAP-01.md) | 飞船 | 简单 | FORCED | VALIDATED | `v8` |
+| [MAP-01](MAP-01.md) | 飞船 | 简单 | FORCED | VALIDATED | `v10` |
 | [MAP-02](MAP-02.md) | 飞船 | 中等 | FORCED | VALIDATED | `v10` |
 | [MAP-03](MAP-03.md) | 飞船 | 困难 | FORCED | NEEDS_MORE_EVIDENCE | `v10` |
 | [MAP-04](MAP-04.md) | 灯塔 | 简单 | OPTIONAL | NEEDS_MORE_EVIDENCE | `v10` |
@@ -40,4 +40,4 @@
 
 ## 覆盖说明
 
-- V10 原生运行时：26 张；V8 回退：4 张（01/02/05/16/17/25/27，3-seed 缺口见 `validated-regression.md`）。
+- V10 原生运行时：27 张；V8 回退：3 张（01/02/05/16/17/25/27，3-seed 缺口见 `validated-regression.md`）。
