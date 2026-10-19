@@ -533,7 +533,7 @@ def render(payload: dict[str, Any]) -> str:
         "  （实例参数）」+「`judge_state()` 原始计数器」，不调用各图 `v10_metrics()`。",
         "- 本轮它先查出 **53 处不一致**（截断局被当成 `VALID`），已按规格文本在投影层归一",
         "  并重跑为 0（DCR-V10-26）；不一致明细与其处理见 `dcr/DCR-V10-26.md`。",
-        f"- 覆盖 **{totals['maps_covered']}/23** 张原生图、{totals['checks']} 次复算；"
+        f"- 覆盖 **{totals['maps_covered']}/{len(V10_MAPS)}** 张原生图、{totals['checks']} 次复算；"
         f"一致 {totals['match']}、不一致 **{totals['mismatch']}**。",
         "- 公式前提取自各图 `METRIC_SPECS` 与 `DCR-V10-*`；阈值 1e-6。",
         "",
