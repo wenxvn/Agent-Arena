@@ -1562,3 +1562,15 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：MAP-17 的 MiMo 0/3 是能力结果（未送满阈值），不说明地图无效；MAP-17 的动作契约是整帧提交，参考策略为脚本化时刻表而非逐步启发式，已在 DCR 与报告中标注；只剩 MAP-16（V4 适配器）未参数化。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 11：MAP-16 回退原因的精确记录
+
+事件：核对最后一张回退图 MAP-16 的可参数化空间，并把结论写入报告与 README。
+
+原因：MAP-16 走 `V4MapAdapter`，绑定 V6 冻结场景 `map16_l3_original`；V6 另有两个 map16 场景，需要判断它们能否当 seed。
+
+结论：`map16_l1_single_train` / `map16_l2_siding_variant_a` / `map16_l3_original` 是 **L1/L2/L3 难度变体**（单列车、侧线变体、原版），把难度变体当环境 seed 会混淆“实例采样”与“难度递进”，因此 V10 **不**用它们凑 3-seed；MAP-16 维持 `VALIDATED` 并保留 3-seed 缺口记录。V11 若要补齐，应新建原生 MAP-16 运行时（不修改 V4/V6 冻结文件）。
+
+验证：仅文档修改；`pytest`、`mypy`、`ruff`、`freeze verify` 与此前一致。
+
+关联提交：本次提交（分支 `v10-validity`）。
