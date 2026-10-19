@@ -107,7 +107,7 @@ Oracle 各 seed 的触发率为 3/3。
 
 - 缺陷与待证事项：离线门禁通过；3 案卷含诱饵；指标偏置已纠
 - 当前裁定：Batch 3：公开条目 ID/成对规则/法庭节点/窗口语义；诱饵事件；两处指标偏置纠正；四消融 0/3，window_delay 触发 window_pressure
-- 剩余风险：公式级独立复算（第二套实现重算分子分母）未按图完成；现有检查为规格驱动五态核对 + 可复现回放。
+- 剩余风险：公式级独立复算已覆盖 30/30 图（见 `metric-recompute.md`）；五态核对、回放确定性与 MiMo 单 replicate 的边界仍按报告披露。
 - 提升到 `VALIDATED` 的条件：Batch 8 MiMo 复测有真实局 + 指标复算无越界。
 
 ## 9. 证据索引
@@ -115,6 +115,6 @@ Oracle 各 seed 的触发率为 3/3。
 - `docs/v10/dcr/DCR-V10-07.md`
 - `runs/v10/baselines/MAP-30.json`（若存在）
 - `runs/v10/baselines/summary.json`
-- `docs/v10/validated-regression.md`（回退图）
+- `docs/v10/validated-regression.md`（V9 防回归与 seed 差异）
 - `runs/v10/mimo/episodes/` 下该图逐局 trace/judge
 

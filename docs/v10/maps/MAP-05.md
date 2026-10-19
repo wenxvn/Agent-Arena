@@ -110,13 +110,13 @@ Oracle 各 seed 的触发率为 4/4。
 
 - 缺陷与待证事项：V10 原生 4 seed：窗口时刻与通道耗时随 seed 变化；规则/契约/成功条件不变
 - 当前裁定：Batch 9b：4 实例各自可行；Oracle 4/4、启发式 4/4、四消融 0/4；阶段 5b 的 3 局 MiMo 非法动作 0
-- 剩余风险：公式级独立复算（第二套实现重算分子分母）未按图完成；现有检查为规格驱动五态核对 + 可复现回放。
+- 剩余风险：公式级独立复算已覆盖 30/30 图（见 `metric-recompute.md`）；五态核对、回放确定性与 MiMo 单 replicate 的边界仍按报告披露。
 
 ## 9. 证据索引
 
 - `docs/v10/dcr/DCR-V10-27.md`
 - `runs/v10/baselines/MAP-05.json`（若存在）
 - `runs/v10/baselines/summary.json`
-- `docs/v10/validated-regression.md`（回退图）
+- `docs/v10/validated-regression.md`（V9 防回归与 seed 差异）
 - `runs/v10/mimo/episodes/` 下该图逐局 trace/judge
 

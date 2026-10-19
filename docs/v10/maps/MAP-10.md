@@ -99,7 +99,7 @@ Oracle 各 seed 的触发率为 4/4。
 
 - 缺陷与待证事项：离线门禁通过；4 实例
 - 当前裁定：Batch 5：油耗 = burn_base + ceil(cargo/2)、容量与库存双约束；max_load 1/4（烧光油）、underload 0/4（货不够）、no_move 0/4
-- 剩余风险：公式级独立复算（第二套实现重算分子分母）未按图完成；现有检查为规格驱动五态核对 + 可复现回放。
+- 剩余风险：公式级独立复算已覆盖 30/30 图（见 `metric-recompute.md`）；五态核对、回放确定性与 MiMo 单 replicate 的边界仍按报告披露。
 - 提升到 `VALIDATED` 的条件：Batch 8 MiMo 复测有真实局 + 指标复算无越界。
 
 ## 9. 证据索引
@@ -107,6 +107,6 @@ Oracle 各 seed 的触发率为 4/4。
 - `docs/v10/dcr/DCR-V10-20.md`
 - `runs/v10/baselines/MAP-10.json`（若存在）
 - `runs/v10/baselines/summary.json`
-- `docs/v10/validated-regression.md`（回退图）
+- `docs/v10/validated-regression.md`（V9 防回归与 seed 差异）
 - `runs/v10/mimo/episodes/` 下该图逐局 trace/judge
 

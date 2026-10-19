@@ -40,4 +40,4 @@
 
 ## 覆盖说明
 
-- V10 原生运行时：30 张；V8 回退：0 张（01/02/05/16/17/25/27，3-seed 缺口见 `validated-regression.md`）。
+- V10 原生运行时：30 张；V8 回退：0 张（无；全部 30 图均已原生化，见 `validated-regression.md`）。

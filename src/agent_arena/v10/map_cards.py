@@ -409,8 +409,8 @@ def _verdict_section(map_id: str, native: bool) -> list[str]:
         ]
     else:
         lines.append(
-            "- 剩余风险：公式级独立复算（第二套实现重算分子分母）未按图完成；"
-            "现有检查为规格驱动五态核对 + 可复现回放。"
+            "- 剩余风险：公式级独立复算已覆盖 30/30 图（见 `metric-recompute.md`）；"
+            "五态核对、回放确定性与 MiMo 单 replicate 的边界仍按报告披露。"
         )
     if decision.validity_status == "NEEDS_MORE_EVIDENCE":
         lines.append("- 提升到 `VALIDATED` 的条件：Batch 8 MiMo 复测有真实局 + 指标复算无越界。")
@@ -425,7 +425,7 @@ def _verdict_section(map_id: str, native: bool) -> list[str]:
         ),
         f"- `runs/v10/baselines/{map_id}.json`（若存在）",
         "- `runs/v10/baselines/summary.json`",
-        "- `docs/v10/validated-regression.md`（回退图）",
+        "- `docs/v10/validated-regression.md`（V9 防回归与 seed 差异）",
         "- `runs/v10/mimo/episodes/` 下该图逐局 trace/judge",
         "",
     ]
@@ -479,7 +479,11 @@ def render_index(cards: dict[str, str]) -> str:
             "## 覆盖说明",
             "",
             f"- V10 原生运行时：{len(V10_MAPS)} 张；V8 回退：{len(MAP_IDS) - len(V10_MAPS)} 张"
-            "（01/02/05/16/17/25/27，3-seed 缺口见 `validated-regression.md`）。",
+            + (
+                "（01/02/05/16/17/25/27，3-seed 缺口见 `validated-regression.md`）。"
+                if len(V10_MAPS) < len(MAP_IDS)
+                else "（无；全部 30 图均已原生化，见 `validated-regression.md`）。"
+            ),
         ]
     ) + "\n"
 

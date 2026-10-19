@@ -100,7 +100,7 @@ Oracle 各 seed 的触发率为 4/4。
 
 - 缺陷与待证事项：离线门禁通过；4 实例；补上 V9 缺失的离线跨期证据
 - 当前裁定：Batch 5：30 天 × 槽位排班、每日双结算、双归零失败；all_research/all_forage/no_research/waste_slots 全 0/4；启发式研究 38/35/40/75
-- 剩余风险：公式级独立复算（第二套实现重算分子分母）未按图完成；现有检查为规格驱动五态核对 + 可复现回放。
+- 剩余风险：公式级独立复算已覆盖 30/30 图（见 `metric-recompute.md`）；五态核对、回放确定性与 MiMo 单 replicate 的边界仍按报告披露。
 - 提升到 `VALIDATED` 的条件：Batch 8 MiMo 复测有真实局 + 指标复算无越界。
 
 ## 9. 证据索引
@@ -108,6 +108,6 @@ Oracle 各 seed 的触发率为 4/4。
 - `docs/v10/dcr/DCR-V10-22.md`
 - `runs/v10/baselines/MAP-12.json`（若存在）
 - `runs/v10/baselines/summary.json`
-- `docs/v10/validated-regression.md`（回退图）
+- `docs/v10/validated-regression.md`（V9 防回归与 seed 差异）
 - `runs/v10/mimo/episodes/` 下该图逐局 trace/judge
 
