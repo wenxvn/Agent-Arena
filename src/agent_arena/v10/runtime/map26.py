@@ -353,6 +353,8 @@ class Map26V10Environment(V10Map):
             "replacements": self.replacements,
             "rollbacks": self.rollbacks,
             "restarted": self.restarted,
+            "true_fault": self.variant.fault,
+            "parts": dict(PARTS),
             "truth_seal": self.truth_seal(),
         }
 

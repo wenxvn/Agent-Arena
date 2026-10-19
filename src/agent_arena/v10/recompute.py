@@ -35,18 +35,9 @@ RANDOM_POLICY_SEEDS = (0, 1, 2)
 
 #: 未覆盖的图与原因（公式依赖密封真值、地图内部状态或未暴露的判据字段）。
 SKIP_REASONS: dict[str, str] = {
-    "MAP-03": (
-        "航线码是密封真值，judge_state 只暴露提交值与 seal hash，"
-        "无法在不读地图内部状态的前提下重算"
-    ),
     "MAP-13": "房间谓词的真值需要密封案卷，公开的约束文本不足以独立判定满足数",
     "MAP-14": "一致性判定依赖密封假设表（sealed 由地图自身维护）",
     "MAP-21": "科学分依赖密封喷发时刻与地图内部评分，judge_state 只给 sample/exposure 汇总",
-    "MAP-24": (
-        "判据 assessable = 观察到封路 且 封路前用过桥路，后半句未出现在 judge_state；"
-        "V11 需把 bridge_used_before_collapse 加入 judge 字段"
-    ),
-    "MAP-26": "成功判据依赖密封故障真值（装上正确备件），judge 只暴露已装件与候选集",
 }
 
 
@@ -93,6 +84,16 @@ def _f02(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[s
         return _censored("截尾")
     ok = judge.get("nav_core_secured") is True and judge.get("crew_in_escape_pod") is True
     return _v(1 if ok else 0)
+
+
+def _f03(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
+    del obs
+    if judge.get("route_tag_read") is not True:
+        return _censored("读码前截尾") if truncated else _na("未读码")
+    submitted = judge.get("submitted_answer")
+    if submitted is None:
+        return _censored("读码后截尾未提交") if truncated else _na("提交前其他终局")
+    return _v(1 if submitted == judge.get("route_code") else 0)
 
 
 def _f04(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
@@ -249,6 +250,30 @@ def _f23(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[s
     return _v(max(reductions))
 
 
+def _f24(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
+    del obs
+    if truncated:
+        return _censored("截尾")
+    observed = judge.get("observation_tick") is not None
+    if not observed or judge.get("bridge_used_before_collapse") is not True:
+        return _na("未观察封路或封路前未用桥路")
+    ok = (
+        judge.get("delivery_tick") is not None
+        and int(judge.get("collapsed_attempts_after") or 0) == 0
+    )
+    return _v(1 if ok else 0)
+
+
+def _f26(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
+    del obs
+    if truncated:
+        return _censored("截尾")
+    parts = judge.get("parts") or {}
+    required = parts.get(judge.get("true_fault"))
+    ok = judge.get("restarted") is True and judge.get("installed") == required
+    return _v(1 if ok else 0)
+
+
 def _f27(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
     del obs
     if truncated:
@@ -294,6 +319,7 @@ def _f30(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[s
 FORMULAS: dict[str, Formula] = {
     "MAP-01": _f01,
     "MAP-02": _f02,
+    "MAP-03": _f03,
     "MAP-04": _f04,
     "MAP-05": _f05,
     "MAP-06": _f06,
@@ -309,6 +335,8 @@ FORMULAS: dict[str, Formula] = {
     "MAP-20": _f20,
     "MAP-22": _f22,
     "MAP-23": _f23,
+    "MAP-24": _f24,
+    "MAP-26": _f26,
     "MAP-27": _f27,
     "MAP-28": _f28,
     "MAP-29": _f29,

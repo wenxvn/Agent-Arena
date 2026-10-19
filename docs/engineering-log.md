@@ -1514,3 +1514,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：判读是机械规则（预算/终止码/入口尝试），不是对模型推理的复述；`THRESHOLD` 与 `USED_NO_THRESHOLD` 的区分依赖终止码关键字表，已写在模块内可审计。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 8：公式级复算补齐 03/24/26（DCR-V10-32）
+
+事件：把公式级复算从 21/27 推进到 24/27，并补上 MAP-24 的零分母注解。
+
+原因：剩余 3 张图（03/24/26）无法独立重算，根因是 `judge_state` 缺原始输入（航线码 / 桥路使用 / 真实故障）。
+
+改动：三张图的 `judge_state()` 各追加 1–2 个只进 judge 的字段（`route_code`、`bridge_used_before_collapse`、`true_fault`+`parts`）；MAP-24 的 `zero_denominator` 补上「（截尾 → CENSORED）」注解；`recompute.py` 新增 `_f03`/`_f24`/`_f26` 并从 `SKIP_REASONS` 移除三图；新增 `tests/test_v10_batch9_recompute.py`（3 条）；新增 `DCR-V10-32`。
+
+结果：公式级复算 **24/27 图、855 次检查、0 不一致**。复算立刻又发现一处口径不一致——MAP-24 的 `zero_denominator` 没有截尾迁移注解，导致被决策预算截断的 legal_random 局在地图侧是 NA、独立实现按 censored_rule 判 CENSORED；补注解后由 DCR-V10-26 的投影归一覆盖，达到 0 不一致。三图规则行为未变（Oracle 6/6、4/4、4/4 复跑一致），`rule_hash`/`scenario_hash`/`metric_hash` 相应更新。剩余 3 图（13/14/21）需要独立的谓词求值、假设一致性与科学分重算。
+
+验证：`pytest`（含新 3 条）通过；`mypy src` 247 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged；独立核对 27 图 × 132 seed 实例 0 违规。
+
+边界：judge 字段暴露不改变 Observation/prompt，但历史 MiMo 局对应旧 `rule_hash`，引用需注明；13/14/21 仍未覆盖，不计入“全覆盖”。
+
+关联提交：本次提交（分支 `v10-validity`）。

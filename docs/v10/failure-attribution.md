@@ -20,9 +20,9 @@
 
 | 图 | seed | run_id | 标签 | 决策数 | 非法率 | 机制动作（尝试/被拒） | 终止 | 主指标 |
 |---|---:|---|---|---:|---:|---|---|---|
-| MAP-01 | 0 | `V10-MAP-01-S0-o2` | `KEY_ACTION_USED_NO_TRIGGER` | 4 | 0.0 | — | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 0 |
-| MAP-01 | 1 | `V10-MAP-01-S1-o2` | `KEY_ACTION_USED_NO_TRIGGER` | 4 | 0.0 | — | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 0 |
-| MAP-01 | 2 | `V10-MAP-01-S2-o2` | `KEY_ACTION_USED_NO_TRIGGER` | 5 | 0.0 | — | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 0 |
+| MAP-01 | 0 | `V10-MAP-01-S0-o2` | `KEY_ACTION_USED_NO_TRIGGER` | 4 | 0.0 | `interact` 0/0、`pickup` 0/0、`move` 1/0 | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 0 |
+| MAP-01 | 1 | `V10-MAP-01-S1-o2` | `KEY_ACTION_USED_NO_TRIGGER` | 4 | 0.0 | `interact` 0/0、`pickup` 0/0、`move` 1/0 | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 0 |
+| MAP-01 | 2 | `V10-MAP-01-S2-o2` | `KEY_ACTION_USED_NO_TRIGGER` | 5 | 0.0 | `interact` 0/0、`pickup` 0/0、`move` 2/0 | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 0 |
 | MAP-02 | 0 | `V10-MAP-02-S0-m2` | `TRIGGERED` | 12 | 0.0 | `pickup` 1/0、`interact` 3/1 | CREW_PRESSURE_LOST | 0 |
 | MAP-02 | 1 | `V10-MAP-02-S1-m2` | `TRIGGERED` | 10 | 0.0 | `pickup` 1/0、`interact` 1/0 | CREW_PRESSURE_LOST | 0 |
 | MAP-02 | 2 | `V10-MAP-02-S2-m2` | `TRIGGERED` | 10 | 0.0 | `pickup` 1/0、`interact` 3/1 | CREW_PRESSURE_LOST | 0 |

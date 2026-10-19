@@ -522,6 +522,7 @@ class Map03V10Environment(V10Map):
             "milestones": dict(self.milestones),
             "thermal_ticks": self.thermal_ticks,
             "notes": [dict(item) for item in self.notes],
+            "route_code": self._route_code,
             "read_action_index": self.read_action_index,
             "submit_action_index": self.submit_action_index,
             "submitted_answer": self.submitted_answer,

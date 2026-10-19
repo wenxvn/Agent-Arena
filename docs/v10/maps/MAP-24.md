@@ -3,8 +3,8 @@
 - 运行时：`v10 原生`
 - 构念标签：`FORCED`；效度状态：`NEEDS_MORE_EVIDENCE`（均为 `agent_reviewed`）
 - DCR：`DCR-V10-14`
-- `rule_hash`：`4af0f746c8cfb1b79f70a6c5c6e366ca15b6b9e8e35beaa1fb61294c1ae26743`
-- `metric_hash`：`6cf75160b4ebe8c4f4ff5bc858c3e4126486ac22101a1574f143dcb2b87efbd7`
+- `rule_hash`：`79dea80fcdc552b3bee85cf793a3eba4f6b613c7dc259f91faa636524875401e`
+- `metric_hash`：`ff8f11d2c94f4c1cd03907802cea4b741bd29fd71f4df879dbc0b4562cf6f342`
 
 ## 1. 目标构念与最小可观察行为
 
@@ -59,17 +59,17 @@ Oracle 各 seed 的触发率为 4/4。
 
 | seed | scenario_hash（前 16 位） |
 |---:|---|
-| 0 | `ca2e7239244cff97` |
-| 1 | `1db68baaf07085f0` |
-| 2 | `f6f169e6a2c73fb9` |
-| 3 | `29fa68a27cac92d0` |
+| 0 | `02357895deddcaaa` |
+| 1 | `5b9ec38d57ffa546` |
+| 2 | `d10a80fac6f74d0c` |
+| 3 | `080db7e16df92603` |
 
 ## 5. 主次指标（`METRIC_SPECS`）
 
 | metric_id | role | direction | 公式 | 分母 | 零分母 | 截尾 | 单位 | valid_range |
 |---|---|---|---|---|---|---|---|---|
-| `map24.v10.replan_success` | primary | higher | 观察到封路后完成且不再尝试断边 | 观察到封路的局（1） | 从未观察到封路 → NOT_APPLICABLE | 截尾 → CENSORED | ratio | (0.0, 1.0) |
-| `map24.v10.replan_latency` | secondary | lower | 观察封路后的第一个移动 tick − 观察 tick | 观察到封路的局（1） | 从未观察到封路 → NOT_APPLICABLE | 部分进度保持 VALID；未发生的终点事件为 CENSORED | ticks | (-5.0, 30.0) |
+| `map24.v10.replan_success` | primary | higher | 观察到封路后完成且不再尝试断边 | 观察到封路的局（1） | 从未观察到封路 → NOT_APPLICABLE（截尾 → CENSORED） | 截尾 → CENSORED | ratio | (0.0, 1.0) |
+| `map24.v10.replan_latency` | secondary | lower | 观察封路后的第一个移动 tick − 观察 tick | 观察到封路的局（1） | 从未观察到封路 → NOT_APPLICABLE（截尾 → CENSORED） | 部分进度保持 VALID；未发生的终点事件为 CENSORED | ticks | (-5.0, 30.0) |
 | `map24.v10.collapsed_edge_attempts_after_observation` | guardrail | lower | 观察到封路后仍尝试断边的次数 | — | NOT_APPLICABLE | 部分进度保持 VALID；未发生的终点事件为 CENSORED | count | (0.0, 40.0) |
 | `map24.v10.route_cost_ratio` | guardrail | lower | 观察封路后到交付的实际移动成本 / 同点最短可行成本 | 观察到封路且最短成本 > 0 的局（1） | 最短成本为 0 或未观察 → NOT_APPLICABLE | 部分进度保持 VALID；未发生的终点事件为 CENSORED | ratio | (0.0, 1.0) |
 | `map24.v10.tide_failed_moves` | diagnostic | lower | 潮道关闭时仍尝试通过的次数 | — | NOT_APPLICABLE | 部分进度保持 VALID；未发生的终点事件为 CENSORED | count | (0.0, 40.0) |
