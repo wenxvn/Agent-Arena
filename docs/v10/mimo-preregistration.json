@@ -236,6 +236,21 @@
     "comparison_rule": "MAP-02 此前无 MiMo 局，本阶段是首次真实模型证据",
     "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
   },
+  "phase_7_public_rules_rerun": {
+    "declared_at": "2026-10-19（开跑前登记）",
+    "rationale": "MAP-02 / MAP-05 成为原生图后才发现它们**没有 `public_rules()`**：阶段 5b/6 的模型只看到动作契约与 Observation，看不到机制说明（供电单目标、校准前置、泄漏公告与隔离、双目标判据）。这是接口透明度的缺口。本阶段给两图补公开规则（DCR-V10-27/29 修订），并对两图各 3 个环境 seed 重跑。",
+    "dcr": "DCR-V10-27 / DCR-V10-29（公开规则补充）",
+    "maps": ["MAP-02", "MAP-05"],
+    "group_tag": "m2",
+    "run_id_pattern": "V10-<map>-S<seed>-m2",
+    "episodes": 6,
+    "environment_seeds": [0, 1, 2],
+    "ledger": "runs/v10/mimo/ledger_v10_012.jsonl",
+    "manifest_file": "runs/v10/mimo/manifest_m2.json",
+    "manifest_hash": "45b77850387438e0a1a0a4eac4e7011fc1deecc42a174448e2d811449e2cb9c2",
+    "comparison_rule": "与阶段 5b/6 只作“补公开规则前后”的配对描述；rule_hash 与 prompt 均已变",
+    "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
+  },
   "stop_rules": [
     "达到全局 CNY 10 上限（含未知预留）立即停止",
     "出现 UNKNOWN_PROVIDER_SPEND 立即封账并停止自动调用",

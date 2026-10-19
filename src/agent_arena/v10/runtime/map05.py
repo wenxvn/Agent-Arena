@@ -155,6 +155,20 @@ class Map05V10Environment(V10Map, Map05Environment):
             "edge_cost": dict(variant.edge_cost),
         }
 
+    def public_rules(self) -> tuple[str, ...]:
+        return (
+            "C 是唯一能切换供电的节点；供电一次只能指向 R/B/W 中的**一个**塔，"
+            "切换必须在 C 进行。",
+            "每个塔必须先在塔内完成两步校准（calibrate_align → calibrate_phase_lock）"
+            "才能发信号；未校准发信号会被拒。",
+            "发信号（send_signal）在该动作结算后的 tick 判定是否落在窗口内；"
+            "窗口结束后仍未发出的塔立即判负。",
+            "三塔由 C 经 C_R/C_B/C_W 到达，**各通道耗时不同且随实例变化**，"
+            "可用一次移动观察 tick 增量。",
+            "三个窗口的起止 tick 在 Observation 的 windows 中公开；"
+            "C 的 schedule_chart 可查看排程（inspect(schedule_chart)）。",
+        )
+
     def sealed_truth(self) -> dict[str, Any]:
         variant = VARIANTS[self.environment_seed]
         return {"reference_completion_tick": variant.reference_completion_tick}

@@ -2,7 +2,7 @@
 
 - 由 `python -m agent_arena.v10.attribution` 生成；逐局回放 `runs/v10/mimo/`
   `episodes/` 的动作序列。
-- 覆盖 **94** 局（其中有效局 75）；机制动作集见模块
+- 覆盖 **100** 局（其中有效局 75）；机制动作集见模块
   `MECHANISM_TOOLS`。
 - 标签含义：`CONTRACT_ARTIFACT`（接口假象）｜`KEY_ACTION_NEVER_ATTEMPTED`｜`KEY_ACTION_ATTEMPTED_REJECTED`｜`KEY_ACTION_USED_NO_TRIGGER`｜`TRIGGERED`。
 
@@ -13,25 +13,25 @@
 | `CONTRACT_ARTIFACT` | 10 |
 | `KEY_ACTION_ATTEMPTED_REJECTED` | 2 |
 | `KEY_ACTION_NEVER_ATTEMPTED` | 8 |
-| `KEY_ACTION_USED_NO_TRIGGER` | 25 |
-| `TRIGGERED` | 49 |
+| `KEY_ACTION_USED_NO_TRIGGER` | 26 |
+| `TRIGGERED` | 54 |
 
 ## 2. 逐局归因（有效局）
 
 | 图 | seed | run_id | 标签 | 决策数 | 非法率 | 机制动作（尝试/被拒） | 终止 | 主指标 |
 |---|---:|---|---|---:|---:|---|---|---|
-| MAP-02 | 0 | `V10-MAP-02-S0-l2` | `TRIGGERED` | 6 | 0.0 | `pickup` 2/0、`interact` 0/0 | NAV_CORE_FLOODED | 0 |
-| MAP-02 | 1 | `V10-MAP-02-S1-l2` | `TRIGGERED` | 6 | 0.0 | `pickup` 2/0、`interact` 0/0 | NAV_CORE_FLOODED | 0 |
-| MAP-02 | 2 | `V10-MAP-02-S2-l2` | `KEY_ACTION_USED_NO_TRIGGER` | 6 | 0.0 | `pickup` 1/0、`interact` 0/0 | NAV_CORE_FLOODED | 0 |
+| MAP-02 | 0 | `V10-MAP-02-S0-m2` | `TRIGGERED` | 12 | 0.0 | `pickup` 1/0、`interact` 3/1 | CREW_PRESSURE_LOST | 0 |
+| MAP-02 | 1 | `V10-MAP-02-S1-m2` | `TRIGGERED` | 10 | 0.0 | `pickup` 1/0、`interact` 1/0 | CREW_PRESSURE_LOST | 0 |
+| MAP-02 | 2 | `V10-MAP-02-S2-m2` | `TRIGGERED` | 10 | 0.0 | `pickup` 1/0、`interact` 3/1 | CREW_PRESSURE_LOST | 0 |
 | MAP-03 | 0 | `V10-MAP-03-S0-p0` | `KEY_ACTION_USED_NO_TRIGGER` | 39 | 0.0 | `write_memory` 1/0、`submit` 0/0 | RETURN_WINDOW_EXPIRED | None |
 | MAP-03 | 1 | `V10-MAP-03-S1-p0` | `TRIGGERED` | 25 | 0.0 | `write_memory` 1/0、`submit` 1/0 | ROUTE_CALIBRATED | 1 |
 | MAP-03 | 2 | `V10-MAP-03-S2-p0` | `TRIGGERED` | 34 | 0.029 | `write_memory` 1/0、`submit` 1/0 | ROUTE_CALIBRATED | 1 |
 | MAP-04 | 0 | `V10-MAP-04-S0-ext` | `TRIGGERED` | 12 | 0.083 | `wait` 1/0 | RESCUE_SIGNAL_WINDOW_EXPIRED | 0 |
 | MAP-04 | 1 | `V10-MAP-04-S1-ext` | `TRIGGERED` | 10 | 0.0 | `wait` 2/0 | RESCUE_SIGNAL_WINDOW_EXPIRED | 0 |
 | MAP-04 | 2 | `V10-MAP-04-S2-ext` | `TRIGGERED` | 10 | 0.0 | `wait` 3/0 | RESCUE_SIGNAL_WINDOW_EXPIRED | 0 |
-| MAP-05 | 0 | `V10-MAP-05-S0-k2b` | `KEY_ACTION_USED_NO_TRIGGER` | 12 | 0.0 | `switch_power` 3/3、`interact` 2/0 | SIGNAL_WINDOW_MISSED | 0 |
-| MAP-05 | 1 | `V10-MAP-05-S1-k2b` | `KEY_ACTION_NEVER_ATTEMPTED` | 6 | 0.0 | `switch_power` 0/0、`interact` 0/0 | SIGNAL_WINDOW_MISSED | 0 |
-| MAP-05 | 2 | `V10-MAP-05-S2-k2b` | `KEY_ACTION_USED_NO_TRIGGER` | 7 | 0.0 | `switch_power` 0/0、`interact` 2/1 | SIGNAL_WINDOW_MISSED | 0 |
+| MAP-05 | 0 | `V10-MAP-05-S0-m2` | `TRIGGERED` | 25 | 0.16 | `switch_power` 7/5、`interact` 6/0 | SIGNAL_WINDOW_MISSED | 0 |
+| MAP-05 | 1 | `V10-MAP-05-S1-m2` | `TRIGGERED` | 20 | 0.15 | `switch_power` 5/3、`interact` 6/0 | SIGNAL_WINDOW_MISSED | 0 |
+| MAP-05 | 2 | `V10-MAP-05-S2-m2` | `KEY_ACTION_USED_NO_TRIGGER` | 19 | 0.105 | `switch_power` 3/2、`interact` 4/0 | SIGNAL_WINDOW_MISSED | 0 |
 | MAP-06 | 0 | `V10-MAP-06-S0-p0` | `KEY_ACTION_USED_NO_TRIGGER` | 3 | 0.0 | `interact` 1/0 | LAMP_RESTORED | 0.821429 |
 | MAP-06 | 1 | `V10-MAP-06-S1-p0` | `TRIGGERED` | 3 | 0.0 | `interact` 1/0 | LAMP_RESTORED | 0.521429 |
 | MAP-06 | 2 | `V10-MAP-06-S2-p0` | `TRIGGERED` | 6 | 0.0 | `interact` 2/0 | LAMP_RESTORED | 0.371429 |
@@ -100,9 +100,8 @@
 
 | 图 | 局数 | 主因 | 说明 |
 |---|---:|---|---|
-| MAP-02 | 1/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×1 |
 | MAP-03 | 1/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×1 |
-| MAP-05 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×2；KEY_ACTION_NEVER_ATTEMPTED×1 |
+| MAP-05 | 1/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×1 |
 | MAP-06 | 1/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×1 |
 | MAP-07 | 2/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×1；KEY_ACTION_NEVER_ATTEMPTED×1 |
 | MAP-11 | 1/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×1 |

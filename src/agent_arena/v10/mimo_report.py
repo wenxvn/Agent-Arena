@@ -38,6 +38,7 @@ GROUP_OF_SEED_TAG = {
     "k2": "MAP-05 原生首测",
     "k2b": "MAP-05 契约补区间重跑",
     "l2": "MAP-02 原生首测",
+    "m2": "补公开规则后重跑（MAP-02/05）",
 }
 
 
@@ -160,7 +161,7 @@ def render_results() -> str:
         "| 分组 | 有效局 | 成功 | 成功率 | 中断保留 | 结算 CNY |",
         "|---|---:|---:|---:|---:|---:|",
     ]
-    for group in ("p0", "castle", "interface", "ext", "i2", "j2", "k2", "k2b", "l2"):
+    for group in ("p0", "castle", "interface", "ext", "i2", "j2", "k2", "k2b", "l2", "m2"):
         items = by_group.get(group, [])
         if not items:
             continue

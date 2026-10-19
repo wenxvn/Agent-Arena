@@ -3,7 +3,7 @@
 - 由 `python -m agent_arena.v10.mimo_report` 从 `runs/v10/mimo/` 逐字重算，禁止手填。
 - 模型：`mimo-v2.6-flash`；temperature=0；reasoning 关闭；每次请求先前预留、按供应商
   usage 结算；未知消费立即封账（保留预留，**不按 0 计**）。
-- 全局上限 CNY 10；已结算 **CNY 1.80707420**；未知/未结预留 **CNY 0.11468800**；合计占用 **CNY 1.92176220**。
+- 全局上限 CNY 10；已结算 **CNY 1.86622364**；未知/未结预留 **CNY 0.11468800**；合计占用 **CNY 1.98091164**。
 - 每图 3 个环境 seed、单一 replicate；`n=3` 只作描述，不作显著性断言，也不做跨模型排名。
 
 ## 1. 覆盖与账本
@@ -26,6 +26,7 @@
 | `ledger_v10_009.jsonl` | 31 | 0.01543524 | 0.00000000 | — | `e43f60bb5e92` |
 | `ledger_v10_010.jsonl` | 25 | 0.01239556 | 0.00000000 | — | `be2d6c90a9c5` |
 | `ledger_v10_011.jsonl` | 18 | 0.00781520 | 0.00000000 | — | `adddbf99fb2a` |
+| `ledger_v10_012.jsonl` | 96 | 0.05914944 | 0.00000000 | — | `50bee897baf0` |
 
 ## 2. 分组结果（仅统计有效局）
 
@@ -40,14 +41,18 @@
 | MAP-05 原生首测 | 3 | 0 | 0.000 | 0 | 0.01543524 |
 | MAP-05 契约补区间重跑 | 3 | 0 | 0.000 | 0 | 0.01239556 |
 | MAP-02 原生首测 | 3 | 0 | 0.000 | 0 | 0.00781520 |
+| 补公开规则后重跑（MAP-02/05） | 6 | 0 | 0.000 | 0 | 0.05914944 |
 
 ## 3. 逐图逐 seed
 
 | 图 | 世界 | 难度 | seed | run_id | 结局 | 决策数 | 主指标 | 机制触发 | CNY | 有效 |
 |---|---|---|---:|---|---|---:|---|---|---:|---|
 | MAP-02 | spaceship | 中等 | 0 | `V10-MAP-02-S0-l2` | NAV_CORE_FLOODED | 6 | 0 | True | 0.00291800 | 是 |
+| MAP-02 | spaceship | 中等 | 0 | `V10-MAP-02-S0-m2` | CREW_PRESSURE_LOST | 12 | 0 | True | 0.00912600 | 是 |
 | MAP-02 | spaceship | 中等 | 1 | `V10-MAP-02-S1-l2` | NAV_CORE_FLOODED | 6 | 0 | True | 0.00223008 | 是 |
+| MAP-02 | spaceship | 中等 | 1 | `V10-MAP-02-S1-m2` | CREW_PRESSURE_LOST | 10 | 0 | True | 0.00381052 | 是 |
 | MAP-02 | spaceship | 中等 | 2 | `V10-MAP-02-S2-l2` | NAV_CORE_FLOODED | 6 | 0 | False | 0.00266712 | 是 |
+| MAP-02 | spaceship | 中等 | 2 | `V10-MAP-02-S2-m2` | CREW_PRESSURE_LOST | 10 | 0 | True | 0.00305016 | 是 |
 | MAP-03 | spaceship | 困难 | 0 | `V10-MAP-03-S0-p0` | RETURN_WINDOW_EXPIRED | 39 | None | False | 0.16710588 | 是 |
 | MAP-03 | spaceship | 困难 | 1 | `V10-MAP-03-S1-p0` | ROUTE_CALIBRATED | 25 | 1 | True | 0.10062108 | 是 |
 | MAP-03 | spaceship | 困难 | 2 | `V10-MAP-03-S2-p0` | ROUTE_CALIBRATED | 34 | 1 | True | 0.07361828 | 是 |
@@ -56,10 +61,13 @@
 | MAP-04 | lighthouse | 简单 | 2 | `V10-MAP-04-S2-ext` | RESCUE_SIGNAL_WINDOW_EXPIRED | 10 | 0 | True | 0.00493452 | 是 |
 | MAP-05 | lighthouse | 中等 | 0 | `V10-MAP-05-S0-k2` | SIGNAL_WINDOW_MISSED | 12 | 0 | False | 0.00606956 | 是 |
 | MAP-05 | lighthouse | 中等 | 0 | `V10-MAP-05-S0-k2b` | SIGNAL_WINDOW_MISSED | 12 | 0 | False | 0.00619600 | 是 |
+| MAP-05 | lighthouse | 中等 | 0 | `V10-MAP-05-S0-m2` | SIGNAL_WINDOW_MISSED | 25 | 0 | True | 0.01723336 | 是 |
 | MAP-05 | lighthouse | 中等 | 1 | `V10-MAP-05-S1-k2` | SIGNAL_WINDOW_MISSED | 6 | 0 | False | 0.00283300 | 是 |
 | MAP-05 | lighthouse | 中等 | 1 | `V10-MAP-05-S1-k2b` | SIGNAL_WINDOW_MISSED | 6 | 0 | False | 0.00273556 | 是 |
+| MAP-05 | lighthouse | 中等 | 1 | `V10-MAP-05-S1-m2` | SIGNAL_WINDOW_MISSED | 20 | 0 | True | 0.01351336 | 是 |
 | MAP-05 | lighthouse | 中等 | 2 | `V10-MAP-05-S2-k2` | SIGNAL_WINDOW_MISSED | 13 | 0 | False | 0.00653268 | 是 |
 | MAP-05 | lighthouse | 中等 | 2 | `V10-MAP-05-S2-k2b` | SIGNAL_WINDOW_MISSED | 7 | 0 | False | 0.00346400 | 是 |
+| MAP-05 | lighthouse | 中等 | 2 | `V10-MAP-05-S2-m2` | SIGNAL_WINDOW_MISSED | 19 | 0 | False | 0.01241604 | 是 |
 | MAP-06 | lighthouse | 困难 | 0 | `V10-MAP-06-S0-p0` | LAMP_RESTORED | 3 | 0.821429 | False | 0.00263400 | 是 |
 | MAP-06 | lighthouse | 困难 | 1 | `V10-MAP-06-S1-p0` | LAMP_RESTORED | 3 | 0.521429 | True | 0.00130288 | 是 |
 | MAP-06 | lighthouse | 困难 | 2 | `V10-MAP-06-S2-p0` | LAMP_RESTORED | 6 | 0.371429 | True | 0.00638620 | 是 |
@@ -145,12 +153,12 @@
 | outcome | 局数 |
 |---|---:|
 | `decision_budget_exhausted` | 31 |
-| `failure` | 28 |
+| `failure` | 34 |
 | `settle_closed:供应商 usage 超出登记上限。` | 1 |
 | `success` | 30 |
 | `unknown_provider_spend` | 4 |
 
-- 有效局成功 **36/89**；其余为机制失败/决策预算耗尽。
+- 有效局成功 **36/95**；其余为机制失败/决策预算耗尽。
 - 结论范围：本矩阵只覆盖 V10 原生图；5 张 V8 回退图
   （MAP-01、MAP-16、MAP-17、MAP-25、MAP-27）仍有 3-seed 缺口，见 `validated-regression.md`，
   不得据此声称 30/30 的 MiMo 多 seed 覆盖。

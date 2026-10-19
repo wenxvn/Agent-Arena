@@ -2,13 +2,13 @@
 
 - 运行时：`v10 原生`
 - 构念标签：`FORCED`；效度状态：`VALIDATED`（均为 `agent_reviewed`）
-- DCR：`—`
-- `rule_hash`：`874953a49540ba9ba409242dba3f500d7bdc394e4189c6195369e5ed0d35a030`
+- DCR：`DCR-V10-27`
+- `rule_hash`：`d13fecd05beb7444abbaeea92036b0122d6cd017609b9a7aab08ed97425a9a4f`
 - `metric_hash`：`f39f6db1c49ce558d4dfe5ebf74b4dc75fa5561ef05a4568643851f635933e43`
 
 ## 1. 目标构念与最小可观察行为
 
-- 本轮裁定：Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录
+- 本轮裁定：Batch 9b：4 实例各自可行；Oracle 4/4、启发式 4/4、四消融 0/4；阶段 5b 的 3 局 MiMo 非法动作 0
 
 - 主指标：`map05.v10.mission_success`
   - `map05.v10.mission_success`：三束信号都在各自窗口内发出（方向：higher）
@@ -20,7 +20,11 @@ Oracle 各 seed 的触发率为 4/4。
 
 ### 公开规则（写进 system prompt）
 
-- （未声明 `public_rules()`，回退到运行时的 Observation 描述）
+1. C 是唯一能切换供电的节点；供电一次只能指向 R/B/W 中的**一个**塔，切换必须在 C 进行。
+2. 每个塔必须先在塔内完成两步校准（calibrate_align → calibrate_phase_lock）才能发信号；未校准发信号会被拒。
+3. 发信号（send_signal）在该动作结算后的 tick 判定是否落在窗口内；窗口结束后仍未发出的塔立即判负。
+4. 三塔由 C 经 C_R/C_B/C_W 到达，**各通道耗时不同且随实例变化**，可用一次移动观察 tick 增量。
+5. 三个窗口的起止 tick 在 Observation 的 windows 中公开；C 的 schedule_chart 可查看排程（inspect(schedule_chart)）。
 
 ### Observation 公开字段
 
@@ -52,10 +56,10 @@ Oracle 各 seed 的触发率为 4/4。
 
 | seed | scenario_hash（前 16 位） |
 |---:|---|
-| 0 | `ea4eaf320fe58f59` |
-| 1 | `8fc26a0b58f00988` |
-| 2 | `d3fd078468758b23` |
-| 3 | `c682d4d3d34a46a2` |
+| 0 | `5ac16ccffad4dc80` |
+| 1 | `505eb6dbd48251be` |
+| 2 | `9486e390137eda2e` |
+| 3 | `d33879867180b045` |
 
 ## 5. 主次指标（`METRIC_SPECS`）
 
@@ -90,24 +94,27 @@ Oracle 各 seed 的触发率为 4/4。
 |---:|---|---|---:|---|---:|---|
 | 0 | `V10-MAP-05-S0-k2` | SIGNAL_WINDOW_MISSED（failure） | 12 | 0 | 0.00606956 | 是 |
 | 0 | `V10-MAP-05-S0-k2b` | SIGNAL_WINDOW_MISSED（failure） | 12 | 0 | 0.006196 | 是 |
+| 0 | `V10-MAP-05-S0-m2` | SIGNAL_WINDOW_MISSED（failure） | 25 | 0 | 0.01723336 | 是 |
 | 1 | `V10-MAP-05-S1-k2` | SIGNAL_WINDOW_MISSED（failure） | 6 | 0 | 0.002833 | 是 |
 | 1 | `V10-MAP-05-S1-k2b` | SIGNAL_WINDOW_MISSED（failure） | 6 | 0 | 0.00273556 | 是 |
+| 1 | `V10-MAP-05-S1-m2` | SIGNAL_WINDOW_MISSED（failure） | 20 | 0 | 0.01351336 | 是 |
 | 2 | `V10-MAP-05-S2-k2` | SIGNAL_WINDOW_MISSED（failure） | 13 | 0 | 0.00653268 | 是 |
 | 2 | `V10-MAP-05-S2-k2b` | SIGNAL_WINDOW_MISSED（failure） | 7 | 0 | 0.003464 | 是 |
+| 2 | `V10-MAP-05-S2-m2` | SIGNAL_WINDOW_MISSED（failure） | 19 | 0 | 0.01241604 | 是 |
 
-- 有效局成功：0/6
-- 结算成本合计 CNY 0.02783080（含中断局的已结算部分）。
+- 有效局成功：0/9
+- 结算成本合计 CNY 0.07099356（含中断局的已结算部分）。
 - 单 seed、单 replicate，只作描述，不作统计推断。
 
 ## 8. 结论、剩余风险与下一步
 
-- 缺陷与待证事项：V8 实例对 seed 不敏感（3-seed 未达标，见 validated-regression.md）
-- 当前裁定：Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录
+- 缺陷与待证事项：V10 原生 4 seed：窗口时刻与通道耗时随 seed 变化；规则/契约/成功条件不变
+- 当前裁定：Batch 9b：4 实例各自可行；Oracle 4/4、启发式 4/4、四消融 0/4；阶段 5b 的 3 局 MiMo 非法动作 0
 - 剩余风险：公式级独立复算（第二套实现重算分子分母）未按图完成；现有检查为规格驱动五态核对 + 可复现回放。
 
 ## 9. 证据索引
 
-- 无 DCR（沿用 V9 规则）
+- `docs/v10/dcr/DCR-V10-27.md`
 - `runs/v10/baselines/MAP-05.json`（若存在）
 - `runs/v10/baselines/summary.json`
 - `docs/v10/validated-regression.md`（回退图）

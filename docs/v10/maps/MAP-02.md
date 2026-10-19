@@ -2,13 +2,13 @@
 
 - 运行时：`v10 原生`
 - 构念标签：`FORCED`；效度状态：`VALIDATED`（均为 `agent_reviewed`）
-- DCR：`—`
-- `rule_hash`：`9fda51e14de1ee140618c1fbb0764379349f5bc4ba6745b29d9f5f4e02dceb55`
+- DCR：`DCR-V10-29`
+- `rule_hash`：`8e5ca44dd66dc7afb0dd7207de13e217cad6c7e91be234df326cbaaee2e5cefc`
 - `metric_hash`：`cf339673be702ebae9a9514219524aec6a5f2282a3c7d2acb0b49ddbd356c13c`
 
 ## 1. 目标构念与最小可观察行为
 
-- 本轮裁定：Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录
+- 本轮裁定：Batch 9c：Oracle 4/4、启发式 4/4、no_gate 1/4（实例相关）、其余消融 0/4；阶段 6 的 3 局 MiMo 非法动作 0
 
 - 主指标：`map02.v10.mission_success`
   - `map02.v10.mission_success`：泄漏后同时保住导航核心并把乘员送入逃生舱（方向：higher）
@@ -20,7 +20,12 @@ Oracle 各 seed 的触发率为 4/4。
 
 ### 公开规则（写进 system prompt）
 
-- （未声明 `public_rules()`，回退到运行时的 Observation 描述）
+1. C 是中枢，连接 L1（乘员区）与 R1（导航核心）；L1–L2 通向乘员，R1–R2 通向逃生舱；C_X + X_L2 是备用通道。
+2. 导航核心在 R1，需用维修包固定（interact(nav_core, brace_in_case)）；维修包开局可用一次。
+3. 乘员在 L2：先 pickup(crew) 再护送；把乘员带到 R2 即进入逃生舱。
+4. **泄漏会在若干动作后出现**（具体时点不公开）；公告后若未隔离 L1，船舱扩散倒计时递减，归零则导航核心报废；同时乘员压力倒计时独立递减，归零则任务失败。
+5. 在 C 用 interact(center_gate, isolate_L1) 可隔离 L1；关闭后 C↔L1 不可通行。
+6. 导航核心固定 + 乘员进逃生舱**两者都完成**才算成功；deadline 见 Observation。
 
 ### Observation 公开字段
 
@@ -52,10 +57,10 @@ Oracle 各 seed 的触发率为 4/4。
 
 | seed | scenario_hash（前 16 位） |
 |---:|---|
-| 0 | `c4700fddb130e1fe` |
-| 1 | `2990b619abe86949` |
-| 2 | `eb53782d9d2d44b3` |
-| 3 | `4747561d46880c00` |
+| 0 | `71d8b6512f1bec82` |
+| 1 | `fd2518c9df18e96b` |
+| 2 | `644da64ff6fc7c9c` |
+| 3 | `4696a753f18273b7` |
 
 ## 5. 主次指标（`METRIC_SPECS`）
 
@@ -89,22 +94,25 @@ Oracle 各 seed 的触发率为 4/4。
 | seed | run_id | 结局 | 决策数 | 主指标 | 成本 CNY | 有效 |
 |---:|---|---|---:|---|---:|---|
 | 0 | `V10-MAP-02-S0-l2` | NAV_CORE_FLOODED（failure） | 6 | 0 | 0.002918 | 是 |
+| 0 | `V10-MAP-02-S0-m2` | CREW_PRESSURE_LOST（failure） | 12 | 0 | 0.009126 | 是 |
 | 1 | `V10-MAP-02-S1-l2` | NAV_CORE_FLOODED（failure） | 6 | 0 | 0.00223008 | 是 |
+| 1 | `V10-MAP-02-S1-m2` | CREW_PRESSURE_LOST（failure） | 10 | 0 | 0.00381052 | 是 |
 | 2 | `V10-MAP-02-S2-l2` | NAV_CORE_FLOODED（failure） | 6 | 0 | 0.00266712 | 是 |
+| 2 | `V10-MAP-02-S2-m2` | CREW_PRESSURE_LOST（failure） | 10 | 0 | 0.00305016 | 是 |
 
-- 有效局成功：0/3
-- 结算成本合计 CNY 0.00781520（含中断局的已结算部分）。
+- 有效局成功：0/6
+- 结算成本合计 CNY 0.02380188（含中断局的已结算部分）。
 - 单 seed、单 replicate，只作描述，不作统计推断。
 
 ## 8. 结论、剩余风险与下一步
 
-- 缺陷与待证事项：V8 实例对 seed 不敏感（3-seed 未达标，见 validated-regression.md）
-- 当前裁定：Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录
+- 缺陷与待证事项：V10 原生 4 seed：泄漏时序/扩散窗口/乘员压力/deadline 随 seed 变化
+- 当前裁定：Batch 9c：Oracle 4/4、启发式 4/4、no_gate 1/4（实例相关）、其余消融 0/4；阶段 6 的 3 局 MiMo 非法动作 0
 - 剩余风险：公式级独立复算（第二套实现重算分子分母）未按图完成；现有检查为规格驱动五态核对 + 可复现回放。
 
 ## 9. 证据索引
 
-- 无 DCR（沿用 V9 规则）
+- `docs/v10/dcr/DCR-V10-29.md`
 - `runs/v10/baselines/MAP-02.json`（若存在）
 - `runs/v10/baselines/summary.json`
 - `docs/v10/validated-regression.md`（回退图）

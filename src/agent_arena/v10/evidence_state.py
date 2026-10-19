@@ -219,7 +219,7 @@ DECISIONS: dict[str, Decision] = {
 
 #: Batch 5 防回归：7 张 V9 VALIDATED 图的复跑通过，但环境 seed 未参数化（3-seed 未达标）。
 #: 证据见 ``docs/v10/validated-regression.md``；不撤销 VALIDATED，但在最终报告中记为缺口。
-for _map_id in ("MAP-01", "MAP-02", "MAP-05", "MAP-16", "MAP-17", "MAP-25", "MAP-27"):
+for _map_id in ("MAP-01", "MAP-16", "MAP-17", "MAP-25", "MAP-27"):
     DECISIONS.setdefault(
         _map_id,
         Decision(
@@ -230,6 +230,24 @@ for _map_id in ("MAP-01", "MAP-02", "MAP-05", "MAP-16", "MAP-17", "MAP-25", "MAP
             "Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录",
         ),
     )
+
+#: Batch 9b/9c：MAP-05 / MAP-02 已从 V8 回退图改造为 V10 原生运行时（DCR-V10-27 / 29）。
+DECISIONS["MAP-05"] = Decision(
+    "FORCED",
+    "VALIDATED",
+    "V10 原生 4 seed：窗口时刻与通道耗时随 seed 变化；规则/契约/成功条件不变",
+    "DCR-V10-27",
+    "Batch 9b：4 实例各自可行；Oracle 4/4、启发式 4/4、四消融 0/4；"
+    "阶段 5b 的 3 局 MiMo 非法动作 0",
+)
+DECISIONS["MAP-02"] = Decision(
+    "FORCED",
+    "VALIDATED",
+    "V10 原生 4 seed：泄漏时序/扩散窗口/乘员压力/deadline 随 seed 变化",
+    "DCR-V10-29",
+    "Batch 9c：Oracle 4/4、启发式 4/4、no_gate 1/4（实例相关）、其余消融 0/4；"
+    "阶段 6 的 3 局 MiMo 非法动作 0",
+)
 
 
 def _summary() -> dict[str, Any]:
@@ -275,7 +293,9 @@ def _run_priority(row: dict[str, Any]) -> tuple[bool, int]:
     """
 
     run_id = str(row.get("run_id", ""))
-    if run_id.endswith("-l2"):
+    if run_id.endswith("-m2"):
+        phase = 8
+    elif run_id.endswith("-l2"):
         phase = 7
     elif run_id.endswith("-k2b"):
         phase = 6

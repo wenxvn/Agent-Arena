@@ -3,8 +3,8 @@
 - 分支 `v10-validity`；起始 HEAD `2fa4df2`（main）；本报告提交的 HEAD 见 `git log -1`。
 - V8/V9 冻结：`freeze verify` 每批末与末尾均 **9/9 `unchanged`**。
 - 质量门禁：`pytest` **1101 passed**、`mypy src` **0 issues（242 文件）**、scoped `ruff` clean。
-- 真实模型：MiMo 有效局 **89**（+5 局 provider/账本中断保留），成功 **36/89**；
-  结算 **CNY 1.80707420** + 未知预留 **CNY 0.11468800** = **CNY 1.92176220**（上限 ¥10，剩余 ¥8.07823780）。
+- 真实模型：MiMo 有效局 **95**（+5 局 provider/账本中断保留），成功 **36/95**；
+  结算 **CNY 1.86622364** + 未知预留 **CNY 0.11468800** = **CNY 1.98091164**（上限 ¥10，剩余 ¥8.01908836）。
 - 状态口径：**`VALIDATED` 表示“测得住”**（8 项 Gate 全过），不表示“MiMo 能通关”（见 `validation-gates.md`）。
 
 ## 0. 30 图状态前后对比
@@ -19,7 +19,7 @@
 构念标签（独立维度）：FORCED 28、**OPTIONAL 2**（MAP-04、MAP-26）、**BYPASS 0**、**BLOCKED 0**。
 
 实现规模：**25 张 V10 原生运行时**、**29 份 DCR**、25 图 ×3–10 环境 seed 基线、30 张逐图审计卡、
-8 项 Gate、154+140 指标、16 个 V10 账本、94 条 MiMo 逐局记录。
+8 项 Gate、154+140 指标、17 个 V10 账本、100 条 MiMo 逐局记录。
 
 ## 1. 哪些地图从 V9 状态提升到 VALIDATED？逐图证据是什么？
 
@@ -41,7 +41,8 @@ DCR-V10-25 把 `set_flow_tenths`/`adjust_loads`/`open_bypasses` 的结构写进�
 Gate 通过；模型仍未产出产能（主指标恒 0），这属于策略/难度结论，不再是接口问题。
 
 **MAP-05 与 MAP-02 已在 V10 完成 seed 化（DCR-V10-27 / DCR-V10-29）**：各 4 个预登记实例，
-Oracle 4/4、启发式 4/4、消融最高 1/4 或 0/4、`legal_random` 0/80；两图的 3 局 MiMo 非法动作均为 0。
+Oracle 4/4、启发式 4/4、消融最高 1/4 或 0/4、`legal_random` 0/80；补公开规则后 MAP-02 的 3 局
+MiMo 非法动作 0、机制触发 3/3（仍因乘员压力失败），MAP-05 非法率降到 11%–16%、机制触发 2/3。
 
 **5 张 V8 回退图（01/16/17/25/27）维持 `VALIDATED`**，但环境 seed 未参数化
 （`seed_effective=False`），3-seed 缺口如实记录（`validated-regression.md`），不计入原生 Gate。
@@ -123,7 +124,7 @@ Oracle 4/4、启发式 4/4、消融最高 1/4 或 0/4、`legal_random` 0/80；�
 - **环境 seed**：每图 `{0,1,2}`；高风险图离线扩展至 10 seed（MAP-06/15/21）、4–6 seed（04/14/18/28/29/30），
   MAP-05 为 4 seed（DCR-V10-27）。
   MiMo 只跑 3 环境 seed/图；**replicate 固定为 1**（单次；不把重复冒充 seed）。
-- **覆盖**：25/25 张 V10 原生图 × 3 seed；实际有效 **89** 局（含 5 次补跑与阶段 3/4/5/6 重跑），
+- **覆盖**：25/25 张 V10 原生图 × 3 seed；实际有效 **95** 局（含 5 次补跑与阶段 3/4/5/6/7 重跑），
   另有 5 局中断保留（4 次未知消费 + 1 次输入越界）。
 - **费用**：结算 **CNY 1.79925900** + 未知预留 **CNY 0.11468800** = **CNY 1.91394700**；
   15 个 V10 账本、逐账本与逐局明细见 `cost-ledger-audit.md`。
@@ -171,7 +172,7 @@ Oracle 4/4、启发式 4/4、消融最高 1/4 或 0/4、`legal_random` 0/80；�
       5 张 V8 回退图**明确未达标**（记录缺口）。
 - [x] 随机、启发式、消融与反旁路实验均可重放（`baselines.suite` + `baseline-results.md`）。
 - [x] pytest、ruff、mypy、diff-check 的真实退出码记录（本文件头部与各批 commit）。
-- [x] MiMo 预算门禁、预登记、trace、账本和异常恢复可验证（16 个账本 + `mimo-preregistration.json`）。
+- [x] MiMo 预算门禁、预登记、trace、账本和异常恢复可验证（17 个账本 + `mimo-preregistration.json`）。
 - [x] 30 图状态不虚报：25 张原生图 8 Gate 全过、5 张回退图带 3-seed 缺口记录；模型失败的归因
       （接口/策略/预算/机制/provider/场景）见 §4 与 `failure-attribution.md`。
 - [x] `docs/v10/final-report.md` 含完整前后对照与剩余风险（本文件）。

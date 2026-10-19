@@ -130,6 +130,20 @@ class Map02V10Environment(V10Map, Map02Environment):
         variant = VARIANTS[self.environment_seed]
         return {"event_order_seed": self.environment_seed, "deadline": variant.global_deadline}
 
+    def public_rules(self) -> tuple[str, ...]:
+        return (
+            "C 是中枢，连接 L1（乘员区）与 R1（导航核心）；L1–L2 通向乘员，"
+            "R1–R2 通向逃生舱；C_X + X_L2 是备用通道。",
+            "导航核心在 R1，需用维修包固定（interact(nav_core, brace_in_case)）；"
+            "维修包开局可用一次。",
+            "乘员在 L2：先 pickup(crew) 再护送；把乘员带到 R2 即进入逃生舱。",
+            "**泄漏会在若干动作后出现**（具体时点不公开）；公告后若未隔离 L1，"
+            "船舱扩散倒计时递减，归零则导航核心报废；同时乘员压力倒计时独立递减，"
+            "归零则任务失败。",
+            "在 C 用 interact(center_gate, isolate_L1) 可隔离 L1；关闭后 C↔L1 不可通行。",
+            "导航核心固定 + 乘员进逃生舱**两者都完成**才算成功；deadline 见 Observation。",
+        )
+
     # ------------------------------------------------------------------ public
     def _public(self) -> dict[str, Any]:
         payload = Map02Environment._public(self)
