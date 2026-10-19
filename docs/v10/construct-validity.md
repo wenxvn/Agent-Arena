@@ -33,7 +33,7 @@
 | MAP-14 | pyramid | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `blind_two_submissions` 0/6；`no_seal` 0/6；`one_question` 2/6；`waste_questions` 6/6 | 0.00–1.00 | 0/3 | Batch 4：公开推理规则；开门需要相容封存假设；6 实例；blind_two_submissions 0/6（V9 为 2/3 开门）、no_seal 0/6、one_question 2/6 |
 | MAP-15 | pyramid | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `fixed_route` 1/10；`no_probe` 0/10；`no_transfer` 0/10；`random_rule` 0/10 | 0.00–0.10 | 2/3 | Batch 2：删除 goal 泄露；6 规律家族；训练/测试墙色分离；record_rule 提交假设；消除相位自愈；四消融均 ≤1/10，启发式 10/10 |
 | MAP-16 | subway | FORCED | VALIDATED | `v8` | — | — | 未运行 | Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录 |
-| MAP-17 | subway | FORCED | VALIDATED | `v8` | — | — | 未运行 | Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录 |
+| MAP-17 | subway | FORCED | VALIDATED | `v10` | `half_board` 0/4；`no_board` 0/4；`no_ring` 0/4 | 0.00–0.00 | 0/3 | Batch 9g：Oracle 4/4、启发式 4/4、三消融 0/4；公开规则含瓶颈共用与整帧提交语义 |
 | MAP-18 | subway | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `greedy_dispatch` 3/5；`ignore_windows` 0/5；`no_replan` 1/5 | 0.00–0.60 | 0/3 | Batch 1：时钟分离、发车窗口强制、5 个故障变体；抢跑 0/5，no_replan 1/5，greedy 3/5，启发式 5/5 |
 | MAP-19 | volcano | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `fixed_vector_no_lag` 0/4；`max_loads_no_cooling` 0/4；`naive_forecast` 1/4；`no_forecast` 0/4 | 0.00–0.25 | 0/3 | Batch 4：预测成为产能的必要条件；精确温度与误差反馈公开；no_forecast 0/4、fixed_vector_no_lag 0/4、naive_forecast 1/4（容差 2 对照实例） |
 | MAP-20 | volcano | FORCED | NEEDS_MORE_EVIDENCE | `v10` | `bypass_overuse` 0/4；`no_bypass` 0/4；`static_allocation` 0/4；`zero_flow` 0/4 | 0.00–0.00 | 0/3 | Batch 4：产能与热量解耦、动态热点公开；区阀 C 30→35；static_allocation 0/4、no_bypass 0/4、bypass_overuse 0/4；Oracle bypass_used 10/10 tick |

@@ -1,22 +1,42 @@
-# MAP-17｜地铁 · 早高峰（中等）
+# MAP-17｜地铁 · 四车排程（中等）
 
-- 运行时：`v8 回退（V10 无原生运行时）`
+- 运行时：`v10 原生`
 - 构念标签：`FORCED`；效度状态：`VALIDATED`（均为 `agent_reviewed`）
-- DCR：`—`
-- `rule_hash`：`v8:9e9985a2238afcfccd3cb4ee43919f71cda953e291f69408df4c41d8da1eb203`
-- `metric_hash`：`v8:d82a19a1e94964db317283e281e56d9478e94f48e2aacd2103245b610f210dc1`
+- DCR：`DCR-V10-34`
+- `rule_hash`：`cd7765f7159a0df1ebb4296e83855818682cf61767bdf48613c88464625bb9ef`
+- `metric_hash`：`7fb46f5ef704ae20ff3128340c743026fd94effc79d6fa185b8bffe928523b37`
 
 ## 1. 目标构念与最小可观察行为
 
-- 本轮裁定：Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录
+- 本轮裁定：Batch 9g：Oracle 4/4、启发式 4/4、三消融 0/4；公开规则含瓶颈共用与整帧提交语义
 
-- 该图在 V10 未重建运行时，三分量（目标构念/最小行为/消融）沿用 V9 构念证据；
-  V10 只做防回归与环境 seed 复核（见 `docs/v10/validated-regression.md`）。
+- 主指标：`map17.v10.mission_success`
+  - `map17.v10.mission_success`：在时限内送达人数达到该实例的服务阈值（方向：higher）
+
+规格里声明的核心机制是否被真实触发由各图 `mechanism_triggered()` 判定；
+Oracle 各 seed 的触发率为 4/4。
 
 ## 2. 公开信息边界
 
-- V8 回退图的 Observation 与公开动作沿用 `worlds/scenario_v8` 只读实现；
-  V10 未新增或减少其公开字段。
+### 公开规则（写进 system prompt）
+
+1. 环线 A—B—C—D 与支线 B—E—F 共用 B 站咽喉；每段每 tick 只能过 1 列车。
+2. 每 tick 提交一整行时刻表：set_timetable(tick, operations)。operations 以列车 id 为键，每项含 op（stop/release/detour/switch_line/delay）与目标/上车人数。
+3. 上车（board）必须对应列车的 task 路线与需求表 demand_matrix；站台/区段容量或同段冲突会让整帧被拒（tick 不前进）。
+4. 需求表共 10 人；到时限时送达人数达到本实例的服务阈值即成功。
+5. 公开验收参数（服务阈值与时限）见 goal 与 ticks_remaining。
+
+### Observation 公开字段
+
+`delivered_by_od`、`demand_matrix`、`energy_consumed`、`energy_remaining`、`goal`、`last_delivery_tick`、`onboard_passengers`、`passenger_wait_person_ticks`、`station_train_counts`、`tick`、`ticks_remaining`、`topology`、`train_positions`、`train_seat_capacity`、`waiting_demand`
+
+### 随 seed 变化的公开实例参数（`scenario_descriptor` 键）
+
+`horizon`、`label`、`threshold`
+
+### 密封真值（只列键名，真值只在 judge 与 hash 中）
+
+`schedule`、`threshold`
 
 ## 3. 合法动作契约（`SHAPES`）
 
@@ -26,44 +46,65 @@
 
 ## 4. 环境 seed 与实例差异性
 
-- 预登记 seed：`0, 1, 2`（3 个）
-- 实例指纹各不相同：`否`
-- 不同 `scenario_hash` 数：`3`
+- 预登记 seed：`0, 1, 2, 3`（4 个）
+- 实例指纹各不相同：`是`
+- 不同 `scenario_hash` 数：`4`
 
 | seed | scenario_hash（前 16 位） |
 |---:|---|
-| 0 | `d58ab92b846182d5` |
-| 1 | `314cae80157d8a14` |
-| 2 | `33a129b0f15a2847` |
+| 0 | `a895b1e57dc5996a` |
+| 1 | `12d9e3ec853f9c82` |
+| 2 | `cf20af527734aa05` |
+| 3 | `aacb27ec5078e36c` |
 
-> V8 回退图对 seed 不敏感（`seed_effective=False`）：3-seed 未达标，已在
-> `validated-regression.md` 记为缺口。
-> 注意：`scenario_hash` 把 `environment_seed` 计入身份，所以三个 hash 不同
-> **不等于**三个环境实例不同；实例是否不同由 `seed_effective` 判定。
+## 5. 主次指标（`METRIC_SPECS`）
 
-## 5. 指标
+| metric_id | role | direction | 公式 | 分母 | 零分母 | 截尾 | 单位 | valid_range |
+|---|---|---|---|---|---|---|---|---|
+| `map17.v10.mission_success` | primary | higher | 在时限内送达人数达到该实例的服务阈值 | 1 | NOT_APPLICABLE | 截尾 → CENSORED；到时限未达标 → VALID 0 | ratio | (0.0, 1.0) |
+| `map17.v10.service_rate` | secondary | higher | 已送达人次 / 10 | 10 | NOT_APPLICABLE | 部分进度保持 VALID；未发生的终点事件为 CENSORED | ratio | (0.0, 1.0) |
+| `map17.v10.threshold_margin` | secondary | higher | 送达人次 − 本实例服务阈值（正数表示超过门槛） | 1 | NOT_APPLICABLE | 截尾 → CENSORED | passengers | (-10.0, 10.0) |
+| `map17.v10.wait_person_ticks` | guardrail | lower | 累计候车人·tick | — | NOT_APPLICABLE | 部分进度保持 VALID；未发生的终点事件为 CENSORED | person_ticks | (0.0, 500.0) |
+| `map17.v10.refused_frames` | guardrail | lower | 被环境整帧拒绝的时刻表数（容量/冲突/时刻不符） | — | NOT_APPLICABLE | 部分进度保持 VALID；未发生的终点事件为 CENSORED | count | (0.0, 200.0) |
+| `map17.v10.energy_used` | diagnostic | lower | 已消耗的线路能量 | — | NOT_APPLICABLE | 部分进度保持 VALID；未发生的终点事件为 CENSORED | energy | (0.0, 500.0) |
+| `map17.v10.completion_ticks` | diagnostic | lower | 成功时的完成 tick | 成功局（1） | 未成功 → NOT_APPLICABLE | 部分进度保持 VALID；未发生的终点事件为 CENSORED | ticks | (0.0, 200.0) |
 
-- 该图指标沿用 V7/V8 的 154 条注册规格（只读）；V10 未新增 v10 指标。
-- V10 新增的其余 23 图指标见 `docs/v10/metric-schema-v10.md`。
+## 6. 反事实消融（逐 seed，成功率与主指标均值）
 
-## 6. 反事实消融
+| 消融 | 成功率 | 主指标均值 |
+|---|---|---|
+| `half_board` | 0/4 | 0.0 |
+| `no_board` | 0/4 | 0.0 |
+| `no_ring` | 0/4 | 0.0 |
 
-- 无 V10 基线产物（V8 回退图沿用 V9 存档消融）。
+- Oracle：4/4（机制触发 4/4）
+- 公开启发式：4/4（主指标均值 1.0）
+- legal_random：0/80（主指标均值 None）
+- Oracle 是否在决策预算内：`True`
 
-## 7. MiMo 证据
+- 观测到的终止码：`DEADLINE_SERVICE_BELOW_THRESHOLD`、`DEMAND_THRESHOLD_MET`
 
-- 未纳入 Batch 8 矩阵：无真实模型证据（仍为 `NEEDS_MORE_EVIDENCE` 或 `VALIDATED`）。
+## 7. MiMo 证据（Batch 8，单 replicate 描述性）
+
+| seed | run_id | 结局 | 决策数 | 主指标 | 成本 CNY | 有效 |
+|---:|---|---|---:|---|---:|---|
+| 0 | `V10-MAP-17-S0-q2` | DEADLINE_SERVICE_BELOW_THRESHOLD（failure） | 12 | 0 | 0.01474412 | 是 |
+| 1 | `V10-MAP-17-S1-q2` | DEADLINE_SERVICE_BELOW_THRESHOLD（failure） | 12 | 0 | 0.0108868 | 是 |
+| 2 | `V10-MAP-17-S2-q2` | DEADLINE_SERVICE_BELOW_THRESHOLD（failure） | 12 | 0 | 0.0108968 | 是 |
+
+- 有效局成功：0/3
+- 结算成本合计 CNY 0.03652772（含中断局的已结算部分）。
+- 单 seed、单 replicate，只作描述，不作统计推断。
 
 ## 8. 结论、剩余风险与下一步
 
-- 缺陷与待证事项：V8 实例对 seed 不敏感（3-seed 未达标，见 validated-regression.md）
-- 当前裁定：Batch 5 防回归：V9 Oracle 在当前运行时可复跑；多 seed 覆盖缺口已明确记录
-- 剩余风险：无 V10 原生运行时 ⇒ 不能在本阶段声称 3-seed 达成；V11 需先参数化该图实例。
-- 防回归复跑：`通过`；V9 Oracle 记录：`2/2`；V9 消融：`{'no_branch_switch': False}`
+- 缺陷与待证事项：V10 原生 4 seed：服务阈值（8/9/10）与时限（12/14）随 seed 变化
+- 当前裁定：Batch 9g：Oracle 4/4、启发式 4/4、三消融 0/4；公开规则含瓶颈共用与整帧提交语义
+- 剩余风险：公式级独立复算（第二套实现重算分子分母）未按图完成；现有检查为规格驱动五态核对 + 可复现回放。
 
 ## 9. 证据索引
 
-- 无 DCR（沿用 V9 规则）
+- `docs/v10/dcr/DCR-V10-34.md`
 - `runs/v10/baselines/MAP-17.json`（若存在）
 - `runs/v10/baselines/summary.json`
 - `docs/v10/validated-regression.md`（回退图）

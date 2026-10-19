@@ -15,8 +15,8 @@ V10 的处理：
 | 类别 | 数量 | 处理 |
 |---|---:|---|
 | V7/V8 注册规格 | 154 | 只读保留；`metric_id`、`formula`、`valid_range` 不改写 |
-| V10 新增规格 | **159** | 28 张 V10 原生图的 `METRIC_SPECS`，逐条带 `role/direction/formula/denominator/zero_denominator/censored_rule/unit/valid_range/event_source/comparable_scope` |
-| 合计可寻址指标 | 313 | 两套并列；跨版本只做“语义同构量”的定性对照 |
+| V10 新增规格 | **166** | 29 张 V10 原生图的 `METRIC_SPECS`，逐条带 `role/direction/formula/denominator/zero_denominator/censored_rule/unit/valid_range/event_source/comparable_scope` |
+| 合计可寻址指标 | 320 | 两套并列；跨版本只做“语义同构量”的定性对照 |
 
 ## 2. 五态与优先级
 

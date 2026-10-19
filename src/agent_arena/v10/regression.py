@@ -24,7 +24,7 @@ from agent_arena.v10.runtime.catalog import (
 )
 from agent_arena.worlds.scenario_v8.models import V8Action
 
-VALIDATED = ("MAP-16", "MAP-17")
+VALIDATED = ("MAP-16",)
 SEEDS = (0, 1, 2)
 
 

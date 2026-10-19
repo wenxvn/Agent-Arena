@@ -74,6 +74,7 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 | 9d | MAP-27 原生 seed 化（DCR-V10-30）+ 阶段 8 复测 | 完成；MAP-27 8 Gate 全过 | 见 README |
 | 9e | MAP-01 原生 seed 化（DCR-V10-31）+ 阶段 9 复测 | 完成；MAP-01 8 Gate 全过 | 见 README |
 | 9f | MAP-25 原生 seed 化（DCR-V10-33）+ 阶段 10 复测 | 完成；MAP-25 8 Gate 全过 | 见 README |
+| 9g | MAP-17 原生 seed 化（DCR-V10-34）+ 阶段 11 复测 | 完成；MAP-17 8 Gate 全过 | 见 README |
 
 ### 3.1 Batch 9 追加的接口/指标 DCR
 
@@ -90,6 +91,7 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 | DCR-V10-31 | MAP-01 破损的曙光号：V8 固定实例 → V10 原生 4 seed（氧气储备/断供容错/配电参数） | 实例采样 | `MAP-01.json`；Oracle 4/4、启发式 4/4、四消融 0/4 |
 | DCR-V10-32 | 为公式级复算暴露 judge 字段（03 航线码 / 24 桥路使用 / 26 真实故障）+ MAP-24 零分母注解 | judge 字段 | `metric-recompute.md`；复算 25/28 图、887 次检查 0 不一致 |
 | DCR-V10-33 | MAP-25 第一次出舱：V8 固定实例 → V10 原生 4 seed（起始位置 H/T + 氧气 12/10） | 实例采样 | `MAP-25.json`；Oracle 4/4、启发式 4/4、四消融 0/4 |
+| DCR-V10-34 | MAP-17 四车排程：V8 固定实例 → V10 原生 4 seed（服务阈值 8/9/10 + 时限 12/14） | 实例采样 | `MAP-17.json`；Oracle 4/4、启发式 4/4、三消融 0/4 |
 
 ### 3.2 Batch 9 的构念改标
 

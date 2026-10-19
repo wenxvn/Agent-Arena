@@ -187,6 +187,34 @@
     "run_id_pattern": "V10-MAP-25-S<seed>-p2",
     "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
   },
+  "phase_11_map17_native": {
+    "comparison_rule": "MAP-17 此前无 MiMo 局，本阶段是首次真实模型证据",
+    "dcr": "DCR-V10-34",
+    "declared_at": "2026-10-19（开跑前登记）",
+    "environment_seeds": [
+      0,
+      1,
+      2
+    ],
+    "episodes": 3,
+    "group_tag": "q2",
+    "ledger": "runs/v10/mimo/ledger_v10_017.jsonl",
+    "manifest_file": "runs/v10/mimo/manifest_q2.json",
+    "manifest_hash": "e625c2f412a9b6e1ea2adbdb622aca80dff7145d425f4f4ced895f3fb99872bb",
+    "maps": [
+      "MAP-17"
+    ],
+    "outcome": {
+      "all_valid": true,
+      "cost_settled_cny": 0.03652772,
+      "episodes": 3,
+      "result": "三局均 DEADLINE_SERVICE_BELOW_THRESHOLD（12/12 决策），非法动作 0/1/1；模型未送满阈值",
+      "status": "completed"
+    },
+    "rationale": "MAP-17 原先只有 V8 固定实例（seed_effective=False）。DCR-V10-34 把服务阈值（8/9/10）与时限（12/14）按 seed 实例化（规则/契约/需求表/拓扑不变）；同一份 12-tick 时刻表在四个实例上都能送满 10/10。Oracle 4/4、启发式 4/4、三消融 0/4、legal_random 0/80。补跑 3 个环境 seed 以满足 mimo Gate。",
+    "run_id_pattern": "V10-MAP-17-S<seed>-q2",
+    "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
+  },
   "phase_2_extension": {
     "budget_gate": "阶段 2 开跑前必须重新读取全部账本，剩余额度不足即不启动",
     "completed_in_phase_2_before_interruption": [

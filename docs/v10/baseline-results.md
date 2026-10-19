@@ -22,6 +22,7 @@
 | MAP-13 | 4 | 4/4 | 4/4 | 4/4 | 0/80 | `blind_guess` 0/4；`no_direction_nail` 4/4；`no_record` 0/4；`record_only_nail` 0/4 | 1.0 |
 | MAP-14 | 6 | 6/6 | 6/6 | 6/6 | 0/120 | `blind_two_submissions` 0/6；`no_seal` 0/6；`one_question` 2/6；`waste_questions` 6/6 | 1.0 |
 | MAP-15 | 10 | 10/10 | 10/10 | 10/10 | 0/200 | `fixed_route` 1/10；`no_probe` 0/10；`no_transfer` 0/10；`random_rule` 0/10 | 0.1 |
+| MAP-17 | 4 | 4/4 | 4/4 | 4/4 | 0/80 | `half_board` 0/4；`no_board` 0/4；`no_ring` 0/4 | 0.0 |
 | MAP-18 | 5 | 5/5 | 5/5 | 5/5 | 0/100 | `greedy_dispatch` 3/5；`ignore_windows` 0/5；`no_replan` 1/5 | 0.6 |
 | MAP-19 | 4 | 4/4 | 4/4 | 4/4 | 0/80 | `fixed_vector_no_lag` 0/4；`max_loads_no_cooling` 0/4；`naive_forecast` 1/4；`no_forecast` 0/4 | 0.25 |
 | MAP-20 | 4 | 4/4 | 4/4 | 4/4 | 0/80 | `bypass_overuse` 0/4；`no_bypass` 0/4；`static_allocation` 0/4；`zero_flow` 0/4 | 0.0 |

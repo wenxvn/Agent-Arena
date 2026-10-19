@@ -1546,3 +1546,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：MAP-25 的 MiMo 0/3 是能力结果（依赖链执行失败），不说明地图无效；剩余 2 张回退图（16/17）仍未参数化；MAP-25 的实例差异主要在起始位置与氧气预算。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 10：MAP-17 原生 seed 化（DCR-V10-34）
+
+事件：第六张回退图 MAP-17 改造为 V10 原生运行时（4 个预登记实例），补公开规则并完成真实模型首测。
+
+原因：MAP-17 是 `seed_effective=False` 的 2 图之一；地铁世界已有 16（V4 适配）/18 原生，补齐后只剩 MAP-16。
+
+改动：新增 `src/agent_arena/v10/runtime/map17.py`（子类化 V8 规则，只把服务阈值 8/9/10 与时限 12/14 按 seed 实例化；7 条 METRIC_SPECS；`_public` 更新 goal 与 ticks_remaining；`_after_tick` 用实例参数结算；`refused_frames` 按地图自身的 `_rejected` 判定）、`src/agent_arena/v10/baselines/map17.py`（复用 V8 已验证时刻表的 Oracle 与脚本化参考策略、三消融 no_board/half_board/no_ring）、`tests/test_v10_map17.py`（7 条）；`validation`/`attribution`/`recompute`/`mimo_report`/`evidence_state`/`regression` 适配 29 图；新增 `DCR-V10-34`。
+
+结果：MAP-17 `seed_effective=True`、4 个不同 `scenario_hash`；Oracle 4/4（机制触发 4/4）、参考策略 4/4、三消融 0/4、`legal_random` 0/80。真实 MiMo（阶段 11）：三局均 `DEADLINE_SERVICE_BELOW_THRESHOLD`（12/12 决策），非法动作 0/1/1。指标规格 159→166（29 图）；独立核对 29 图 × 140 seed 实例 0 违规；公式级复算 26/29 图、915 次检查全一致。累计费用：结算 CNY `2.01267636` + 未知预留 `0.13312000` = `2.14579636`。
+
+验证：`pytest` 1141 passed；`mypy src` 251 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged；全部生成文档重算。
+
+边界：MAP-17 的 MiMo 0/3 是能力结果（未送满阈值），不说明地图无效；MAP-17 的动作契约是整帧提交，参考策略为脚本化时刻表而非逐步启发式，已在 DCR 与报告中标注；只剩 MAP-16（V4 适配器）未参数化。
+
+关联提交：本次提交（分支 `v10-validity`）。

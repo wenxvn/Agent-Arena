@@ -203,6 +203,15 @@ def _f15(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[s
     return _v(sum(1 for ok in attempts.values() if ok) / len(attempts))
 
 
+def _f17(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
+    del obs
+    if truncated:
+        return _censored("截尾")
+    threshold = int(judge.get("service_threshold") or 0)
+    delivered = int(judge.get("delivered_total") or 0)
+    return _v(1 if delivered >= threshold else 0)
+
+
 def _f18(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
     del obs, truncated
     return _v(int(judge.get("delivered") or 0) / 18)
@@ -338,6 +347,7 @@ FORMULAS: dict[str, Formula] = {
     "MAP-11": _f11,
     "MAP-12": _f12,
     "MAP-15": _f15,
+    "MAP-17": _f17,
     "MAP-18": _f18,
     "MAP-19": _f19,
     "MAP-20": _f20,
