@@ -1,6 +1,6 @@
 # V10 最终报告（Batch 0–9 验收）
 
-- 分支 `v10-validity`；起始 HEAD `2fa4df2`（main）；本报告提交的 HEAD 见 `git log -1`。
+- 分支 `main`（原 `v10-validity` 已合并并删除）；起始 HEAD `2fa4df2`；本报告提交的 HEAD 见 `git log -1`。
 - V8/V9 冻结：`freeze verify` 每批末与末尾均 **9/9 `unchanged`**。
 - 质量门禁：`pytest` **1151 passed**、`mypy src` **0 issues（253 文件）**、scoped `ruff` clean。
 - 真实模型：MiMo 有效局 **152**（+7 局 provider/账本中断保留），成功 **57/152**；

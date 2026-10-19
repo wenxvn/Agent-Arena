@@ -1,7 +1,7 @@
 # V10：30 图核心机制重构、难度校准与多 Seed 有效性验证
 
 - 规格：`研究提纲/V10：30图核心机制重构、难度校准与多Seed有效性验证.md`（用户文件，未纳入 Git）
-- 起始 HEAD：`2fa4df2726c486d5064a3db9b3965dc27bbd2898`（main）；工作分支 `v10-validity`
+- 起始 HEAD：`2fa4df2726c486d5064a3db9b3965dc27bbd2898`（main）；工作分支 `main`（原 `v10-validity` 已合并并删除）
 - 原则：V8/V9 只读（`docs/v10/freeze-manifest.json` 守卫）；V10 独立 runtime、指标、账本与 run_id；不按通关率改规则；`n=3` 只作描述；全部 `agent_reviewed`
 - 结论口径：**`VALIDATED` 表示“测得住”（8 项 Gate 全过），不表示“MiMo 能通关”**；真实模型成功率另见 `mimo-results.md`
 

@@ -1,6 +1,6 @@
 # V10 Batch 0：仓库与证据基线审计
 
-- 审计对象 HEAD：`2fa4df2726c486d5064a3db9b3965dc27bbd2898`（`main`，与 `origin/main` 同步）；V10 工作分支 `v10-validity`
+- 审计对象 HEAD：`2fa4df2726c486d5064a3db9b3965dc27bbd2898`（`main`，与 `origin/main` 同步）；V10 工作分支已合并回 `main`
 - 工作树：只有 `研究提纲/` 下 10 份未跟踪的用户提纲文件（V1–V10），V10 不提交、不修改它们
 - 运行时：Python 3.13.3；pydantic 2.13.4、pydantic-settings 2.15.0、openai 1.109.1、typer 0.27.1；pytest 8.4.2、ruff 0.16.3、mypy 1.20.2
 - 本机 `uv` 不在 PATH，所有命令使用 `.\.venv\Scripts\python.exe -m ...`

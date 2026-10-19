@@ -1714,3 +1714,15 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：重复只覆盖 MAP-01–12，其余 18 图仍是单 replicate；n=2，只作描述性一致性，不作方差估计或显著性检验。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-20 V10 收尾：合并回 main 并删除临时分支
+
+事件：把 `v10-validity` 的 58 个提交快进合并到 `main` 并推送，随后删除本地与远端的 `v10-validity` 和 `codex/v4-manual-map-design`。
+
+原因：V10 的交付应直接落在 `main`；临时分支只用于阶段隔离，收尾后不应保留两份历史。`codex/v4-manual-map-design` 已完全包含在 `main` 中（0 个未合并提交），删除不丢内容。
+
+结果：`main` = `origin/main` = `dcbf504`（`2fa4df2..dcbf504` 快进）；本地与远端只剩 `main`；工作树除用户未跟踪的 `研究提纲/` 外干净。
+
+验证：合并为 fast-forward（无冲突、无新 commit）；CI 在 `main` 上重新触发。
+
+关联提交：本次提交（分支 `main`）。
