@@ -3,7 +3,7 @@
 - 运行时：`v10 原生`
 - 构念标签：`FORCED`；效度状态：`NEEDS_MORE_EVIDENCE`（均为 `agent_reviewed`）
 - DCR：`DCR-V10-11`
-- `rule_hash`：`2e2681200a68248612fd0520ebd2d774b8f70ff3e7b418d77a5616db0d18b1ea`
+- `rule_hash`：`e677a0acc1d837027281f2d1be6ab0b55835861fc8ddab65a561663c1924002d`
 - `metric_hash`：`b80e5ea1790f5ff813676ca4bbd986afb50e55f6370ebc3ae800802a8bf65fa2`
 
 ## 1. 目标构念与最小可观察行为
@@ -22,10 +22,13 @@ Oracle 各 seed 的触发率为 4/4。
 
 1. 三区 A/B/C，每 tick 结算一次：T_next = max(0, T + 本 tick 热量 − 交付水)。
 2. 水源每 tick 60；单支管直供上限 25；区阀上限 A/B/C = 40/40/35；交付超过区阀 → 整帧拒绝。
-3. 旁路按 5 一档、单链路上限 20，下游只收到 4/5。
-4. **本 tick 三区热量公开**（heat_schedule）；热点区热量会超过单支管上限，必须从邻区经有损旁路调水。
-5. 区产量系数 A/B/C = 4/3/2：交付覆盖该区热量才拿满，否则按 交付/热量 折减。
-6. 在 10 tick 内累计目标产能且三区不超过 10.0 即成功。
+3. set_flow(tenths)：`set_flow_tenths` 是长度为 3 的整数数组，顺序固定为区 A、B、C；每项 0–25，三项之和不超过水源 60，超限整帧拒绝。
+4. adjust_loads(loads)：`adjust_loads` 是长度为 3 的字符串数组（顺序 A、B、C），取值只能是 "FULL"、"REDUCED"、"IDLE"；三档的热量分别为 本 tick 热量、本 tick 热量 ×0.5、0。
+5. open_bypass(bypasses)：`open_bypasses` 是以链路名为键的对象，链路只能是 "AB" 或 "BC"；值为 {"from": 端点, "to": 另一端点, "input_tenths": 取水档位}，端点取自该链路两端；`input_tenths` 必须是 5 的整数倍且不超过 20（可选 5/10/15/20）。
+6. 旁路按 5 一档、单链路上限 20，下游只收到 4/5。
+7. **本 tick 三区热量公开**（heat_schedule）；热点区热量会超过单支管上限，必须从邻区经有损旁路调水。
+8. 区产量系数 A/B/C = 4/3/2：交付覆盖该区热量才拿满，否则按 交付/热量 折减。
+9. 在 10 tick 内累计目标产能且三区不超过 10.0 即成功。
 
 ### Observation 公开字段
 
@@ -57,10 +60,10 @@ Oracle 各 seed 的触发率为 4/4。
 
 | seed | scenario_hash（前 16 位） |
 |---:|---|
-| 0 | `816e00fabd65875c` |
-| 1 | `f691794d41743aac` |
-| 2 | `8db23cbfa47326dd` |
-| 3 | `56d1af0495bc3d21` |
+| 0 | `fa615ee529ebd906` |
+| 1 | `6930539428e24d4a` |
+| 2 | `8ae3e0e49fced098` |
+| 3 | `c8f3fed9682e7156` |
 
 ## 5. 主次指标（`METRIC_SPECS`）
 
@@ -93,11 +96,14 @@ Oracle 各 seed 的触发率为 4/4。
 | seed | run_id | 结局 | 决策数 | 主指标 | 成本 CNY | 有效 |
 |---:|---|---|---:|---|---:|---|
 | 0 | `V10-MAP-20-S0-ext` | decision_budget_exhausted（decision_budget_exhausted） | 56 | 0.0 | 0.05722948 | 是 |
+| 0 | `V10-MAP-20-S0-j2` | decision_budget_exhausted（decision_budget_exhausted） | 56 | 0.0 | 0.01219616 | 是 |
 | 1 | `V10-MAP-20-S1-ext` | decision_budget_exhausted（decision_budget_exhausted） | 56 | 0.0 | 0.05725844 | 是 |
+| 1 | `V10-MAP-20-S1-j2` | decision_budget_exhausted（decision_budget_exhausted） | 56 | 0.0 | 0.00812904 | 是 |
 | 2 | `V10-MAP-20-S2-ext` | decision_budget_exhausted（decision_budget_exhausted） | 56 | 0.0 | 0.0575778 | 是 |
+| 2 | `V10-MAP-20-S2-j2` | decision_budget_exhausted（decision_budget_exhausted） | 56 | 0.0 | 0.00999968 | 是 |
 
-- 有效局成功：0/3
-- 结算成本合计 CNY 0.17206572（含中断局的已结算部分）。
+- 有效局成功：0/6
+- 结算成本合计 CNY 0.20239060（含中断局的已结算部分）。
 - 单 seed、单 replicate，只作描述，不作统计推断。
 
 ## 8. 结论、剩余风险与下一步

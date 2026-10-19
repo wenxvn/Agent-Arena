@@ -59,7 +59,13 @@ PREREG = ROOT / "docs" / "v10" / "mimo-preregistration.json"
 LEDGER_PATH = MIMO_ROOT / "ledger_v10_001.jsonl"
 LEDGER_EXT_PATH = MIMO_ROOT / "ledger_v10_002.jsonl"
 LEDGER_I2_PATH = MIMO_ROOT / "ledger_v10_004.jsonl"
-PHASE_LEDGERS = {"main": LEDGER_PATH, "ext": LEDGER_EXT_PATH, "i2": LEDGER_I2_PATH}
+LEDGER_J2_PATH = MIMO_ROOT / "ledger_v10_008.jsonl"
+PHASE_LEDGERS = {
+    "main": LEDGER_PATH,
+    "ext": LEDGER_EXT_PATH,
+    "i2": LEDGER_I2_PATH,
+    "j2": LEDGER_J2_PATH,
+}
 MODEL_NAME = "mimo-v2.6-flash"
 MAX_CONSECUTIVE = 3
 HISTORY_WINDOW = 5
@@ -84,6 +90,8 @@ PHASE_GROUPS: dict[str, tuple[tuple[str, tuple[str, ...]], ...]] = {
     #: 阶段 3：接口修复（DCR-V10-24，带类型的公开动作契约）后的补测，覆盖 Batch 8 中
     #: 确有“形状被误解”证据的图。整图全 seed 重跑，不按单局成败挑选。
     "i2": (("i2", ("MAP-18", "MAP-19", "MAP-20", "MAP-28")),),
+    #: 阶段 4：MAP-20 公开接口补全（DCR-V10-25）后的重测。
+    "j2": (("j2", ("MAP-20",)),),
 }
 
 #: 逐图格式澄清（只写公开结构，不含真值/答案）；随 prompt_hash 一起冻结。
@@ -101,12 +109,6 @@ CONTRACT_HINTS: dict[str, tuple[str, ...]] = {
     "MAP-19": (
         "forecast_next 与 set_cooling 都是长度为 3 的整数数组，顺序固定为区 A、B、C"
         "（不是以区名为键的对象）。",
-    ),
-    "MAP-20": (
-        "set_flow_tenths 是长度为 3 的整数数组，顺序为区 A、B、C；"
-        "adjust_loads 是长度为 3 的字符串数组，取值只能是 \"FULL\"/\"REDUCED\"/\"IDLE\"；"
-        "open_bypasses 是对象：键为链路名（只能是 \"AB\" 或 \"BC\"），"
-        '值为 {"from": 端点, "to": 另一端点, "input_tenths": 5 的整数倍且 ≤ 20}。',
     ),
 }
 

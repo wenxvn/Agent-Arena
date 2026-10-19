@@ -271,13 +271,13 @@
   "construct_status": "FORCED",
   "dcr_id": "DCR-V10-11",
   "decision": "Batch 4：产能与热量解耦、动态热点公开；区阀 C 30→35；static_allocation 0/4、no_bypass 0/4、bypass_overuse 0/4；Oracle bypass_used 10/10 tick",
-  "defect": "离线门禁通过；4 实例；Batch 9 未过：Gate `mimo` 未通过：有效局 3；其中接口可用 0；非法率上限 0.5",
+  "defect": "离线门禁通过；4 实例；Batch 9：8 Gate 全过",
   "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V10 0/3（seed 0,1,2；CNY 0.17206572）",
+  "mimo": "V10 0/3（seed 0,1,2；CNY 0.20239060；另有 3 局重跑/中断保留）",
   "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
-  "validity_status": "NEEDS_MORE_EVIDENCE"
+  "validity_status": "VALIDATED"
  },
  "MAP-21": {
   "ablation": "always_collect 7/10；always_evac 10/10；measure_then_evac 10/10",

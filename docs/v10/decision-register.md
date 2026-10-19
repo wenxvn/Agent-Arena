@@ -67,15 +67,16 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 | 5 | MAP-13 DCR-V10-15、MAP-08 DCR-V10-16、MAP-26 DCR-V10-17、MAP-11 DCR-V10-18、MAP-07 DCR-V10-19、MAP-10 DCR-V10-20、MAP-09 DCR-V10-21、MAP-12 DCR-V10-22 | `accepted_by_agent`，离线 Gate 通过 | 见 README |
 | 6 | 154 枚举 + 128 V10 规格 + 20 项缺陷结论 | 完成 | 见 README |
 | 7 | 多 seed 难度定标 | 完成（Batch 8 后加入 MiMo 列） | 见 README |
-| 8 | 有界 MiMo 复测（4 次中断处理 + 阶段 3 接口修复重跑；MAP-20 阶段 3b 因 provider 退化未完成） | `agent_reviewed`；82 局记录、77 有效、CNY 1.85579132 | 见 README |
-| 9 | 8 项 Gate 判定 + 30 张逐图审计卡 + 指标独立复核 + 成本审计 + 最终报告 | 完成；**MAP-20 维持 NEEDS_MORE_EVIDENCE** | 见 README |
+| 8 | 有界 MiMo 复测（4 次中断处理 + 阶段 3 接口修复重跑 + 阶段 4 MAP-20 公开规则重跑） | `agent_reviewed`；85 局记录、80 有效、CNY 1.88611620 | 见 README |
+| 9 | 8 项 Gate 判定 + 30 张逐图审计卡 + 指标独立复核 + trace 级归因 + 成本审计 + 最终报告 | 完成；**30/30 `VALIDATED`** | 见 README |
 
 ### 3.1 Batch 9 追加的接口/指标 DCR
 
 | DCR | 内容 | 类型 | 证据 |
 |---|---|---|---|
 | DCR-V10-23 | MAP-12 `research_completion` 取值域 `(0,1)`→`(0,3)` | 指标 | `independent-metric-check.md`（4 条违规 → 0） |
-| DCR-V10-24 | 公开动作契约按 `V8Action` 注解渲染类型 + MAP-18/19/20/28 公开格式澄清 | 接口 | `mimo-results.md`；MAP-18 非法 20/20 → 0/13、MAP-28 seed0 由“从未提交”变为成功 |
+| DCR-V10-24 | 公开动作契约按 `V8Action` 注解渲染类型 + MAP-18/19/28 公开格式澄清 | 接口 | `mimo-results.md`；MAP-18 非法 20/20 → 0/13、MAP-28 seed0 由“从未提交”变为成功 |
+| DCR-V10-25 | MAP-20 `set_flow`/`adjust_loads`/`open_bypass` 结构与取值写进地图 `public_rules()`（`rule_hash` `81eb7439…`→`e677a0ac…`） | 接口 | `mimo-results.md`；MAP-20 非法 168/168 → 0/168，`mimo` Gate 通过 |
 
 ### 3.2 Batch 9 的构念改标
 

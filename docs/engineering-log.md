@@ -1402,3 +1402,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 下一步（V11）：先修 MAP-20 的公开接口并补 3 seed MiMo；把 7 张 V8 回退图参数化为 V10 原生运行时；补比值类主指标的公式级独立复算；对 MAP-14/19/22/29 的“未触发机制”做 trace 级归因；再评估古堡三图决策预算。
 
 关联提交：`ed063de`（分支 `v10-validity`，已推送）。
+
+## 2026-10-19 V10 续跑：MAP-20 公开接口补全（DCR-V10-25）与 trace 级失败归因
+
+事件：接续上一轮的缺口清单，完成 MAP-20 的接口规则化、阶段 4 真实模型复验，并新增逐局 trace 级失败归因。V8/V9 仍只读。
+
+原因：MAP-20 是上一轮唯一未过 `mimo` Gate 的图（Batch 8 三局 168/168 非法动作）；同时“模型为何没触发核心机制”只有汇总层解释，缺逐局证据。
+
+改动：`v10/runtime/map20.py` 把 `set_flow_tenths`/`adjust_loads`/`open_bypasses` 的结构与取值集合写进 `public_rules()`（`RULE_VERSION` `v10.map20.1`→`v10.map20.2`，`rule_hash` `81eb7439…`→`e677a0ac…`），并删除 runner 层对该图的临时提示；新增 `src/agent_arena/v10/attribution.py`（逐局回放 trace，输出 `TRIGGERED`/`CONTRACT_ARTIFACT`/`KEY_ACTION_NEVER_ATTEMPTED`/`KEY_ACTION_ATTEMPTED_REJECTED`/`KEY_ACTION_USED_NO_TRIGGER`，兼容早期单文件布局）；新增 `docs/v10/dcr/DCR-V10-25.md`、`docs/v10/failure-attribution.md`、`tests/test_v10_batch9_attribution.py`（8 条）。
+
+结果：阶段 4（`-j2`）MAP-20 三局**非法动作 168/168 → 0/168**，`mimo` Gate 通过 ⇒ **30/30 图 `VALIDATED`**（23 张原生图 8 项 Gate 全过 + 7 张 V8 回退图沿用 V9 并记 3-seed 缺口），`NEEDS_MORE_EVIDENCE`/`NEEDS_REDESIGN`/`BLOCKED`/`BYPASS` 全为 0；MAP-20 仍 `decision_budget_exhausted`、主指标恒 0（转为策略/难度结论）。归因分布（85 局）：`TRIGGERED` 47、`KEY_ACTION_USED_NO_TRIGGER` 22、`CONTRACT_ARTIFACT` 9、`KEY_ACTION_NEVER_ATTEMPTED` 5、`KEY_ACTION_ATTEMPTED_REJECTED` 2。累计费用：结算 CNY `1.77142820` + 未知预留 `0.11468800` = `1.88611620`（上限 ¥10，剩 `8.11388380`）；12 个账本全部保留。新增阶段 4 账本 `ledger_v10_008.jsonl`（168 请求、0 失败、未关闭）。
+
+验证：`pytest` 1085 passed；`mypy src` 237 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged；`validation`、`mimo_report`、`attribution`、`difficulty`、`map_cards`、`status` 全部重算。
+
+边界：MAP-20 的 3 局仍不能说明能力高低（单模型、单 replicate、3 seed、主指标恒 0 只说明模型未产出产能）；`KEY_ACTION_USED_NO_TRIGGER` 的 22 局需逐图判读；早期 9 局的 trace 为单文件布局（归因器已兼容，引用时注明）。
+
+关联提交：本次提交（分支 `v10-validity`）。

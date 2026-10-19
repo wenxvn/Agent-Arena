@@ -33,6 +33,7 @@ GROUP_OF_SEED_TAG = {
     "interface": "接口七图",
     "ext": "扩展八图",
     "i2": "接口修复重跑（MAP-18/19/20/28）",
+    "j2": "接口补全重跑（MAP-20 公开规则）",
 }
 
 
@@ -155,7 +156,7 @@ def render_results() -> str:
         "| 分组 | 有效局 | 成功 | 成功率 | 中断保留 | 结算 CNY |",
         "|---|---:|---:|---:|---:|---:|",
     ]
-    for group in ("p0", "castle", "interface", "ext", "i2"):
+    for group in ("p0", "castle", "interface", "ext", "i2", "j2"):
         items = by_group.get(group, [])
         if not items:
             continue

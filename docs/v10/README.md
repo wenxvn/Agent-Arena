@@ -17,20 +17,21 @@
 | 5 | NEEDS_MORE_EVIDENCE 与 VALIDATED 复核：8 张接口/证据图 + 7 张 VALIDATED 防回归 | 完成（7 张记 3-seed 缺口） | 见 git log `feat(v10): batch 5` | ¥0 |
 | 6 | 指标治理：154 枚举 + 128 项 V10 规格 + 20 项缺陷结论 + 五态核对 | 完成 | 见 git log `feat(v10): batch 6` | ¥0 |
 | 7 | 多 seed 难度定标：`difficulty.py` + `difficulty-calibration.md` | 完成（Batch 8 后已加入 MiMo 列） | 见 git log `feat(v10): batch 7` | ¥0 |
-| 8 | 有界 MiMo 复测：23 张 V10 原生图 × 3 环境 seed + 中断补跑 + 接口修复重跑 | ✅ 完成（82 局记录：77 有效 + 5 中断保留） | 见 git log `feat(v10): batch 8/9` | **CNY 1.86** |
-| 9 | 最终验收：8 Gate 判定、30 张逐图审计卡、指标独立复核、成本审计、最终报告 | ✅ 完成 | 见 git log `feat(v10): batch 8/9` | ¥0 |
+| 8 | 有界 MiMo 复测：23 张 V10 原生图 × 3 环境 seed + 中断补跑 + 接口修复重跑 | ✅ 完成（85 局记录：80 有效 + 5 中断保留） | 见 git log `feat(v10): batch 8/9` | **CNY 1.89** |
+| 9 | 最终验收：8 Gate 判定、30 张逐图审计卡、指标独立复核、trace 级归因、成本审计、最终报告 | ✅ 完成 | 见 git log `feat(v10): batch 8/9` | ¥0 |
 
 ## 结论速览
 
-- **30 图状态**：29 `VALIDATED`（22 张 V10 原生图 8 项 Gate 全过 + 7 张 V8 回退图沿用 V9 并记 3-seed 缺口）、
-  **1 `NEEDS_MORE_EVIDENCE`（MAP-20，接口结构未公开）**；`NEEDS_REDESIGN` 与 `BLOCKED` 均为 **0**；
+- **30 图状态**：**30 `VALIDATED`**（23 张 V10 原生图 8 项 Gate 全过 + 7 张 V8 回退图沿用 V9 并记
+  3-seed 缺口）；`NEEDS_MORE_EVIDENCE`、`NEEDS_REDESIGN`、`BLOCKED` 均为 **0**；
   构念 `BYPASS` 为 **0**，`OPTIONAL` 2（MAP-04、MAP-26）。
 - **P0 五图**：MAP-03/06/15/21 机制有效；**MAP-18 的 0/3 是接口假象**——类型化动作契约修复后
-  （DCR-V10-24）非法动作从 20/20 降到 0，失败转为真实调度冲突；MAP-28 seed0 同因从“从未提交”变为成功。
+  （DCR-V10-24）非法动作从 20/20 降到 0，失败转为真实调度冲突；MAP-28 seed0 同因从“从未提交”变为成功；
+  MAP-20 经 DCR-V10-25 公开取值结构后非法动作 168/168 → 0/168。
 - **指标独立复核**：23 图 × 116 seed 实例，状态-取值违规从 4 条降到 **0**（MAP-12 取值域修复
   DCR-V10-23），回放确定性与 seed 差异性 23/23。
-- **MiMo 事实**：有效局 75+2=**77**（+5 局中断保留），成功 **36/77**；结算 CNY 1.74110332 + 未知预留
-  CNY 0.11468800 = **CNY 1.85579132**，远低于 ¥10 上限。
+- **MiMo 事实**：有效局 **80**（+5 局中断保留），成功 **36/80**；结算 CNY 1.77142820 + 未知预留
+  CNY 0.11468800 = **CNY 1.88611620**，远低于 ¥10 上限；逐局失败归因见 `failure-attribution.md`。
 
 ## 文件
 
@@ -46,6 +47,7 @@
 | `difficulty-calibration.md` | 设计难度 vs 经验难度（含 MiMo 列） |
 | `baseline-results.md` | Oracle/启发式/随机/消融对照表 |
 | `independent-metric-check.md` | 规格驱动五态核对 + 回放确定性 + seed 差异性 |
+| `failure-attribution.md` | Batch 9：MiMo 逐局 trace 级失败归因（接口/策略/预算/阈值） |
 | `metric-schema-v10.md` | v10 指标 schema、五态语义、缺陷处理结论 |
 | `mimo-preregistration.json` | Batch 8 预登记（矩阵、预算、stop rule、补跑与阶段 3 登记） |
 | `mimo-results.md` | 逐图逐 seed 结果、结局分类、中断与补跑 |
@@ -64,6 +66,7 @@
 | `src/agent_arena/v10/ledger.py` | V10 独立 append-only 预算账本（¥10 全局共享、未知消费封账） |
 | `src/agent_arena/v10/contract.py` | 按类型渲染公开动作契约（DCR-V10-24） |
 | `src/agent_arena/v10/validation.py` | Batch 9 的 8 项 Gate 机器判定 |
+| `src/agent_arena/v10/attribution.py` | MiMo 逐局 trace 级失败归因（含早期单文件布局兼容） |
 | `src/agent_arena/v10/map_cards.py` / `mimo_report.py` / `construct_validity.py` / `difficulty.py` | 文档与状态矩阵生成器（禁止手填数字） |
 | `scripts/run_v10_mimo.py` | 有界 MiMo runner（阶段 main / ext / i2，幂等续跑，逐局 trace/judge/manifest） |
 | `tests/test_v10_*.py` | V10 单元与反例测试（1063 项全仓测试通过） |
@@ -81,6 +84,7 @@
 .\.venv\Scripts\python.exe -m agent_arena.v10.mimo_report        # MiMo 结果与成本审计
 .\.venv\Scripts\python.exe -m agent_arena.v10.difficulty          # 难度定标与基线对照
 .\.venv\Scripts\python.exe -m agent_arena.v10.construct_validity  # 构念效度
+.\.venv\Scripts\python.exe -m agent_arena.v10.attribution        # trace 级失败归因
 .\.venv\Scripts\python.exe -m pytest tests -k v10 -q
 ```
 
@@ -88,11 +92,10 @@
 
 ## 下一会话续跑点（V11 候选）
 
+- **MAP-20 的机制为何没被触发**：接口已补全（非法 0/168，DCR-V10-25），但三局主指标恒 0；
+  需判读预算/阈值/提示哪一环不足。
 - 7 张 V8 回退图（01/02/05/16/17/25/27）的 **seed 参数化**：建 V10 原生运行时后补 3-seed Oracle/消融/MiMo。
-- **公式级指标复算**：`independent_check` 是规格驱动核对 + 回放确定性，尚未用第二套实现逐条重算分子/分母。
-- 真实模型失败的**归因细化**：MAP-14/19/20/22/29 的 MiMo 局里模型未触发核心机制（`mechanism_triggered=False`），
-  需要判读 trace 区分“没理解接口”与“策略没走到触发条件”。
+- **公式级指标复算**：`independent_check` 是规格驱动核对 + 回放确定性 + seed 差异性，尚未用第二套实现逐条重算分子/分母。
+- `KEY_ACTION_USED_NO_TRIGGER` 的 22 局（`failure-attribution.md`）：逐图判读预算不足 / 阈值过严 / 提示缺失。
 - 古堡三图（28/29/30）在 MiMo 下大量预算耗尽，需评估**决策预算**与案卷规模是否匹配。
-- MAP-20 的 `adjust_loads`/`open_bypass` 语义（FULL/REDUCED/IDLE、链路名与 `input_tenths`）
-  只由 runner 提示补全，未写进地图 `public_rules()`；V11 应把公开接口补进地图规则（需 DCR）。
 - 跨模型验证需要第二个 provider 与独立预算，本阶段不做。

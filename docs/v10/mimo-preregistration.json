@@ -162,6 +162,28 @@
       }
     }
   },
+  "phase_4_map20_interface": {
+    "declared_at": "2026-10-19（开跑前登记）",
+    "rationale": "MAP-20 是唯一未过 `mimo` Gate 的图：Batch 8 三局 168/168 非法动作，根因是 set_flow_tenths / adjust_loads / open_bypasses 的**结构与取值集合**只存在于代码、未写进地图公开规则。DCR-V10-25 把三条结构写进 `public_rules()`（rule_hash 81eb7439… → e677a0ac…），并删除 runner 对该图的临时提示，使接口修复来自地图自身。",
+    "dcr": "DCR-V10-25",
+    "maps": ["MAP-20"],
+    "group_tag": "j2",
+    "run_id_pattern": "V10-MAP-20-S<seed>-j2",
+    "episodes": 3,
+    "ledger": "runs/v10/mimo/ledger_v10_008.jsonl",
+    "manifest_file": "runs/v10/mimo/manifest_j2.json",
+    "manifest_hash": "84fb07190f105e2eb72e2f8df364b08de7752ff0beff718c461ac59dbcf2897f",
+    "comparison_rule": "与 Batch 8 的 V10-MAP-20-S*-ext 只作“接口补全前后”配对描述：rule_hash、prompt 与 scenario_hash 均已变化，不称严格 A/B",
+    "stop_rule_note": "若再次出现 UNKNOWN_PROVIDER_SPEND / 连续 3 次 provider 错误，立即封账停止，不再补跑",
+    "outcome": {
+      "status": "completed",
+      "episodes": 3,
+      "all_valid": true,
+      "result": "三局非法动作均为 0（修复前 168/168）；主指标恒 0、均 decision_budget_exhausted ⇒ 接口问题消除，剩余为策略/难度结论",
+      "cost_settled_cny": 0.03032488,
+      "ledger_closed": false
+    }
+  },
   "stop_rules": [
     "达到全局 CNY 10 上限（含未知预留）立即停止",
     "出现 UNKNOWN_PROVIDER_SPEND 立即封账并停止自动调用",

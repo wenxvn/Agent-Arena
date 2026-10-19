@@ -109,7 +109,7 @@ class Map20V10Environment(V10Map):
     title = "冷却网络"
     world = "volcano"
     level = "中等"
-    RULE_VERSION = "v10.map20.1"
+    RULE_VERSION = "v10.map20.2"
     SEED_SPACE = tuple(sorted(VARIANTS))
     SHAPES: dict[str, set[frozenset[str]]] = {
         "read_temperature": {frozenset({"tool", "station"})},
@@ -227,6 +227,16 @@ class Map20V10Environment(V10Map):
             f"水源每 tick {SOURCE_MAX}；单支管直供上限 {DIRECT_MAX}；区阀上限 "
             f"A/B/C = {ZONE_VALVE_MAX['A']}/{ZONE_VALVE_MAX['B']}/{ZONE_VALVE_MAX['C']}；"
             "交付超过区阀 → 整帧拒绝。",
+            f"set_flow(tenths)：`set_flow_tenths` 是长度为 3 的整数数组，顺序固定为区 A、B、C；"
+            f"每项 0–{DIRECT_MAX}，三项之和不超过水源 {SOURCE_MAX}，超限整帧拒绝。",
+            f"adjust_loads(loads)：`adjust_loads` 是长度为 3 的字符串数组（顺序 A、B、C），"
+            '取值只能是 "FULL"、"REDUCED"、"IDLE"；三档的热量分别为 本 tick 热量、'
+            f"本 tick 热量 ×{HEAT_REDUCED_FACTOR}、0。",
+            f"open_bypass(bypasses)：`open_bypasses` 是以链路名为键的对象，链路只能是 "
+            '"AB" 或 "BC"；值为 {"from": 端点, "to": 另一端点, "input_tenths": 取水档位}，'
+            f"端点取自该链路两端；`input_tenths` 必须是 {BYPASS_QUANTUM} 的整数倍且不超过 "
+            f"{BYPASS_MAX}（可选 {BYPASS_QUANTUM}/{2 * BYPASS_QUANTUM}/"
+            f"{3 * BYPASS_QUANTUM}/{BYPASS_MAX}）。",
             f"旁路按 {BYPASS_QUANTUM} 一档、单链路上限 {BYPASS_MAX}，下游只收到 4/5。",
             "**本 tick 三区热量公开**（heat_schedule）；热点区热量会超过单支管上限，"
             "必须从邻区经有损旁路调水。",
