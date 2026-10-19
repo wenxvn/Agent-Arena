@@ -30,7 +30,10 @@ jobs:
       - name: 检查类型
         run: uv run mypy src
       - name: 运行离线测试
-        run: uv run pytest -q
+        run: uv run pytest -q --junitxml=pytest-report.xml
+      - name: 汇总失败用例
+        if: failure()
+        run: uv run python scripts/ci_failures.py pytest-report.xml
       - name: V8/V9 冻结校验
         run: uv run python -m agent_arena.v10.freeze verify
       - name: V10 主指标公式级复算（30/30、0 不一致）
