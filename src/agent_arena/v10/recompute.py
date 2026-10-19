@@ -43,8 +43,8 @@ SKIP_REASONS: dict[str, str] = {
     "MAP-14": "一致性判定依赖密封假设表（sealed 由地图自身维护）",
     "MAP-21": "科学分依赖密封喷发时刻与地图内部评分，judge_state 只给 sample/exposure 汇总",
     "MAP-24": (
-        "ssessable = 观察到封路 且 封路前用过桥路，后者未出现在 judge_state；"
-        "V11 需把 ridge_used_before_collapse 加入 judge 字段"
+        "判据 assessable = 观察到封路 且 封路前用过桥路，后半句未出现在 judge_state；"
+        "V11 需把 bridge_used_before_collapse 加入 judge 字段"
     ),
     "MAP-26": "成功判据依赖密封故障真值（装上正确备件），judge 只暴露已装件与候选集",
 }
