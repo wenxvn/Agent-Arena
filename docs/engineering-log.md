@@ -1627,9 +1627,9 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 
 原因：`freeze._sha` 直接哈希工作树字节，本机 CRLF 与 CI 的 LF 必然不同；`runs/` 按约定不入 Git，`tests/test_v9_audit.py` 与 `tests/test_v9_metric_checks.py` 的历史数据测试在 CI 缺文件。
 
-改动：`freeze._sha` 先归一到 LF 再哈希，并用 `freeze write` 重建 `docs/v10/freeze-manifest.json`（V8/V9 源文件未改，仅哈希口径变化）；两组 V9 测试在 `runs/v8/results_90.csv` 缺失时跳过；新增 `DCR-V10-37`。
+改动：`freeze._sha` 先归一到 LF 再哈希，并用 `freeze write` 重建 `docs/v10/freeze-manifest.json`（V8/V9 源文件未改，仅哈希口径变化）；两组 V9 测试在 `runs/v8/results_90.csv` 缺失时跳过；`pyproject.toml` 增加 `pythonpath = ["."]`，修复 `uv run pytest`（console script）下 `scripts/` 无法导入导致的收集失败；新增 `DCR-V10-37`。
 
-结果：本机 `freeze verify` 9/9 unchanged；干净 worktree（LF checkout）同样 9/9 unchanged，pytest 全绿（4 个 V9 测试按预期 skip）；`ruff check .` 通过。
+结果：本机 `freeze verify` 9/9 unchanged；干净 worktree（LF checkout）同样 9/9 unchanged；console-script `pytest` 在干净 worktree 上 1141 passed、10 skipped（4 个 V9 测试按预期 skip）；`ruff check .` 通过。
 
 验证：`pytest` 1151 passed（本机）；`mypy src` 253 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged。
 
