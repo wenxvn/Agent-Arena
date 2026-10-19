@@ -139,7 +139,7 @@ def render() -> str:
 
 def main() -> None:
     V10_DOCS.mkdir(parents=True, exist_ok=True)
-    (V10_DOCS / "construct-validity.md").write_text(render(), encoding="utf-8")
+    (V10_DOCS / "construct-validity.md").write_text(render(), encoding="utf-8", newline="\n")
     print(V10_DOCS / "construct-validity.md")
 
 

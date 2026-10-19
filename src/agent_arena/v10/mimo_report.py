@@ -15,6 +15,7 @@ from typing import Any
 from agent_arena.v10.evidence_state import is_interrupted
 from agent_arena.v10.ledger import global_spend, ledger_spend
 from agent_arena.v10.paths import REPO_ROOT, V10_DOCS, V10_RUNS
+from agent_arena.v10.runtime.catalog import MAP_IDS, V10_MAPS
 from agent_arena.worlds.scenario_v8.catalog import map_metadata
 
 MIMO_ROOT = V10_RUNS / "mimo"
@@ -34,6 +35,8 @@ GROUP_OF_SEED_TAG = {
     "ext": "扩展八图",
     "i2": "接口修复重跑（MAP-18/19/20/28）",
     "j2": "接口补全重跑（MAP-20 公开规则）",
+    "k2": "MAP-05 原生首测",
+    "k2b": "MAP-05 契约补区间重跑",
 }
 
 
@@ -156,7 +159,7 @@ def render_results() -> str:
         "| 分组 | 有效局 | 成功 | 成功率 | 中断保留 | 结算 CNY |",
         "|---|---:|---:|---:|---:|---:|",
     ]
-    for group in ("p0", "castle", "interface", "ext", "i2", "j2"):
+    for group in ("p0", "castle", "interface", "ext", "i2", "j2", "k2", "k2b"):
         items = by_group.get(group, [])
         if not items:
             continue
@@ -205,11 +208,13 @@ def render_results() -> str:
     valid_successes = sum(1 for row in valid_rows if row.get("success"))
     interrupted = [row for row in rows if is_interrupted(row)]
     retries = [row for row in rows if str(row.get("run_id", "")).endswith("-r2")]
+    fallback = sorted(set(MAP_IDS) - set(V10_MAPS))
     lines += [
         "",
         f"- 有效局成功 **{valid_successes}/{len(valid_rows)}**；其余为机制失败/决策预算耗尽。",
-        "- 结论范围：本矩阵只覆盖 V10 原生图；7 张 V8 回退图仍有 3-seed 缺口，",
-        "  见 `validated-regression.md`，不得据此声称 30/30 的 MiMo 多 seed 覆盖。",
+        f"- 结论范围：本矩阵只覆盖 V10 原生图；{len(fallback)} 张 V8 回退图",
+        f"  （{'、'.join(fallback)}）仍有 3-seed 缺口，见 `validated-regression.md`，",
+        "  不得据此声称 30/30 的 MiMo 多 seed 覆盖。",
         "",
         "## 5. 中断与补跑（全部保留，不覆盖）",
         "",
@@ -334,8 +339,8 @@ def main() -> None:
     results = render_results()
     cost = render_cost_audit()
     V10_DOCS.mkdir(parents=True, exist_ok=True)
-    (V10_DOCS / "mimo-results.md").write_text(results, encoding="utf-8")
-    (V10_DOCS / "cost-ledger-audit.md").write_text(cost, encoding="utf-8")
+    (V10_DOCS / "mimo-results.md").write_text(results, encoding="utf-8", newline="\n")
+    (V10_DOCS / "cost-ledger-audit.md").write_text(cost, encoding="utf-8", newline="\n")
     print(json.dumps({"results_bytes": len(results), "cost_bytes": len(cost)}))
 
 

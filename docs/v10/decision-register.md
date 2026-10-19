@@ -68,7 +68,8 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 | 6 | 154 枚举 + 128 V10 规格 + 20 项缺陷结论 | 完成 | 见 README |
 | 7 | 多 seed 难度定标 | 完成（Batch 8 后加入 MiMo 列） | 见 README |
 | 8 | 有界 MiMo 复测（4 次中断处理 + 阶段 3 接口修复重跑 + 阶段 4 MAP-20 公开规则重跑） | `agent_reviewed`；85 局记录、80 有效、CNY 1.88611620 | 见 README |
-| 9 | 8 项 Gate 判定 + 30 张逐图审计卡 + 指标独立复核 + trace 级归因 + 成本审计 + 最终报告 | 完成；**30/30 `VALIDATED`** | 见 README |
+| 9 | 8 项 Gate 判定 + 30 张逐图审计卡 + 指标独立复核 + 公式级复算 + trace 级归因 + 成本审计 + 最终报告 | 完成；**30/30 `VALIDATED`** | 见 README |
+| 9b | MAP-05 原生 seed 化（DCR-V10-27）+ 契约补整数区间（DCR-V10-28）+ 阶段 5/5b 复测 | 完成；MAP-05 8 Gate 全过 | 见 README |
 
 ### 3.1 Batch 9 追加的接口/指标 DCR
 
@@ -77,7 +78,9 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 | DCR-V10-23 | MAP-12 `research_completion` 取值域 `(0,1)`→`(0,3)` | 指标 | `independent-metric-check.md`（4 条违规 → 0） |
 | DCR-V10-24 | 公开动作契约按 `V8Action` 注解渲染类型 + MAP-18/19/28 公开格式澄清 | 接口 | `mimo-results.md`；MAP-18 非法 20/20 → 0/13、MAP-28 seed0 由“从未提交”变为成功 |
 | DCR-V10-25 | MAP-20 `set_flow`/`adjust_loads`/`open_bypass` 结构与取值写进地图 `public_rules()`（`rule_hash` `81eb7439…`→`e677a0ac…`） | 接口 | `mimo-results.md`；MAP-20 非法 168/168 → 0/168，`mimo` Gate 通过 |
-| DCR-V10-26 | 截尾口径归一：被决策预算截断的局按规格文本改判 `CENSORED`（投影层，不动规格与地图） | 指标投影 | `metric-recompute.md`；公式级复算 53 处不一致 → 0（633 次检查） |
+| DCR-V10-26 | 截尾口径归一：被决策预算截断的局按规格文本改判 `CENSORED`（投影层，不动规格与地图） | 指标投影 | `metric-recompute.md`；公式级复算 53 处不一致 → 0（665 次检查） |
+| DCR-V10-27 | MAP-05 三束信号：V8 固定实例 → V10 原生 4 seed（窗口时刻与通道耗时随 seed） | 实例采样 | `MAP-05.json`；Oracle 4/4、四消融 0/4、`seed_effective=True` |
+| DCR-V10-28 | 公开动作契约补充整数字段区间（`ticks/turns/day/tick` 的 `ge/le`） | 接口 | `mimo-results.md`；MAP-05 阶段 5 非法 14/31 → 阶段 5b 0 |
 
 ### 3.2 Batch 9 的构念改标
 

@@ -72,9 +72,27 @@ def _key_label(rendered: str) -> str:
     return "<key>" if rendered in {"<str>", "<int>", "<number>", "<value>"} else rendered
 
 
+def _bounds(field: Any) -> str:
+    """把 pydantic 字段的 `ge`/`le` 约束渲染成区间（DCR-V10-28）。"""
+
+    low = high = None
+    for meta in getattr(field, "metadata", ()):  # Ge/Le/Gt/Lt 等约束对象
+        if hasattr(meta, "ge"):
+            low = meta.ge
+        if hasattr(meta, "le"):
+            high = meta.le
+    if low is None and high is None:
+        return ""
+    return f"({'' if low is None else low}..{'' if high is None else high})"
+
+
 def field_shape(name: str) -> str | None:
     field = V8Action.model_fields.get(name)
-    return None if field is None else render_annotation(field.annotation)
+    if field is None:
+        return None
+    rendered = render_annotation(field.annotation)
+    bounds = _bounds(field)
+    return f"{rendered} {bounds}" if bounds else rendered
 
 
 def action_contract(shapes: dict[str, set[frozenset[str]]]) -> str:

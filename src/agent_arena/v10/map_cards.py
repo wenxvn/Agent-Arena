@@ -490,9 +490,9 @@ def main() -> None:
     cards: dict[str, str] = {}
     for map_id in MAP_IDS:
         text = render_card(map_id, mimo)
-        (CARDS_DIR / f"{map_id}.md").write_text(text, encoding="utf-8")
+        (CARDS_DIR / f"{map_id}.md").write_text(text, encoding="utf-8", newline="\n")
         cards[map_id] = text
-    (CARDS_DIR / "README.md").write_text(render_index(cards), encoding="utf-8")
+    (CARDS_DIR / "README.md").write_text(render_index(cards), encoding="utf-8", newline="\n")
     print(
         json.dumps(
             {

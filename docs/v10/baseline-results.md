@@ -9,6 +9,7 @@
 |---|---:|---|---|---|---:|---|---:|
 | MAP-03 | 6 | 6/6 | 6/6 | 6/6 | 0/120 | `late_read` 0/6；`no_memory` 0/6；`random_guess` 0/6 | 0.0 |
 | MAP-04 | 6 | 6/6 | 6/6 | 6/6 | 0/120 | `blind_retry` 1/6；`detour_only` 6/6；`excess_wait` 0/6；`fixed_phase_script` 0/6 | 1.0 |
+| MAP-05 | 4 | 4/4 | 4/4 | 4/4 | 0/80 | `late_send` 0/4；`no_calibration` 0/4；`no_power_switch` 0/4；`wrong_order` 0/4 | 0.0 |
 | MAP-06 | 10 | 10/10 | 9/10 | 9/10 | 0/200 | `always_direct` 5/10；`always_reinforce` 9/10；`forecast_always` 8/10 | 0.9 |
 | MAP-07 | 4 | 4/4 | 4/4 | 4/4 | 0/80 | `fixed_clockwise` 2/4；`late_open` 0/4；`never_open` 0/4；`turn_both` 2/4 | 0.5 |
 | MAP-08 | 4 | 4/4 | 4/4 | 4/4 | 0/80 | `blind_repairs` 0/4；`no_hypothesis` 0/4；`over_testing` 4/4；`single_test` 1/4 | 1.0 |

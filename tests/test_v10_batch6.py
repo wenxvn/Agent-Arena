@@ -36,7 +36,9 @@ def test_five_state_priority_is_ordered() -> None:
 
 def test_every_v10_map_declares_one_or_two_primaries() -> None:
     policy = primary_policy()
-    assert len(policy) == 23
+    from agent_arena.v10.runtime.catalog import V10_MAPS
+
+    assert len(policy) == len(V10_MAPS)
     for map_id, primaries in policy.items():
         assert 1 <= len(primaries) <= 2, map_id
         assert all(item.startswith(map_id.lower().replace("-", "")) for item in primaries)

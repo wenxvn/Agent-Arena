@@ -11,7 +11,7 @@
 | [MAP-02](MAP-02.md) | 飞船 | 中等 | FORCED | VALIDATED | `v8` |
 | [MAP-03](MAP-03.md) | 飞船 | 困难 | FORCED | NEEDS_MORE_EVIDENCE | `v10` |
 | [MAP-04](MAP-04.md) | 灯塔 | 简单 | OPTIONAL | NEEDS_MORE_EVIDENCE | `v10` |
-| [MAP-05](MAP-05.md) | 灯塔 | 中等 | FORCED | VALIDATED | `v8` |
+| [MAP-05](MAP-05.md) | 灯塔 | 中等 | FORCED | VALIDATED | `v10` |
 | [MAP-06](MAP-06.md) | 灯塔 | 困难 | FORCED | NEEDS_MORE_EVIDENCE | `v10` |
 | [MAP-07](MAP-07.md) | 深海站 | 简单 | FORCED | NEEDS_MORE_EVIDENCE | `v10` |
 | [MAP-08](MAP-08.md) | 深海站 | 中等 | FORCED | NEEDS_MORE_EVIDENCE | `v10` |
@@ -40,4 +40,4 @@
 
 ## 覆盖说明
 
-- V10 原生运行时：23 张；V8 回退：7 张（01/02/05/16/17/25/27，3-seed 缺口见 `validated-regression.md`）。
+- V10 原生运行时：24 张；V8 回退：6 张（01/02/05/16/17/25/27，3-seed 缺口见 `validated-regression.md`）。

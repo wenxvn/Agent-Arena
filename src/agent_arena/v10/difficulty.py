@@ -273,9 +273,13 @@ def main() -> None:
     output.mkdir(parents=True, exist_ok=True)
     (output / "calibration.json").write_text(
         json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=1) + "\n", encoding="utf-8"
+    , newline="\n")
+    (V10_DOCS / "difficulty-calibration.md").write_text(
+        render(payload), encoding="utf-8", newline="\n"
     )
-    (V10_DOCS / "difficulty-calibration.md").write_text(render(payload), encoding="utf-8")
-    (V10_DOCS / "baseline-results.md").write_text(render_baselines(payload), encoding="utf-8")
+    (V10_DOCS / "baseline-results.md").write_text(
+        render_baselines(payload), encoding="utf-8", newline="\n"
+    )
     print(json.dumps([row["map_id"] for row in payload["maps"]], ensure_ascii=False))
 
 

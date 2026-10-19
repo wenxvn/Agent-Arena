@@ -3,7 +3,7 @@
 - 由 `python -m agent_arena.v10.mimo_report` 从 `runs/v10/mimo/` 逐字重算，禁止手填。
 - 模型：`mimo-v2.6-flash`；temperature=0；reasoning 关闭；每次请求先前预留、按供应商
   usage 结算；未知消费立即封账（保留预留，**不按 0 计**）。
-- 全局上限 CNY 10；已结算 **CNY 1.77142820**；未知/未结预留 **CNY 0.11468800**；合计占用 **CNY 1.88611620**。
+- 全局上限 CNY 10；已结算 **CNY 1.79925900**；未知/未结预留 **CNY 0.11468800**；合计占用 **CNY 1.91394700**。
 - 每图 3 个环境 seed、单一 replicate；`n=3` 只作描述，不作显著性断言，也不做跨模型排名。
 
 ## 1. 覆盖与账本
@@ -23,6 +23,8 @@
 | `ledger_v10_006.jsonl` | 202 | 0.08406884 | 0.00000000 | — | `bcddacdddd7f` |
 | `ledger_v10_007.jsonl` | 164 | 0.03708196 | 0.01843200 | UNKNOWN_PROVIDER_SPEND | `9044e8e2c437` |
 | `ledger_v10_008.jsonl` | 168 | 0.03032488 | 0.00000000 | — | `e2060ddf693b` |
+| `ledger_v10_009.jsonl` | 31 | 0.01543524 | 0.00000000 | — | `e43f60bb5e92` |
+| `ledger_v10_010.jsonl` | 25 | 0.01239556 | 0.00000000 | — | `be2d6c90a9c5` |
 
 ## 2. 分组结果（仅统计有效局）
 
@@ -34,6 +36,8 @@
 | 扩展八图 | 24 | 7 | 0.292 | 3 | 0.54273108 |
 | 接口修复重跑（MAP-18/19/20/28） | 8 | 1 | 0.125 | 1 | 0.13425636 |
 | 接口补全重跑（MAP-20 公开规则） | 3 | 0 | 0.000 | 0 | 0.03032488 |
+| MAP-05 原生首测 | 3 | 0 | 0.000 | 0 | 0.01543524 |
+| MAP-05 契约补区间重跑 | 3 | 0 | 0.000 | 0 | 0.01239556 |
 
 ## 3. 逐图逐 seed
 
@@ -45,6 +49,12 @@
 | MAP-04 | lighthouse | 简单 | 0 | `V10-MAP-04-S0-ext` | RESCUE_SIGNAL_WINDOW_EXPIRED | 12 | 0 | True | 0.00652640 | 是 |
 | MAP-04 | lighthouse | 简单 | 1 | `V10-MAP-04-S1-ext` | RESCUE_SIGNAL_WINDOW_EXPIRED | 10 | 0 | True | 0.00404544 | 是 |
 | MAP-04 | lighthouse | 简单 | 2 | `V10-MAP-04-S2-ext` | RESCUE_SIGNAL_WINDOW_EXPIRED | 10 | 0 | True | 0.00493452 | 是 |
+| MAP-05 | lighthouse | 中等 | 0 | `V10-MAP-05-S0-k2` | SIGNAL_WINDOW_MISSED | 12 | 0 | False | 0.00606956 | 是 |
+| MAP-05 | lighthouse | 中等 | 0 | `V10-MAP-05-S0-k2b` | SIGNAL_WINDOW_MISSED | 12 | 0 | False | 0.00619600 | 是 |
+| MAP-05 | lighthouse | 中等 | 1 | `V10-MAP-05-S1-k2` | SIGNAL_WINDOW_MISSED | 6 | 0 | False | 0.00283300 | 是 |
+| MAP-05 | lighthouse | 中等 | 1 | `V10-MAP-05-S1-k2b` | SIGNAL_WINDOW_MISSED | 6 | 0 | False | 0.00273556 | 是 |
+| MAP-05 | lighthouse | 中等 | 2 | `V10-MAP-05-S2-k2` | SIGNAL_WINDOW_MISSED | 13 | 0 | False | 0.00653268 | 是 |
+| MAP-05 | lighthouse | 中等 | 2 | `V10-MAP-05-S2-k2b` | SIGNAL_WINDOW_MISSED | 7 | 0 | False | 0.00346400 | 是 |
 | MAP-06 | lighthouse | 困难 | 0 | `V10-MAP-06-S0-p0` | LAMP_RESTORED | 3 | 0.821429 | False | 0.00263400 | 是 |
 | MAP-06 | lighthouse | 困难 | 1 | `V10-MAP-06-S1-p0` | LAMP_RESTORED | 3 | 0.521429 | True | 0.00130288 | 是 |
 | MAP-06 | lighthouse | 困难 | 2 | `V10-MAP-06-S2-p0` | LAMP_RESTORED | 6 | 0.371429 | True | 0.00638620 | 是 |
@@ -130,14 +140,15 @@
 | outcome | 局数 |
 |---|---:|
 | `decision_budget_exhausted` | 31 |
-| `failure` | 19 |
+| `failure` | 25 |
 | `settle_closed:供应商 usage 超出登记上限。` | 1 |
 | `success` | 30 |
 | `unknown_provider_spend` | 4 |
 
-- 有效局成功 **36/80**；其余为机制失败/决策预算耗尽。
-- 结论范围：本矩阵只覆盖 V10 原生图；7 张 V8 回退图仍有 3-seed 缺口，
-  见 `validated-regression.md`，不得据此声称 30/30 的 MiMo 多 seed 覆盖。
+- 有效局成功 **36/86**；其余为机制失败/决策预算耗尽。
+- 结论范围：本矩阵只覆盖 V10 原生图；6 张 V8 回退图
+  （MAP-01、MAP-02、MAP-16、MAP-17、MAP-25、MAP-27）仍有 3-seed 缺口，见 `validated-regression.md`，
+  不得据此声称 30/30 的 MiMo 多 seed 覆盖。
 
 ## 5. 中断与补跑（全部保留，不覆盖）
 

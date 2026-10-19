@@ -71,7 +71,7 @@ def run_map(map_id: str, *, seeds: tuple[int, ...] | None = None) -> dict[str, A
         oracle = run_actions(map_id, actions, environment_seed=seed)
         (oracle_dir / f"{map_id}-seed{seed}.json").write_text(
             oracle.to_json() + "\n", encoding="utf-8"
-        )
+        , newline="\n")
         summary = oracle.summary()
         summary["within_budget"] = len(actions) <= budget
         payload["oracle"].append(summary)
@@ -156,13 +156,15 @@ def main(argv: list[str] | None = None) -> None:
         (output / f"{map_id}.json").write_text(
             json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=1) + "\n",
             encoding="utf-8",
-        )
+            newline="\n",
+)
         summary[map_id] = condense(payload)
         print(map_id, json.dumps(summary[map_id], ensure_ascii=False), flush=True)
     summary_path.write_text(
         json.dumps(summary, ensure_ascii=False, sort_keys=True, indent=1) + "\n",
         encoding="utf-8",
-    )
+        newline="\n",
+)
 
 
 if __name__ == "__main__":

@@ -15,9 +15,9 @@ def test_unknown_fields_absent_for_all_maps() -> None:
 
 
 def test_scalar_types_are_rendered() -> None:
-    assert field_shape("tick") == "<int>"
+    assert field_shape("tick") == "<int> (0..)"
     assert field_shape("to") == "<str>"
-    assert field_shape("turns") == "<int>"
+    assert field_shape("turns") == "<int> (1..8)"
 
 
 def test_nested_types_are_rendered() -> None:
@@ -35,6 +35,16 @@ def test_contract_documents_shapes_for_map18_and_map28() -> None:
     assert "tick" in contract18
     contract28 = action_contract(create_environment("MAP-28").SHAPES)
     assert '"claims": [{"<key>": <value>}]' in contract28
+
+
+def test_contract_documents_numeric_bounds() -> None:
+    """DCR-V10-28：整数字段的 ge/le 必须写进契约（防止模型给 wait/ticks 超出 1–8）。"""
+
+    assert field_shape("ticks") == "<int> (1..8)"
+    assert field_shape("turns") == "<int> (1..8)"
+    assert field_shape("day") == "<int> (1..60)"
+    contract = action_contract(create_environment("MAP-05").SHAPES)
+    assert '"ticks": <int> (1..8)' in contract
 
 
 def test_contract_has_no_hidden_truth_sections() -> None:

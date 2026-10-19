@@ -1434,3 +1434,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：复算仍是「同一套公开输入下两套实现一致」，不等于构念效度；剩余 6 图（03/13/14/21/24/26）需先把真值或判据字段纳入 `judge_state` 才能覆盖；截尾归一改变了 2026-10-19 之后的离线基线与新局记录，跨日比较需注明口径。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 3：MAP-05 原生 seed 化（DCR-V10-27）与契约补整数区间（DCR-V10-28）
+
+事件：把 7 张 V8 回退图中的 MAP-05 完整改造成 V10 原生运行时（4 个预登记实例），并补跑真实模型；过程中又查出并修掉一类接口缺陷。
+
+原因：MAP-05 是 `seed_effective=False` 的 7 图之一，3-seed 缺口阻碍“30/30 多 seed”结论。先做一张图作为可复用模板。
+
+改动：新增 `src/agent_arena/v10/runtime/map05.py`（子类化 V8 规则，只把 `WINDOWS`/`EDGE_COST` 按 seed 实例化，公开 `windows`/`goal` 随 seed 生成，`scenario_descriptor`/`sealed_truth` 声明实例与参考完成 tick，6 条 `METRIC_SPECS`）、`src/agent_arena/v10/baselines/map05.py`（同一份只读公开信息的排程器：Oracle 脚本 + 在线启发式 + 四个消融）、`tests/test_v10_map05.py`（8 条）；`contract.py` 增加整数字段 `ge/le` 区间渲染（DCR-V10-28，`ticks: <int> (1..8)` 等）；`validation`/`attribution`/`recompute`/`regression`/`mimo_report`/`evidence_state` 适配 24 图；所有生成器改为 `newline="\n"` 写文件（消除反复出现的 CRLF 噪声）。
+
+结果：MAP-05 `seed_effective=True`、4 个不同 `scenario_hash`；Oracle 4/4（机制触发 4/4）、公开启发式 4/4、四消融 0/4（不切电/不按窗口/顺序反/不校准）、`legal_random` 0/80。真实 MiMo：阶段 5 三局均 `SIGNAL_WINDOW_MISSED`，非法动作 5/12、0/6、9/13 全是 `wait.ticks` 超出 1–8；DCR-V10-28 把区间写进契约后阶段 5b 三局**非法动作 0/0/0**（仍失败，属调度能力）。离线复算新增 MAP-05 公式（`mission_success`），覆盖 18/24 图、665 次检查全一致；独立核对 24 图 × 120 seed 实例 0 违规。累计费用：结算 CNY `1.79925900` + 未知预留 `0.11468800` = `1.91394700`（上限 ¥10）。
+
+验证：`pytest` 1093 passed；`mypy src` 240 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged；`status`/`map_cards`/`validation`/`difficulty`/`construct_validity`/`attribution`/`mimo_report`/`regression`/`independent_check`/`recompute` 全部重算。
+
+边界：MAP-05 的 MiMo 0/3 只说明该模型未解出窗口排程，不说明地图无效；其余 6 张回退图仍未参数化；Batch 8 早期 MiMo 局按旧契约/旧口径记录，不回写。
+
+关联提交：本次提交（分支 `v10-validity`）。

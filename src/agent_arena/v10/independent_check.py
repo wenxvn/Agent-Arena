@@ -194,9 +194,12 @@ def main() -> None:
     output.write_text(
         json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=1) + "\n",
         encoding="utf-8",
-    )
+        newline="\n",
+)
     V10_DOCS.mkdir(parents=True, exist_ok=True)
-    (V10_DOCS / "independent-metric-check.md").write_text(render(payload), encoding="utf-8")
+    (V10_DOCS / "independent-metric-check.md").write_text(
+        render(payload), encoding="utf-8", newline="\n"
+    )
     print(json.dumps(payload["totals"], ensure_ascii=False))
 
 

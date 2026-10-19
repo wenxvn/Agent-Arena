@@ -1,4 +1,4 @@
-"""V10 Batch 5：7 张已 VALIDATED 图的防回归审计。
+"""V10 Batch 5/9：V9 已 VALIDATED 图的防回归审计（含 V10 已原生化的图）。
 
 对 MAP-01/02/05/16/17/25/27 逐图记录：
 
@@ -134,10 +134,11 @@ def audit() -> dict[str, Any]:
 
 def render(payload: dict[str, Any]) -> str:
     lines = [
-        "# Batch 5：7 张已 VALIDATED 图的防回归审计",
+        "# V9 已 VALIDATED 图的防回归审计（含 V10 已原生化的图）",
         "",
         "- 由 `python -m agent_arena.v10.regression` 生成；V8/V9 只读。",
-        "- `runtime=v8_fallback` 的图在 V10 尚无原生运行时，seed 参数化能力沿用 V8 实现。",
+        "- `runtime=v8_fallback` 的图在 V10 尚无原生运行时；已原生化的图（如 MAP-05）",
+        "  按 V10 实例判定。",
         "- `seed_effective` 用初始 Observation + 密封真值指纹比较 seed 0/1/2；三者全不同才算通过。",
         "",
         "| 图 | 运行时 | 3 seed 实例不同 | scenario_hash | V9 Oracle | 防回归复跑 | 结论 |",
@@ -181,8 +182,10 @@ def main() -> None:
     output.mkdir(parents=True, exist_ok=True)
     (output / "validated_regression.json").write_text(
         json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=1) + "\n", encoding="utf-8"
+    , newline="\n")
+    (V10_DOCS / "validated-regression.md").write_text(
+        render(payload), encoding="utf-8", newline="\n"
     )
-    (V10_DOCS / "validated-regression.md").write_text(render(payload), encoding="utf-8")
     print(json.dumps({k: v for k, v in payload.items() if k != "maps"}, ensure_ascii=False))
 
 

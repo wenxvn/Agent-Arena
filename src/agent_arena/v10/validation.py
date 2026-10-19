@@ -270,9 +270,10 @@ def main() -> None:
         )
         + "\n",
         encoding="utf-8",
-    )
+        newline="\n",
+)
     V10_DOCS.mkdir(parents=True, exist_ok=True)
-    (V10_DOCS / "validation-gates.md").write_text(render(gates), encoding="utf-8")
+    (V10_DOCS / "validation-gates.md").write_text(render(gates), encoding="utf-8", newline="\n")
     print(
         json.dumps(
             {

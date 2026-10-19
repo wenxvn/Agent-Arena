@@ -358,7 +358,7 @@ def write(state: dict[str, V10Row], *, title_note: str = "") -> None:
     writer = csv.DictWriter(buffer, fieldnames=FIELDS, lineterminator="\n")
     writer.writeheader()
     writer.writerows(table)
-    (V10_DOCS / "map-status-matrix.csv").write_text(buffer.getvalue(), encoding="utf-8")
+    (V10_DOCS / "map-status-matrix.csv").write_text(buffer.getvalue(), encoding="utf-8", newline="\n")
     (V10_DOCS / "map-status-matrix.json").write_text(
         json.dumps(
             {map_id: asdict(item) for map_id, item in state.items()},
@@ -368,7 +368,8 @@ def write(state: dict[str, V10Row], *, title_note: str = "") -> None:
         )
         + "\n",
         encoding="utf-8",
-    )
+        newline="\n",
+)
     lines = [
         "# V10 30 图状态矩阵",
         "",
@@ -406,7 +407,7 @@ def write(state: dict[str, V10Row], *, title_note: str = "") -> None:
     for name in ("FORCED", "OPTIONAL", "BYPASS", "BLOCKED"):
         maps = construct.get(name, [])
         lines.append(f"| 构念 | {name} | {len(maps)} | {'、'.join(maps)} |")
-    (V10_DOCS / "map-status-matrix.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (V10_DOCS / "map-status-matrix.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
 
 
 def current_state() -> dict[str, V10Row]:

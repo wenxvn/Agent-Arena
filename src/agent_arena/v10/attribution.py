@@ -59,6 +59,7 @@ REJECT_PREFIXES = (
 MECHANISM_TOOLS: dict[str, tuple[str, ...]] = {
     "MAP-03": ("write_memory", "submit"),
     "MAP-04": ("wait",),
+    "MAP-05": ("switch_power", "interact"),
     "MAP-06": ("interact",),
     "MAP-07": ("turn_valve",),
     "MAP-08": ("run_test", "seal_diagnosis"),
@@ -303,8 +304,11 @@ def main() -> None:
     (output / "mimo_attribution.json").write_text(
         json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=1) + "\n",
         encoding="utf-8",
+        newline="\n",
+)
+    (V10_DOCS / "failure-attribution.md").write_text(
+        render(payload), encoding="utf-8", newline="\n"
     )
-    (V10_DOCS / "failure-attribution.md").write_text(render(payload), encoding="utf-8")
     print(json.dumps(payload["labels"], ensure_ascii=False))
 
 

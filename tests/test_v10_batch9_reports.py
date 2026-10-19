@@ -32,4 +32,5 @@ def test_cost_audit_separates_unknown_spend_from_settled() -> None:
 def test_results_report_states_scope_limits() -> None:
     text = render_results()
     assert "不作显著性断言" in text
-    assert "7 张 V8 回退图" in text
+    assert "V8 回退图" in text
+    assert "不得据此声称 30/30" in text

@@ -60,11 +60,15 @@ LEDGER_PATH = MIMO_ROOT / "ledger_v10_001.jsonl"
 LEDGER_EXT_PATH = MIMO_ROOT / "ledger_v10_002.jsonl"
 LEDGER_I2_PATH = MIMO_ROOT / "ledger_v10_004.jsonl"
 LEDGER_J2_PATH = MIMO_ROOT / "ledger_v10_008.jsonl"
+LEDGER_K2_PATH = MIMO_ROOT / "ledger_v10_009.jsonl"
+LEDGER_K2B_PATH = MIMO_ROOT / "ledger_v10_010.jsonl"
 PHASE_LEDGERS = {
     "main": LEDGER_PATH,
     "ext": LEDGER_EXT_PATH,
     "i2": LEDGER_I2_PATH,
     "j2": LEDGER_J2_PATH,
+    "k2": LEDGER_K2_PATH,
+    "k2b": LEDGER_K2B_PATH,
 }
 MODEL_NAME = "mimo-v2.6-flash"
 MAX_CONSECUTIVE = 3
@@ -92,6 +96,10 @@ PHASE_GROUPS: dict[str, tuple[tuple[str, tuple[str, ...]], ...]] = {
     "i2": (("i2", ("MAP-18", "MAP-19", "MAP-20", "MAP-28")),),
     #: 阶段 4：MAP-20 公开接口补全（DCR-V10-25）后的重测。
     "j2": (("j2", ("MAP-20",)),),
+    #: 阶段 5：MAP-05 原生 seed 化（DCR-V10-27）后的首轮真实模型证据。
+    "k2": (("k2", ("MAP-05",)),),
+    #: 阶段 5b：契约补充整数区间（DCR-V10-28）后重跑 MAP-05。
+    "k2b": (("k2b", ("MAP-05",)),),
 }
 
 #: 逐图格式澄清（只写公开结构，不含真值/答案）；随 prompt_hash 一起冻结。
@@ -273,7 +281,8 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(
         json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
         encoding="utf-8",
-    )
+        newline="\n",
+)
 
 
 def _append_jsonl(path: Path, row: dict[str, Any]) -> None:
@@ -327,7 +336,7 @@ def run_episode(
     prompt_hash = sha256(system.encode("utf-8")).hexdigest()
     episode_dir = _episode_dir(run_id)
     trace_path = episode_dir / "agent_trace.jsonl"
-    trace_path.write_text("", encoding="utf-8")
+    trace_path.write_text("", encoding="utf-8", newline="\n")
     header = {
         "event": "trace_header",
         "schema": "v10-mimo-trace-1",
@@ -601,7 +610,8 @@ def main() -> int:
     (MIMO_ROOT / f"manifest_{args.phase}.json").write_text(
         json.dumps(manifest, ensure_ascii=False, sort_keys=True, indent=1) + "\n",
         encoding="utf-8",
-    )
+        newline="\n",
+)
     if args.phase == "main":
         _write_json(MIMO_ROOT / "manifest.json", manifest)
 

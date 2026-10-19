@@ -90,6 +90,13 @@ def _f04(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[s
     return _v(deadline - finish)
 
 
+def _f05(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
+    if truncated:
+        return _censored("截尾")
+    transmitted = judge.get("transmitted") or {}
+    return _v(1 if transmitted and all(transmitted.values()) else 0)
+
+
 def _f06(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[str, Any]:
     if truncated:
         return _censored("截尾")
@@ -255,6 +262,7 @@ def _f30(obs: dict[str, Any], judge: dict[str, Any], truncated: bool) -> tuple[s
 
 FORMULAS: dict[str, Formula] = {
     "MAP-04": _f04,
+    "MAP-05": _f05,
     "MAP-06": _f06,
     "MAP-07": _f07,
     "MAP-08": _f08,
@@ -528,8 +536,9 @@ def main() -> None:
     (output / "metric_recompute.json").write_text(
         json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=1) + "\n",
         encoding="utf-8",
-    )
-    (V10_DOCS / "metric-recompute.md").write_text(render(payload), encoding="utf-8")
+        newline="\n",
+)
+    (V10_DOCS / "metric-recompute.md").write_text(render(payload), encoding="utf-8", newline="\n")
     print(json.dumps(payload["totals"], ensure_ascii=False))
 
 

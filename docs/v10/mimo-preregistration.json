@@ -184,6 +184,43 @@
       "ledger_closed": false
     }
   },
+  "phase_5_map05_native": {
+    "declared_at": "2026-10-19（开跑前登记）",
+    "rationale": "MAP-05 原先只有 V8 固定实例（seed_effective=False，3-seed 缺口）。DCR-V10-27 把它参数化为 4 个预登记实例（窗口时刻与通道耗时不同，规则/契约/成功条件不变），Oracle 4/4、启发式 4/4、四消融 0/4、legal_random 0/80。为满足 8 项 Gate 的 `mimo` 条件（≥3 有效 seed 且接口可用），补跑 3 个环境 seed。",
+    "dcr": "DCR-V10-27",
+    "maps": ["MAP-05"],
+    "group_tag": "k2",
+    "run_id_pattern": "V10-MAP-05-S<seed>-k2",
+    "episodes": 3,
+    "environment_seeds": [0, 1, 2],
+    "ledger": "runs/v10/mimo/ledger_v10_009.jsonl",
+    "manifest_file": "runs/v10/mimo/manifest_k2.json",
+    "manifest_hash": "e8edb7d833123cf76a6dd544d1f5d8f3c329a5265bcbe5c0194cb32be07b5dc4",
+    "comparison_rule": "MAP-05 此前无 MiMo 局，本阶段是首次真实模型证据，不与 V8/V9 成功率比较",
+    "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑",
+    "outcome": {
+      "status": "completed",
+      "episodes": 3,
+      "result": "三局均 SIGNAL_WINDOW_MISSED（12/6/13 决策）；非法动作 5/12、0/6、9/13——全部是 wait.ticks 超出公开的 1..8 区间（契约未写区间）",
+      "cost_settled_cny": 0.01543524,
+      "ledger_closed": false
+    }
+  },
+  "phase_5b_contract_bounds": {
+    "declared_at": "2026-10-19（开跑前登记）",
+    "rationale": "阶段 5 暴露第三类接口假象：契约渲染了字段类型却没有渲染 `ge`/`le` 区间，模型给 `wait.ticks` 17/16/…/9 被判非法（三局合计 14/31 决策）。DCR-V10-28 把区间写进契约（`ticks: <int> (1..8)` 等），对 MAP-05 全 3 seed 重跑验证。",
+    "dcr": "DCR-V10-28",
+    "maps": ["MAP-05"],
+    "group_tag": "k2b",
+    "run_id_pattern": "V10-MAP-05-S<seed>-k2b",
+    "episodes": 3,
+    "environment_seeds": [0, 1, 2],
+    "ledger": "runs/v10/mimo/ledger_v10_010.jsonl",
+    "manifest_file": "runs/v10/mimo/manifest_k2b.json",
+    "manifest_hash": "a67078e76f47b1fd624910289d3b8400959fdc0f8c28c1cc9cc0a0b3de120fe4",
+    "comparison_rule": "与阶段 5 的同图同 seed 只作“契约补区间前后”的配对描述；prompt 已变，不称严格 A/B",
+    "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
+  },
   "stop_rules": [
     "达到全局 CNY 10 上限（含未知预留）立即停止",
     "出现 UNKNOWN_PROVIDER_SPEND 立即封账并停止自动调用",
