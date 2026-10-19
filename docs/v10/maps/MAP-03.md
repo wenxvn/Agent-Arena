@@ -96,16 +96,19 @@ Oracle 各 seed 的触发率为 6/6。
 
 - 观测到的终止码：`RETURN_WINDOW_EXPIRED`、`ROUTE_CALIBRATED`、`ROUTE_KEY_REJECTED`
 
-## 7. MiMo 证据（Batch 8，单 replicate 描述性）
+## 7. MiMo 证据（含重复运行；单 seed 描述性）
 
 | seed | run_id | 结局 | 决策数 | 主指标 | 成本 CNY | 有效 |
 |---:|---|---|---:|---|---:|---|
 | 0 | `V10-MAP-03-S0-p0` | RETURN_WINDOW_EXPIRED（decision_budget_exhausted） | 39 | None | 0.0816078 | 是 |
+| 0 | `V10-MAP-03-S0-x2-v2` | RETURN_WINDOW_EXPIRED（failure） | 39 | None | 0.01888496 | 是 |
 | 1 | `V10-MAP-03-S1-p0` | ROUTE_CALIBRATED（decision_budget_exhausted） | 25 | 1 | 0.13510428 | 是 |
+| 1 | `V10-MAP-03-S1-x2-v2` | RETURN_WINDOW_EXPIRED（failure） | 27 | None | 0.01277632 | 是 |
 | 2 | `V10-MAP-03-S2-p0` | ROUTE_CALIBRATED（decision_budget_exhausted） | 34 | 1 | 0.20872256 | 是 |
+| 2 | `V10-MAP-03-S2-x2-v2` | RETURN_WINDOW_EXPIRED（failure） | 35 | None | 0.01711468 | 是 |
 
-- 有效局成功：2/3
-- 结算成本合计 CNY 0.42543464（含中断局的已结算部分）。
+- 有效局成功：2/6
+- 结算成本合计 CNY 0.47421060（含中断局的已结算部分）。
 - 单 seed、单 replicate，只作描述，不作统计推断。
 
 ## 8. 结论、剩余风险与下一步

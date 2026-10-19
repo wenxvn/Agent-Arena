@@ -14,8 +14,8 @@
   "shared_across_all_ledgers": true
  },
  "cost_so_far_cny": {
-  "settled": 2.09549548,
-  "total": 2.22861548,
+  "settled": 2.27994884,
+  "total": 2.41306884,
   "unknown_reserved": 0.13312
  },
  "history": [
@@ -91,6 +91,13 @@
    "note": "阶段 14：MAP-19 补 wait 语义后重测 3 局；tick 已推进但均过热终局；结算 CNY 0.01946776，无未知消费",
    "settled_cny": 0.01946776,
    "status": "completed"
+  },
+  {
+   "at": "2026-10-19",
+   "ledger": "runs/v10/mimo/ledger_v10_021.jsonl",
+   "note": "阶段 15：全矩阵重复运行启动，37 局后触发全局请求上限（GLOBAL_REQUEST_LIMIT）按 stop rule 关闭；有效配对 36（MAP-01–12），结算 CNY 0.18445336，无未知消费。",
+   "settled_cny": 0.18445336,
+   "status": "partial_stopped"
   }
  ],
  "manifest_hash": "a5326bc5178a2133ffac4602fff085a7f581616345ed82e88ed9ea7707bb5684",
@@ -333,6 +340,68 @@
   "rationale": "阶段 2/3 的 MAP-19 三局分别 60/60、60/60、60 决策，58 次左右为 forecast_next、tick 始终为 0；公开规则未说明设置/申报类动作不推进时间、wait 才结算。DCR-V10-39 只补充这一句公开规则（不改规则逻辑、预算与成功条件），重测 3 个 seed。",
   "run_id_pattern": "V10-MAP-19-S<seed>-u2",
   "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
+ },
+ "phase_15_replicate_r2": {
+  "analysis_plan": "按 (map, seed) 配对：① 成功率与翻转数；② 主指标绝对差（仅两局都 VALID）；③ 非法动作数变化；④ 按世界/难度汇总。n=2 只作描述，不作显著性检验。",
+  "comparison_rule": "同一 (map, seed) 的首局（replicate 0）vs 第二局（replicate 1）；只作描述性一致性，不替代首局、不作显著性断言",
+  "dcr": "—（重复维度，不是地图/DCR 变更）",
+  "declared_at": "2026-10-19（开跑前登记）",
+  "environment_seeds": [
+   0,
+   1,
+   2
+  ],
+  "episodes": 90,
+  "group_tag": "x2",
+  "ledger": "runs/v10/mimo/ledger_v10_021.jsonl",
+  "manifest_file": "runs/v10/mimo/manifest_x2.json",
+  "maps": [
+   "MAP-01",
+   "MAP-02",
+   "MAP-03",
+   "MAP-04",
+   "MAP-05",
+   "MAP-06",
+   "MAP-07",
+   "MAP-08",
+   "MAP-09",
+   "MAP-10",
+   "MAP-11",
+   "MAP-12",
+   "MAP-13",
+   "MAP-14",
+   "MAP-15",
+   "MAP-16",
+   "MAP-17",
+   "MAP-18",
+   "MAP-19",
+   "MAP-20",
+   "MAP-21",
+   "MAP-22",
+   "MAP-23",
+   "MAP-24",
+   "MAP-25",
+   "MAP-26",
+   "MAP-27",
+   "MAP-28",
+   "MAP-29",
+   "MAP-30"
+  ],
+  "outcome": {
+   "completed_second_runs": 36,
+   "cost_settled_cny": 0.18445336,
+   "coverage": "MAP-01–MAP-12 × 3 seed；MAP-13 S0 启动后被账本关闭，不计入配对",
+   "interrupted": 1,
+   "planned_pairs": 90,
+   "reason": "GLOBAL_REQUEST_LIMIT（全局请求上限；账本按 stop rule 关闭）",
+   "result": "36 对：两局都成功 18、都不成功 14；翻转 2 升/2 降；成功率一致 32/36=0.8889；主指标平均绝对差 0.121212（33 对均 VALID）。",
+   "second_runs": 37,
+   "status": "partial_stopped"
+  },
+  "rationale": "V10 目前每个 (map, seed) 只有 1 局；需要一组同实例第二次运行来报告重复一致性（成功是否翻转、主指标差、非法动作是否稳定）。全部 30 图 × 3 seed 都跑第二局，每图内条件与首局完全相同；temperature=0，差异只来自 provider 非确定性。",
+  "replicate": 1,
+  "run_id_pattern": "V10-MAP-XX-S<seed>-x2-v2",
+  "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账；全局 ¥10 上限不变"
  },
  "phase_2_extension": {
   "budget_gate": "阶段 2 开跑前必须重新读取全部账本，剩余额度不足即不启动",

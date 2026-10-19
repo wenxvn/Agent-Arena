@@ -87,16 +87,19 @@ Oracle 各 seed 的触发率为 4/4。
 
 - 观测到的终止码：`DEADLINE_EXCEEDED`、`LEAK_REPAIRED`
 
-## 7. MiMo 证据（Batch 8，单 replicate 描述性）
+## 7. MiMo 证据（含重复运行；单 seed 描述性）
 
 | seed | run_id | 结局 | 决策数 | 主指标 | 成本 CNY | 有效 |
 |---:|---|---|---:|---|---:|---|
 | 0 | `V10-MAP-08-S0-interface` | LEAK_REPAIRED（success） | 3 | 1 | 0.001747 | 是 |
+| 0 | `V10-MAP-08-S0-x2-v2` | LEAK_REPAIRED（success） | 3 | 1 | 0.001886 | 是 |
 | 1 | `V10-MAP-08-S1-interface` | LEAK_REPAIRED（success） | 3 | 1 | 0.001745 | 是 |
+| 1 | `V10-MAP-08-S1-x2-v2` | LEAK_REPAIRED（success） | 3 | 1 | 0.001886 | 是 |
 | 2 | `V10-MAP-08-S2-interface` | LEAK_REPAIRED（success） | 4 | 1 | 0.002392 | 是 |
+| 2 | `V10-MAP-08-S2-x2-v2` | LEAK_REPAIRED（success） | 4 | 1 | 0.002588 | 是 |
 
-- 有效局成功：3/3
-- 结算成本合计 CNY 0.00588400（含中断局的已结算部分）。
+- 有效局成功：6/6
+- 结算成本合计 CNY 0.01224400（含中断局的已结算部分）。
 - 单 seed、单 replicate，只作描述，不作统计推断。
 
 ## 8. 结论、剩余风险与下一步

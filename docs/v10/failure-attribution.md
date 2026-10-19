@@ -2,7 +2,7 @@
 
 - 由 `python -m agent_arena.v10.attribution` 生成；逐局回放 `runs/v10/mimo/`
   `episodes/` 的动作序列。
-- 覆盖 **122** 局（其中有效局 90）；机制动作集见模块
+- 覆盖 **90** 局（其中有效局 90）；机制动作集见模块
   `MECHANISM_TOOLS`。
 - 标签含义：`CONTRACT_ARTIFACT`（接口假象）｜`KEY_ACTION_NEVER_ATTEMPTED`｜`KEY_ACTION_ATTEMPTED_REJECTED`｜`KEY_ACTION_USED_NO_TRIGGER`｜`TRIGGERED`。
 
@@ -10,11 +10,10 @@
 
 | 标签 | 局数 |
 |---|---:|
-| `CONTRACT_ARTIFACT` | 10 |
-| `KEY_ACTION_ATTEMPTED_REJECTED` | 3 |
-| `KEY_ACTION_NEVER_ATTEMPTED` | 10 |
-| `KEY_ACTION_USED_NO_TRIGGER` | 41 |
-| `TRIGGERED` | 58 |
+| `KEY_ACTION_ATTEMPTED_REJECTED` | 2 |
+| `KEY_ACTION_NEVER_ATTEMPTED` | 3 |
+| `KEY_ACTION_USED_NO_TRIGGER` | 29 |
+| `TRIGGERED` | 56 |
 
 ## 2. 逐局归因（有效局）
 

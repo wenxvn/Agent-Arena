@@ -1698,3 +1698,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：只读本地 trace；n=3、单 replicate，只作描述；不据此改规则、预算或提示。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 20：全矩阵重复运行（阶段 15，部分完成）
+
+事件：按预登记启动 30 图 × 3 seed 的第二局（replicate=1），在 37 局后触发全局请求上限，按 stop rule 关闭账本。
+
+原因：V10 此前每个 (map, seed) 只有一局，无法区分“地图/指标不稳定”和“provider 非确定性”。
+
+改动：runner 增加 `x2` 阶段与 `PHASE_REPLICATES`（run_id 后缀 `-v2`、replicate=1、账本 `ledger_v10_021.jsonl`）；`evidence_state` 只在 replicate 0 中选择首局证据，并把 `budget_closed` 计入中断；新增 `v10/replicate.py`（按 (map, seed) 配对，统计成功一致、翻转、主指标差、非法动作差）。
+
+结果：预登记 90 对，实际第二局 37 局（36 完成 + 1 中断），有效配对 36（MAP-01–12）；两局都成功 18、都不成功 14，翻转 2 升/2 降，成功率一致 **32/36=0.8889**，主指标平均绝对差 **0.121212**（33 对均 VALID）。结算 CNY `0.18445336`，无未知消费；累计结算 `2.27994884` + 未知 `0.13312000` = `2.41306884`。阶段 15 记为 `partial_stopped`（`GLOBAL_REQUEST_LIMIT`），未运行部分不回写、不补跑。
+
+验证：`pytest` 1157 passed；`mypy src` 257 文件 0 issues；`ruff check .` 通过；`freeze verify` 9/9 unchanged；`trace_scan --check` 仍为 0。
+
+边界：重复只覆盖 MAP-01–12，其余 18 图仍是单 replicate；n=2，只作描述性一致性，不作方差估计或显著性检验。
+
+关联提交：本次提交（分支 `v10-validity`）。

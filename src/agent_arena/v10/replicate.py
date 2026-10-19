@@ -12,7 +12,7 @@ import json
 from collections import Counter
 from typing import Any
 
-from agent_arena.v10.evidence_state import effective_mimo_rows, mimo_rows
+from agent_arena.v10.evidence_state import effective_mimo_rows, is_interrupted, mimo_rows
 from agent_arena.v10.paths import V10_DOCS
 
 
@@ -31,6 +31,8 @@ def pairs() -> list[dict[str, Any]]:
     second: dict[tuple[str, int], dict[str, Any]] = {}
     for row in mimo_rows():
         if int(row.get("replicate") or 0) == 0:
+            continue
+        if is_interrupted(row):
             continue
         if not str(row.get("run_id", "")).endswith("-v2"):
             continue
@@ -78,8 +80,19 @@ def audit() -> dict[str, Any]:
         counter["pairs"] += 1
         counter["agree"] += int(row["success_a"] == row["success_b"])
         counter["flips"] += int(row["success_a"] != row["success_b"])
+    all_second = [
+        row for row in mimo_rows() if int(row.get("replicate") or 0) == 1
+    ]
+    interrupted = [row for row in all_second if is_interrupted(row)]
     return {
         "pairs": rows,
+        "coverage": {
+            "planned": 90,
+            "second_runs": len(all_second),
+            "interrupted_second": len(interrupted),
+            "maps": sorted({row["map_id"] for row in rows}),
+            "stopped": "GLOBAL_REQUEST_LIMIT" if interrupted else "",
+        },
         "totals": {
             "pairs": len(rows),
             "both_success": len(both),
@@ -104,8 +117,20 @@ def render(payload: dict[str, Any]) -> str:
         "- 首局 = 有效证据（replicate 0），第二局 = 阶段 15（`-x2-v2`，replicate 1）。",
         "- temperature=0、环境确定；差异只来自 provider 非确定性。n=2，只作描述。",
         "",
-        f"- 配对 **{totals['pairs']}** 个 (map, seed)；两局都成功 {totals['both_success']}、"
-        f"都不成功 {totals['neither_success']}；",
+        (
+            f"- 计划 {payload['coverage']['planned']} 对；实际第二局 "
+            f"{payload['coverage']['second_runs']} 局"
+            f"（中断 {payload['coverage']['interrupted_second']}），"
+            f"有效配对 **{totals['pairs']}** 个，覆盖 "
+            f"{payload['coverage']['maps'][0]}–{payload['coverage']['maps'][-1]}。"
+        ),
+        (
+            "- 阶段 15 因全局请求上限（`GLOBAL_REQUEST_LIMIT`）停止；未运行的部分不回写、不补跑，"
+            "本表只描述已完成的配对。"
+            if payload["coverage"]["stopped"]
+            else "- 阶段 15 完整运行。"
+        ),
+        f"- 两局都成功 {totals['both_success']}、都不成功 {totals['neither_success']}；",
         f"  成功翻转 {totals['flip_up']} 升 / {totals['flip_down']} 降；"
         f"成功率一致 **{totals['success_agreement']}**。",
         f"- 两局都 `VALID` 的主指标配对 {totals['primary_pairs']} 个，"

@@ -85,16 +85,19 @@ Oracle 各 seed 的触发率为 4/4。
 
 - 观测到的终止码：`DRAINED_IN_TIME`、`FLOODED`
 
-## 7. MiMo 证据（Batch 8，单 replicate 描述性）
+## 7. MiMo 证据（含重复运行；单 seed 描述性）
 
 | seed | run_id | 结局 | 决策数 | 主指标 | 成本 CNY | 有效 |
 |---:|---|---|---:|---|---:|---|
 | 0 | `V10-MAP-07-S0-interface` | DRAINED_IN_TIME（success） | 4 | 1 | 0.001992 | 是 |
+| 0 | `V10-MAP-07-S0-x2-v2` | DRAINED_IN_TIME（success） | 5 | 1 | 0.002776 | 是 |
 | 1 | `V10-MAP-07-S1-interface` | FLOODED（failure） | 4 | 0 | 0.001969 | 是 |
+| 1 | `V10-MAP-07-S1-x2-v2` | FLOODED（failure） | 4 | 0 | 0.00166924 | 是 |
 | 2 | `V10-MAP-07-S2-interface` | FLOODED（failure） | 2 | 0 | 0.00094 | 是 |
+| 2 | `V10-MAP-07-S2-x2-v2` | FLOODED（failure） | 2 | 0 | 0.001038 | 是 |
 
-- 有效局成功：1/3
-- 结算成本合计 CNY 0.00490100（含中断局的已结算部分）。
+- 有效局成功：2/6
+- 结算成本合计 CNY 0.01038424（含中断局的已结算部分）。
 - 单 seed、单 replicate，只作描述，不作统计推断。
 
 ## 8. 结论、剩余风险与下一步

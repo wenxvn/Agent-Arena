@@ -88,22 +88,25 @@ Oracle 各 seed 的触发率为 4/4。
 
 - 观测到的终止码：`SIGNAL_WINDOW_MISSED`、`THREE_SIGNALS_SENT`
 
-## 7. MiMo 证据（Batch 8，单 replicate 描述性）
+## 7. MiMo 证据（含重复运行；单 seed 描述性）
 
 | seed | run_id | 结局 | 决策数 | 主指标 | 成本 CNY | 有效 |
 |---:|---|---|---:|---|---:|---|
 | 0 | `V10-MAP-05-S0-k2` | SIGNAL_WINDOW_MISSED（failure） | 12 | 0 | 0.00606956 | 是 |
 | 0 | `V10-MAP-05-S0-k2b` | SIGNAL_WINDOW_MISSED（failure） | 12 | 0 | 0.006196 | 是 |
 | 0 | `V10-MAP-05-S0-m2` | SIGNAL_WINDOW_MISSED（failure） | 25 | 0 | 0.01723336 | 是 |
+| 0 | `V10-MAP-05-S0-x2-v2` | SIGNAL_WINDOW_MISSED（failure） | 25 | 0 | 0.01454712 | 是 |
 | 1 | `V10-MAP-05-S1-k2` | SIGNAL_WINDOW_MISSED（failure） | 6 | 0 | 0.002833 | 是 |
 | 1 | `V10-MAP-05-S1-k2b` | SIGNAL_WINDOW_MISSED（failure） | 6 | 0 | 0.00273556 | 是 |
 | 1 | `V10-MAP-05-S1-m2` | SIGNAL_WINDOW_MISSED（failure） | 20 | 0 | 0.01351336 | 是 |
+| 1 | `V10-MAP-05-S1-x2-v2` | SIGNAL_WINDOW_MISSED（failure） | 13 | 0 | 0.0053198 | 是 |
 | 2 | `V10-MAP-05-S2-k2` | SIGNAL_WINDOW_MISSED（failure） | 13 | 0 | 0.00653268 | 是 |
 | 2 | `V10-MAP-05-S2-k2b` | SIGNAL_WINDOW_MISSED（failure） | 7 | 0 | 0.003464 | 是 |
 | 2 | `V10-MAP-05-S2-m2` | SIGNAL_WINDOW_MISSED（failure） | 19 | 0 | 0.01241604 | 是 |
+| 2 | `V10-MAP-05-S2-x2-v2` | SIGNAL_WINDOW_MISSED（failure） | 20 | 0 | 0.01019548 | 是 |
 
-- 有效局成功：0/9
-- 结算成本合计 CNY 0.07099356（含中断局的已结算部分）。
+- 有效局成功：0/12
+- 结算成本合计 CNY 0.10105596（含中断局的已结算部分）。
 - 单 seed、单 replicate，只作描述，不作统计推断。
 
 ## 8. 结论、剩余风险与下一步

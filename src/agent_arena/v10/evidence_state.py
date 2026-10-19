@@ -294,7 +294,7 @@ def _summary() -> dict[str, Any]:
     return data
 
 
-INTERRUPTED_OUTCOMES = ("unknown_provider_spend", "provider_error_limit")
+INTERRUPTED_OUTCOMES = ("unknown_provider_spend", "provider_error_limit", "budget_closed")
 
 
 def is_interrupted(row: dict[str, Any]) -> bool:
@@ -365,6 +365,9 @@ def effective_mimo_rows() -> dict[str, list[dict[str, Any]]]:
 
     selected: dict[tuple[str, int], dict[str, Any]] = {}
     for row in mimo_rows():
+        # 重复运行（replicate>0）是独立维度，不替代首局证据。
+        if int(row.get("replicate") or 0) != 0:
+            continue
         key = (str(row["map_id"]), int(row.get("environment_seed", 0)))
         current = selected.get(key)
         if current is None or _run_priority(row) > _run_priority(current):

@@ -95,16 +95,19 @@ Oracle 各 seed 的触发率为 9/10。
 
 - 观测到的终止码：`LAMP_RESTORED`、`REPAIR_DEADLINE_MISSED`、`RESOURCE_EXHAUSTED`
 
-## 7. MiMo 证据（Batch 8，单 replicate 描述性）
+## 7. MiMo 证据（含重复运行；单 seed 描述性）
 
 | seed | run_id | 结局 | 决策数 | 主指标 | 成本 CNY | 有效 |
 |---:|---|---|---:|---|---:|---|
 | 0 | `V10-MAP-06-S0-p0` | LAMP_RESTORED（decision_budget_exhausted） | 3 | 0.821429 | 0.21135656 | 是 |
+| 0 | `V10-MAP-06-S0-x2-v2` | LAMP_RESTORED（success） | 3 | 0.821429 | 0.00118848 | 是 |
 | 1 | `V10-MAP-06-S1-p0` | LAMP_RESTORED（decision_budget_exhausted） | 3 | 0.521429 | 0.21265944 | 是 |
+| 1 | `V10-MAP-06-S1-x2-v2` | LAMP_RESTORED（success） | 3 | 0.521429 | 0.00106304 | 是 |
 | 2 | `V10-MAP-06-S2-p0` | LAMP_RESTORED（decision_budget_exhausted） | 6 | 0.371429 | 0.21904564 | 是 |
+| 2 | `V10-MAP-06-S2-x2-v2` | LAMP_RESTORED（success） | 6 | 0.371429 | 0.00200476 | 是 |
 
-- 有效局成功：3/3
-- 结算成本合计 CNY 0.64306164（含中断局的已结算部分）。
+- 有效局成功：6/6
+- 结算成本合计 CNY 0.64731792（含中断局的已结算部分）。
 - 单 seed、单 replicate，只作描述，不作统计推断。
 
 ## 8. 结论、剩余风险与下一步

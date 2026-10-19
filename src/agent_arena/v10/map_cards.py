@@ -351,7 +351,7 @@ def _mimo_section(map_id: str, rows: list[dict[str, Any]]) -> list[str]:
             "",
         ]
     lines = [
-        "## 7. MiMo 证据（Batch 8，单 replicate 描述性）",
+        "## 7. MiMo 证据（含重复运行；单 seed 描述性）",
         "",
         "| seed | run_id | 结局 | 决策数 | 主指标 | 成本 CNY | 有效 |",
         "|---:|---|---|---:|---|---:|---|",

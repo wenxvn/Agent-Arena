@@ -3,8 +3,8 @@
 - 分支 `v10-validity`；起始 HEAD `2fa4df2`（main）；本报告提交的 HEAD 见 `git log -1`。
 - V8/V9 冻结：`freeze verify` 每批末与末尾均 **9/9 `unchanged`**。
 - 质量门禁：`pytest` **1151 passed**、`mypy src` **0 issues（253 文件）**、scoped `ruff` clean。
-- 真实模型：MiMo 有效局 **116**（+6 局 provider/账本中断保留），成功 **37/116**；
-  结算 **CNY 2.09549548** + 未知预留 **CNY 0.13312000** = **CNY 2.22861548**（上限 ¥10，剩余 ¥7.77138452）。
+- 真实模型：MiMo 有效局 **152**（+7 局 provider/账本中断保留），成功 **57/152**；
+  结算 **CNY 2.27994884** + 未知预留 **CNY 0.13312000** = **CNY 2.41306884**（上限 ¥10，剩余 ¥7.58693116）。
 - 状态口径：**`VALIDATED` 表示“测得住”**（8 项 Gate 全过），不表示“MiMo 能通关”（见 `validation-gates.md`）。
 
 ## 0. 30 图状态前后对比
@@ -19,7 +19,7 @@
 构念标签（独立维度）：FORCED 28、**OPTIONAL 2**（MAP-04、MAP-26）、**BYPASS 0**、**BLOCKED 0**。
 
 实现规模：**30 张 V10 原生运行时**、**36 份 DCR**、30 图 ×3–10 环境 seed 基线、30 张逐图审计卡、
-8 项 Gate、154+172 指标、25 个账本、122 条 MiMo 逐局记录。
+8 项 Gate、154+172 指标、26 个账本、159 条 MiMo 逐局记录（含 37 局重复运行）。
 
 ## 1. 哪些地图从 V9 状态提升到 VALIDATED？逐图证据是什么？
 
@@ -83,7 +83,7 @@ V6 的 `map16_l1/l2` 场景仍按难度变体处理，不冒充 seed。
 | 归因 | 证据 | 图 |
 |---|---|---|
 | **接口假象（已修复）** | 修复前 MAP-18 3 局 20/20 非法、MAP-19 121/180、MAP-20 168/168、MAP-28 seed0 11 次非法、MAP-05 阶段 5 共 14/31；类型化契约（DCR-V10-24）、MAP-20 公开规则（DCR-V10-25）与整数区间（DCR-V10-28）后，五图非法动作全部降到 **0** | 18、19、20、28、05 |
-| **策略** | trace 级归因（`failure-attribution.md`）：`KEY_ACTION_NEVER_ATTEMPTED` 5 局、`KEY_ACTION_ATTEMPTED_REJECTED` 2 局、`KEY_ACTION_USED_NO_TRIGGER` 22 局；例：MAP-14 三局 `WRONG_SUBMISSION_LIMIT`、MAP-22 两局 `MOVE_BUDGET_EXHAUSTED`、MAP-29 反复 `investigate` 不可见目标 | 14、22、29、13、15 |
+| **策略** | trace 级归因（`failure-attribution.md`）：`KEY_ACTION_NEVER_ATTEMPTED` 3 局、`KEY_ACTION_ATTEMPTED_REJECTED` 2 局、`KEY_ACTION_USED_NO_TRIGGER` 29 局；例：MAP-14 三局 `WRONG_SUBMISSION_LIMIT`、MAP-22 两局 `MOVE_BUDGET_EXHAUSTED`、MAP-29 反复 `investigate` 不可见目标 | 14、22、29、13、15 |
 | **决策预算** | 古堡三图 9/9 全部 `decision_budget_exhausted`（28 用满 30、29 用满 38、30 用满 46）；MAP-30 已达到主指标 0.5–0.75 但链未闭合；MAP-19/20 在 60/56 决策内也没达成机制阈值 | 28、29、30、19、20 |
 | **机制/资源失败** | MAP-07 `FLOODED`、MAP-12 seed2 `STATION_LOST`、MAP-18 撞车/容量终局、MAP-21 科研分低 | 07、12、18、21、04 |
 | **provider/账本** | 5 局中断保留（4 次 `UNKNOWN_PROVIDER_SPEND`、1 次输入越界），全部按 stop rule 封账并另开账本、以新 `run_id` 补跑；阶段 3b 的 MAP-20 计划局因 provider 退化未跑，改由阶段 4 完成 | 15、19、22 |
@@ -125,10 +125,12 @@ V6 的 `map16_l1/l2` 场景仍按难度变体处理，不冒充 seed。
 - **环境 seed**：每图 `{0,1,2}`；高风险图离线扩展至 10 seed（MAP-06/15/21）、4–6 seed（04/14/18/28/29/30），
   MAP-05/16 为 4 seed（DCR-V10-27/36）。
   MiMo 只跑 3 环境 seed/图；**replicate 固定为 1**（单次；不把重复冒充 seed）。
-- **覆盖**：30/30 张 V10 原生图 × 3 seed；实际有效 **116** 局（含 9 次补跑与阶段 3–14 重跑），
-  另有 6 局中断保留（5 次未知消费 + 1 次输入越界）。
-- **费用**：结算 **CNY 2.09549548** + 未知预留 **CNY 0.13312000** = **CNY 2.22861548**；
-  25 个账本（20 个 `v10_*` + 5 个早期）、逐账本与逐局明细见 `cost-ledger-audit.md`。
+- **覆盖**：30/30 张 V10 原生图 × 3 seed；有效 **152** 局（首局 116 + 重复 36），
+  另有 7 局中断保留（5 次未知消费 + 1 次输入越界 + 1 次全局请求上限）。
+- **重复运行**：阶段 15 覆盖 MAP-01–12（36 对），成功率一致 32/36=0.8889、翻转 2 升/2 降、
+  主指标平均绝对差 0.121212；因全局请求上限停止，未覆盖其余 18 图（`replicate-analysis.md`）。
+- **费用**：结算 **CNY 2.27994884** + 未知预留 **CNY 0.13312000** = **CNY 2.41306884**；
+  26 个账本（21 个 `v10_*` + 5 个早期）、逐账本与逐局明细见 `cost-ledger-audit.md`。
 - **provider 失败**：`APIConnectionError` 6 次（3 次在 ext 阶段、1 次在补充账本、1 次在阶段 3b、0 次在阶段 4），
   每次立即封账并保留全额预留；**MAP-15 输入越界 1 次**（早期 runner 把完整 Observation 写入
   history，属接口缺陷，已修复并复验）。
@@ -137,7 +139,7 @@ V6 的 `map16_l1/l2` 场景仍按难度变体处理，不冒充 seed。
 ## 7. 旧 V8/V9 数据是否完整保持、能否复算、哪些跨版本比较不合法？
 
 - **完整保持**：`freeze verify` 9/9 `unchanged`；V8 90 局、V9 29 条记录与全部账本原样保留；
-  V10 的 25 个账本（含 5 个早期）**一个未删、一个未改**，sha256 记录在 `cost-ledger-audit.md`。
+  V10 的 26 个账本（含 5 个早期）**一个未删、一个未改**，sha256 记录在 `cost-ledger-audit.md`。
 - **可复算**：V8/V9 的 Oracle、随机、指标复算在 Batch 0 已重跑并与存档一致（`baseline-audit.md` §4）；
   V10 的 30 卡、状态矩阵、Gate、难度定标、成本审计全部由 `runs/v10/` 重算。
 - **不合法的跨版本比较**：① 154 条旧指标值与 172 条 V10 值不能混算；② V8/V9 的 `scenario_hash`
@@ -156,7 +158,7 @@ V6 的 `map16_l1/l2` 场景仍按难度变体处理，不冒充 seed。
    场景仍按难度变体处理。V11 可在该运行时上扩展更多实例或补 3 局以上的真实模型证据。
 3. **公式级指标复算已覆盖 30/30**（**1093 次检查全一致**，DCR-V10-26/32/35）；下一步是让
    独立实现进入 CI 或作为新图的准入检查。
-4. **`KEY_ACTION_USED_NO_TRIGGER` 的 22 局**（`failure-attribution.md`）：模型按机制动作操作但阈值没到，
+4. **`KEY_ACTION_USED_NO_TRIGGER` 的 29 局**（`failure-attribution.md`）：模型按机制动作操作但阈值没到，
    需要逐图判读是预算不足、阈值过严还是提示缺失。
 5. **古堡三图的预算/案卷规模已判读**（`castle-gap-analysis.md`）：预算 30/38/46 均大于 Oracle
    18/22/31；MAP-28 seed 1 已凑齐全部证据却停在 A，MAP-30 seed 0 案卷 3/3 却未核对链条、未到 J。
@@ -175,9 +177,9 @@ V6 的 `map16_l1/l2` 场景仍按难度变体处理，不冒充 seed。
 - [x] pytest、ruff、mypy、diff-check 的真实退出码记录（本文件头部与各批 commit）。
 - [x] CI 质量门禁：`ruff check .`、`mypy src`、`pytest`，以及 `freeze verify`、
       `recompute --check`（30/30、0 不一致）、`independent_check --check`（0 违规）。
-- [x] 动作循环扫描：122 局 trace 中仅 MAP-19/20 的旧局命中，当前规则下 0 局（`trace_scan --check`）。
+- [x] 动作循环扫描：159 局 trace 中仅 MAP-19/20 的旧局命中，当前规则下 0 局（`trace_scan --check`）。
 - [x] 剩余失败已量化：`thermal-gap-analysis.md`（19/20）与 `castle-gap-analysis.md`（28/29/30）。
-- [x] MiMo 预算门禁、预登记、trace、账本和异常恢复可验证（25 个账本 + `mimo-preregistration.json`）。
+- [x] MiMo 预算门禁、预登记、trace、账本和异常恢复可验证（26 个账本 + `mimo-preregistration.json`）。
 - [x] 30 图状态不虚报：30 张原生图 8 Gate 全过；模型失败的归因
       （接口/策略/预算/机制/provider/场景）见 §4、`failure-attribution.md`、
       `trigger-gap-analysis.md` 与 `castle-budget-analysis.md`。
@@ -194,7 +196,8 @@ V6 的 `map16_l1/l2` 场景仍按难度变体处理，不冒充 seed。
    复算验证的是公式与分母口径，不验证构念效度。
 4. **截尾口径修复不改历史**：Batch 8 及后续阶段的 90+ 局按旧口径记录（截断局曾记 `VALID 0`），
    离线基线与后续运行已按 DCR-V10-26 归一；解释旧局时必须记得这一点。
-5. **MiMo 单模型、单 replicate、3 seed**：`n` 很小，禁止据此做跨模型排名或显著性断言。
+5. **MiMo 单模型、3 seed**：重复运行只覆盖 MAP-01–12（36 对），其余 18 图仍是单 replicate；
+   `n` 很小，禁止据此做跨模型排名或显著性断言。
 6. **合法替代与作弊仍未完全分离**：MAP-11 `storm_search`；MAP-19/20 修复 tick 语义后仍未达标。
 7. **难度反转未做认知负担直接测量**：只提供设计/经验/解释三元记录。
 8. **`prompt_hash` 与 `rule_hash` 在阶段间不同**（类型化契约 + MAP-20 公开规则）：跨阶段只作配对描述。
@@ -207,7 +210,8 @@ V6 的 `map16_l1/l2` 场景仍按难度变体处理，不冒充 seed。
 V10 的主目标——**让 30 张手工地图具备可证伪、可重复、有区分度的能力测量机制**——已达成：
 **30/30 图 `VALIDATED`**（30 张原生图 8 项 Gate 全过；V8 回退 0）、
 30 张逐图独立规格与审计卡齐备、154+172 指标有版本化 schema 与独立复核、多环境 seed 与消融证据可重放、
-真实模型复测在有界预算内完成，**主指标还做了第二套实现的公式级复算**（30/30 图、1093 次检查）。
+真实模型复测在有界预算内完成（含 MAP-01–12 的 36 对重复运行，成功率一致 0.8889），
+**主指标还做了第二套实现的公式级复算**（30/30 图、1093 次检查）。
 过程中发现并修掉**五类系统性测量缺陷**——动作字段**类型**未公开（DCR-V10-24）、MAP-20 的
 **取值结构**未公开（DCR-V10-25）、整数字段**区间**未公开（DCR-V10-28）、被预算截断的局漏判
 `CENSORED`（DCR-V10-26）、**时间推进语义**未公开（DCR-V10-38/39，MAP-20/19）：前三者合计把

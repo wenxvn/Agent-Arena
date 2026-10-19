@@ -78,6 +78,7 @@ DCR 编号是规划，最终以 `docs/v10/dcr/` 中实际文件为准；某图�
 | 9h | MAP-16 原生 seed 化（DCR-V10-36）+ 阶段 12 复测 | 完成；MAP-16 8 Gate 全过；V8 回退归零 | 见 README |
 | 9i | MAP-20 补 wait 语义（DCR-V10-38）+ 阶段 13 复测 | 完成；tick 可推进，主指标 0.858824/0.329412/截尾 | 见 README |
 | 9j | MAP-19 补 wait 语义（DCR-V10-39）+ 阶段 14 复测 | 完成；tick 推进到 4/2/4，三局均过热 | 见 README |
+| 9k | 全矩阵重复运行（阶段 15，replicate 1） | 部分完成：36 对（MAP-01–12），全局请求上限停止 | 见 README |
 
 ### 3.1 Batch 9 追加的接口/指标 DCR
 

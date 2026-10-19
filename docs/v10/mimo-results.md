@@ -3,7 +3,7 @@
 - 由 `python -m agent_arena.v10.mimo_report` 从 `runs/v10/mimo/` 逐字重算，禁止手填。
 - 模型：`mimo-v2.6-flash`；temperature=0；reasoning 关闭；每次请求先前预留、按供应商
   usage 结算；未知消费立即封账（保留预留，**不按 0 计**）。
-- 全局上限 CNY 10；已结算 **CNY 2.09549548**；未知/未结预留 **CNY 0.13312000**；合计占用 **CNY 2.22861548**。
+- 全局上限 CNY 10；已结算 **CNY 2.27994884**；未知/未结预留 **CNY 0.13312000**；合计占用 **CNY 2.41306884**。
 - 每图 3 个环境 seed、单一 replicate；`n=3` 只作描述，不作显著性断言，也不做跨模型排名。
 
 ## 1. 覆盖与账本
@@ -35,6 +35,7 @@
 | `ledger_v10_018.jsonl` | 30 | 0.01593856 | 0.00000000 | — | `bcd3ccea5a1f` |
 | `ledger_v10_019.jsonl` | 90 | 0.04741280 | 0.00000000 | — | `e9dae2f3678c` |
 | `ledger_v10_020.jsonl` | 26 | 0.01946776 | 0.00000000 | — | `771f0724e81b` |
+| `ledger_v10_021.jsonl` | 376 | 0.18445336 | 0.00000000 | GLOBAL_REQUEST_LIMIT | `521042775f5b` |
 
 ## 2. 分组结果（仅统计有效局）
 
@@ -57,57 +58,95 @@
 | MAP-16 原生首测 | 3 | 1 | 0.333 | 0 | 0.01593856 |
 | MAP-20 wait 语义重测 | 3 | 0 | 0.000 | 0 | 0.04741280 |
 | MAP-19 wait 语义重测 | 3 | 0 | 0.000 | 0 | 0.01946776 |
+| 重复运行（replicate 1） | 36 | 20 | 0.556 | 1 | 0.18445336 |
 
 ## 3. 逐图逐 seed
 
 | 图 | 世界 | 难度 | seed | run_id | 结局 | 决策数 | 主指标 | 机制触发 | CNY | 有效 |
 |---|---|---|---:|---|---|---:|---|---|---:|---|
 | MAP-01 | spaceship | 简单 | 0 | `V10-MAP-01-S0-o2` | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 4 | 0 | False | 0.00258500 | 是 |
+| MAP-01 | spaceship | 简单 | 0 | `V10-MAP-01-S0-x2-v2` | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 4 | 0 | False | 0.00221068 | 是 |
 | MAP-01 | spaceship | 简单 | 1 | `V10-MAP-01-S1-o2` | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 4 | 0 | False | 0.00258200 | 是 |
+| MAP-01 | spaceship | 简单 | 1 | `V10-MAP-01-S1-x2-v2` | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 4 | 0 | False | 0.00258200 | 是 |
 | MAP-01 | spaceship | 简单 | 2 | `V10-MAP-01-S2-o2` | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 5 | 0 | False | 0.00114180 | 是 |
+| MAP-01 | spaceship | 简单 | 2 | `V10-MAP-01-S2-x2-v2` | OXYGEN_SUPPLY_INTERRUPTION_LIMIT | 5 | 0 | False | 0.00114380 | 是 |
 | MAP-02 | spaceship | 中等 | 0 | `V10-MAP-02-S0-l2` | NAV_CORE_FLOODED | 6 | 0 | True | 0.00291800 | 是 |
 | MAP-02 | spaceship | 中等 | 0 | `V10-MAP-02-S0-m2` | CREW_PRESSURE_LOST | 12 | 0 | True | 0.00912600 | 是 |
+| MAP-02 | spaceship | 中等 | 0 | `V10-MAP-02-S0-x2-v2` | DUAL_OBJECTIVE_COMPLETE | 11 | 1 | True | 0.00646640 | 是 |
 | MAP-02 | spaceship | 中等 | 1 | `V10-MAP-02-S1-l2` | NAV_CORE_FLOODED | 6 | 0 | True | 0.00223008 | 是 |
 | MAP-02 | spaceship | 中等 | 1 | `V10-MAP-02-S1-m2` | CREW_PRESSURE_LOST | 10 | 0 | True | 0.00381052 | 是 |
+| MAP-02 | spaceship | 中等 | 1 | `V10-MAP-02-S1-x2-v2` | CREW_PRESSURE_LOST | 10 | 0 | True | 0.00334476 | 是 |
 | MAP-02 | spaceship | 中等 | 2 | `V10-MAP-02-S2-l2` | NAV_CORE_FLOODED | 6 | 0 | False | 0.00266712 | 是 |
 | MAP-02 | spaceship | 中等 | 2 | `V10-MAP-02-S2-m2` | CREW_PRESSURE_LOST | 10 | 0 | True | 0.00305016 | 是 |
+| MAP-02 | spaceship | 中等 | 2 | `V10-MAP-02-S2-x2-v2` | CREW_PRESSURE_LOST | 10 | 0 | True | 0.00448600 | 是 |
 | MAP-03 | spaceship | 困难 | 0 | `V10-MAP-03-S0-p0` | RETURN_WINDOW_EXPIRED | 39 | None | False | 0.16710588 | 是 |
+| MAP-03 | spaceship | 困难 | 0 | `V10-MAP-03-S0-x2-v2` | RETURN_WINDOW_EXPIRED | 39 | None | False | 0.01888496 | 是 |
 | MAP-03 | spaceship | 困难 | 1 | `V10-MAP-03-S1-p0` | ROUTE_CALIBRATED | 25 | 1 | True | 0.10062108 | 是 |
+| MAP-03 | spaceship | 困难 | 1 | `V10-MAP-03-S1-x2-v2` | RETURN_WINDOW_EXPIRED | 27 | None | False | 0.01277632 | 是 |
 | MAP-03 | spaceship | 困难 | 2 | `V10-MAP-03-S2-p0` | ROUTE_CALIBRATED | 34 | 1 | True | 0.07361828 | 是 |
+| MAP-03 | spaceship | 困难 | 2 | `V10-MAP-03-S2-x2-v2` | RETURN_WINDOW_EXPIRED | 35 | None | False | 0.01711468 | 是 |
 | MAP-04 | lighthouse | 简单 | 0 | `V10-MAP-04-S0-ext` | RESCUE_SIGNAL_WINDOW_EXPIRED | 12 | 0 | True | 0.00652640 | 是 |
+| MAP-04 | lighthouse | 简单 | 0 | `V10-MAP-04-S0-x2-v2` | RESCUE_SIGNAL_WINDOW_EXPIRED | 7 | 0 | True | 0.00344236 | 是 |
 | MAP-04 | lighthouse | 简单 | 1 | `V10-MAP-04-S1-ext` | RESCUE_SIGNAL_WINDOW_EXPIRED | 10 | 0 | True | 0.00404544 | 是 |
+| MAP-04 | lighthouse | 简单 | 1 | `V10-MAP-04-S1-x2-v2` | SIGNAL_LIT | 9 | 3 | True | 0.00454248 | 是 |
 | MAP-04 | lighthouse | 简单 | 2 | `V10-MAP-04-S2-ext` | RESCUE_SIGNAL_WINDOW_EXPIRED | 10 | 0 | True | 0.00493452 | 是 |
+| MAP-04 | lighthouse | 简单 | 2 | `V10-MAP-04-S2-x2-v2` | RESCUE_SIGNAL_WINDOW_EXPIRED | 10 | 0 | True | 0.00477816 | 是 |
 | MAP-05 | lighthouse | 中等 | 0 | `V10-MAP-05-S0-k2` | SIGNAL_WINDOW_MISSED | 12 | 0 | False | 0.00606956 | 是 |
 | MAP-05 | lighthouse | 中等 | 0 | `V10-MAP-05-S0-k2b` | SIGNAL_WINDOW_MISSED | 12 | 0 | False | 0.00619600 | 是 |
 | MAP-05 | lighthouse | 中等 | 0 | `V10-MAP-05-S0-m2` | SIGNAL_WINDOW_MISSED | 25 | 0 | True | 0.01723336 | 是 |
+| MAP-05 | lighthouse | 中等 | 0 | `V10-MAP-05-S0-x2-v2` | SIGNAL_WINDOW_MISSED | 25 | 0 | True | 0.01454712 | 是 |
 | MAP-05 | lighthouse | 中等 | 1 | `V10-MAP-05-S1-k2` | SIGNAL_WINDOW_MISSED | 6 | 0 | False | 0.00283300 | 是 |
 | MAP-05 | lighthouse | 中等 | 1 | `V10-MAP-05-S1-k2b` | SIGNAL_WINDOW_MISSED | 6 | 0 | False | 0.00273556 | 是 |
 | MAP-05 | lighthouse | 中等 | 1 | `V10-MAP-05-S1-m2` | SIGNAL_WINDOW_MISSED | 20 | 0 | True | 0.01351336 | 是 |
+| MAP-05 | lighthouse | 中等 | 1 | `V10-MAP-05-S1-x2-v2` | SIGNAL_WINDOW_MISSED | 13 | 0 | False | 0.00531980 | 是 |
 | MAP-05 | lighthouse | 中等 | 2 | `V10-MAP-05-S2-k2` | SIGNAL_WINDOW_MISSED | 13 | 0 | False | 0.00653268 | 是 |
 | MAP-05 | lighthouse | 中等 | 2 | `V10-MAP-05-S2-k2b` | SIGNAL_WINDOW_MISSED | 7 | 0 | False | 0.00346400 | 是 |
 | MAP-05 | lighthouse | 中等 | 2 | `V10-MAP-05-S2-m2` | SIGNAL_WINDOW_MISSED | 19 | 0 | False | 0.01241604 | 是 |
+| MAP-05 | lighthouse | 中等 | 2 | `V10-MAP-05-S2-x2-v2` | SIGNAL_WINDOW_MISSED | 20 | 0 | False | 0.01019548 | 是 |
 | MAP-06 | lighthouse | 困难 | 0 | `V10-MAP-06-S0-p0` | LAMP_RESTORED | 3 | 0.821429 | False | 0.00263400 | 是 |
+| MAP-06 | lighthouse | 困难 | 0 | `V10-MAP-06-S0-x2-v2` | LAMP_RESTORED | 3 | 0.821429 | False | 0.00118848 | 是 |
 | MAP-06 | lighthouse | 困难 | 1 | `V10-MAP-06-S1-p0` | LAMP_RESTORED | 3 | 0.521429 | True | 0.00130288 | 是 |
+| MAP-06 | lighthouse | 困难 | 1 | `V10-MAP-06-S1-x2-v2` | LAMP_RESTORED | 3 | 0.521429 | True | 0.00106304 | 是 |
 | MAP-06 | lighthouse | 困难 | 2 | `V10-MAP-06-S2-p0` | LAMP_RESTORED | 6 | 0.371429 | True | 0.00638620 | 是 |
+| MAP-06 | lighthouse | 困难 | 2 | `V10-MAP-06-S2-x2-v2` | LAMP_RESTORED | 6 | 0.371429 | True | 0.00200476 | 是 |
 | MAP-07 | abyss | 简单 | 0 | `V10-MAP-07-S0-interface` | DRAINED_IN_TIME | 4 | 1 | True | 0.00199200 | 是 |
+| MAP-07 | abyss | 简单 | 0 | `V10-MAP-07-S0-x2-v2` | DRAINED_IN_TIME | 5 | 1 | True | 0.00277600 | 是 |
 | MAP-07 | abyss | 简单 | 1 | `V10-MAP-07-S1-interface` | FLOODED | 4 | 0 | False | 0.00196900 | 是 |
+| MAP-07 | abyss | 简单 | 1 | `V10-MAP-07-S1-x2-v2` | FLOODED | 4 | 0 | False | 0.00166924 | 是 |
 | MAP-07 | abyss | 简单 | 2 | `V10-MAP-07-S2-interface` | FLOODED | 2 | 0 | False | 0.00094000 | 是 |
+| MAP-07 | abyss | 简单 | 2 | `V10-MAP-07-S2-x2-v2` | FLOODED | 2 | 0 | False | 0.00103800 | 是 |
 | MAP-08 | abyss | 中等 | 0 | `V10-MAP-08-S0-interface` | LEAK_REPAIRED | 3 | 1 | True | 0.00174700 | 是 |
+| MAP-08 | abyss | 中等 | 0 | `V10-MAP-08-S0-x2-v2` | LEAK_REPAIRED | 3 | 1 | True | 0.00188600 | 是 |
 | MAP-08 | abyss | 中等 | 1 | `V10-MAP-08-S1-interface` | LEAK_REPAIRED | 3 | 1 | True | 0.00174500 | 是 |
+| MAP-08 | abyss | 中等 | 1 | `V10-MAP-08-S1-x2-v2` | LEAK_REPAIRED | 3 | 1 | True | 0.00188600 | 是 |
 | MAP-08 | abyss | 中等 | 2 | `V10-MAP-08-S2-interface` | LEAK_REPAIRED | 4 | 1 | True | 0.00239200 | 是 |
+| MAP-08 | abyss | 中等 | 2 | `V10-MAP-08-S2-x2-v2` | LEAK_REPAIRED | 4 | 1 | True | 0.00258800 | 是 |
 | MAP-09 | abyss | 困难 | 0 | `V10-MAP-09-S0-interface` | HULL_SEALED | 4 | 1 | True | 0.00185000 | 是 |
+| MAP-09 | abyss | 困难 | 0 | `V10-MAP-09-S0-x2-v2` | HULL_SEALED | 4 | 1 | True | 0.00198200 | 是 |
 | MAP-09 | abyss | 困难 | 1 | `V10-MAP-09-S1-interface` | HULL_SEALED | 2 | 1 | True | 0.00088900 | 是 |
+| MAP-09 | abyss | 困难 | 1 | `V10-MAP-09-S1-x2-v2` | HULL_SEALED | 2 | 1 | True | 0.00095300 | 是 |
 | MAP-09 | abyss | 困难 | 2 | `V10-MAP-09-S2-interface` | HULL_SEALED | 5 | 1 | True | 0.00210512 | 是 |
+| MAP-09 | abyss | 困难 | 2 | `V10-MAP-09-S2-x2-v2` | HULL_SEALED | 5 | 1 | True | 0.00226512 | 是 |
 | MAP-10 | polar | 简单 | 0 | `V10-MAP-10-S0-interface` | DELIVERED_IN_FULL | 2 | 1 | True | 0.00079100 | 是 |
+| MAP-10 | polar | 简单 | 0 | `V10-MAP-10-S0-x2-v2` | DELIVERED_IN_FULL | 2 | 1 | True | 0.00087300 | 是 |
 | MAP-10 | polar | 简单 | 1 | `V10-MAP-10-S1-interface` | DELIVERED_IN_FULL | 2 | 1 | True | 0.00078700 | 是 |
+| MAP-10 | polar | 简单 | 1 | `V10-MAP-10-S1-x2-v2` | DELIVERED_IN_FULL | 2 | 1 | True | 0.00087100 | 是 |
 | MAP-10 | polar | 简单 | 2 | `V10-MAP-10-S2-interface` | DELIVERED_IN_FULL | 2 | 1 | True | 0.00054012 | 是 |
+| MAP-10 | polar | 简单 | 2 | `V10-MAP-10-S2-x2-v2` | DELIVERED_IN_FULL | 2 | 1 | True | 0.00037324 | 是 |
 | MAP-11 | polar | 中等 | 0 | `V10-MAP-11-S0-interface` | SURVIVOR_RESCUED | 3 | 1 | False | 0.00110912 | 是 |
+| MAP-11 | polar | 中等 | 0 | `V10-MAP-11-S0-x2-v2` | SURVIVOR_RESCUED | 3 | 1 | False | 0.00124512 | 是 |
 | MAP-11 | polar | 中等 | 1 | `V10-MAP-11-S1-interface` | SURVIVOR_RESCUED | 2 | 1 | True | 0.00087100 | 是 |
+| MAP-11 | polar | 中等 | 1 | `V10-MAP-11-S1-x2-v2` | SURVIVOR_RESCUED | 2 | 1 | True | 0.00045924 | 是 |
 | MAP-11 | polar | 中等 | 2 | `V10-MAP-11-S2-interface` | SURVIVOR_RESCUED | 5 | 1 | True | 0.00198024 | 是 |
+| MAP-11 | polar | 中等 | 2 | `V10-MAP-11-S2-x2-v2` | SURVIVOR_RESCUED | 5 | 1 | True | 0.00221824 | 是 |
 | MAP-12 | polar | 困难 | 0 | `V10-MAP-12-S0-interface` | RESEARCH_COMPLETED | 30 | 1 | True | 0.01534724 | 是 |
+| MAP-12 | polar | 困难 | 0 | `V10-MAP-12-S0-x2-v2` | RESEARCH_COMPLETED | 30 | 1 | True | 0.01466708 | 是 |
 | MAP-12 | polar | 困难 | 1 | `V10-MAP-12-S1-interface` | RESEARCH_COMPLETED | 30 | 1 | True | 0.01490592 | 是 |
+| MAP-12 | polar | 困难 | 1 | `V10-MAP-12-S1-x2-v2` | RESEARCH_COMPLETED | 30 | 1 | True | 0.01413732 | 是 |
 | MAP-12 | polar | 困难 | 2 | `V10-MAP-12-S2-interface` | STATION_LOST | 12 | 0 | True | 0.00577524 | 是 |
+| MAP-12 | polar | 困难 | 2 | `V10-MAP-12-S2-x2-v2` | STATION_LOST | 14 | 0 | True | 0.00770912 | 是 |
 | MAP-13 | pyramid | 简单 | 0 | `V10-MAP-13-S0-ext` | INCORRECT_ATTEMPT_LIMIT | 24 | 0.2 | True | 0.01732500 | 是 |
+| MAP-13 | pyramid | 简单 | 0 | `V10-MAP-13-S0-x2-v2` | budget_closed | 13 | None | True | 0.00876536 | 否 |
 | MAP-13 | pyramid | 简单 | 1 | `V10-MAP-13-S1-ext` | decision_budget_exhausted | 30 | None | True | 0.01856380 | 是 |
 | MAP-13 | pyramid | 简单 | 2 | `V10-MAP-13-S2-ext` | INCORRECT_ATTEMPT_LIMIT | 24 | 0.2 | True | 0.01605760 | 是 |
 | MAP-14 | pyramid | 中等 | 0 | `V10-MAP-14-S0-ext` | WRONG_SUBMISSION_LIMIT | 35 | 0 | False | 0.02588176 | 是 |
@@ -189,13 +228,14 @@
 
 | outcome | 局数 |
 |---|---:|
+| `budget_closed` | 1 |
 | `decision_budget_exhausted` | 36 |
-| `failure` | 49 |
+| `failure` | 65 |
 | `settle_closed:供应商 usage 超出登记上限。` | 1 |
-| `success` | 31 |
+| `success` | 51 |
 | `unknown_provider_spend` | 5 |
 
-- 有效局成功 **37/116**；其余为机制失败/决策预算耗尽。
+- 有效局成功 **57/152**；其余为机制失败/决策预算耗尽。
 - 结论范围：本矩阵覆盖全部 30 张 V10 原生图；V8 回退图为 0。
   不得据此声称 30/30 的 MiMo 多 seed 覆盖。
 
@@ -203,6 +243,7 @@
 
 | run_id | 图 | seed | 结局 | 决策数 | 处置 |
 |---|---|---:|---|---:|---|
+| `V10-MAP-13-S0-x2-v2` | MAP-13 | 0 | budget_closed | 13 | 保留记录，不计入该 seed 有效证据；按预登记规则另开账本、以新 run_id 补跑 |
 | `V10-MAP-15-S2-p0` | MAP-15 | 2 | settle_closed:供应商 usage 超出登记上限。 | 32 | 保留记录，不计入该 seed 有效证据；按预登记规则另开账本、以新 run_id 补跑 |
 | `V10-MAP-19-S2-ext` | MAP-19 | 2 | unknown_provider_spend | 2 | 保留记录，不计入该 seed 有效证据；按预登记规则另开账本、以新 run_id 补跑 |
 | `V10-MAP-19-S2-i2` | MAP-19 | 2 | unknown_provider_spend | 43 | 保留记录，不计入该 seed 有效证据；按预登记规则另开账本、以新 run_id 补跑 |

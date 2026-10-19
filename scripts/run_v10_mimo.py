@@ -44,6 +44,7 @@ from agent_arena.v10.ledger import (  # noqa: E402
 from agent_arena.v10.metrics.governance import schema_hash  # noqa: E402
 from agent_arena.v10.runtime.catalog import (  # noqa: E402
     LEVEL_OF,
+    MAP_IDS,
     WORLD_OF,
     create_environment,
     metric_hash,
@@ -71,6 +72,7 @@ LEDGER_Q2_PATH = MIMO_ROOT / "ledger_v10_017.jsonl"
 LEDGER_R2_PATH = MIMO_ROOT / "ledger_v10_018.jsonl"
 LEDGER_T2_PATH = MIMO_ROOT / "ledger_v10_019.jsonl"
 LEDGER_U2_PATH = MIMO_ROOT / "ledger_v10_020.jsonl"
+LEDGER_X2_PATH = MIMO_ROOT / "ledger_v10_021.jsonl"
 PHASE_LEDGERS = {
     "main": LEDGER_PATH,
     "ext": LEDGER_EXT_PATH,
@@ -87,6 +89,7 @@ PHASE_LEDGERS = {
     "r2": LEDGER_R2_PATH,
     "t2": LEDGER_T2_PATH,
     "u2": LEDGER_U2_PATH,
+    "x2": LEDGER_X2_PATH,
 }
 MODEL_NAME = "mimo-v2.6-flash"
 MAX_CONSECUTIVE = 3
@@ -136,7 +139,12 @@ PHASE_GROUPS: dict[str, tuple[tuple[str, tuple[str, ...]], ...]] = {
     "t2": (("t2", ("MAP-20",)),),
     #: 阶段 14：MAP-19 公开规则补 wait 语义（DCR-V10-39）后的重测。
     "u2": (("u2", ("MAP-19",)),),
+    #: 阶段 15：全矩阵第二次重复运行（replicate=1），只用于描述重复一致性。
+    "x2": (("x2", tuple(MAP_IDS)),),
 }
+
+#: 分组的重复编号：x2 = 同一 (map, seed) 的第二局（不替代首局）。
+PHASE_REPLICATES: dict[str, int] = {"x2": 1}
 
 #: 逐图格式澄清（只写公开结构，不含真值/答案）；随 prompt_hash 一起冻结。
 CONTRACT_HINTS: dict[str, tuple[str, ...]] = {
@@ -258,17 +266,19 @@ def _system_prompt(map_id: str, environment: Any) -> str:
 
 def _episodes(phase: str = "main") -> list[dict[str, Any]]:
     plan: list[dict[str, Any]] = []
+    replicate = PHASE_REPLICATES.get(phase, 0)
     for group, maps in PHASE_GROUPS[phase]:
         for map_id in maps:
             for seed in (0, 1, 2):
                 plan.append(
                     {
-                        "run_id": f"V10-{map_id}-S{seed}-{group}",
+                        "run_id": f"V10-{map_id}-S{seed}-{group}"
+                        + (f"-v{replicate + 1}" if replicate else ""),
                         "map_id": map_id,
                         "world": WORLD_OF[map_id],
                         "difficulty": LEVEL_OF[map_id],
                         "environment_seed": seed,
-                        "replicate": 0,
+                        "replicate": replicate,
                         "group": group,
                         "decision_budget": decision_budget(map_id),
                     }

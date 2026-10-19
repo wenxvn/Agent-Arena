@@ -46,6 +46,7 @@ GROUP_OF_SEED_TAG = {
     "r2": "MAP-16 原生首测",
     "t2": "MAP-20 wait 语义重测",
     "u2": "MAP-19 wait 语义重测",
+    "x2": "重复运行（replicate 1）",
 }
 
 
@@ -186,6 +187,7 @@ def render_results() -> str:
         "r2",
         "t2",
         "u2",
+        "x2",
         # 未登记的新分组追加在末尾，保证矩阵不会静默漏掉一批局。
         *sorted(set(by_group) - set(GROUP_OF_SEED_TAG)),
     ):

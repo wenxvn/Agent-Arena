@@ -17,7 +17,7 @@
 | 5 | NEEDS_MORE_EVIDENCE 与 VALIDATED 复核：8 张接口/证据图 + 7 张 VALIDATED 防回归 | 完成（当时 7 张记 3-seed 缺口；已由 DCR-V10-27/29/30/31/33/34/36 补齐） | 见 git log `feat(v10): batch 5` | ¥0 |
 | 6 | 指标治理：154 枚举 + 128 项 V10 规格 + 20 项缺陷结论 + 五态核对 | 完成 | 见 git log `feat(v10): batch 6` | ¥0 |
 | 7 | 多 seed 难度定标：`difficulty.py` + `difficulty-calibration.md` | 完成（Batch 8 后已加入 MiMo 列） | 见 git log `feat(v10): batch 7` | ¥0 |
-| 8 | 有界 MiMo 复测：30 张 V10 原生图 × 3 环境 seed + 中断补跑 + 接口修复重跑 + MAP-16/20/19 原生与 wait 语义重测 | ✅ 完成（122 局记录：116 有效 + 6 中断保留） | 见 git log `feat(v10): batch 8/9` | **CNY 2.23** |
+| 8 | 有界 MiMo 复测：30 张 V10 原生图 × 3 环境 seed + 中断补跑 + 接口修复重跑 + MAP-16/20/19 重测 + MAP-01–12 重复运行 | ✅ 完成（159 局记录：152 有效 + 7 中断保留） | 见 git log `feat(v10): batch 8/9` | **CNY 2.41** |
 | 9 | 最终验收：8 Gate 判定、30 张逐图审计卡、指标独立复核、trace 级归因、成本审计、最终报告 | ✅ 完成 | 见 git log `feat(v10): batch 8/9` | ¥0 |
 
 ## 结论速览
@@ -35,8 +35,8 @@
 - **指标独立复核**：30 图 × 144 seed 实例，状态-取值违规从 4 条降到 **0**（MAP-12 取值域修复
   DCR-V10-23），回放确定性与 seed 差异性 30/30；**主指标公式级第二套实现** 30/30 图、1093 次检查
   全一致，并据此修掉“截断局漏判 `CENSORED`”的系统性口径缺陷（DCR-V10-26）。
-- **MiMo 事实**：有效局 **116**（+6 局中断保留），成功 **37/116**；结算 CNY 2.09549548 + 未知预留
-  CNY 0.13312000 = **CNY 2.22861548**，远低于 ¥10 上限；逐局失败归因见 `failure-attribution.md`。
+- **MiMo 事实**：有效局 **152**（+7 局中断保留），成功 **57/152**；结算 CNY 2.27994884 + 未知预留
+  CNY 0.13312000 = **CNY 2.41306884**，远低于 ¥10 上限；逐局失败归因见 `failure-attribution.md`。
 
 ## 文件
 
@@ -56,8 +56,9 @@
 | `trigger-gap-analysis.md` | 未触发机制局的逐局判读（预算/阈值/入口） |
 | `castle-budget-analysis.md` | 古堡三图的决策预算剖面与最后动作 |
 | `metric-recompute.md` | Batch 9：主指标公式级第二套实现（30/30 图、1093 次检查全一致） |
-| `action-loop-scan.md` | 122 局 trace 的“重复动作 + tick 不推进”扫描（仅 19/20 命中，均已修复） |
+| `action-loop-scan.md` | 159 局 trace 的“重复动作 + tick 不推进”扫描（仅 19/20 命中，均已修复） |
 | `thermal-gap-analysis.md` | MAP-19/20 接口修复后的热策略差距（超载/旁路缺口逐局量化） |
+| `replicate-analysis.md` | MAP-01–12 的 36 对重复运行一致性（0.8889 成功一致） |
 | `castle-gap-analysis.md` | 古堡三图预算耗尽时“还差什么”：证据/提问/案卷完成度与终局位置 |
 | `metric-schema-v10.md` | v10 指标 schema、五态语义、缺陷处理结论 |
 | `mimo-preregistration.json` | Batch 8 预登记（矩阵、预算、stop rule、补跑与阶段 3–12 登记） |
@@ -95,6 +96,7 @@
 .\.venv\Scripts\python.exe -m agent_arena.v10.trace_scan --check         # 当前规则下无免费动作循环
 .\.venv\Scripts\python.exe -m agent_arena.v10.thermal_gap                 # 19/20 热策略差距
 .\.venv\Scripts\python.exe -m agent_arena.v10.castle_gap                  # 古堡三图完成度
+.\.venv\Scripts\python.exe -m agent_arena.v10.replicate                   # 重复运行一致性
 .\.venv\Scripts\python.exe -m agent_arena.v10.validation         # 8 项 Gate 判定
 .\.venv\Scripts\python.exe -m agent_arena.v10.status             # 状态矩阵
 .\.venv\Scripts\python.exe -m agent_arena.v10.map_cards           # 30 张审计卡
@@ -116,11 +118,13 @@
   DCR-V10-35 补齐 13/14/21，DCR-V10-36 补齐 MAP-16）。下一步是把它接入 CI。
 - 未触发机制局已逐局判读（`trigger-gap-analysis.md`）：29 局 = THRESHOLD 13 / BUDGET 12 /
   USED_NO_THRESHOLD 3 / ENTRY_REJECTED 1；古堡预算见 `castle-budget-analysis.md`。
-  `CONTRACT_ARTIFACT` 10 局均为旧契约下的历史记录（DCR-V10-24/25/28 之前的重跑证据）。
+  旧契约下的 `CONTRACT_ARTIFACT` 局已被新阶段替代，不再计入有效证据；归因只读首局有效证据。
 - **MAP-19/20 的机制为何没被触发**：旧局都在重复免费动作、tick 未推进；DCR-V10-38/39 补
   “只有 wait 推进时间”后 tick 已推进，剩余差距是热量分配、旁路时机与冷却排队。
-  `action-loop-scan.md` 对全部 122 局做了同类扫描：当前规则下 0 局免费动作循环；
+  `action-loop-scan.md` 对全部 159 局做了同类扫描：当前规则下 0 局免费动作循环；
   `thermal-gap-analysis.md` 把剩余失败量化到超载次数与旁路缺口。
 - 古堡三图（28/29/30）的预算耗尽已量化（`castle-gap-analysis.md`）：预算都大于 Oracle 动作数，
   失败集中在回提交点/核对链条之前的移动与重复调查，不是信息或预算不足。
+- **重复运行**：阶段 15 覆盖 MAP-01–12（36 对，成功率一致 0.8889），因全局请求上限停止；
+  其余 18 图仍是单 replicate，需要新预登记与新账本才能补齐。
 - 跨模型验证需要第二个 provider 与独立预算，本阶段不做。

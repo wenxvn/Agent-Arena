@@ -89,19 +89,22 @@ Oracle 各 seed 的触发率为 4/4。
 
 - 观测到的终止码：`CREW_PRESSURE_LOST`、`DUAL_OBJECTIVE_COMPLETE`、`NAV_CORE_FLOODED`
 
-## 7. MiMo 证据（Batch 8，单 replicate 描述性）
+## 7. MiMo 证据（含重复运行；单 seed 描述性）
 
 | seed | run_id | 结局 | 决策数 | 主指标 | 成本 CNY | 有效 |
 |---:|---|---|---:|---|---:|---|
 | 0 | `V10-MAP-02-S0-l2` | NAV_CORE_FLOODED（failure） | 6 | 0 | 0.002918 | 是 |
 | 0 | `V10-MAP-02-S0-m2` | CREW_PRESSURE_LOST（failure） | 12 | 0 | 0.009126 | 是 |
+| 0 | `V10-MAP-02-S0-x2-v2` | DUAL_OBJECTIVE_COMPLETE（success） | 11 | 1 | 0.0064664 | 是 |
 | 1 | `V10-MAP-02-S1-l2` | NAV_CORE_FLOODED（failure） | 6 | 0 | 0.00223008 | 是 |
 | 1 | `V10-MAP-02-S1-m2` | CREW_PRESSURE_LOST（failure） | 10 | 0 | 0.00381052 | 是 |
+| 1 | `V10-MAP-02-S1-x2-v2` | CREW_PRESSURE_LOST（failure） | 10 | 0 | 0.00334476 | 是 |
 | 2 | `V10-MAP-02-S2-l2` | NAV_CORE_FLOODED（failure） | 6 | 0 | 0.00266712 | 是 |
 | 2 | `V10-MAP-02-S2-m2` | CREW_PRESSURE_LOST（failure） | 10 | 0 | 0.00305016 | 是 |
+| 2 | `V10-MAP-02-S2-x2-v2` | CREW_PRESSURE_LOST（failure） | 10 | 0 | 0.004486 | 是 |
 
-- 有效局成功：0/6
-- 结算成本合计 CNY 0.02380188（含中断局的已结算部分）。
+- 有效局成功：1/9
+- 结算成本合计 CNY 0.03809904（含中断局的已结算部分）。
 - 单 seed、单 replicate，只作描述，不作统计推断。
 
 ## 8. 结论、剩余风险与下一步

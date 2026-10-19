@@ -89,16 +89,19 @@ Oracle 各 seed 的触发率为 6/6。
 
 - 观测到的终止码：`RESCUE_SIGNAL_WINDOW_EXPIRED`、`SIGNAL_LIT`
 
-## 7. MiMo 证据（Batch 8，单 replicate 描述性）
+## 7. MiMo 证据（含重复运行；单 seed 描述性）
 
 | seed | run_id | 结局 | 决策数 | 主指标 | 成本 CNY | 有效 |
 |---:|---|---|---:|---|---:|---|
 | 0 | `V10-MAP-04-S0-ext` | RESCUE_SIGNAL_WINDOW_EXPIRED（failure） | 12 | 0 | 0.0065264 | 是 |
+| 0 | `V10-MAP-04-S0-x2-v2` | RESCUE_SIGNAL_WINDOW_EXPIRED（failure） | 7 | 0 | 0.00344236 | 是 |
 | 1 | `V10-MAP-04-S1-ext` | RESCUE_SIGNAL_WINDOW_EXPIRED（failure） | 10 | 0 | 0.00404544 | 是 |
+| 1 | `V10-MAP-04-S1-x2-v2` | SIGNAL_LIT（success） | 9 | 3 | 0.00454248 | 是 |
 | 2 | `V10-MAP-04-S2-ext` | RESCUE_SIGNAL_WINDOW_EXPIRED（failure） | 10 | 0 | 0.00493452 | 是 |
+| 2 | `V10-MAP-04-S2-x2-v2` | RESCUE_SIGNAL_WINDOW_EXPIRED（failure） | 10 | 0 | 0.00477816 | 是 |
 
-- 有效局成功：0/3
-- 结算成本合计 CNY 0.01550636（含中断局的已结算部分）。
+- 有效局成功：1/6
+- 结算成本合计 CNY 0.02826936（含中断局的已结算部分）。
 - 单 seed、单 replicate，只作描述，不作统计推断。
 
 ## 8. 结论、剩余风险与下一步

@@ -91,7 +91,7 @@ Oracle 各 seed 的触发率为 6/6。
 
 - 观测到的终止码：`GATE_OPENED_WITH_CONSISTENT_HYPOTHESIS`、`WRONG_SUBMISSION_LIMIT`
 
-## 7. MiMo 证据（Batch 8，单 replicate 描述性）
+## 7. MiMo 证据（含重复运行；单 seed 描述性）
 
 | seed | run_id | 结局 | 决策数 | 主指标 | 成本 CNY | 有效 |
 |---:|---|---|---:|---|---:|---|

@@ -8,7 +8,7 @@
   "defect": "V10 原生 4 seed：氧气储备/断供容错/公开配电参数随 seed 变化；15 动作方案在四实例都可行；Batch 9：8 Gate 全过",
   "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V10 0/3（seed 0,1,2；CNY 0.00630880）",
+  "mimo": "V10 0/3（seed 0,1,2；CNY 0.01224528；另有 3 局重跑/中断保留）",
   "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"
@@ -22,7 +22,7 @@
   "defect": "V10 原生 4 seed：泄漏时序/扩散窗口/乘员压力/deadline 随 seed 变化；Batch 9：8 Gate 全过",
   "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V10 0/3（seed 0,1,2；CNY 0.02380188；另有 3 局重跑/中断保留）",
+  "mimo": "V10 0/3（seed 0,1,2；CNY 0.03809904；另有 6 局重跑/中断保留）",
   "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"
@@ -36,7 +36,7 @@
   "defect": "离线门禁通过；Batch 9：8 Gate 全过",
   "environment_seeds": "6（0,1,2,3,4,5）",
   "extra": {},
-  "mimo": "V10 2/3（seed 0,1,2；CNY 0.42543464）",
+  "mimo": "V10 2/3（seed 0,1,2；CNY 0.47421060；另有 3 局重跑/中断保留）",
   "oracle": "6/6（机制触发 6/6）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"
@@ -50,7 +50,7 @@
   "defect": "Batch 9 改标：绕行是合法替代（detour_only 6/6），但主指标 time_margin 0.67 ≪ Oracle 3.33，机制影响效率而非通过与否；Batch 9：8 Gate 全过",
   "environment_seeds": "6（0,1,2,3,4,5）",
   "extra": {},
-  "mimo": "V10 0/3（seed 0,1,2；CNY 0.01550636）",
+  "mimo": "V10 0/3（seed 0,1,2；CNY 0.02826936；另有 3 局重跑/中断保留）",
   "oracle": "6/6（机制触发 6/6）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"
@@ -64,7 +64,7 @@
   "defect": "V10 原生 4 seed：窗口时刻与通道耗时随 seed 变化；规则/契约/成功条件不变；Batch 9：8 Gate 全过",
   "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V10 0/3（seed 0,1,2；CNY 0.07099356；另有 6 局重跑/中断保留）",
+  "mimo": "V10 0/3（seed 0,1,2；CNY 0.10105596；另有 9 局重跑/中断保留）",
   "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"
@@ -78,7 +78,7 @@
   "defect": "离线门禁通过；10 seed cohort；Batch 9：8 Gate 全过",
   "environment_seeds": "10（0,1,2,3,4,5,6,7,8,9）",
   "extra": {},
-  "mimo": "V10 3/3（seed 0,1,2；CNY 0.64306164）",
+  "mimo": "V10 3/3（seed 0,1,2；CNY 0.64731792；另有 3 局重跑/中断保留）",
   "oracle": "10/10（机制触发 9/10）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"
@@ -92,7 +92,7 @@
   "defect": "离线门禁通过；4 实例；Batch 9：8 Gate 全过",
   "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V10 1/3（seed 0,1,2；CNY 0.00490100）",
+  "mimo": "V10 1/3（seed 0,1,2；CNY 0.01038424；另有 3 局重跑/中断保留）",
   "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"
@@ -106,7 +106,7 @@
   "defect": "离线门禁通过；4 个分区实例；Batch 9：8 Gate 全过",
   "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V10 3/3（seed 0,1,2；CNY 0.00588400）",
+  "mimo": "V10 3/3（seed 0,1,2；CNY 0.01224400；另有 3 局重跑/中断保留）",
   "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"
@@ -120,7 +120,7 @@
   "defect": "离线门禁通过；4 实例；Batch 9：8 Gate 全过",
   "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V10 3/3（seed 0,1,2；CNY 0.00484412）",
+  "mimo": "V10 3/3（seed 0,1,2；CNY 0.01004424；另有 3 局重跑/中断保留）",
   "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"
@@ -134,7 +134,7 @@
   "defect": "离线门禁通过；4 实例；Batch 9：8 Gate 全过",
   "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V10 3/3（seed 0,1,2；CNY 0.00211812）",
+  "mimo": "V10 3/3（seed 0,1,2；CNY 0.00423536；另有 3 局重跑/中断保留）",
   "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"
@@ -148,7 +148,7 @@
   "defect": "离线门禁通过；4 实例（含晴稳对照）；Batch 9：8 Gate 全过",
   "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V10 3/3（seed 0,1,2；CNY 0.00396036）",
+  "mimo": "V10 3/3（seed 0,1,2；CNY 0.00788296；另有 3 局重跑/中断保留）",
   "oracle": "4/4（机制触发 3/4）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"
@@ -162,7 +162,7 @@
   "defect": "离线门禁通过；4 实例；补上 V9 缺失的离线跨期证据；Batch 9：8 Gate 全过",
   "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V10 2/3（seed 0,1,2；CNY 0.03602840）",
+  "mimo": "V10 2/3（seed 0,1,2；CNY 0.07254192；另有 3 局重跑/中断保留）",
   "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"
@@ -176,7 +176,7 @@
   "defect": "离线门禁通过；4 道不同约束题；方向钉仍为 OPTIONAL（质量 4/5）；Batch 9：8 Gate 全过",
   "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V10 0/3（seed 0,1,2；CNY 0.05194640）",
+  "mimo": "V10 0/3（seed 0,1,2；CNY 0.06071176；另有 1 局重跑/中断保留）",
   "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"

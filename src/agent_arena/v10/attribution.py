@@ -196,10 +196,11 @@ def attribute(row: dict[str, Any]) -> RunAttribution:
 
 
 def analyse() -> dict[str, Any]:
-    rows = mimo_rows()
     effective_ids = {
         str(item["run_id"]) for items in effective_mimo_rows().values() for item in items
     }
+    # 只归因首局证据；重复运行由 replicate 分析单独描述。
+    rows = [row for row in mimo_rows() if str(row["run_id"]) in effective_ids]
     attributions = [attribute(row) for row in rows]
     return {
         "schema": "v10-mimo-attribution-1",
