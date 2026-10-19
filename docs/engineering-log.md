@@ -1668,3 +1668,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：规则文本变化改变 MAP-19 的 `rule_hash` 与新局 `prompt_hash`，旧局保留并标注；n=3、单 replicate，不作能力上限断言；MAP-19/20 的剩余失败属热策略层。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 18：动作循环扫描工具（trace_scan）
+
+事件：把“重复动作 + tick 不推进”的临时排查固化为可复现工具，并对全部 122 局 MiMo trace 做系统扫描。
+
+原因：DCR-V10-38/39 是逐个 trace 发现的；需要一条通用检查，避免同类“免费动作循环”再次被当成能力结论。
+
+改动：新增 `src/agent_arena/v10/trace_scan.py`（只读 trace，输出 `runs/v10/trace_scan/action_loops.json` 与 `docs/v10/action-loop-scan.md`；`--check` 在当前规则下存在免费动作循环时退出 1）；新增 `tests/test_v10_trace_scan.py`（4 条判定测试）；README 与最终报告加入复现入口与验收项。
+
+结果：122 局中命中 10 局 —— MAP-19 旧局 4 局（免费动作循环）、MAP-20 旧局 3 局（免费动作循环）、MAP-18 p0 3 局（旧契约 `invalid_output` 循环）；**当前 `rule_hash` 下免费动作循环为 0**，`trace_scan --check` 退出 0。MAP-12 的重复 `assign` 每天结算，判为正常。
+
+验证：`pytest` 1157 passed；`mypy src` 254 文件 0 issues；`ruff check .` 通过；`freeze verify` 9/9 unchanged。
+
+边界：工具只读本地 `runs/v10/mimo`，CI 无本地局，因此不作为 CI 门禁；历史局按 `rule_hash` 标注，不回写。
+
+关联提交：本次提交（分支 `v10-validity`）。

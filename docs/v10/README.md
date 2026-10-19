@@ -56,6 +56,7 @@
 | `trigger-gap-analysis.md` | 未触发机制局的逐局判读（预算/阈值/入口） |
 | `castle-budget-analysis.md` | 古堡三图的决策预算剖面与最后动作 |
 | `metric-recompute.md` | Batch 9：主指标公式级第二套实现（30/30 图、1093 次检查全一致） |
+| `action-loop-scan.md` | 122 局 trace 的“重复动作 + tick 不推进”扫描（仅 19/20 命中，均已修复） |
 | `metric-schema-v10.md` | v10 指标 schema、五态语义、缺陷处理结论 |
 | `mimo-preregistration.json` | Batch 8 预登记（矩阵、预算、stop rule、补跑与阶段 3–12 登记） |
 | `mimo-results.md` | 逐图逐 seed 结果、结局分类、中断与补跑 |
@@ -89,6 +90,7 @@
 .\.venv\Scripts\python.exe -m agent_arena.v10.baselines.suite    # 多 seed 基线 → runs/v10/baselines
 .\.venv\Scripts\python.exe -m agent_arena.v10.independent_check --check  # 指标独立复核（失败退出 1）
 .\.venv\Scripts\python.exe -m agent_arena.v10.recompute --check          # 公式级复算（30/30、0 不一致）
+.\.venv\Scripts\python.exe -m agent_arena.v10.trace_scan --check         # 当前规则下无免费动作循环
 .\.venv\Scripts\python.exe -m agent_arena.v10.validation         # 8 项 Gate 判定
 .\.venv\Scripts\python.exe -m agent_arena.v10.status             # 状态矩阵
 .\.venv\Scripts\python.exe -m agent_arena.v10.map_cards           # 30 张审计卡
@@ -113,5 +115,6 @@
   `CONTRACT_ARTIFACT` 10 局均为旧契约下的历史记录（DCR-V10-24/25/28 之前的重跑证据）。
 - **MAP-19/20 的机制为何没被触发**：旧局都在重复免费动作、tick 未推进；DCR-V10-38/39 补
   “只有 wait 推进时间”后 tick 已推进，剩余差距是热量分配、旁路时机与冷却排队。
+  `action-loop-scan.md` 对全部 122 局做了同类扫描：当前规则下 0 局免费动作循环。
 - 古堡三图（28/29/30）在 MiMo 下大量预算耗尽，需评估**决策预算**与案卷规模是否匹配。
 - 跨模型验证需要第二个 provider 与独立预算，本阶段不做。

@@ -173,6 +173,7 @@ V6 的 `map16_l1/l2` 场景仍按难度变体处理，不冒充 seed。
 - [x] pytest、ruff、mypy、diff-check 的真实退出码记录（本文件头部与各批 commit）。
 - [x] CI 质量门禁：`ruff check .`、`mypy src`、`pytest`，以及 `freeze verify`、
       `recompute --check`（30/30、0 不一致）、`independent_check --check`（0 违规）。
+- [x] 动作循环扫描：122 局 trace 中仅 MAP-19/20 的旧局命中，当前规则下 0 局（`trace_scan --check`）。
 - [x] MiMo 预算门禁、预登记、trace、账本和异常恢复可验证（25 个账本 + `mimo-preregistration.json`）。
 - [x] 30 图状态不虚报：30 张原生图 8 Gate 全过；模型失败的归因
       （接口/策略/预算/机制/provider/场景）见 §4、`failure-attribution.md`、
