@@ -2,7 +2,7 @@
 
 - 由 `python -m agent_arena.v10.attribution` 生成；逐局回放 `runs/v10/mimo/`
   `episodes/` 的动作序列。
-- 覆盖 **119** 局（其中有效局 90）；机制动作集见模块
+- 覆盖 **122** 局（其中有效局 90）；机制动作集见模块
   `MECHANISM_TOOLS`。
 - 标签含义：`CONTRACT_ARTIFACT`（接口假象）｜`KEY_ACTION_NEVER_ATTEMPTED`｜`KEY_ACTION_ATTEMPTED_REJECTED`｜`KEY_ACTION_USED_NO_TRIGGER`｜`TRIGGERED`。
 
@@ -14,7 +14,7 @@
 | `KEY_ACTION_ATTEMPTED_REJECTED` | 3 |
 | `KEY_ACTION_NEVER_ATTEMPTED` | 10 |
 | `KEY_ACTION_USED_NO_TRIGGER` | 41 |
-| `TRIGGERED` | 55 |
+| `TRIGGERED` | 58 |
 
 ## 2. 逐局归因（有效局）
 
@@ -74,9 +74,9 @@
 | MAP-18 | 0 | `V10-MAP-18-S0-i2` | `TRIGGERED` | 13 | 0.0 | `set_timetable` 13/2 | HEAD_ON_COLLISION | 0.5 |
 | MAP-18 | 1 | `V10-MAP-18-S1-i2` | `TRIGGERED` | 8 | 0.0 | `set_timetable` 8/1 | STATION_CAPACITY_EXCEEDED | 0.5 |
 | MAP-18 | 2 | `V10-MAP-18-S2-i2` | `TRIGGERED` | 7 | 0.0 | `set_timetable` 7/0 | SEGMENT_CAPACITY | 0.333333 |
-| MAP-19 | 0 | `V10-MAP-19-S0-i2` | `KEY_ACTION_USED_NO_TRIGGER` | 60 | 0.0 | `forecast_next` 59/0 | decision_budget_exhausted | None |
-| MAP-19 | 1 | `V10-MAP-19-S1-i2` | `KEY_ACTION_USED_NO_TRIGGER` | 60 | 0.0 | `forecast_next` 58/0 | decision_budget_exhausted | None |
-| MAP-19 | 2 | `V10-MAP-19-S2-ext-r2` | `KEY_ACTION_USED_NO_TRIGGER` | 60 | 0.0 | `forecast_next` 59/0 | decision_budget_exhausted | None |
+| MAP-19 | 0 | `V10-MAP-19-S0-u2` | `TRIGGERED` | 11 | 0.0 | `forecast_next` 4/0 | THERMAL_RUNAWAY | 0.122449 |
+| MAP-19 | 1 | `V10-MAP-19-S1-u2` | `TRIGGERED` | 5 | 0.0 | `forecast_next` 2/0 | THERMAL_RUNAWAY | 0.121951 |
+| MAP-19 | 2 | `V10-MAP-19-S2-u2` | `TRIGGERED` | 10 | 0.0 | `forecast_next` 5/0 | THERMAL_RUNAWAY | 0.172414 |
 | MAP-20 | 0 | `V10-MAP-20-S0-t2` | `KEY_ACTION_NEVER_ATTEMPTED` | 22 | 0.0 | `open_bypass` 0/0 | PRODUCTION_BELOW_TARGET | 0.858824 |
 | MAP-20 | 1 | `V10-MAP-20-S1-t2` | `KEY_ACTION_ATTEMPTED_REJECTED` | 12 | 0.0 | `open_bypass` 1/1 | THERMAL_OVERHEAT | 0.329412 |
 | MAP-20 | 2 | `V10-MAP-20-S2-t2` | `KEY_ACTION_NEVER_ATTEMPTED` | 56 | 0.0 | `open_bypass` 0/0 | decision_budget_exhausted | None |
@@ -124,7 +124,6 @@
 | MAP-14 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×3 |
 | MAP-16 | 2/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×2 |
 | MAP-17 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×3 |
-| MAP-19 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×3 |
 | MAP-20 | 3/3 | `KEY_ACTION_NEVER_ATTEMPTED` | KEY_ACTION_NEVER_ATTEMPTED×2；KEY_ACTION_ATTEMPTED_REJECTED×1 |
 | MAP-22 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×2；KEY_ACTION_ATTEMPTED_REJECTED×1 |
 | MAP-25 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×3 |

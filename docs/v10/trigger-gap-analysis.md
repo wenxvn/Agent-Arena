@@ -1,7 +1,7 @@
 # V10 未触发机制局的逐局判读
 
 - 由 `python -m agent_arena.v10.trigger_gap` 生成；只读既有 MiMo trace 与基线产物。
-- 覆盖 **37** 局（16 张图），
+- 覆盖 **34** 局（15 张图），
   全部是“有效但 `mechanism_triggered=False`”。
 - 判读规则：`BUDGET`（预算用尽）｜`THRESHOLD`（撞规则阈值）｜
 `ENTRY_NOT_ATTEMPTED`（没尝试机制动作）｜`ENTRY_REJECTED`（机制动作全被拒）｜
@@ -11,7 +11,7 @@
 
 | 判读 | 局数 |
 |---|---:|
-| `BUDGET` | 13 |
+| `BUDGET` | 10 |
 | `ENTRY_NOT_ATTEMPTED` | 1 |
 | `ENTRY_REJECTED` | 1 |
 | `THRESHOLD` | 15 |
@@ -30,7 +30,6 @@
 | MAP-14 | 3 | `THRESHOLD`×3 | 38 | 12 | 26 | 24, 35, 35 |
 | MAP-16 | 2 | `THRESHOLD`×2 | 30 | 20 | 10 | 4, 7 |
 | MAP-17 | 3 | `USED_NO_THRESHOLD`×3 | 38 | 14 | 24 | 12, 12, 12 |
-| MAP-19 | 3 | `BUDGET`×3 | 60 | 38 | 22 | 60, 60, 60 |
 | MAP-20 | 3 | `BUDGET`×1；`ENTRY_NOT_ATTEMPTED`×1；`USED_NO_THRESHOLD`×1 | 56 | 40 | 16 | 12, 22, 56 |
 | MAP-22 | 3 | `ENTRY_REJECTED`×1；`THRESHOLD`×1；`USED_NO_THRESHOLD`×1 | 80 | 24 | 56 | 28, 58, 59 |
 | MAP-25 | 3 | `BUDGET`×3 | 30 | 16 | 14 | 30, 30, 30 |
@@ -60,9 +59,6 @@
 | MAP-17 | 0 | `V10-MAP-17-S0-q2` | `USED_NO_THRESHOLD` | 12/38 | DEADLINE_SERVICE_BELOW_THRESHOLD | `set_timetable` 12/0 | `set_timetable` → TICK_COMMITTED |
 | MAP-17 | 1 | `V10-MAP-17-S1-q2` | `USED_NO_THRESHOLD` | 12/38 | DEADLINE_SERVICE_BELOW_THRESHOLD | `set_timetable` 11/0 | `set_timetable` → TICK_COMMITTED |
 | MAP-17 | 2 | `V10-MAP-17-S2-q2` | `USED_NO_THRESHOLD` | 12/38 | DEADLINE_SERVICE_BELOW_THRESHOLD | `set_timetable` 11/0 | `set_timetable` → TICK_COMMITTED |
-| MAP-19 | 0 | `V10-MAP-19-S0-i2` | `BUDGET` | 60/60 | decision_budget_exhausted | `forecast_next` 59/0 | `forecast_next` → FORECAST_RECORDED |
-| MAP-19 | 1 | `V10-MAP-19-S1-i2` | `BUDGET` | 60/60 | decision_budget_exhausted | `forecast_next` 58/0 | `forecast_next` → FORECAST_RECORDED |
-| MAP-19 | 2 | `V10-MAP-19-S2-ext-r2` | `BUDGET` | 60/60 | decision_budget_exhausted | `forecast_next` 59/0 | `forecast_next` → FORECAST_RECORDED |
 | MAP-20 | 0 | `V10-MAP-20-S0-t2` | `ENTRY_NOT_ATTEMPTED` | 22/56 | PRODUCTION_BELOW_TARGET | `open_bypass` 0/0 | `wait` → PRODUCTION_BELOW_TARGET |
 | MAP-20 | 1 | `V10-MAP-20-S1-t2` | `USED_NO_THRESHOLD` | 12/56 | THERMAL_OVERHEAT | `open_bypass` 1/0 | `wait` → THERMAL_OVERHEAT |
 | MAP-20 | 2 | `V10-MAP-20-S2-t2` | `BUDGET` | 56/56 | decision_budget_exhausted | `open_bypass` 0/0 | `set_flow` → FLOW_SET |

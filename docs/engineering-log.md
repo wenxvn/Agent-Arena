@@ -1652,3 +1652,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：规则文本变化改变了 MAP-20 的 `rule_hash` 与新局 `prompt_hash`，旧 `-ext`/`-j2` 局保留并需标注；n=3、单 replicate，不作能力上限断言。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 17：MAP-19 公开 wait 语义与阶段 14 复测（DCR-V10-39）
+
+事件：用“重复动作 + tick 不推进”扫描全部 MiMo trace，发现 MAP-19 与 MAP-20 同类：旧局 58 次左右 `forecast_next`、tick 始终 0。
+
+原因：MAP-19 的 `forecast_next`/`set_cooling`/`adjust_loads`/`read_temperature` 的 `_action_cost` 为 0，只有 `wait` 推进 tick；公开规则没有说明。模型把“申报”当成推进动作，形成免费动作循环。
+
+改动：`map19.public_rules()` 追加与 DCR-V10-38 相同的“只有 wait 推进时间”说明；新增阶段 14（`ledger_v10_020.jsonl`、3 seed）与 `DCR-V10-39`；`evidence_state._run_priority` 补 `-u2`（15）。
+
+结果：阶段 14 三局 tick 推进到 4/2/4、非法动作均 0，但都在 5–11 决策后 `THERMAL_RUNAWAY`，主指标 0.122449/0.121951/0.172414（旧局为 0）。结算 CNY `0.01946776`；累计结算 `2.09549548` + 未知 `0.13312000` = `2.22861548`。累计 MiMo：122 局记录、116 有效、6 中断保留、成功 37/116。
+
+验证：`pytest` 1151 passed；`mypy src` 253 文件 0 issues；`ruff check .` 通过；`freeze verify` 9/9 unchanged；公式级复算 30/30、1093 次检查 0 不一致；独立核对 30 图 × 144 seed 实例 0 违规；CI 运行 `freeze verify`、`recompute --check`、`independent_check --check`。
+
+边界：规则文本变化改变 MAP-19 的 `rule_hash` 与新局 `prompt_hash`，旧局保留并标注；n=3、单 replicate，不作能力上限断言；MAP-19/20 的剩余失败属热策略层。
+
+关联提交：本次提交（分支 `v10-validity`）。

@@ -14,8 +14,8 @@
   "shared_across_all_ledgers": true
  },
  "cost_so_far_cny": {
-  "settled": 2.07602772,
-  "total": 2.20914772,
+  "settled": 2.09549548,
+  "total": 2.22861548,
   "unknown_reserved": 0.13312
  },
  "history": [
@@ -78,6 +78,18 @@
    "ledger": "runs/v10/mimo/ledger_v10_019.jsonl",
    "note": "阶段 13：MAP-20 补 wait 语义后重测 3 局；tick 已推进但均未达标；结算 CNY 0.04741280，无未知消费",
    "settled_cny": 0.0474128,
+   "status": "completed"
+  },
+  {
+   "at": "2026-10-19",
+   "episodes": [
+    "V10-MAP-19-S0-u2",
+    "V10-MAP-19-S1-u2",
+    "V10-MAP-19-S2-u2"
+   ],
+   "ledger": "runs/v10/mimo/ledger_v10_020.jsonl",
+   "note": "阶段 14：MAP-19 补 wait 语义后重测 3 局；tick 已推进但均过热终局；结算 CNY 0.01946776，无未知消费",
+   "settled_cny": 0.01946776,
    "status": "completed"
   }
  ],
@@ -292,6 +304,34 @@
   },
   "rationale": "阶段 4 的 MAP-20 三局 56/56 决策全部是 set_flow [25,25,10]，tick 始终为 0；公开规则未说明 set_flow/open_bypass/adjust_loads 不推进时间、wait 才结算。DCR-V10-38 只补充这一句公开规则（不改规则逻辑、预算与成功条件），重测 3 个 seed。",
   "run_id_pattern": "V10-MAP-20-S<seed>-t2",
+  "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
+ },
+ "phase_14_map19_wait_rule": {
+  "comparison_rule": "与阶段 3/2 的 MAP-19 局对照：同一实例、同一预算，只补 wait 语义；旧局保留并标注",
+  "dcr": "DCR-V10-39",
+  "declared_at": "2026-10-19（开跑前登记）",
+  "environment_seeds": [
+   0,
+   1,
+   2
+  ],
+  "episodes": 3,
+  "group_tag": "u2",
+  "ledger": "runs/v10/mimo/ledger_v10_020.jsonl",
+  "manifest_file": "runs/v10/mimo/manifest_u2.json",
+  "manifest_hash": "2c214d4c9a7de858f2459bf24b3c48c890eede31a1f9a6b3b37bff59f09dd331",
+  "maps": [
+   "MAP-19"
+  ],
+  "outcome": {
+   "all_valid": true,
+   "cost_settled_cny": 0.01946776,
+   "episodes": 3,
+   "result": "三局 tick 均推进（4/2/4），但都在 5–11 决策后 THERMAL_RUNAWAY；主指标 0.122449/0.121951/0.172414；非法动作均为 0。",
+   "status": "completed"
+  },
+  "rationale": "阶段 2/3 的 MAP-19 三局分别 60/60、60/60、60 决策，58 次左右为 forecast_next、tick 始终为 0；公开规则未说明设置/申报类动作不推进时间、wait 才结算。DCR-V10-39 只补充这一句公开规则（不改规则逻辑、预算与成功条件），重测 3 个 seed。",
+  "run_id_pattern": "V10-MAP-19-S<seed>-u2",
   "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
  },
  "phase_2_extension": {

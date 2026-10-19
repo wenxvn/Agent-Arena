@@ -3,7 +3,7 @@
 - 运行时：`v10 原生`
 - 构念标签：`FORCED`；效度状态：`NEEDS_MORE_EVIDENCE`（均为 `agent_reviewed`）
 - DCR：`DCR-V10-10`
-- `rule_hash`：`a32b8f9651ae8fd9bb79b2a74cfa00f1a1ce988e0646be03ca01db5ff3ba580b`
+- `rule_hash`：`57b2e25d838fadb4473aab6571d5accfe674b57368e1a5a1884ff5c436390e83`
 - `metric_hash`：`4f3e6c6bf174de835c70259e8c385ca7e30f06c3bc03c1fb2a98b2772b32a0fe`
 
 ## 1. 目标构念与最小可观察行为
@@ -25,6 +25,7 @@ Oracle 各 seed 的触发率为 4/4。
 3. set_cooling 在提交后 tick+2 才生效。
 4. **forecast_next 是申报**：必须提交下一 tick 的三区温度预测；预测最大误差 ≤ 1 时该 tick 的负荷才计入产能，否则该 tick 产能记 0。
 5. 在 12 tick 内累计 49 点产能且温度不超 10 即成功。
+6. 时间只在 wait 时推进：read_temperature / set_cooling / adjust_loads / forecast_next 只修改本 tick 的设置或申报，不推进 tick；每个 tick 必须调用一次 wait 才结算（否则 tick 不变、产能为 0）。
 
 ### Observation 公开字段
 
@@ -56,10 +57,10 @@ Oracle 各 seed 的触发率为 4/4。
 
 | seed | scenario_hash（前 16 位） |
 |---:|---|
-| 0 | `28a955e260815cb1` |
-| 1 | `caf8bbe6e04e7827` |
-| 2 | `02fa06cb42a3fd8c` |
-| 3 | `467575e681bbac31` |
+| 0 | `f6b080e3779b8336` |
+| 1 | `88227fe5a15f2772` |
+| 2 | `a33aec202a1af1a7` |
+| 3 | `93a9d4c4edcec766` |
 
 ## 5. 主次指标（`METRIC_SPECS`）
 
@@ -93,14 +94,17 @@ Oracle 各 seed 的触发率为 4/4。
 |---:|---|---|---:|---|---:|---|
 | 0 | `V10-MAP-19-S0-ext` | decision_budget_exhausted（decision_budget_exhausted） | 60 | None | 0.0451994 | 是 |
 | 0 | `V10-MAP-19-S0-i2` | decision_budget_exhausted（decision_budget_exhausted） | 60 | None | 0.0131528 | 是 |
+| 0 | `V10-MAP-19-S0-u2` | THERMAL_RUNAWAY（failure） | 11 | 0.122449 | 0.00842104 | 是 |
 | 1 | `V10-MAP-19-S1-ext` | decision_budget_exhausted（decision_budget_exhausted） | 60 | None | 0.0461032 | 是 |
 | 1 | `V10-MAP-19-S1-i2` | decision_budget_exhausted（decision_budget_exhausted） | 60 | None | 0.0143592 | 是 |
+| 1 | `V10-MAP-19-S1-u2` | THERMAL_RUNAWAY（failure） | 5 | 0.121951 | 0.00407 | 是 |
 | 2 | `V10-MAP-19-S2-ext` | unknown_provider_spend（unknown_provider_spend） | 2 | None | 0.00123 | 否（中断保留） |
 | 2 | `V10-MAP-19-S2-ext-r2` | decision_budget_exhausted（decision_budget_exhausted） | 60 | None | 0.0073822 | 是 |
 | 2 | `V10-MAP-19-S2-i2` | unknown_provider_spend（unknown_provider_spend） | 43 | None | 0.00956996 | 否（中断保留） |
+| 2 | `V10-MAP-19-S2-u2` | THERMAL_RUNAWAY（failure） | 10 | 0.172414 | 0.00697672 | 是 |
 
-- 有效局成功：0/5；另有 2 局 provider/账本中断（保留但不计入）
-- 结算成本合计 CNY 0.13699676（含中断局的已结算部分）。
+- 有效局成功：0/8；另有 2 局 provider/账本中断（保留但不计入）
+- 结算成本合计 CNY 0.15646452（含中断局的已结算部分）。
 - 单 seed、单 replicate，只作描述，不作统计推断。
 
 ## 8. 结论、剩余风险与下一步

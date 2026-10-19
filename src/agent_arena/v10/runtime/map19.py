@@ -208,6 +208,9 @@ class Map19V10Environment(V10Map):
             f"{self.variant.tolerance} 时该 tick 的负荷才计入产能，否则该 tick 产能记 0。",
             f"在 {self.variant.horizon} tick 内累计 {self.variant.target} 点产能"
             "且温度不超 10 即成功。",
+            "时间只在 wait 时推进：read_temperature / set_cooling / adjust_loads / forecast_next "
+            "只修改本 tick 的设置或申报，不推进 tick；每个 tick 必须调用一次 wait 才结算"
+            "（否则 tick 不变、产能为 0）。",
         )
 
     # ------------------------------------------------------------------ public
