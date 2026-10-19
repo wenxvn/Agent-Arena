@@ -11,7 +11,7 @@
 - `SKIPPED`：公式依赖密封真值或地图内部状态（如 MAP-03 的航线码、MAP-13 的密封案卷、
   MAP-14 的假设表、MAP-21 的喷发时刻），在报告中如实标注“未覆盖”。
 
-覆盖：19/23 张原生图；未覆盖 4 张（03/13/14/21）与原因见 `docs/v10/metric-recompute.md`。
+覆盖：24/27 张原生图；未覆盖 3 张（13/14/21）与原因见 `docs/v10/metric-recompute.md`。
 
 用法：``python -m agent_arena.v10.recompute``
 """
