@@ -1636,3 +1636,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：归一化后“仅换行差异”不再触发冻结告警，真实内容变化仍被 sha256 捕获；CI 只验证文件未变，不重放本地 Trace。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 16：MAP-20 公开 wait 语义与阶段 13 复测（DCR-V10-38）
+
+事件：复核 MAP-20 “机制从未触发”的三局 trace，发现 56/56 决策全是 `set_flow [25,25,10]`、`tick` 始终为 0；补公开规则后重测 3 局。
+
+原因：`set_flow`/`open_bypass`/`adjust_loads` 的 `_action_cost` 为 0，只有 `wait` 推进 tick；公开规则没有说明这一点。模型因此反复设置、从不提交，主指标恒 0。离线 Oracle（40 动作）与公开启发式（30 动作）均 4/4 成功，`no_bypass` 消融产能 0.9412，说明问题不在旁路本身。
+
+改动：`map20.public_rules()` 追加“时间只在 wait 时推进，每个 tick 必须 wait 一次”；新增阶段 13（`ledger_v10_019.jsonl`、3 seed）与新 `DCR-V10-38`；`evidence_state._run_priority` 补 `-t2`（14）与 `-r2`（13），避免旧 `-j2` 局压过新证据。
+
+结果：阶段 13 三局非法动作均 0；seed 0 产能 0.858824（tick 10，未用旁路）、seed 1 0.329412（用 `open_bypass` 后过热）、seed 2 截尾（tick 5 后回到重复 set_flow）。结算 CNY `0.04741280`；累计结算 `2.07602772` + 未知 `0.13312000` = `2.20914772`。`trigger-gap-analysis` 的 MAP-20 从 `BUDGET×3` 变为 `ENTRY_NOT_ATTEMPTED/USED_NO_THRESHOLD/BUDGET`。
+
+验证：`pytest` 1151 passed；`mypy src` 253 文件 0 issues；`ruff check .` 通过；`freeze verify` 9/9 unchanged；公式级复算 30/30、1093 次检查 0 不一致；独立核对 30 图 × 144 seed 实例 0 违规。
+
+边界：规则文本变化改变了 MAP-20 的 `rule_hash` 与新局 `prompt_hash`，旧 `-ext`/`-j2` 局保留并需标注；n=3、单 replicate，不作能力上限断言。
+
+关联提交：本次提交（分支 `v10-validity`）。

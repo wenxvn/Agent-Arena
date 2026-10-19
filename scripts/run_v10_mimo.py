@@ -69,6 +69,7 @@ LEDGER_O2_PATH = MIMO_ROOT / "ledger_v10_015.jsonl"
 LEDGER_P2_PATH = MIMO_ROOT / "ledger_v10_016.jsonl"
 LEDGER_Q2_PATH = MIMO_ROOT / "ledger_v10_017.jsonl"
 LEDGER_R2_PATH = MIMO_ROOT / "ledger_v10_018.jsonl"
+LEDGER_T2_PATH = MIMO_ROOT / "ledger_v10_019.jsonl"
 PHASE_LEDGERS = {
     "main": LEDGER_PATH,
     "ext": LEDGER_EXT_PATH,
@@ -83,6 +84,7 @@ PHASE_LEDGERS = {
     "p2": LEDGER_P2_PATH,
     "q2": LEDGER_Q2_PATH,
     "r2": LEDGER_R2_PATH,
+    "t2": LEDGER_T2_PATH,
 }
 MODEL_NAME = "mimo-v2.6-flash"
 MAX_CONSECUTIVE = 3
@@ -128,6 +130,8 @@ PHASE_GROUPS: dict[str, tuple[tuple[str, tuple[str, ...]], ...]] = {
     "q2": (("q2", ("MAP-17",)),),
     #: 阶段 12：MAP-16 原生 seed 化（DCR-V10-36）后的首轮真实模型证据。
     "r2": (("r2", ("MAP-16",)),),
+    #: 阶段 13：MAP-20 公开规则补 wait 语义（DCR-V10-38）后的重测。
+    "t2": (("t2", ("MAP-20",)),),
 }
 
 #: 逐图格式澄清（只写公开结构，不含真值/答案）；随 prompt_hash 一起冻结。

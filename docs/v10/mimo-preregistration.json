@@ -14,8 +14,8 @@
   "shared_across_all_ledgers": true
  },
  "cost_so_far_cny": {
-  "settled": 2.02861492,
-  "total": 2.16173492,
+  "settled": 2.07602772,
+  "total": 2.20914772,
   "unknown_reserved": 0.13312
  },
  "history": [
@@ -66,6 +66,18 @@
    "ledger": "runs/v10/mimo/ledger_v10_018.jsonl",
    "note": "阶段 12：MAP-16 原生 seed 化后首测 3 局；1 成功、非法动作 0/0/0；结算 CNY 0.01593856，无未知消费",
    "settled_cny": 0.01593856,
+   "status": "completed"
+  },
+  {
+   "at": "2026-10-19",
+   "episodes": [
+    "V10-MAP-20-S0-t2",
+    "V10-MAP-20-S1-t2",
+    "V10-MAP-20-S2-t2"
+   ],
+   "ledger": "runs/v10/mimo/ledger_v10_019.jsonl",
+   "note": "阶段 13：MAP-20 补 wait 语义后重测 3 局；tick 已推进但均未达标；结算 CNY 0.04741280，无未知消费",
+   "settled_cny": 0.0474128,
    "status": "completed"
   }
  ],
@@ -252,6 +264,34 @@
   },
   "rationale": "MAP-16 原为 V4 适配图，V8 固定实例只把 0/1/2 当重复标签。DCR-V10-36 复用 Map16Environment 已公开的起点/终点参数登记四个实例（规则不改），Oracle 4/4、启发式 4/4、三消融 0/4、legal_random 0/80。补跑 3 个环境 seed 以满足 mimo Gate。",
   "run_id_pattern": "V10-MAP-16-S<seed>-r2",
+  "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
+ },
+ "phase_13_map20_wait_rule": {
+  "comparison_rule": "与阶段 4（-j2）三局对照：同一实例、同一预算，只补 wait 语义；旧局保留并标注",
+  "dcr": "DCR-V10-38",
+  "declared_at": "2026-10-19（开跑前登记）",
+  "environment_seeds": [
+   0,
+   1,
+   2
+  ],
+  "episodes": 3,
+  "group_tag": "t2",
+  "ledger": "runs/v10/mimo/ledger_v10_019.jsonl",
+  "manifest_file": "runs/v10/mimo/manifest_t2.json",
+  "manifest_hash": "83d92c968c671c9c3d14ec7b8c36e66f827edd0e9cef30ee04e87f5b65eb59a6",
+  "maps": [
+   "MAP-20"
+  ],
+  "outcome": {
+   "all_valid": true,
+   "cost_settled_cny": 0.0474128,
+   "episodes": 3,
+   "result": "三局均未达标但 tick 已推进：seed 0 产能 0.858824（10 tick，未开旁路）；seed 1 12 决策后 THERMAL_OVERHEAT（0.329412）；seed 2 在 tick 5 后重复 set_flow 56 次耗尽预算。三局非法动作均为 0。",
+   "status": "completed"
+  },
+  "rationale": "阶段 4 的 MAP-20 三局 56/56 决策全部是 set_flow [25,25,10]，tick 始终为 0；公开规则未说明 set_flow/open_bypass/adjust_loads 不推进时间、wait 才结算。DCR-V10-38 只补充这一句公开规则（不改规则逻辑、预算与成功条件），重测 3 个 seed。",
+  "run_id_pattern": "V10-MAP-20-S<seed>-t2",
   "stop_rule_note": "UNKNOWN_PROVIDER_SPEND 或连续 3 次 provider 错误立即封账，不再补跑"
  },
  "phase_2_extension": {

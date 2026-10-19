@@ -2,7 +2,7 @@
 
 - 由 `python -m agent_arena.v10.attribution` 生成；逐局回放 `runs/v10/mimo/`
   `episodes/` 的动作序列。
-- 覆盖 **116** 局（其中有效局 90）；机制动作集见模块
+- 覆盖 **119** 局（其中有效局 90）；机制动作集见模块
   `MECHANISM_TOOLS`。
 - 标签含义：`CONTRACT_ARTIFACT`（接口假象）｜`KEY_ACTION_NEVER_ATTEMPTED`｜`KEY_ACTION_ATTEMPTED_REJECTED`｜`KEY_ACTION_USED_NO_TRIGGER`｜`TRIGGERED`。
 
@@ -11,8 +11,8 @@
 | 标签 | 局数 |
 |---|---:|
 | `CONTRACT_ARTIFACT` | 10 |
-| `KEY_ACTION_ATTEMPTED_REJECTED` | 2 |
-| `KEY_ACTION_NEVER_ATTEMPTED` | 8 |
+| `KEY_ACTION_ATTEMPTED_REJECTED` | 3 |
+| `KEY_ACTION_NEVER_ATTEMPTED` | 10 |
 | `KEY_ACTION_USED_NO_TRIGGER` | 41 |
 | `TRIGGERED` | 55 |
 
@@ -77,9 +77,9 @@
 | MAP-19 | 0 | `V10-MAP-19-S0-i2` | `KEY_ACTION_USED_NO_TRIGGER` | 60 | 0.0 | `forecast_next` 59/0 | decision_budget_exhausted | None |
 | MAP-19 | 1 | `V10-MAP-19-S1-i2` | `KEY_ACTION_USED_NO_TRIGGER` | 60 | 0.0 | `forecast_next` 58/0 | decision_budget_exhausted | None |
 | MAP-19 | 2 | `V10-MAP-19-S2-ext-r2` | `KEY_ACTION_USED_NO_TRIGGER` | 60 | 0.0 | `forecast_next` 59/0 | decision_budget_exhausted | None |
-| MAP-20 | 0 | `V10-MAP-20-S0-j2` | `KEY_ACTION_NEVER_ATTEMPTED` | 56 | 0.0 | `open_bypass` 0/0 | decision_budget_exhausted | 0.0 |
-| MAP-20 | 1 | `V10-MAP-20-S1-j2` | `KEY_ACTION_NEVER_ATTEMPTED` | 56 | 0.0 | `open_bypass` 0/0 | decision_budget_exhausted | 0.0 |
-| MAP-20 | 2 | `V10-MAP-20-S2-j2` | `KEY_ACTION_NEVER_ATTEMPTED` | 56 | 0.0 | `open_bypass` 0/0 | decision_budget_exhausted | 0.0 |
+| MAP-20 | 0 | `V10-MAP-20-S0-t2` | `KEY_ACTION_NEVER_ATTEMPTED` | 22 | 0.0 | `open_bypass` 0/0 | PRODUCTION_BELOW_TARGET | 0.858824 |
+| MAP-20 | 1 | `V10-MAP-20-S1-t2` | `KEY_ACTION_ATTEMPTED_REJECTED` | 12 | 0.0 | `open_bypass` 1/1 | THERMAL_OVERHEAT | 0.329412 |
+| MAP-20 | 2 | `V10-MAP-20-S2-t2` | `KEY_ACTION_NEVER_ATTEMPTED` | 56 | 0.0 | `open_bypass` 0/0 | decision_budget_exhausted | None |
 | MAP-21 | 0 | `V10-MAP-21-S0-p0` | `TRIGGERED` | 7 | 0.0 | `collect_and_carry_sample` 1/0、`reinforce_sample_case` 1/0 | EVACUATED_BEFORE_ERUPTION | 0.654546 |
 | MAP-21 | 1 | `V10-MAP-21-S1-p0` | `TRIGGERED` | 6 | 0.0 | `collect_and_carry_sample` 1/0、`reinforce_sample_case` 0/0 | EVACUATED_BEFORE_ERUPTION | 0.916667 |
 | MAP-21 | 2 | `V10-MAP-21-S2-p0` | `TRIGGERED` | 6 | 0.0 | `collect_and_carry_sample` 1/0、`reinforce_sample_case` 0/0 | EVACUATED_BEFORE_ERUPTION | 0.590909 |
@@ -125,7 +125,7 @@
 | MAP-16 | 2/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×2 |
 | MAP-17 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×3 |
 | MAP-19 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×3 |
-| MAP-20 | 3/3 | `KEY_ACTION_NEVER_ATTEMPTED` | KEY_ACTION_NEVER_ATTEMPTED×3 |
+| MAP-20 | 3/3 | `KEY_ACTION_NEVER_ATTEMPTED` | KEY_ACTION_NEVER_ATTEMPTED×2；KEY_ACTION_ATTEMPTED_REJECTED×1 |
 | MAP-22 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×2；KEY_ACTION_ATTEMPTED_REJECTED×1 |
 | MAP-25 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×3 |
 | MAP-27 | 3/3 | `KEY_ACTION_USED_NO_TRIGGER` | KEY_ACTION_USED_NO_TRIGGER×3 |

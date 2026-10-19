@@ -274,7 +274,7 @@
   "defect": "离线门禁通过；4 实例；Batch 9：8 Gate 全过",
   "environment_seeds": "4（0,1,2,3）",
   "extra": {},
-  "mimo": "V10 0/3（seed 0,1,2；CNY 0.20239060；另有 3 局重跑/中断保留）",
+  "mimo": "V10 0/3（seed 0,1,2；CNY 0.24980340；另有 6 局重跑/中断保留）",
   "oracle": "4/4（机制触发 4/4）",
   "review": "agent_reviewed",
   "validity_status": "VALIDATED"

@@ -3,7 +3,7 @@
 - 由 `python -m agent_arena.v10.mimo_report` 从 `runs/v10/mimo/` 逐字重算，禁止手填。
 - 模型：`mimo-v2.6-flash`；temperature=0；reasoning 关闭；每次请求先前预留、按供应商
   usage 结算；未知消费立即封账（保留预留，**不按 0 计**）。
-- 全局上限 CNY 10；已结算 **CNY 2.02861492**；未知/未结预留 **CNY 0.13312000**；合计占用 **CNY 2.16173492**。
+- 全局上限 CNY 10；已结算 **CNY 2.07602772**；未知/未结预留 **CNY 0.13312000**；合计占用 **CNY 2.20914772**。
 - 每图 3 个环境 seed、单一 replicate；`n=3` 只作描述，不作显著性断言，也不做跨模型排名。
 
 ## 1. 覆盖与账本
@@ -33,6 +33,7 @@
 | `ledger_v10_016.jsonl` | 90 | 0.04212948 | 0.00000000 | — | `2719d2b6934f` |
 | `ledger_v10_017.jsonl` | 36 | 0.03652772 | 0.00000000 | — | `f312fdf95081` |
 | `ledger_v10_018.jsonl` | 30 | 0.01593856 | 0.00000000 | — | `bcd3ccea5a1f` |
+| `ledger_v10_019.jsonl` | 90 | 0.04741280 | 0.00000000 | — | `e9dae2f3678c` |
 
 ## 2. 分组结果（仅统计有效局）
 
@@ -50,6 +51,10 @@
 | 补公开规则后重跑（MAP-02/05） | 6 | 0 | 0.000 | 0 | 0.05914944 |
 | MAP-27 原生首测 | 3 | 0 | 0.000 | 1 | 0.06148672 |
 | MAP-01 原生首测 | 3 | 0 | 0.000 | 0 | 0.00630880 |
+| MAP-25 原生首测 | 3 | 0 | 0.000 | 0 | 0.04212948 |
+| MAP-17 原生首测 | 3 | 0 | 0.000 | 0 | 0.03652772 |
+| MAP-16 原生首测 | 3 | 1 | 0.333 | 0 | 0.01593856 |
+| MAP-20 wait 语义重测 | 3 | 0 | 0.000 | 0 | 0.04741280 |
 
 ## 3. 逐图逐 seed
 
@@ -131,10 +136,13 @@
 | MAP-19 | volcano | 简单 | 2 | `V10-MAP-19-S2-i2` | unknown_provider_spend | 43 | None | False | 0.00956996 | 否 |
 | MAP-20 | volcano | 中等 | 0 | `V10-MAP-20-S0-ext` | decision_budget_exhausted | 56 | 0.0 | False | 0.05722948 | 是 |
 | MAP-20 | volcano | 中等 | 0 | `V10-MAP-20-S0-j2` | decision_budget_exhausted | 56 | 0.0 | False | 0.01219616 | 是 |
+| MAP-20 | volcano | 中等 | 0 | `V10-MAP-20-S0-t2` | PRODUCTION_BELOW_TARGET | 22 | 0.858824 | False | 0.01964304 | 是 |
 | MAP-20 | volcano | 中等 | 1 | `V10-MAP-20-S1-ext` | decision_budget_exhausted | 56 | 0.0 | False | 0.05725844 | 是 |
 | MAP-20 | volcano | 中等 | 1 | `V10-MAP-20-S1-j2` | decision_budget_exhausted | 56 | 0.0 | False | 0.00812904 | 是 |
+| MAP-20 | volcano | 中等 | 1 | `V10-MAP-20-S1-t2` | THERMAL_OVERHEAT | 12 | 0.329412 | False | 0.00932436 | 是 |
 | MAP-20 | volcano | 中等 | 2 | `V10-MAP-20-S2-ext` | decision_budget_exhausted | 56 | 0.0 | False | 0.05757780 | 是 |
 | MAP-20 | volcano | 中等 | 2 | `V10-MAP-20-S2-j2` | decision_budget_exhausted | 56 | 0.0 | False | 0.00999968 | 是 |
+| MAP-20 | volcano | 中等 | 2 | `V10-MAP-20-S2-t2` | decision_budget_exhausted | 56 | None | False | 0.01844540 | 是 |
 | MAP-21 | volcano | 困难 | 0 | `V10-MAP-21-S0-p0` | EVACUATED_BEFORE_ERUPTION | 7 | 0.654546 | True | 0.00589824 | 是 |
 | MAP-21 | volcano | 困难 | 1 | `V10-MAP-21-S1-p0` | EVACUATED_BEFORE_ERUPTION | 6 | 0.916667 | True | 0.00438948 | 是 |
 | MAP-21 | volcano | 困难 | 2 | `V10-MAP-21-S2-p0` | EVACUATED_BEFORE_ERUPTION | 6 | 0.590909 | True | 0.00232772 | 是 |
@@ -176,13 +184,13 @@
 
 | outcome | 局数 |
 |---|---:|
-| `decision_budget_exhausted` | 35 |
-| `failure` | 44 |
+| `decision_budget_exhausted` | 36 |
+| `failure` | 46 |
 | `settle_closed:供应商 usage 超出登记上限。` | 1 |
 | `success` | 31 |
 | `unknown_provider_spend` | 5 |
 
-- 有效局成功 **37/110**；其余为机制失败/决策预算耗尽。
+- 有效局成功 **37/113**；其余为机制失败/决策预算耗尽。
 - 结论范围：本矩阵覆盖全部 30 张 V10 原生图；V8 回退图为 0。
   不得据此声称 30/30 的 MiMo 多 seed 覆盖。
 

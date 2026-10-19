@@ -11,10 +11,11 @@
 
 | 判读 | 局数 |
 |---|---:|
-| `BUDGET` | 15 |
+| `BUDGET` | 13 |
+| `ENTRY_NOT_ATTEMPTED` | 1 |
 | `ENTRY_REJECTED` | 1 |
 | `THRESHOLD` | 15 |
-| `USED_NO_THRESHOLD` | 6 |
+| `USED_NO_THRESHOLD` | 7 |
 
 ## 2. 逐图
 
@@ -30,7 +31,7 @@
 | MAP-16 | 2 | `THRESHOLD`×2 | 30 | 20 | 10 | 4, 7 |
 | MAP-17 | 3 | `USED_NO_THRESHOLD`×3 | 38 | 14 | 24 | 12, 12, 12 |
 | MAP-19 | 3 | `BUDGET`×3 | 60 | 38 | 22 | 60, 60, 60 |
-| MAP-20 | 3 | `BUDGET`×3 | 56 | 40 | 16 | 56, 56, 56 |
+| MAP-20 | 3 | `BUDGET`×1；`ENTRY_NOT_ATTEMPTED`×1；`USED_NO_THRESHOLD`×1 | 56 | 40 | 16 | 12, 22, 56 |
 | MAP-22 | 3 | `ENTRY_REJECTED`×1；`THRESHOLD`×1；`USED_NO_THRESHOLD`×1 | 80 | 24 | 56 | 28, 58, 59 |
 | MAP-25 | 3 | `BUDGET`×3 | 30 | 16 | 14 | 30, 30, 30 |
 | MAP-27 | 3 | `BUDGET`×1；`THRESHOLD`×2 | 46 | 17 | 29 | 20, 27, 46 |
@@ -62,9 +63,9 @@
 | MAP-19 | 0 | `V10-MAP-19-S0-i2` | `BUDGET` | 60/60 | decision_budget_exhausted | `forecast_next` 59/0 | `forecast_next` → FORECAST_RECORDED |
 | MAP-19 | 1 | `V10-MAP-19-S1-i2` | `BUDGET` | 60/60 | decision_budget_exhausted | `forecast_next` 58/0 | `forecast_next` → FORECAST_RECORDED |
 | MAP-19 | 2 | `V10-MAP-19-S2-ext-r2` | `BUDGET` | 60/60 | decision_budget_exhausted | `forecast_next` 59/0 | `forecast_next` → FORECAST_RECORDED |
-| MAP-20 | 0 | `V10-MAP-20-S0-j2` | `BUDGET` | 56/56 | decision_budget_exhausted | `open_bypass` 0/0 | `set_flow` → FLOW_SET |
-| MAP-20 | 1 | `V10-MAP-20-S1-j2` | `BUDGET` | 56/56 | decision_budget_exhausted | `open_bypass` 0/0 | `set_flow` → FLOW_SET |
-| MAP-20 | 2 | `V10-MAP-20-S2-j2` | `BUDGET` | 56/56 | decision_budget_exhausted | `open_bypass` 0/0 | `set_flow` → FLOW_SET |
+| MAP-20 | 0 | `V10-MAP-20-S0-t2` | `ENTRY_NOT_ATTEMPTED` | 22/56 | PRODUCTION_BELOW_TARGET | `open_bypass` 0/0 | `wait` → PRODUCTION_BELOW_TARGET |
+| MAP-20 | 1 | `V10-MAP-20-S1-t2` | `USED_NO_THRESHOLD` | 12/56 | THERMAL_OVERHEAT | `open_bypass` 1/0 | `wait` → THERMAL_OVERHEAT |
+| MAP-20 | 2 | `V10-MAP-20-S2-t2` | `BUDGET` | 56/56 | decision_budget_exhausted | `open_bypass` 0/0 | `set_flow` → FLOW_SET |
 | MAP-22 | 0 | `V10-MAP-22-S0-ext-r2` | `USED_NO_THRESHOLD` | 59/80 | MOVE_BUDGET_EXHAUSTED | `write_memory` 6/4、`return_to_camp` 5/5 | `move` → MOVE_BUDGET_EXHAUSTED |
 | MAP-22 | 1 | `V10-MAP-22-S1-ext` | `ENTRY_REJECTED` | 58/80 | MOVE_BUDGET_EXHAUSTED | `write_memory` 0/0、`return_to_camp` 5/5 | `move` → MOVE_BUDGET_EXHAUSTED |
 | MAP-22 | 2 | `V10-MAP-22-S2-ext-r2` | `THRESHOLD` | 28/80 | RETURNED_TO_CAMP_WITH_RUIN_RECORD | `write_memory` 2/0、`return_to_camp` 1/0 | `return_to_camp` → RETURNED_TO_CAMP_WITH_RUIN_RECORD |

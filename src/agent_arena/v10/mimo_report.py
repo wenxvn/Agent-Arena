@@ -43,6 +43,8 @@ GROUP_OF_SEED_TAG = {
     "o2": "MAP-01 原生首测",
     "p2": "MAP-25 原生首测",
     "q2": "MAP-17 原生首测",
+    "r2": "MAP-16 原生首测",
+    "t2": "MAP-20 wait 语义重测",
 }
 
 
@@ -178,6 +180,12 @@ def render_results() -> str:
         "m2",
         "n2",
         "o2",
+        "p2",
+        "q2",
+        "r2",
+        "t2",
+        # 未登记的新分组追加在末尾，保证矩阵不会静默漏掉一批局。
+        *sorted(set(by_group) - set(GROUP_OF_SEED_TAG)),
     ):
         items = by_group.get(group, [])
         if not items:

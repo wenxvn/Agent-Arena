@@ -3,7 +3,7 @@
 - 运行时：`v10 原生`
 - 构念标签：`FORCED`；效度状态：`NEEDS_MORE_EVIDENCE`（均为 `agent_reviewed`）
 - DCR：`DCR-V10-11`
-- `rule_hash`：`e677a0acc1d837027281f2d1be6ab0b55835861fc8ddab65a561663c1924002d`
+- `rule_hash`：`9640623b4f0c66eb5f1eb12ab1c6ba3e97194206fc2adba37eaf469f902db15f`
 - `metric_hash`：`b80e5ea1790f5ff813676ca4bbd986afb50e55f6370ebc3ae800802a8bf65fa2`
 
 ## 1. 目标构念与最小可观察行为
@@ -29,6 +29,7 @@ Oracle 各 seed 的触发率为 4/4。
 7. **本 tick 三区热量公开**（heat_schedule）；热点区热量会超过单支管上限，必须从邻区经有损旁路调水。
 8. 区产量系数 A/B/C = 4/3/2：交付覆盖该区热量才拿满，否则按 交付/热量 折减。
 9. 在 10 tick 内累计目标产能且三区不超过 10.0 即成功。
+10. 时间只在 wait 时推进：set_flow / open_bypass / adjust_loads 只修改本 tick 的设置，不推进 tick；每个 tick 必须调用一次 wait 才提交并结算（否则 tick 不变、产能为 0）。
 
 ### Observation 公开字段
 
@@ -60,10 +61,10 @@ Oracle 各 seed 的触发率为 4/4。
 
 | seed | scenario_hash（前 16 位） |
 |---:|---|
-| 0 | `fa615ee529ebd906` |
-| 1 | `6930539428e24d4a` |
-| 2 | `8ae3e0e49fced098` |
-| 3 | `c8f3fed9682e7156` |
+| 0 | `fb07c412b4764164` |
+| 1 | `89f9f6e30f53d437` |
+| 2 | `b6ea1cacfdf3234b` |
+| 3 | `d0b51beb453869c6` |
 
 ## 5. 主次指标（`METRIC_SPECS`）
 
@@ -97,13 +98,16 @@ Oracle 各 seed 的触发率为 4/4。
 |---:|---|---|---:|---|---:|---|
 | 0 | `V10-MAP-20-S0-ext` | decision_budget_exhausted（decision_budget_exhausted） | 56 | 0.0 | 0.05722948 | 是 |
 | 0 | `V10-MAP-20-S0-j2` | decision_budget_exhausted（decision_budget_exhausted） | 56 | 0.0 | 0.01219616 | 是 |
+| 0 | `V10-MAP-20-S0-t2` | PRODUCTION_BELOW_TARGET（failure） | 22 | 0.858824 | 0.01964304 | 是 |
 | 1 | `V10-MAP-20-S1-ext` | decision_budget_exhausted（decision_budget_exhausted） | 56 | 0.0 | 0.05725844 | 是 |
 | 1 | `V10-MAP-20-S1-j2` | decision_budget_exhausted（decision_budget_exhausted） | 56 | 0.0 | 0.00812904 | 是 |
+| 1 | `V10-MAP-20-S1-t2` | THERMAL_OVERHEAT（failure） | 12 | 0.329412 | 0.00932436 | 是 |
 | 2 | `V10-MAP-20-S2-ext` | decision_budget_exhausted（decision_budget_exhausted） | 56 | 0.0 | 0.0575778 | 是 |
 | 2 | `V10-MAP-20-S2-j2` | decision_budget_exhausted（decision_budget_exhausted） | 56 | 0.0 | 0.00999968 | 是 |
+| 2 | `V10-MAP-20-S2-t2` | decision_budget_exhausted（decision_budget_exhausted） | 56 | None | 0.0184454 | 是 |
 
-- 有效局成功：0/6
-- 结算成本合计 CNY 0.20239060（含中断局的已结算部分）。
+- 有效局成功：0/9
+- 结算成本合计 CNY 0.24980340（含中断局的已结算部分）。
 - 单 seed、单 replicate，只作描述，不作统计推断。
 
 ## 8. 结论、剩余风险与下一步
