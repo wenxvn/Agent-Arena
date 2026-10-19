@@ -1684,3 +1684,17 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：工具只读本地 `runs/v10/mimo`，CI 无本地局，因此不作为 CI 门禁；历史局按 `rule_hash` 标注，不回写。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 19：剩余失败的量化判读（thermal_gap / castle_gap）
+
+事件：对“接口修好后仍然失败”的两类局做逐 tick / 逐局终态量化，把策略层差距落到可复算数字。
+
+改动：新增 `src/agent_arena/v10/thermal_gap.py`（MAP-19 安全负荷超载、预测被拒；MAP-20 热点未走旁路、旁路 tick 与产能）与 `src/agent_arena/v10/castle_gap.py`（MAP-28 已记录/必备证据与终局位置、MAP-29 提问/比对、MAP-30 案卷完成度/链条/法庭节点）；生成 `docs/v10/thermal-gap-analysis.md` 与 `docs/v10/castle-gap-analysis.md`，README 与最终报告加入入口与结论。
+
+结果：MAP-19 三局分别 3/1/3 个超载 tick、预测被拒 3/1/2 tick；MAP-20 seed 0 十个 tick 热点均未走旁路（产能 73/85）、seed 1 每个 tick 都开旁路但产能仍只有 28/85、seed 2 在 tick 5 后回到重复 `set_flow`。古堡：MAP-28 seed 1 已凑齐全部必备证据却停在 A，MAP-30 seed 0 案卷 3/3 但链条未核对且仍在 A；三图预算均大于 Oracle 动作数，失败集中在回提交点/核对链条前的移动。
+
+验证：`pytest` 1157 passed；`mypy src` 254 文件 0 issues；`ruff check .` 通过；两个新模块在本地 122 局产物上退出 0。
+
+边界：只读本地 trace；n=3、单 replicate，只作描述；不据此改规则、预算或提示。
+
+关联提交：本次提交（分支 `v10-validity`）。
