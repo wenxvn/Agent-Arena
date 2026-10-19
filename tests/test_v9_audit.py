@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from decimal import Decimal
 
+import pytest
+
 from agent_arena.v7.metrics.schema import MetricStatus
 from agent_arena.v8.metrics import metric_schema_hash
 from agent_arena.v8.prompts import system_prompt as v8_system_prompt
-from agent_arena.v9.audit import official_rows
+from agent_arena.v9.audit import V8_ROOT, official_rows
 from agent_arena.v9.baseline_run import oracle_cases
 from agent_arena.v9.metrics import empty_status, rescore_v8
 from agent_arena.v9.prompts import prompt_hashes, system_prompt
@@ -21,6 +23,12 @@ from agent_arena.worlds.scenario_v8.catalog import (
 )
 from agent_arena.worlds.scenario_v8.models import V8Action
 from agent_arena.worlds.scenario_v8.oracle import normalize_action_payload
+
+#: runs/ 是本地生成物、不入 Git；CI/干净 checkout 没有 90 局历史数据时跳过。
+pytestmark = pytest.mark.skipif(
+    not (V8_ROOT / "results_90.csv").exists(),
+    reason="runs/v8 历史局不在 Git 中（本地生成物）",
+)
 
 
 def test_official_rows_are_ninety_unique_instances() -> None:

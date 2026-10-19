@@ -30,7 +30,14 @@ def _files(root: Path) -> list[Path]:
 
 
 def _sha(path: Path) -> str:
-    return sha256(path.read_bytes()).hexdigest()
+    """按 LF 归一后的内容哈希。
+
+    冻结守卫关心的是文件**内容**；同一份内容在不同 checkout 设置下可能是 CRLF
+    或 LF。直接哈希工作树字节会把“纯换行差异”误报为漂移（Linux CI 与 Windows
+    本地必然不一致），因此统一归一为 LF 再算 sha256。
+    """
+
+    return sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
 def snapshot() -> dict[str, Any]:

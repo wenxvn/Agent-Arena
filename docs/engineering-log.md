@@ -1620,3 +1620,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：排除的是非包研究脚本，包代码、测试与脚本仍全量 lint；CI 的三项 V10 检查是只读/可重算的，不调用真实模型、不读取本地 `runs/` 历史局。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 15：CI 可复现性修复（DCR-V10-37）
+
+事件：lint 修复后 CI 进入 pytest 步骤仍失败；在干净 worktree 复现并定位为“冻结校验哈希 CRLF/LF”与“V9 回归测试依赖本地 runs/”。
+
+原因：`freeze._sha` 直接哈希工作树字节，本机 CRLF 与 CI 的 LF 必然不同；`runs/` 按约定不入 Git，`tests/test_v9_audit.py` 与 `tests/test_v9_metric_checks.py` 的历史数据测试在 CI 缺文件。
+
+改动：`freeze._sha` 先归一到 LF 再哈希，并用 `freeze write` 重建 `docs/v10/freeze-manifest.json`（V8/V9 源文件未改，仅哈希口径变化）；两组 V9 测试在 `runs/v8/results_90.csv` 缺失时跳过；新增 `DCR-V10-37`。
+
+结果：本机 `freeze verify` 9/9 unchanged；干净 worktree（LF checkout）同样 9/9 unchanged，pytest 全绿（4 个 V9 测试按预期 skip）；`ruff check .` 通过。
+
+验证：`pytest` 1151 passed（本机）；`mypy src` 253 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged。
+
+边界：归一化后“仅换行差异”不再触发冻结告警，真实内容变化仍被 sha256 捕获；CI 只验证文件未变，不重放本地 Trace。
+
+关联提交：本次提交（分支 `v10-validity`）。

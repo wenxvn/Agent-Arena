@@ -2,8 +2,17 @@
 
 from __future__ import annotations
 
+import pytest
+
+from agent_arena.v9.audit import V8_ROOT
 from agent_arena.v9.metric_checks import registry
 from agent_arena.v9.metric_checks.base import run_all
+
+#: 独立复算读取 V8 的 90 局本地 trace；干净 checkout 无数据时跳过。
+pytestmark = pytest.mark.skipif(
+    not (V8_ROOT / "results_90.csv").exists(),
+    reason="runs/v8 历史局不在 Git 中（本地生成物）",
+)
 
 
 def test_all_independent_metric_checks_match() -> None:
