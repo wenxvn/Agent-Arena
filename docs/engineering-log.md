@@ -1498,3 +1498,19 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：MAP-01 的 MiMo 0/3 是能力结果（供氧时序判断失败），不说明地图无效；剩余 3 张回退图（16/17/25）仍未参数化；MAP-01 的实例差异主要是容错余量，不是主路径变化。
 
 关联提交：本次提交（分支 `v10-validity`）。
+
+## 2026-10-19 V10 续跑 7：未触发机制局的逐局判读与古堡预算剖面
+
+事件：把“模型为何没触发核心机制”从汇总标签推进到逐局判读，并对古堡三图的预算消耗做剖面分析。
+
+原因：`failure-attribution.md` 只给标签分布，无法回答“是预算、阈值还是没走到入口”；古堡三图的预算是否过紧也缺证据。
+
+改动：新增 `src/agent_arena/v10/trigger_gap.py`（只用既有 trace 与基线产物：逐局判读 `BUDGET`/`THRESHOLD`/`ENTRY_NOT_ATTEMPTED`/`ENTRY_REJECTED`/`USED_NO_THRESHOLD`；古堡三图的决策/预算/Oracle 动作/动作直方图/最后 5 动作）与 `tests/test_v10_batch9_trigger_gap.py`（4 条）；生成 `docs/v10/trigger-gap-analysis.md`、`docs/v10/castle-budget-analysis.md`。
+
+结果：29 局未触发机制（13 张图）——`THRESHOLD` 13、`BUDGET` 12、`USED_NO_THRESHOLD` 3、`ENTRY_REJECTED` 1。`BUDGET` 图的预算余量为 12（MAP-28）到 56（MAP-22），模型仍用尽预算 ⇒ 策略效率问题，不是预算过紧。古堡剖面：MAP-29 三局各用 16/12/6 次 `investigate`、只有 1–3 次 `compare_testimony`，8 次 `ask` 已用掉提问预算的大半；MAP-30 记录 11–14 条、比较 1–5 次但从未 `submit`（主指标 0.5–0.75）；MAP-28 两局各 17–18 次 `move`、`record` 5 次但没提交。
+
+验证：`pytest` 1122 passed；`mypy src` 246 文件 0 issues；scoped `ruff` clean；`freeze verify` 9/9 unchanged。
+
+边界：判读是机械规则（预算/终止码/入口尝试），不是对模型推理的复述；`THRESHOLD` 与 `USED_NO_THRESHOLD` 的区分依赖终止码关键字表，已写在模块内可审计。
+
+关联提交：本次提交（分支 `v10-validity`）。

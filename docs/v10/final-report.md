@@ -174,7 +174,8 @@ Oracle 4/4、启发式 4/4、消融最高 1/4 或 0/4、`legal_random` 0/80；MA
 - [x] pytest、ruff、mypy、diff-check 的真实退出码记录（本文件头部与各批 commit）。
 - [x] MiMo 预算门禁、预登记、trace、账本和异常恢复可验证（20 个账本 + `mimo-preregistration.json`）。
 - [x] 30 图状态不虚报：27 张原生图 8 Gate 全过、3 张回退图带 3-seed 缺口记录；模型失败的归因
-      （接口/策略/预算/机制/provider/场景）见 §4 与 `failure-attribution.md`。
+      （接口/策略/预算/机制/provider/场景）见 §4、`failure-attribution.md`、
+      `trigger-gap-analysis.md` 与 `castle-budget-analysis.md`。
 - [x] `docs/v10/final-report.md` 含完整前后对照与剩余风险（本文件）。
 
 ## 10. 剩余风险（必须披露）
