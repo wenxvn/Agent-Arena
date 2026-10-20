@@ -24,4 +24,9 @@
 
 ## 提交
 
-按 Batch 拆分为若干提交，具体 hash 与最终 HEAD 见 `final-report.md` 与 `git log`。本文不复制全部 commit 列表，避免与 Git 历史重复。
+- `8c4b8cb`：Web 服务层、30 图 catalog、离线执行、预算、存储、导出、历史与测试；
+- `c0c5e0b`：可操作 Streamlit 页面、`agent-arena web` CLI、UI/CLI 测试；
+- `a7e72ff`：验收/截图/冒烟脚本、交付文档、README、CI、截图；
+- 最终报告与进度回填：本提交（见 `git log -1`）。
+
+最终 HEAD 与完整历史以 `git log` 为准。
