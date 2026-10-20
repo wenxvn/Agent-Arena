@@ -1,6 +1,6 @@
 # V11 网页页面说明
 
-启动：`uv run --with streamlit agent-arena web`（默认 `http://127.0.0.1:8501`）。
+启动：`uv sync --extra web` 后运行 `uv run agent-arena web`（默认 `http://127.0.0.1:8501`）。没有 extra 时可用 `uv run --with streamlit agent-arena web`。
 
 ## 1. 导航
 

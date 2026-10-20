@@ -42,13 +42,14 @@ from agent_arena.web.export import (
     export_filename,
     export_json_bytes,
     export_summary_bytes,
+    export_trace_jsonl,
     replay_document,
 )
 from agent_arena.web.history import (
-    comparison_rows,
-    compatibility,
+    compatibility_all,
     filter_runs,
     leaderboard,
+    multi_comparison_rows,
 )
 from agent_arena.web.providers import (
     configuration_check,
@@ -403,10 +404,13 @@ def _apply_deep_link(st: Any) -> None:
 
     view = _query_value(st, "view")
     run_id = _query_value(st, "run")
+    map_id = _query_value(st, "map")
     if view in VIEWS:
         st.session_state["nav"] = view
     if run_id:
         st.session_state["active_run"] = run_id
+    if map_id and any(item.map_id == map_id for item in web_catalog.cards()):
+        st.session_state["selected_map"] = map_id
 
 
 def _nav(st: Any) -> str:
@@ -899,6 +903,12 @@ def _result_view(st: Any, service_getter: Any = get_service) -> None:
         st.caption(str(failure.get("source", "")))
     elif result.get("message"):
         st.write(str(result["message"]))
+    attribution = result.get("attribution")
+    if isinstance(attribution, dict) and attribution.get("label"):
+        st.info(
+            f"失败归因：{attribution.get('label_zh')}"
+            f"（{attribution.get('label')}）— {attribution.get('detail')}"
+        )
 
     columns = st.columns(4)
     columns[0].metric("动作数", result.get("decision_count", status.decisions))
@@ -1042,7 +1052,7 @@ def _downloads(
     st.subheader("导出")
     run_id = str(manifest.get("run_id", "run"))
     document = replay_document(manifest, result, steps)
-    first, second, third = st.columns(3)
+    first, second, third, fourth = st.columns(4)
     first.download_button(
         "回放 JSON",
         data=export_json_bytes(document),
@@ -1061,6 +1071,12 @@ def _downloads(
         file_name=export_filename(run_id, "csv"),
         mime="text/csv",
     )
+    fourth.download_button(
+        "公开 Trace JSONL",
+        data=export_trace_jsonl(steps),
+        file_name=export_filename(run_id, "trace"),
+        mime="application/x-ndjson",
+    )
 
 
 def _history_view(st: Any, service_getter: Any = get_service) -> None:
@@ -1074,20 +1090,26 @@ def _history_view(st: Any, service_getter: Any = get_service) -> None:
         st.info("还没有历史运行。")
         return
     maps = sorted({row.map_id for row in all_rows})
-    left, right, third = st.columns(3)
-    map_choice = left.selectbox("地图", ["全部地图"] + maps)
+    providers = sorted({row.provider_id for row in all_rows})
+    seeds = sorted({row.environment_seed for row in all_rows})
+    first, second, third, fourth = st.columns(4)
+    map_choice = first.selectbox("地图", ["全部地图"] + maps)
     states = sorted({row.state for row in all_rows})
-    state_choice = right.selectbox("状态", ["全部状态"] + states)
+    state_choice = second.selectbox("状态", ["全部状态"] + states)
     modes = sorted({row.mode for row in all_rows})
     mode_choice = third.selectbox("模式", ["全部模式"] + modes)
-    fourth, fifth = st.columns(2)
-    query = fourth.text_input("搜索 run_id / 模型", "")
-    since = fifth.text_input("起始日期（YYYY-MM-DD）", "")
+    provider_choice = fourth.selectbox("Provider", ["全部 Provider"] + providers)
+    fifth, sixth, seventh = st.columns(3)
+    seed_choice = fifth.selectbox("seed", ["全部 seed"] + [str(seed) for seed in seeds])
+    query = sixth.text_input("搜索 run_id / 模型", "")
+    since = seventh.text_input("起始日期（YYYY-MM-DD）", "")
     filtered = filter_runs(
         all_rows,
         map_id="" if map_choice == "全部地图" else map_choice,
         state="" if state_choice == "全部状态" else state_choice,
         mode="" if mode_choice == "全部模式" else mode_choice,
+        provider_id="" if provider_choice == "全部 Provider" else provider_choice,
+        environment_seed=None if seed_choice == "全部 seed" else int(seed_choice),
         query=query,
         since=since,
     )
@@ -1109,7 +1131,7 @@ def _history_view(st: Any, service_getter: Any = get_service) -> None:
     _history_export(st, filtered)
 
     st.divider()
-    st.subheader("两局对照")
+    st.subheader("多局对照（2–4 局）")
     if len(filtered) < 2:
         st.info("至少需要两局同条件运行才能对照。")
     else:
@@ -1118,25 +1140,31 @@ def _history_view(st: Any, service_getter: Any = get_service) -> None:
             for row in filtered
         }
         names = list(labels)
-        left_name = st.selectbox("对照 A", names, index=0)
-        right_name = st.selectbox("对照 B", names, index=1)
-        left_row = labels[left_name]
-        right_row = labels[right_name]
-        verdict = compatibility(left_row, right_row)
-        if not verdict["compatible"]:
-            st.error(
-                "不可直接比较：" + "、".join(verdict["mismatches"])
-                + "。请只并排查看，不要当作同一条件对照。"
-            )
-        elif verdict["warnings"]:
-            st.warning("；".join(verdict["warnings"]))
-        else:
-            st.success("同地图、同规则/指标版本、同模式，可直接对照。")
-        st.dataframe(
-            comparison_rows(left_row, right_row),
-            width="stretch",
-            hide_index=True,
+        selected_names = st.multiselect(
+            "对照运行（2–4 局）",
+            names,
+            default=names[: min(2, len(names))],
+            max_selections=4,
         )
+        if len(selected_names) < 2:
+            st.info("请选择至少两局。")
+        else:
+            chosen = [labels[name] for name in selected_names]
+            verdict = compatibility_all(chosen)
+            if not verdict["compatible"]:
+                st.error(
+                    "不可直接比较：" + "、".join(verdict["mismatches"])
+                    + "。请只并排查看，不要当作同一条件对照。"
+                )
+            elif verdict["warnings"]:
+                st.warning("；".join(verdict["warnings"]))
+            else:
+                st.success("同地图、同规则/指标版本、同模式，可直接对照。")
+            st.dataframe(
+                multi_comparison_rows(chosen),
+                width="stretch",
+                hide_index=True,
+            )
 
     st.divider()
     st.subheader("本地同模型成绩榜（P2）")

@@ -169,6 +169,16 @@ class _Stub:
         del label, kwargs
         return options[index] if options else ""
 
+    def multiselect(
+        self,
+        label: str,
+        options: list[Any],
+        default: list[Any] | None = None,
+        **kwargs: Any,
+    ) -> list[Any]:
+        del label, kwargs
+        return list(default or options[:2])
+
     def radio(self, label: str, options: list[str], index: int = 0, **kwargs: Any) -> str:
         del label, kwargs
         return options[index] if options else ""
@@ -281,7 +291,7 @@ def test_history_page_renders_filters_and_leaderboard(monkeypatch, tmp_path) -> 
     run_id = _prepare_runs(tmp_path / "web")
     stub = _render(monkeypatch, tmp_path, "历史与对照", run_id)
     text = " ".join(str(value) for _, value in stub.calls)
-    assert "两局对照" in text
+    assert "多局对照（2–4 局）" in text
     assert "本地同模型成绩榜" in text
 
 
@@ -299,10 +309,12 @@ def test_deep_link_sets_view_and_run() -> None:
     stub.query_params = {
         "view": "结果与回放",
         "run": "web-20261020T024951Z-3e3249a7",
+        "map": "MAP-19",
     }
     ui_app._apply_deep_link(stub)
     assert stub.session_state["nav"] == "结果与回放"
     assert stub.session_state["active_run"] == "web-20261020T024951Z-3e3249a7"
+    assert stub.session_state["selected_map"] == "MAP-19"
 
 
 def test_pending_nav_is_applied_before_widget() -> None:

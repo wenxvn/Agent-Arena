@@ -63,6 +63,15 @@ def test_json_and_summary_exports_are_utf8() -> None:
     assert "steps" not in json.loads(summary)
 
 
+def test_trace_jsonl_has_header_and_steps() -> None:
+    from agent_arena.web.export import export_trace_jsonl
+
+    lines = export_trace_jsonl(_steps()).decode("utf-8").splitlines()
+    assert json.loads(lines[0])["event"] == "trace_header"
+    assert json.loads(lines[1])["event"] == "decision"
+    assert "sk-" not in "\n".join(lines)
+
+
 def test_export_filenames_are_bounded() -> None:
     assert export_filename("web-20260101T000000Z-abcdef12", "json").endswith("replay.json")
     assert export_filename("web-20260101T000000Z-abcdef12", "csv").endswith("actions.csv")

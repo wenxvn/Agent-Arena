@@ -11,11 +11,14 @@ Agent Arena 是一个用于学习、运行和比较 LLM Agent 行为的本地实
 ```bash
 git clone https://github.com/wenxvn/Agent-Arena.git
 cd Agent-Arena
-uv sync
-uv run --with streamlit agent-arena web
+uv sync --extra web
+uv run agent-arena web
 ```
 
 打开 <http://127.0.0.1:8501>。
+
+> 没有安装可选依赖时，也可用：
+> `uv run --with streamlit agent-arena web`。
 
 首次使用建议点击首页的 **离线演示：MAP-01 · 破损的曙光号**：
 

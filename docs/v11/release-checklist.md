@@ -5,7 +5,7 @@
 ## P0 硬门槛
 
 - [x] **30 图最终体验检查**：30/30 可选中、可启动、可回放、可导出；逐图留痕 `map-ux-checklist.md`；6 张占位标题只在展示层修复；MAP-19/20/28/29/30 有详情提醒。
-- [x] **统一运行入口**：`uv run --with streamlit agent-arena web`；首页可选 10 世界 30 图；地图、seed、模式、Provider、模型、预算在一处配置；原 CLI 保留。
+- [x] **统一运行入口**：`uv sync --extra web` + `uv run agent-arena web`（无 extra 时可用 `uv run --with streamlit agent-arena web`）；首页可选 10 世界 30 图；地图、seed、模式、Provider、模型、预算在一处配置；原 CLI 保留。
 - [x] **模型 API 配置**：`.env.example`、OpenAI-compatible/MiMo、Ollama、零网络配置检查、显式连接检查、无 Key 离线演示；密钥只显示“已配置/未配置”；真实付费前勾选确认。
 - [x] **结果输出**：稳定 `run_id`、地图、rule/metric hash、seed、模式、Agent、outcome、动作、公开观察、token/费用、失败原因；实时进度、历史回放、JSON/CSV 导出。
 - [x] **错误处理与安全**：连接/超时/限流/模型不存在、非法动作、usage 缺失、预算耗尽、用户取消、刷新、中断、重复提交、未知费用均有状态与 fail-closed 处理；无自动无限重试；单 worker 串行。

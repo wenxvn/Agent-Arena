@@ -202,6 +202,7 @@ class RunSummary:
     metric_hash: str | None
     metric_schema_hash: str | None = None
     display_title: str = ""
+    decision_budget: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -216,6 +217,7 @@ class RunSummary:
             "outcome": self.outcome,
             "success": self.success,
             "decisions": self.decisions,
+            "decision_budget": self.decision_budget,
             "created_at": self.created_at,
             "finished_at": self.finished_at,
             "cost_settled_cny": self.cost_settled_cny,

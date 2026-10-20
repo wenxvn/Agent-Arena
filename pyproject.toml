@@ -1,6 +1,6 @@
 [project]
 name = "agent-arena"
-version = "0.1.0"
+version = "0.2.0"
 description = "用于研究 LLM Agent 行为的确定性实验环境。"
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
@@ -13,6 +13,10 @@ dependencies = [
 
 [project.scripts]
 agent-arena = "agent_arena.cli:app"
+
+[project.optional-dependencies]
+# 本地网页平台。安装：uv sync --extra web
+web = ["streamlit>=1.40,<2.0"]
 
 [dependency-groups]
 dev = [

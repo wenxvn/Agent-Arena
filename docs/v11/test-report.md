@@ -60,7 +60,7 @@
 
 ## 5. 浏览器实测
 
-- 实际启动：`uv run --with streamlit agent-arena web --headless --port 8501`；
+- 实际启动：`uv sync --extra web` 后 `uv run agent-arena web --headless --port 8501`；
 - 页面：首页、挑战配置、运行监控、结果与回放、历史与对照、设置与帮助；
 - 验证内容：中文渲染、30 图卡片、MAP-30 真实结果（46 步、¥0.0392、五态表）、运行时间线、导出按钮、Provider 状态、历史对照；
 - 截图：`docs/v11/screenshots/`；

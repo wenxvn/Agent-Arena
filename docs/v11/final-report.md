@@ -18,7 +18,7 @@
 **推荐启动命令**：
 
 ```bash
-uv run --with streamlit agent-arena web
+uv run agent-arena web
 ```
 
 打开 <http://127.0.0.1:8501>。辅助脚本：`scripts/launch_web.ps1`、`scripts/launch_web.sh`。原 CLI 入口保留。

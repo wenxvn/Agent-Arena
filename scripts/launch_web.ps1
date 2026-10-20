@@ -21,4 +21,4 @@ if ($Check) {
     exit $LASTEXITCODE
 }
 
-uv run --with streamlit agent-arena web --port $Port
+uv run --extra web agent-arena web --port $Port

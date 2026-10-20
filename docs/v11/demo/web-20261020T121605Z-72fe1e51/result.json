@@ -1,0 +1,213 @@
+{
+ "agent": "public_heuristic_policy",
+ "attempt_id": "att-2c22679acbcf",
+ "attribution": {
+  "accepted": 15,
+  "attempts": 15,
+  "detail": "环境记录核心机制已被真实触发。",
+  "label": "TRIGGERED",
+  "label_zh": "机制已触发",
+  "mechanism_tools": [
+   "interact",
+   "move",
+   "pickup"
+  ],
+  "outcome": "success",
+  "rejected": 0
+ },
+ "config": {
+  "agent": "public_heuristic_policy",
+  "created_at": "2026-10-20T12:16:05+00:00",
+  "environment_seed": 0,
+  "idempotency_key": null,
+  "map_id": "MAP-01",
+  "max_cost_cny": "0.01",
+  "max_decisions": 30,
+  "max_input_tokens": 10000,
+  "max_output_tokens": 1000,
+  "max_requests": 1,
+  "mode": "offline",
+  "model": "public-heuristic-policy",
+  "policy_seed": 0,
+  "provider_id": "offline_public_policy",
+  "schema_version": "v11-web-1"
+ },
+ "cost_settled_cny": "0",
+ "cost_unknown": false,
+ "decision_budget": 30,
+ "decision_count": 15,
+ "design_difficulty": "简单",
+ "environment_seed": 0,
+ "failure": {
+  "detail": "环境已返回成功终局。",
+  "headline": "挑战成功",
+  "source": "主指标 map01.v10.mission_success：有效（1）"
+ },
+ "finished_at": "2026-10-20T12:16:05+00:00",
+ "invalid_actions": 0,
+ "map_id": "MAP-01",
+ "max_decisions": 30,
+ "mechanism_triggered": true,
+ "message": null,
+ "metric_hash": "994de84ec19f38ea3fa01873290e8ebe0e58cbfcbdfc4c0fa29a4e4a82f589b0",
+ "metric_schema_hash": "cd5f3d6db40ae775c2928c817c475e05cda25d0e157b0632ba768772478dd102",
+ "metric_specs": [
+  {
+   "censored_rule": "截尾 → CENSORED；氧气/断供终局 → VALID 0",
+   "comparable_scope": "同一地图、同一 rule_hash",
+   "denominator": "1",
+   "direction": "higher",
+   "event_source": "environment judge counters",
+   "formula": "修复船壳、恢复供氧与主电源、完成气闸检查并在舰桥确认",
+   "metric_id": "map01.v10.mission_success",
+   "role": "primary",
+   "unit": "ratio",
+   "valid_range": [
+    0.0,
+    1.0
+   ],
+   "zero_denominator": "NOT_APPLICABLE"
+  },
+  {
+   "censored_rule": "部分进度保持 VALID；未发生的终点事件为 CENSORED",
+   "comparable_scope": "同一地图、同一 rule_hash",
+   "denominator": "6",
+   "direction": "higher",
+   "event_source": "environment judge counters",
+   "formula": "已满足的依赖前置数 / 6（供氧→取件→断电→修壳→母线→气闸→确认）",
+   "metric_id": "map01.v10.dependency_satisfaction_rate",
+   "role": "secondary",
+   "unit": "ratio",
+   "valid_range": [
+    0.0,
+    1.0
+   ],
+   "zero_denominator": "NOT_APPLICABLE"
+  },
+  {
+   "censored_rule": "部分进度保持 VALID；未发生的终点事件为 CENSORED",
+   "comparable_scope": "同一地图、同一 rule_hash",
+   "denominator": "—",
+   "direction": "lower",
+   "event_source": "environment judge counters",
+   "formula": "最长断供连续 tick",
+   "metric_id": "map01.v10.longest_oxygen_outage_ticks",
+   "role": "guardrail",
+   "unit": "ticks",
+   "valid_range": [
+    0.0,
+    200.0
+   ],
+   "zero_denominator": "NOT_APPLICABLE"
+  },
+  {
+   "censored_rule": "部分进度保持 VALID；未发生的终点事件为 CENSORED",
+   "comparable_scope": "同一地图、同一 rule_hash",
+   "denominator": "1",
+   "direction": "lower",
+   "event_source": "environment judge counters",
+   "formula": "因氧气耗尽/断供超限导致的终局（1 表示失败）",
+   "metric_id": "map01.v10.oxygen_guardrail_violations",
+   "role": "guardrail",
+   "unit": "ratio",
+   "valid_range": [
+    0.0,
+    1.0
+   ],
+   "zero_denominator": "NOT_APPLICABLE"
+  },
+  {
+   "censored_rule": "部分进度保持 VALID；未发生的终点事件为 CENSORED",
+   "comparable_scope": "同一地图、同一 rule_hash",
+   "denominator": "—",
+   "direction": "lower",
+   "event_source": "environment judge counters",
+   "formula": "违反依赖顺序的动作次数",
+   "metric_id": "map01.v10.dependency_violations",
+   "role": "guardrail",
+   "unit": "count",
+   "valid_range": [
+    0.0,
+    200.0
+   ],
+   "zero_denominator": "NOT_APPLICABLE"
+  },
+  {
+   "censored_rule": "部分进度保持 VALID；未发生的终点事件为 CENSORED",
+   "comparable_scope": "同一地图、同一 rule_hash",
+   "denominator": "成功局（1）",
+   "direction": "lower",
+   "event_source": "environment judge counters",
+   "formula": "成功时的完成 tick",
+   "metric_id": "map01.v10.completion_ticks",
+   "role": "diagnostic",
+   "unit": "ticks",
+   "valid_range": [
+    0.0,
+    200.0
+   ],
+   "zero_denominator": "未成功 → NOT_APPLICABLE"
+  }
+ ],
+ "metrics": {
+  "map01.v10.completion_ticks": {
+   "state": "VALID",
+   "value": 15
+  },
+  "map01.v10.dependency_satisfaction_rate": {
+   "state": "VALID",
+   "value": 1.0
+  },
+  "map01.v10.dependency_violations": {
+   "state": "VALID",
+   "value": 0
+  },
+  "map01.v10.longest_oxygen_outage_ticks": {
+   "state": "VALID",
+   "value": 2
+  },
+  "map01.v10.mission_success": {
+   "state": "VALID",
+   "value": 1
+  },
+  "map01.v10.oxygen_guardrail_violations": {
+   "state": "VALID",
+   "value": 0
+  }
+ },
+ "mode": "offline",
+ "mode_label": "离线演示（公开规则策略，非模型挑战）",
+ "model": "public-heuristic-policy",
+ "outcome": "success",
+ "policy_seed": 0,
+ "primary_metric": "map01.v10.mission_success",
+ "primary_metric_state": "VALID",
+ "primary_metric_unit": null,
+ "primary_metric_value": 1,
+ "prompt_hash": "f05e52237260649d5f2c8fe484232c75f8978eb812d8bba52dbfb6c5a0688755",
+ "provider_error": null,
+ "provider_id": "offline_public_policy",
+ "rejected_actions": 0,
+ "rule_hash": "49951ca491bd0a573fd8ecee271a52421d28968b93184e345356d84d518ac09b",
+ "run_id": "web-20261020T121605Z-72fe1e51",
+ "scenario_hash": "2b7e5276473a1c5bd229c752822a79facca16d3df3bba6567f458bead196e235",
+ "schema_version": "v11-web-result-1",
+ "started_at": "2026-10-20T12:16:05+00:00",
+ "state": "SUCCEEDED",
+ "success": true,
+ "termination": "REPAIR_CONFIRMED",
+ "title": "破损的曙光号",
+ "usage": {
+  "cost_enforced": false,
+  "cost_projected_cny": "0",
+  "cost_settled_cny": "0",
+  "cost_unknown": false,
+  "currency": null,
+  "input_tokens": 0,
+  "mode_note": "离线演示不发送任何 Provider 请求。",
+  "output_tokens": 0,
+  "requests": 0
+ },
+ "world": "spaceship",
+ "world_label": "飞船"
+}

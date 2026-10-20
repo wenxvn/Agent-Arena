@@ -1031,7 +1031,8 @@ def web_command(
         raise typer.Exit(code=2)
     if importlib.util.find_spec("streamlit") is None:
         typer.echo(
-            "未安装 streamlit。请使用：uv run --with streamlit agent-arena web",
+            "未安装 streamlit。请先运行：uv sync --extra web "
+            "（或 uv run --with streamlit agent-arena web）",
             err=True,
         )
         raise typer.Exit(code=2)

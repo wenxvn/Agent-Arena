@@ -14,6 +14,7 @@ def filter_runs(
     state: str = "",
     mode: str = "",
     provider_id: str = "",
+    environment_seed: int | None = None,
     query: str = "",
     since: str = "",
 ) -> list[RunSummary]:
@@ -27,6 +28,8 @@ def filter_runs(
         if mode and row.mode != mode:
             continue
         if provider_id and row.provider_id != provider_id:
+            continue
+        if environment_seed is not None and row.environment_seed != environment_seed:
             continue
         if since and row.created_at[:10] < since[:10]:
             continue
@@ -63,6 +66,44 @@ def compatibility(left: RunSummary, right: RunSummary) -> dict[str, Any]:
         "compatible": not mismatches,
         "mismatches": mismatches,
         "warnings": warnings,
+    }
+
+
+def multi_comparison_rows(rows: list[RunSummary]) -> list[dict[str, Any]]:
+    return [
+        {
+            "run_id": row.run_id,
+            "地图": row.map_id,
+            "标题": row.display_title,
+            "模型": row.model,
+            "模式": row.mode,
+            "seed": row.environment_seed,
+            "状态": row.state,
+            "结局": row.outcome or "—",
+            "成功": row.success,
+            "动作 / 预算": f"{row.decisions} / {row.decision_budget}",
+            "费用 CNY": row.cost_settled_cny,
+            "rule_hash": (row.rule_hash or "")[:12],
+            "metric_hash": (row.metric_hash or "")[:12],
+        }
+        for row in rows
+    ]
+
+
+def compatibility_all(rows: list[RunSummary]) -> dict[str, Any]:
+    if len(rows) < 2:
+        return {"compatible": False, "mismatches": ["少于两局"], "warnings": []}
+    mismatches: set[str] = set()
+    warnings: set[str] = set()
+    baseline = rows[0]
+    for row in rows[1:]:
+        verdict = compatibility(baseline, row)
+        mismatches.update(str(item) for item in verdict["mismatches"])
+        warnings.update(str(item) for item in verdict["warnings"])
+    return {
+        "compatible": not mismatches,
+        "mismatches": sorted(mismatches),
+        "warnings": sorted(warnings),
     }
 
 
@@ -128,6 +169,7 @@ def leaderboard(rows: list[RunSummary]) -> list[dict[str, Any]]:
                     "run_id": item.run_id,
                     "success": item.success,
                     "decisions": item.decisions,
+                    "budget": item.decision_budget,
                     "seed": item.environment_seed,
                     "cost_cny": item.cost_settled_cny,
                     "rule_hash": rule_hash[:12],
@@ -145,7 +187,9 @@ def unique_values(rows: list[RunSummary], field: str) -> list[str]:
 __all__ = [
     "comparison_rows",
     "compatibility",
+    "compatibility_all",
     "filter_runs",
     "leaderboard",
+    "multi_comparison_rows",
     "unique_values",
 ]

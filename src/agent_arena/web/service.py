@@ -19,6 +19,7 @@ from agent_arena.llm.protocol import DecisionProvider
 from agent_arena.web.catalog import DISPLAY_TITLES
 from agent_arena.web.clock import new_attempt_id, new_run_id, utc_now
 from agent_arena.web.execution import ExecutionOutcome, execute_live, execute_offline
+from agent_arena.web.lock import SingleInstanceLock
 from agent_arena.web.providers import build_live_provider
 from agent_arena.web.safety import classify_exception, error_hint
 from agent_arena.web.schemas import (
@@ -76,8 +77,15 @@ class RunService:
         self._offline_runner = offline_runner
         self._live_runner = live_runner
         self._provider_factory = provider_factory
+        self._instance_lock = SingleInstanceLock(self.store.base / ".service.lock")
+        self._instance_lock.acquire()
         _ACTIVE_OWNERS.add(self._owner)
-        self.recovery = self.recover() if recover else {"recovered": [], "broken": []}
+        try:
+            self.recovery = self.recover() if recover else {"recovered": [], "broken": []}
+        except Exception:
+            _ACTIVE_OWNERS.discard(self._owner)
+            self._instance_lock.release()
+            raise
 
     # ---------------------------------------------------------------- lifecycle
     def recover(self) -> dict[str, list[str]]:
@@ -136,6 +144,7 @@ class RunService:
         if worker is not None and worker.is_alive():
             worker.join(timeout=5)
         _ACTIVE_OWNERS.discard(self._owner)
+        self._instance_lock.release()
 
     # ------------------------------------------------------------------- create
     def create_run(self, config: RunConfig, *, idempotency_key: str | None = None) -> str:
@@ -484,6 +493,7 @@ class RunService:
             outcome=manifest.get("outcome"),
             success=bool(manifest.get("success")),
             decisions=int(manifest.get("decisions") or 0),
+            decision_budget=int(manifest.get("decision_budget") or 0),
             created_at=str(manifest.get("created_at", "")),
             finished_at=manifest.get("finished_at"),
             cost_settled_cny=cost_value,

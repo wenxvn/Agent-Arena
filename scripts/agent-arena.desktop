@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Agent Arena
+Comment=启动 Agent Arena 本地网页
+Exec=sh -c 'cd /path/to/Agent-Arena && ./scripts/launch_web.sh'
+Terminal=true
+Categories=Development;

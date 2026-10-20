@@ -16,7 +16,7 @@
 ```powershell
 git clone https://github.com/wenxvn/Agent-Arena.git
 cd Agent-Arena
-uv sync
+uv sync --extra web
 ```
 
 ### macOS / Linux
@@ -24,18 +24,19 @@ uv sync
 ```bash
 git clone https://github.com/wenxvn/Agent-Arena.git
 cd Agent-Arena
-uv sync
+uv sync --extra web
 ```
 
 ## 2. 启动网页（推荐命令）
 
 ```bash
-uv run --with streamlit agent-arena web
+uv run agent-arena web
 ```
 
 打开 <http://127.0.0.1:8501>。
 
-- `streamlit` 通过 `--with` 临时提供，不写入核心依赖；
+- `streamlit` 通过可选依赖组 `web` 锁定在 `uv.lock` 中；不写入核心依赖；
+- 未安装可选依赖时可用 `uv run --with streamlit agent-arena web` 临时启动；
 - 默认地址 `127.0.0.1`，端口 `8501`；
 - 不想自动打开浏览器可加 `--headless`；
 - 换端口：`--port 8600`。
@@ -115,7 +116,7 @@ git diff --check
 | 现象 | 处理 |
 |---|---|
 | `uv: command not found` | 安装 uv 后重开终端 |
-| `未安装 streamlit` | 使用 `uv run --with streamlit agent-arena web` |
+| `未安装 streamlit` | 运行 `uv sync --extra web`；临时可用 `uv run --with streamlit agent-arena web` |
 | 网页打不开 | 确认命令窗口未退出；访问 `http://127.0.0.1:8501` |
 | 端口占用 | `agent-arena web --port 8600` |
 | 密钥未配置 | 编辑本机 `.env`，不要写入源码或网页 |

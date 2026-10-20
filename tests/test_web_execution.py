@@ -121,6 +121,7 @@ def test_live_success_records_steps_tokens_and_metrics() -> None:
     states = {value["state"] for value in result["metrics"].values()}
     assert states <= {"VALID", "CENSORED", "NOT_APPLICABLE", "MISSING", "INVALID"}
     assert result["primary_metric_state"] in {"VALID", "CENSORED"}
+    assert result["attribution"]["label"] == "TRIGGERED"
 
 
 def test_invalid_model_output_is_counted_not_crashed() -> None:

@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from agent_arena.web.execution import ExecutionOutcome
+from agent_arena.web.lock import ServiceLockError
 from agent_arena.web.schemas import (
     OFFLINE_MODEL,
     OFFLINE_PROVIDER,
@@ -259,6 +260,17 @@ def test_shutdown_rejects_new_runs(tmp_path) -> None:
     service.shutdown()
     with pytest.raises(RunServiceError):
         service.create_run(_offline())
+
+
+def test_single_instance_lock_per_run_directory(tmp_path) -> None:
+    first = _service(tmp_path)
+    try:
+        with pytest.raises(ServiceLockError):
+            _service(tmp_path)
+    finally:
+        first.shutdown()
+    second = _service(tmp_path)
+    second.shutdown()
 
 
 def test_live_service_persists_budget_snapshot(tmp_path) -> None:

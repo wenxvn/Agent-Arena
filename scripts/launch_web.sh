@@ -4,4 +4,4 @@ set -eu
 repo=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$repo"
 port="${1:-8501}"
-exec uv run --with streamlit agent-arena web --port "$port"
+exec uv run --extra web agent-arena web --port "$port"

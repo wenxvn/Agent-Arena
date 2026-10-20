@@ -29,6 +29,7 @@ from agent_arena.v10.runtime.catalog import (
     rule_hash,
     scenario_hash,
 )
+from agent_arena.web.attribution import attribute_steps
 from agent_arena.web.budget import (
     BudgetExceeded,
     BudgetLimits,
@@ -204,6 +205,7 @@ def execute_offline(
     decisions = invalid = rejected = 0
     started_at = utc_now()
     cancelled = False
+    step_events: list[dict[str, Any]] = []
 
     while not environment.is_terminal and decisions < budget:
         if should_stop():
@@ -230,21 +232,21 @@ def execute_offline(
         observation = environment.observe()
         decisions += 1
         history.append({"action": entry, "result": step_result.result})
-        on_event(
-            {
-                "event": "decision",
-                "decision_index": decisions,
-                "action": sanitize_payload(entry),
-                "result": str(step_result.result),
-                "status": step_result.status.value,
-                "observation_after": sanitize_payload(observation),
-                "input_tokens": 0,
-                "output_tokens": 0,
-                "latency_ms": 0,
-                "decision_reason": "公开启发式规则策略（离线演示，非模型决策）",
-                "state_hash_after": environment.state_hash(),
-            }
-        )
+        event = {
+            "event": "decision",
+            "decision_index": decisions,
+            "action": sanitize_payload(entry),
+            "result": str(step_result.result),
+            "status": step_result.status.value,
+            "observation_after": sanitize_payload(observation),
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "latency_ms": 0,
+            "decision_reason": "公开启发式规则策略（离线演示，非模型决策）",
+            "state_hash_after": environment.state_hash(),
+        }
+        step_events.append(event)
+        on_event(event)
 
     if cancelled:
         state, outcome, termination = RunState.CANCELLED, "cancelled", "cancelled_by_user"
@@ -280,6 +282,13 @@ def execute_offline(
         rejected=rejected,
         usage=usage,
         started_at=started_at,
+    )
+    payload["attribution"] = attribute_steps(
+        config.map_id,
+        step_events,
+        invalid_actions=invalid,
+        mechanism_triggered=payload.get("mechanism_triggered"),
+        outcome=outcome,
     )
     return ExecutionOutcome(
         state=state,
@@ -319,6 +328,7 @@ def execute_live(
     state: RunState | None = None
     outcome = ""
     termination = ""
+    step_events: list[dict[str, Any]] = []
 
     while not environment.is_terminal and decisions < config.max_decisions:
         if should_stop():
@@ -415,22 +425,22 @@ def execute_live(
         observation = environment.observe()
         decisions += 1
         history.append({"action": entry, "result": step_result.result})
-        on_event(
-            {
-                "event": "decision",
-                "decision_index": decisions,
-                "action": sanitize_payload(entry),
-                "result": str(step_result.result),
-                "status": step_result.status.value,
-                "observation_after": sanitize_payload(observation),
-                "input_tokens": response.input_tokens,
-                "output_tokens": response.output_tokens,
-                "latency_ms": latency,
-                "decision_reason": None,
-                "state_hash_after": environment.state_hash(),
-                "budget": budget.snapshot(),
-            }
-        )
+        event = {
+            "event": "decision",
+            "decision_index": decisions,
+            "action": sanitize_payload(entry),
+            "result": str(step_result.result),
+            "status": step_result.status.value,
+            "observation_after": sanitize_payload(observation),
+            "input_tokens": response.input_tokens,
+            "output_tokens": response.output_tokens,
+            "latency_ms": latency,
+            "decision_reason": None,
+            "state_hash_after": environment.state_hash(),
+            "budget": budget.snapshot(),
+        }
+        step_events.append(event)
+        on_event(event)
 
     if state is None:
         if environment.is_terminal:
@@ -458,6 +468,13 @@ def execute_live(
         started_at=started_at,
         provider_error=provider_error,
         message=message,
+    )
+    payload["attribution"] = attribute_steps(
+        config.map_id,
+        step_events,
+        invalid_actions=invalid,
+        mechanism_triggered=payload.get("mechanism_triggered"),
+        outcome=outcome,
     )
     return ExecutionOutcome(
         state=state,

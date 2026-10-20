@@ -24,7 +24,7 @@ jobs:
       - name: 检查依赖锁
         run: uv lock --check
       - name: 安装冻结依赖
-        run: uv sync --frozen --all-groups
+        run: uv sync --frozen --all-groups --extra web
       - name: 检查代码规范
         run: uv run ruff check .
       - name: 检查类型

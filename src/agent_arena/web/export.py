@@ -56,6 +56,28 @@ def export_summary_bytes(result: dict[str, Any]) -> bytes:
     return export_json_bytes(sanitize_payload(summary))
 
 
+def export_trace_jsonl(steps: list[dict[str, Any]]) -> bytes:
+    """公开动作级 JSONL：header + 每个 decision 事件，不含密钥/隐藏真值。"""
+
+    lines = [
+        json.dumps(
+            {"event": "trace_header", "schema": "v11-web-trace-1"},
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+    ]
+    for step in steps:
+        lines.append(
+            json.dumps(
+                sanitize_payload(step),
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+        )
+    return ("\n".join(lines) + "\n").encode("utf-8")
+
+
 def export_actions_csv(steps: list[dict[str, Any]], *, bom: bool = True) -> bytes:
     buffer = io.StringIO(newline="")
     writer = csv.DictWriter(buffer, fieldnames=CSV_FIELDS, extrasaction="ignore")
@@ -93,6 +115,7 @@ def export_filename(run_id: str, kind: str) -> str:
         "json": "replay.json",
         "summary": "summary.json",
         "csv": "actions.csv",
+        "trace": "trace.jsonl",
     }
     return f"{run_id}-{suffix.get(kind, 'export.txt')}"
 
@@ -111,5 +134,6 @@ __all__ = [
     "export_filename",
     "export_json_bytes",
     "export_summary_bytes",
+    "export_trace_jsonl",
     "replay_document",
 ]
