@@ -17,7 +17,8 @@
 | `65806ef` | 跨进程锁、失败归因、筛选/多局对照、Streamlit extra 锁定 |
 | `e4fb40c` | shell 启动脚本可执行位 |
 | `d51f472` | 文件锁 mypy 跨平台修正 |
-| 本提交 | 最终报告、验收数据与进度回填 |
+| `33732ab` | 硬化文档：干净安装、Ubuntu CI、演示包与 0.2.0 |
+| 本提交 | Streamlit 单例/深链导航修复、深色截图、E2E 清理 |
 
 **推荐启动命令**：
 
@@ -121,7 +122,7 @@ uv run agent-arena web
 | 公开状态走势图 | DONE（基础版） |
 | 本地同模型成绩榜 | DONE（含决策预算列） |
 | 快捷启动脚本 | DONE（PowerShell/sh/command/桌面快捷方式/模板） |
-| 截图 | DONE（`docs/v11/screenshots/` 7 张） |
+| 截图 | DONE（`docs/v11/screenshots/` 8 张） |
 | 演示数据包 | DONE（`docs/v11/demo/` + 安装脚本） |
 | 桌面快捷方式 | DONE（模板；Linux 需改路径） |
 

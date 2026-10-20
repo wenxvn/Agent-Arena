@@ -63,7 +63,12 @@
 - 已发出的请求不会被强制中断，UI 明示“当前请求或步骤结束后生效”；
 - 取消后仍写 partial result，状态 `CANCELLED`。
 
-### 2.5 恢复与损坏容错
+### 2.5 单实例与进程内单例
+
+- `web/lock.py` 的 `SingleInstanceLock` 在 `runs/web/.service.lock` 上加进程锁：Windows 用 `msvcrt.locking`，POSIX 用 `fcntl.flock`；第二个服务进程会被明确拒绝并提示 PID。
+- Streamlit 每次 rerun 会重新执行入口脚本，`__main__` 的模块级变量会重置；因此 `RunService` 单例放在被 import 的 `ui/runtime.py`，避免每次 rerun 新建服务并撞锁。
+
+### 2.6 恢复与损坏容错
 
 - 每次状态转换原子写 manifest（临时文件 + `os.replace`，Windows 对 `PermissionError` 有限重试）；
 - 动作事件 append-only JSONL（`flush` + `fsync`）；

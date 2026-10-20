@@ -7,7 +7,7 @@
 | P2-1 公开状态可视化 | **DONE（基础版）** | 结果页可选公开 Observation 数值字段画折线；数据只来自 agent-visible 事件 | 增加地图主题卡片、资源条、进度图 |
 | P2-2 本地同模型成绩榜 | **DONE** | 同地图/模型/模式/规则指标版本内排序；显示 seed、费用与决策预算 | 按 seed 分组/个人最好成绩分层 |
 | P2-3 快捷启动脚本 | **DONE** | `launch_web.ps1`、`launch_web.sh`、`launch_web.command`、Windows 桌面快捷方式脚本、Linux `.desktop` 模板 | 跨平台安装器 |
-| P2-3 演示截图 | **DONE** | `docs/v11/screenshots/` 七张（含移动端） | 深色模式对照 |
+| P2-3 演示截图 | **DONE** | `docs/v11/screenshots/` 八张（含移动端） | 深色模式对照 |
 | P2-3 演示数据包 | **DONE** | `docs/v11/demo/` + `scripts/install_v11_demo.py`，一键安装 MAP-01 离线 15 步记录 | 扩展到 3 局样本 |
 | P2-3 桌面快捷方式 | **DONE（模板）** | Windows 脚本可直接创建；macOS `.command`；Linux `.desktop` 模板需改路径 | 各平台安装器 |
 

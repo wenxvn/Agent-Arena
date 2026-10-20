@@ -30,6 +30,10 @@
 - 新增 `scripts/e2e_web.py`：Playwright + 系统 Chrome 覆盖首页 → 离线运行 → 结果 → 下载 JSON → 深链历史，本地通过。
 - 新增 `scripts/verify_v11_map_pages.py`：30 图配置页浏览器映射 30/30。
 - 新增跨进程单实例锁；Streamlit 锁定到 `uv.lock` 的 `web` extra。
+- 修复 Streamlit 每次 rerun 重置 `__main__` 全局导致新建服务撞锁；单例移到 `ui/runtime.py`。
+- 修复深链每次 rerun 覆盖侧边栏导航；深链只在首次加载应用。
+- E2E 与 30 图映射脚本使用 `ignore_cleanup_errors`，避免 Windows 锁文件阻塞临时目录清理。
+- 新增深色模式截图（`08-home-dark.png`），截图总数 8 张。
 - 新增公开动作级失败归因与 `trace.jsonl`；历史补 Provider/Seed 筛选、2–4 局对照、成绩榜预算列。
 - Windows 干净克隆安装 176.9s（首次）/96.5s（复跑），无 `.env`，自检 7/7；Ubuntu CI `d51f472` success。
 - 演示数据包、启动/桌面快捷方式模板、版本 `0.2.0`。
@@ -44,6 +48,7 @@
 - `65806ef`：跨进程锁、失败归因、筛选/多局对照、Streamlit extra 锁定；
 - `e4fb40c`：shell 启动脚本可执行位；
 - `d51f472`：文件锁 mypy 跨平台修正；
-- 最终报告、验收数据与进度回填：本提交（见 `git log -1`）。
+- `33732ab`：硬化文档、干净安装/Ubuntu CI 证据、演示包与 0.2.0；
+- 本提交：Streamlit 单例/深链导航修复、深色截图、E2E 清理（见 `git log -1`）。
 
 最终 HEAD 与完整历史以 `git log` 为准。

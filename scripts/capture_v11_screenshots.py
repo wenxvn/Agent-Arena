@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 
 from playwright.sync_api import Page, sync_playwright
@@ -32,7 +33,7 @@ def _wait_text(page: Page, text: str, timeout: int = 20_000) -> None:
 
 
 def _click_nav(page: Page, label: str) -> None:
-    page.get_by_text(label, exact=True).first.click()
+    page.locator('[data-testid="stSidebar"] label').filter(has_text=label).first.click()
     page.wait_for_timeout(2_000)
 
 
@@ -43,10 +44,25 @@ def _shot(page: Page, name: str) -> str:
     return str(path.relative_to(ROOT))
 
 
+def _latest_run(runs_dir: Path) -> str:
+    candidates = sorted(
+        (path for path in runs_dir.glob("web-*") if (path / "result.json").is_file()),
+        key=lambda path: path.stat().st_mtime,
+        reverse=True,
+    )
+    return candidates[0].name if candidates else ""
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", default="http://127.0.0.1:8501")
+    parser.add_argument("--run-id", default="")
+    parser.add_argument("--runs-dir", type=Path, default=None)
     args = parser.parse_args()
+    runs_dir = args.runs_dir or Path(
+        os.environ.get("AGENT_ARENA_WEB_RUNS_DIR", str(ROOT / "runs" / "web"))
+    )
+    run_id = args.run_id or _latest_run(runs_dir)
     shots: list[str] = []
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(channel="chrome", headless=True)
@@ -61,11 +77,23 @@ def main() -> int:
         page.wait_for_timeout(4_000)
         shots.append(_shot(page, "02-config-rules.png"))
 
-        _click_nav(page, NAV["live"])
+        if run_id:
+            page.goto(
+                f"{args.url}/?view=%E8%BF%90%E8%A1%8C%E7%9B%91%E6%8E%A7&run={run_id}",
+                wait_until="networkidle",
+            )
+        else:
+            _click_nav(page, NAV["live"])
         _wait_text(page, "动作时间线")
         shots.append(_shot(page, "03-run-monitor.png"))
 
-        _click_nav(page, NAV["result"])
+        if run_id:
+            page.goto(
+                f"{args.url}/?view=%E7%BB%93%E6%9E%9C%E4%B8%8E%E5%9B%9E%E6%94%BE&run={run_id}",
+                wait_until="networkidle",
+            )
+        else:
+            _click_nav(page, NAV["result"])
         _wait_text(page, "逐步回放")
         shots.append(_shot(page, "04-result.png"))
 
@@ -82,6 +110,15 @@ def main() -> int:
         _wait_text(mobile, "地图大厅")
         mobile.wait_for_timeout(800)
         shots.append(_shot(mobile, "07-home-mobile.png"))
+
+        dark = browser.new_page(
+            viewport={"width": 1440, "height": 1200},
+            color_scheme="dark",
+        )
+        dark.goto(args.url, wait_until="networkidle")
+        _wait_text(dark, "地图大厅")
+        dark.wait_for_timeout(800)
+        shots.append(_shot(dark, "08-home-dark.png"))
         browser.close()
     for path in shots:
         print(path)

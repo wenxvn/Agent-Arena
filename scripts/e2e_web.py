@@ -129,7 +129,9 @@ def main() -> int:
     url = args.url
     try:
         if args.start:
-            temporary = tempfile.TemporaryDirectory(prefix="agent-arena-e2e-")
+            temporary = tempfile.TemporaryDirectory(
+                prefix="agent-arena-e2e-", ignore_cleanup_errors=True
+            )
             runs_dir = Path(temporary.name) / "runs" / "web"
             process = _start_server(args.port, runs_dir)
             url = f"http://127.0.0.1:{args.port}"
@@ -147,6 +149,8 @@ def main() -> int:
                 process.wait(timeout=10)
             except subprocess.TimeoutExpired:
                 process.kill()
+                process.wait(timeout=10)
+            time.sleep(0.5)
         if temporary is not None:
             temporary.cleanup()
 

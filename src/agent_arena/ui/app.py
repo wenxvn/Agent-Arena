@@ -29,6 +29,8 @@ from agent_arena.ui.present import (
     summarize_trace,
     trace_overview,
 )
+from agent_arena.ui.runtime import get_service as _get_shared_service
+from agent_arena.ui.runtime import reset_service as _reset_shared_service
 from agent_arena.v10.baselines.suite import decision_budget
 from agent_arena.web import catalog as web_catalog
 from agent_arena.web.budget import BudgetLimits
@@ -105,8 +107,6 @@ VIEWS = [
 LEGACY_VIEWS = {"单局回放", "矩阵总览", "错误热点", "条件对照"}
 RESEARCH_VIEWS = ["单局回放", "矩阵总览", "错误热点", "条件对照"]
 
-_SERVICE: RunService | None = None
-
 
 def _load_streamlit() -> Any:
     try:
@@ -121,17 +121,11 @@ def _load_streamlit() -> Any:
 
 
 def get_service() -> RunService:
-    global _SERVICE
-    if _SERVICE is None:
-        _SERVICE = RunService(WEB_RUNS_DIR)
-    return _SERVICE
+    return _get_shared_service(WEB_RUNS_DIR)
 
 
 def reset_service() -> None:
-    global _SERVICE
-    if _SERVICE is not None:
-        _SERVICE.shutdown()
-    _SERVICE = None
+    _reset_shared_service()
 
 
 # --------------------------------------------------------------------- legacy
@@ -400,8 +394,15 @@ def _query_value(st: Any, key: str) -> str:
 
 
 def _apply_deep_link(st: Any) -> None:
-    """支持 ``?view=结果与回放&run=<run_id>`` 深链；不影响状态事实来源。"""
+    """支持 ``?view=结果与回放&run=<run_id>`` 深链；只在首次加载生效。
 
+    ``_nav`` 会在用户导航后写回 ``view`` 参数；如果每次 rerun 都重新应用，就会把
+    用户刚点的侧边栏选项覆盖掉。
+    """
+
+    state = getattr(st, "session_state", None)
+    if state is not None and state.get("_deep_link_applied"):
+        return
     view = _query_value(st, "view")
     run_id = _query_value(st, "run")
     map_id = _query_value(st, "map")
@@ -411,15 +412,15 @@ def _apply_deep_link(st: Any) -> None:
         st.session_state["active_run"] = run_id
     if map_id and any(item.map_id == map_id for item in web_catalog.cards()):
         st.session_state["selected_map"] = map_id
+    if state is not None:
+        state["_deep_link_applied"] = True
 
 
 def _nav(st: Any) -> str:
     try:
-        selected = str(st.sidebar.radio("导航", VIEWS, key="nav"))
+        return str(st.sidebar.radio("导航", VIEWS, key="nav"))
     except TypeError:  # 兼容旧测试的极简 stub
-        selected = str(st.sidebar.radio("导航", VIEWS))
-    _set_query_param(st, "view", selected)
-    return selected
+        return str(st.sidebar.radio("导航", VIEWS))
 
 
 def _world_options() -> dict[str, str]:
@@ -1123,7 +1124,7 @@ def _history_view(st: Any, service_getter: Any = get_service) -> None:
             "seed": row.environment_seed,
             "状态": state_label(row.state),
             "结局": row.outcome or "—",
-            "费用": row.cost_settled_cny,
+            "费用": "—" if row.cost_settled_cny is None else row.cost_settled_cny,
         }
         for row in filtered
     ]

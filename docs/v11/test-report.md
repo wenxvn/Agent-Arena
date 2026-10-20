@@ -117,6 +117,9 @@ uv run --with playwright --with streamlit python scripts/verify_v11_map_pages.py
 11. **失败归因与原始 trace**：新增公开动作级 `attribution.py`（复用 V10 `MECHANISM_TOOLS`），导出新增 `trace.jsonl`。
 12. **历史筛选/对照**：补 Provider/Seed 筛选、2–4 局对照、成绩榜决策预算列。
 13. **CLI 测试平台差异**：`--help` 文本断言改为 `--check` 行为测试，修复 Ubuntu CI 唯一失败。
+14. **Streamlit 单例重置**：入口脚本每次 rerun 重置 `__main__` 全局，导致每次新建 `RunService` 并撞文件锁；把单例移到 `ui/runtime.py`，跨 rerun/会话复用。
+15. **深链覆盖导航**：`_nav` 每次 rerun 写回 `view` 参数，`_apply_deep_link` 又每次读回，导致侧边栏点击被覆盖；改为深链只在首次加载应用（`_deep_link_applied`）。
+16. **E2E 临时目录清理**：Windows 下服务进程未完全退出时 `.service.lock` 仍被占用；改为 `ignore_cleanup_errors=True` 并等待进程退出。
 
 ## 7. OS 覆盖
 

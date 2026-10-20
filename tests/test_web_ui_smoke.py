@@ -325,3 +325,14 @@ def test_pending_nav_is_applied_before_widget() -> None:
     ui_app._apply_pending_nav(stub)
     assert stub.session_state["nav"] == "挑战配置"
     assert "pending_nav" not in stub.session_state
+
+
+def test_deep_link_only_applies_on_first_load() -> None:
+    from agent_arena.ui import app as ui_app
+
+    stub = _Stub()
+    stub.session_state["nav"] = "挑战配置"
+    stub.session_state["_deep_link_applied"] = True
+    stub.query_params = {"view": "结果与回放"}
+    ui_app._apply_deep_link(stub)
+    assert stub.session_state["nav"] == "挑战配置"
