@@ -6,9 +6,10 @@ Windows 使用 ``msvcrt.locking``，POSIX 使用 ``fcntl.flock``；锁随进程�
 
 from __future__ import annotations
 
+import importlib
 import os
 from pathlib import Path
-from typing import BinaryIO
+from typing import Any, BinaryIO
 
 
 class ServiceLockError(RuntimeError):
@@ -78,25 +79,20 @@ def _owner_hint(handle: BinaryIO) -> str:
 
 def _lock(handle: BinaryIO) -> None:
     if os.name == "nt":
-        import msvcrt
-
-        msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+        module: Any = importlib.import_module("msvcrt")
+        module.locking(handle.fileno(), module.LK_NBLCK, 1)
     else:
-        import fcntl
-
-        mode = fcntl.LOCK_EX | fcntl.LOCK_NB  # type: ignore[attr-defined]
-        fcntl.flock(handle.fileno(), mode)  # type: ignore[attr-defined]
+        module = importlib.import_module("fcntl")
+        module.flock(handle.fileno(), module.LOCK_EX | module.LOCK_NB)
 
 
 def _unlock(handle: BinaryIO) -> None:
     if os.name == "nt":
-        import msvcrt
-
-        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+        module: Any = importlib.import_module("msvcrt")
+        module.locking(handle.fileno(), module.LK_UNLCK, 1)
     else:
-        import fcntl
-
-        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)  # type: ignore[attr-defined]
+        module = importlib.import_module("fcntl")
+        module.flock(handle.fileno(), module.LOCK_UN)
 
 
 __all__ = ["ServiceLockError", "SingleInstanceLock"]
