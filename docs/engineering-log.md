@@ -1735,12 +1735,12 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 - `ui/app.py`：升级为可操作网页（首页/配置/监控/结果/历史/设置），保留四个只读研究视图；支持 `?view=...&run=...` 深链。
 - `cli.py`：新增 `agent-arena web`，默认只监听 127.0.0.1，Streamlit 通过 `--with` 提供。
 - 文档：`docs/v11/` 14 份交付文档、30 图 UX 清单、展示难度表、最终报告；README 改为网页优先。
-- 测试：新增 74 个 V11 测试；CI 增加 `verify_v11.py`。
+- 测试：新增 82 个 V11 测试；CI 增加 `verify_v11.py`。
 
 结果：
 - 30/30 图离线可启动/回放/导出，473 步；一键自检 7/7。
 - 真实 MiMo 冒烟 3 局（MAP-01/19/30）：58 次已记录请求，结算 CNY 0.04637556 + 未知预留 0.073728 = 0.12010356，低于 ¥3；0 成功（环境规则/预算终局）。
-- 质量：1231 pytest passed、mypy 0 issues、ruff clean、uv lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、git diff --check 0。
+- 质量：1239 pytest passed、mypy 0 issues、ruff clean、uv lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、git diff --check 0。
 
 缺陷与修复：
 - `RunBudget.snapshot()` 的 limits 含 Decimal 导致 JSONL 写入失败；改为字符串并在存储层加 `default=str`，新增回归/集成测试；修复前 4 次未落盘请求按 ¥0.073728 预留上界记入 V11 账本。
@@ -1761,6 +1761,29 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 - 历史页在不足两局时提前 `return`，导致本地同模型成绩榜不渲染；改为只跳过对照区。
 - Streamlit 1.66 `use_container_width` 弃用、指标“值”列 Arrow 混合类型；改用 `width="stretch"` 与字符串值。
 
-验证：`scripts/e2e_web.py --start` 通过（离线 15 步、SUCCEEDED、下载 JSON 24,307 B、深链历史）；`1231 pytest passed`、ruff/mypy 通过。
+验证：`scripts/e2e_web.py --start` 通过（离线 15 步、SUCCEEDED、下载 JSON 24,307 B、深链历史）；`1239 pytest passed`、ruff/mypy 通过。
 
 关联提交：本次 V11 完善提交（分支 `main`）。
+
+## 2026-10-20 V11 硬化：跨进程锁、依赖锁定、归因与 CI 跨平台
+
+事件：按阶段交付清单补齐 P0/P1/P2 的剩余工程项，并用 GitHub Actions 实际验证 Ubuntu。
+
+改动：
+- 新增 `web/lock.py`：Windows `msvcrt` / POSIX `fcntl` 单实例锁，第二个服务实例明确拒绝；
+- Streamlit 写入 `[project.optional-dependencies].web` 并更新 `uv.lock`；推荐 `uv sync --extra web`；
+- 新增 `web/attribution.py`（复用 V10 `MECHANISM_TOOLS`）与 `trace.jsonl` 导出；
+- 历史补 Provider/Seed 筛选、2–4 局对照、成绩榜决策预算列；
+- 30 图浏览器映射脚本 `verify_v11_map_pages.py`（30/30）；
+- 演示数据包 `docs/v11/demo/` + 安装脚本；Windows/macOS/Linux 启动与桌面快捷方式模板；
+- 版本 bump 到 `0.2.0`；CI 安装 `--extra web`；CLI 帮助测试改为平台无关。
+
+验证：
+- Ubuntu GitHub Actions `d51f472` **success**（lock/ruff/mypy/pytest/freeze/recompute/independent/verify_v11）；
+- Windows 干净克隆 `d51f472`：`uv sync --extra web` + `web --check` 首次 176.9s、缓存复跑 96.5s，7/7，无 `.env`；
+- 浏览器 E2E 15 步、下载 JSON 24,307 B；30 图映射 30/30；`1239 pytest passed`；
+- 本地 ruff/mypy/lock/freeze/recompute/independent 全绿。
+
+边界：macOS 实机、连接检查/Ollama 真实局、额度/限流/鉴权错误、Provider 账单对账、移动端/深色/a11y 仍未验证。
+
+关联提交：`4d6a219`、`65806ef`、`e4fb40c`、`d51f472`（分支 `main`）。

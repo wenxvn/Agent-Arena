@@ -123,7 +123,7 @@ uv run python -m agent_arena.v10.recompute --check
 uv run python -m agent_arena.v10.independent_check --check
 ```
 
-当前 V11 结果：1231 pytest passed、mypy 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations。详见 [测试报告](docs/v11/test-report.md)。
+当前 V11 结果：1239 pytest passed、mypy 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations。详见 [测试报告](docs/v11/test-report.md)。
 
 ## 研究背景（简版）
 

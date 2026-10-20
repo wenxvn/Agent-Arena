@@ -17,7 +17,7 @@
 
 - 离线矩阵：30/30 图可启动、可回放、可导出，473 步；
 - 一键自检：7/7 通过（catalog、offline_matrix、budget、redaction、paths、export、recovery）；
-- 全量测试：1231 passed；
+- 全量测试：1239 passed；
 - `ruff check .` / `mypy src` / `uv lock --check` / `git diff --check` 全部退出码 0；
 - V10 `freeze verify` 9/9 unchanged；`recompute --check` 1093/1093；`independent_check --check` 0 违规；
 - 真实 MiMo：3 局有效（MAP-01/19/30），58 次已记录请求，结算 ¥0.04637556，未知预留 ¥0.073728。
@@ -28,6 +28,11 @@
 - 快速开始/配置页创建成功后递增 idempotency nonce，避免重复点击复用旧运行。
 - 单局历史页继续渲染本地同模型成绩榜。
 - 新增 `scripts/e2e_web.py`：Playwright + 系统 Chrome 覆盖首页 → 离线运行 → 结果 → 下载 JSON → 深链历史，本地通过。
+- 新增 `scripts/verify_v11_map_pages.py`：30 图配置页浏览器映射 30/30。
+- 新增跨进程单实例锁；Streamlit 锁定到 `uv.lock` 的 `web` extra。
+- 新增公开动作级失败归因与 `trace.jsonl`；历史补 Provider/Seed 筛选、2–4 局对照、成绩榜预算列。
+- Windows 干净克隆安装 176.9s（首次）/96.5s（复跑），无 `.env`，自检 7/7；Ubuntu CI `d51f472` success。
+- 演示数据包、启动/桌面快捷方式模板、版本 `0.2.0`。
 
 ## 提交
 
@@ -35,6 +40,10 @@
 - `c0c5e0b`：可操作 Streamlit 页面、`agent-arena web` CLI、UI/CLI 测试；
 - `a7e72ff`：验收/截图/冒烟脚本、交付文档、README、CI、截图；
 - `54c3951`：导航 widget key、idempotency、单局历史成绩榜修复；Playwright E2E；
-- 最终报告与进度回填：本提交（见 `git log -1`）。
+- `4d6a219`：CLI 测试平台差异修复（Ubuntu CI 转 success）；
+- `65806ef`：跨进程锁、失败归因、筛选/多局对照、Streamlit extra 锁定；
+- `e4fb40c`：shell 启动脚本可执行位；
+- `d51f472`：文件锁 mypy 跨平台修正；
+- 最终报告、验收数据与进度回填：本提交（见 `git log -1`）。
 
 最终 HEAD 与完整历史以 `git log` 为准。

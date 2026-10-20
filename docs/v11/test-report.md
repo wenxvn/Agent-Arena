@@ -10,14 +10,14 @@
 |---|---|---:|
 | `uv run ruff check .` | All checks passed | 0 |
 | `uv run mypy src` | 273 source files，0 issues | 0 |
-| `uv run pytest -q` | **1231 passed** | 0 |
+| `uv run pytest -q` | **1239 passed** | 0 |
 | `uv run uv lock --check` | Resolved 36 packages | 0 |
 | `git diff --check` | 无输出 | 0 |
 | `uv run python -m agent_arena.v10.freeze verify` | 9/9 unchanged | 0 |
 | `uv run python -m agent_arena.v10.recompute --check` | 1093/1093 match，30 图 | 0 |
 | `uv run python -m agent_arena.v10.independent_check --check` | 0 violations，144 seed 实例 | 0 |
 
-改动前基线：`1157 passed in 103.62s`。新增 74 个 V11 测试（Web 服务、执行、预算、catalog、导出、历史、UI 冒烟、自检、CLI）。
+改动前基线：`1157 passed in 103.62s`。新增 82 个 V11 测试（Web 服务、执行、预算、catalog、导出、历史、UI 冒烟、自检、CLI）。
 
 ## 2. 一键自检（零 API）
 
@@ -81,6 +81,27 @@ uv run --with playwright --with streamlit python scripts/e2e_web.py --start
 
 该 E2E 发现并修复了两个真实 UI 缺陷：Streamlit radio widget key 在组件实例化后被写入导致导航失效（改为 `pending_nav` + rerun 前写入），以及单局历史页过早返回导致成绩榜不显示。
 
+### 30 图网页映射
+
+```bash
+uv run --with playwright --with streamlit python scripts/verify_v11_map_pages.py --start
+```
+
+逐图通过深链 `?view=挑战配置&map=MAP-XX` 打开配置页，确认公开目标、标题、规则与动作契约可渲染。实测：**30/30，failures=[]**。
+
+### 干净安装（Windows）
+
+- 目标：`%TEMP%\agent-arena-clean`，`git clone` 本地 HEAD（`d51f472`），无 `.env`；
+- `uv sync --extra web` + `uv run agent-arena web --check`；
+- 首次实测 **176.9 秒**（约 2.95 分钟），缓存复跑 **96.5 秒**；自检 7/7，无 API Key；
+- 证明“干净环境 + 无 Key 离线”路径，远低于 15 分钟体验目标。
+
+### Ubuntu CI
+
+- GitHub Actions 在 `d51f472`（最终代码）上 **success**，包含 Ubuntu + Python 3.13 的 lock、ruff、mypy、pytest、freeze、recompute、independent 与 `verify_v11.py`；
+- 通过 GitHub API 观察，不依赖本机运行；
+- 已包含最终锁/筛选/归因改动；后续提交仍需重新观察。
+
 ## 6. 修复的缺陷
 
 1. **Decimal 序列化**：`RunBudget.snapshot()` 的 limits 含 `Decimal`，写 JSONL 失败；改为字符串 + 存储层 `default=str`，新增回归测试与服务层集成测试。
@@ -91,21 +112,26 @@ uv run --with playwright --with streamlit python scripts/e2e_web.py --start
 6. **单局历史页无成绩榜**：对照区提前 `return`；改为只跳过对照，继续渲染本地成绩榜。
 7. **UI 截断**：首页“需自备 API”、费用小数、token 过长、历史表列过多；改为“需 API”、`¥0.0392`、k 缩写、精简列。
 8. **指标表缺范围**：补 `valid_range`，公式移到折叠区；`None` 显示为“—”，`CENSORED` 不写 0。
+9. **跨进程竞争**：新增 `SingleInstanceLock`（Windows `msvcrt` / POSIX `fcntl`），同一 `runs/web` 第二个服务实例被明确拒绝。
+10. **依赖不可复现**：Streamlit 加入 `[project.optional-dependencies].web` 并锁定到 `uv.lock`；`uv sync --extra web` 为推荐安装。
+11. **失败归因与原始 trace**：新增公开动作级 `attribution.py`（复用 V10 `MECHANISM_TOOLS`），导出新增 `trace.jsonl`。
+12. **历史筛选/对照**：补 Provider/Seed 筛选、2–4 局对照、成绩榜决策预算列。
+13. **CLI 测试平台差异**：`--help` 文本断言改为 `--check` 行为测试，修复 Ubuntu CI 唯一失败。
 
 ## 7. OS 覆盖
 
 | 系统 | 状态 |
 |---|---|
-| Windows 11 | **已实测**（安装、启动、离线 30 图、真实 3 局、浏览器页面） |
-| Ubuntu | CI 配置为 `ubuntu-latest`，本次未在本机执行；列为未验证 |
+| Windows 11 | **已实测**（干净克隆安装 176.9s/96.5s、离线 30 图、真实 3 局、浏览器六页、30 图映射） |
+| Ubuntu | **CI 已实测**：`d51f472` GitHub Actions success（lock/ruff/mypy/pytest/freeze/recompute/independent/verify_v11）；后续提交需重跑 |
 | macOS | 未执行；启动脚本与文档已提供，列为未验证 |
 
-不虚报跨系统通过；全量 CI 需要 GitHub Actions 实际运行结果。
+不虚报跨系统通过；macOS 仍是明确缺口。
 
 ## 8. 未覆盖 / 已知缺口
 
-- 未做自动化浏览器 E2E（截图与手工导航为主）；
-- 未做移动端真机测试；
+- 未做 macOS 实机测试；Ubuntu 仅通过 CI，不是交互式浏览器实测；
+- 未做移动端真机测试、深色模式/可访问性审计；
 - 未做 Provider 账单对账（本地只有 usage 估算/结算）；
-- 未做断点续跑环境状态（只恢复为 `INTERRUPTED`）；
-- `decision_reason` 在 V10 契约中不存在，页面显示“—”。
+- 未做真实 kill 进程中途恢复（恢复有构造测试与服务级测试，未做真实进程级演练）；
+- `decision_reason` 在 V10 契约中不存在，真实模式显示“—”。

@@ -13,7 +13,11 @@
 | `c0c5e0b` | 可操作 Streamlit 页面、`agent-arena web` CLI、UI/CLI 测试 |
 | `a7e72ff` | 验收/截图/冒烟脚本、14 份交付文档、README、CI、截图 |
 | `54c3951` | 导航 widget key、idempotency、单局历史成绩榜修复；Playwright E2E |
-| 本提交 | 最终报告与进度 hash 回填 |
+| `4d6a219` | CLI 测试平台差异修复，Ubuntu CI 转为 success |
+| `65806ef` | 跨进程锁、失败归因、筛选/多局对照、Streamlit extra 锁定 |
+| `e4fb40c` | shell 启动脚本可执行位 |
+| `d51f472` | 文件锁 mypy 跨平台修正 |
+| 本提交 | 最终报告、验收数据与进度回填 |
 
 **推荐启动命令**：
 
@@ -31,6 +35,7 @@ uv run agent-arena web
 - 每张图详情包含公开目标、公开规则全文、带类型动作契约、公开观察字段、`scenario_descriptor`、成功/失败说明、版本 hash；
 - 离线矩阵：30/30 成功启动并结束，合计 473 步，逐图 JSON 回放与 CSV 行数一致；
 - `docs/v11/map-ux-checklist.md` 逐图留痕；6 张占位标题（08/16/18/22/26/30）只在展示层修复；
+- 浏览器深链逐图打开配置页：**30/30，failures=[]**（`scripts/verify_v11_map_pages.py`）；
 - MAP-19/20/28/29/30 有额外公开提醒，未修改规则。
 
 ## 3. 离线 / 真实模式各自完成了哪些端到端测试
@@ -52,6 +57,12 @@ uv run agent-arena web
 - MAP-30：46 决策，`decision_budget_exhausted`（`CENSORED` 指标）；
 - 全部 0 非法动作、0 自动重试、0 成功；未改规则凑成功。
 
+### 干净安装 / 跨 OS
+
+- Windows 干净克隆 `d51f472`（无 `.env`）：`uv sync --extra web` + `web --check`，首次 **176.9 秒**、缓存复跑 **96.5 秒**，7/7；
+- Ubuntu GitHub Actions：`d51f472` **success**（lock/ruff/mypy/pytest/freeze/recompute/independent/verify_v11）；
+- macOS 未实机验证。
+
 ## 4. 取消、刷新、并发、Provider 错误、费用保护是否通过
 
 | 项 | 结果 | 证据 |
@@ -67,6 +78,10 @@ uv run agent-arena web
 | 请求/token/费用上限 | 通过 | `test_web_budget.py`、`test_cost_cap_blocks_before_any_request` |
 | 未知消费全局记录 | 通过 | `unknown_spend_adjustment`，本次 ¥0.073728 |
 | 浏览器 E2E | 通过 | `scripts/e2e_web.py`：离线运行 15 步、下载 JSON 24,307 B、深链历史 |
+| 30 图网页映射 | 通过 | `scripts/verify_v11_map_pages.py`：30/30 |
+| 跨进程互斥 | 通过 | `SingleInstanceLock`；`test_single_instance_lock_per_run_directory` |
+| 失败归因 | 通过 | `web/attribution.py`；结果页显示 label/detail |
+| 原始公开 trace | 通过 | `trace.jsonl` 导出（header + decision） |
 
 ## 5. 数据/密钥泄露、版本 hash 与指标五态
 
@@ -95,25 +110,26 @@ uv run agent-arena web
 
 - 展示难度 30/30 + 说明：`difficulty-display.md`；ID/规则 hash 未变；
 - 网页细化：卡片、配置、监控、时间线、结果、失败解释、空状态、移动端基本响应式；
-- 历史筛选 + 同版本对照 + 版本不一致阻止：`web/history.py`、页面；
+- 历史筛选 + 2–4 局同版本对照 + 版本不一致阻止：`web/history.py`、页面；Provider/Seed 筛选、成绩榜决策预算列已补；
 - 新手引导：首页快速开始、规则折叠、费用提示、无 Key 演示。
-- 自动化浏览器 E2E：首页 → 离线运行 → 结果 → 下载 JSON → 深链历史；本地通过。
+- 自动化浏览器 E2E：首页 → 离线运行 → 结果 → 下载 JSON → 深链历史；30 图配置页逐图 30/30。
 
 ### P2
 
 | 项 | 状态 |
 |---|---|
 | 公开状态走势图 | DONE（基础版） |
-| 本地同模型成绩榜 | DONE |
-| 快捷启动脚本 | DONE |
+| 本地同模型成绩榜 | DONE（含决策预算列） |
+| 快捷启动脚本 | DONE（PowerShell/sh/command/桌面快捷方式/模板） |
 | 截图 | DONE（`docs/v11/screenshots/` 7 张） |
-| 演示数据包 / 桌面快捷方式 | DEFERRED（`backlog.md`） |
+| 演示数据包 | DONE（`docs/v11/demo/` + 安装脚本） |
+| 桌面快捷方式 | DONE（模板；Linux 需改路径） |
 
 ### OS 覆盖
 
-- **Windows 11**：已实测（安装、启动、离线 30 图、真实 3 局、浏览器六页）；
-- **Ubuntu**：CI 配置将运行，本次未在本机执行；未验证；
-- **macOS**：未执行；文档与脚本已提供；未验证。
+- **Windows 11**：已实测（干净安装 176.9s/96.5s、启动、离线 30 图、真实 3 局、浏览器六页、30 图映射）；
+- **Ubuntu**：GitHub Actions `d51f472` success（锁/ruff/mypy/pytest/freeze/recompute/independent/verify_v11）；
+- **macOS**：未实机验证；`.command` 与文档已提供。
 
 ## 7. 真实 API 调用、请求、花费、未知消费
 
@@ -137,20 +153,22 @@ uv run agent-arena web
 
 成立的依据：
 
-- P0 全部通过；P1 全部落地；P2 除演示数据包外均完成；
-- 1229→**1231 pytest passed**、mypy 0 issues、ruff clean、lock 0、`git diff --check` 0；
+- P0 功能与主要 Gate 通过；P1 全部落地；P2 全部有实现或明确模板；
+- **1239 pytest passed**、mypy 0 issues、ruff clean、lock 0、`git diff --check` 0；
 - freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations；
-- 30/30 离线端到端 + 3/3 真实端到端；
+- 30/30 离线端到端 + 3/3 真实端到端 + 30/30 浏览器映射；
+- Windows 干净安装 176.9s/96.5s、无 `.env` 自检 7/7；Ubuntu CI 已 success；
 - 无密钥/隐藏真值泄露测试通过；
-- 真实费用有硬门禁、未知消费封账。
+- 真实费用有硬门禁、未知消费封账；版本 `0.2.0`。
 
-**不是**公网生产就绪，阻塞/缺口：
+**不是**公网生产就绪，剩余缺口：
 
-1. macOS/Linux 实机未验证；
-2. 无公网鉴权、多用户隔离、速率限制；
-3. 取消不能强制中断已发出的网络请求；
-4. 崩溃只能恢复到 `INTERRUPTED`，不能续跑环境；
-5. 无自动化浏览器 E2E 与移动端真机测试；
-6. V10 契约不返回 `decision_reason`，真实模式该列显示“—”。
+1. macOS 实机未验证；
+2. 连接检查、Ollama 真实局、额度不足/限流/鉴权错误未真实触发；
+3. 取消不能强制中断已发出的网络请求；真实 kill 进程恢复未演练；
+4. 无自动化浏览器 E2E 进入 CI（本地脚本已通过）；
+5. 移动端真机、深色模式、可访问性未审计；
+6. Provider 账单对账未做；修复前 4 次请求只有预留上界；
+7. V10 契约不返回 `decision_reason`，真实模式该列显示“—”。
 
 最短修复路线：先在 macOS/Ubuntu 实机跑 `uv sync` + `verify_v11.py` + 网页 smoke，再补 Playwright CI；公网需求另立安全 ADR。未完成项均不阻塞本地预览。
