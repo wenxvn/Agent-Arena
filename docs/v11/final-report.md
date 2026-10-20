@@ -12,6 +12,7 @@
 | `8c4b8cb` | Web 服务层、30 图 catalog、离线执行、预算、存储、导出、历史与测试 |
 | `c0c5e0b` | 可操作 Streamlit 页面、`agent-arena web` CLI、UI/CLI 测试 |
 | `a7e72ff` | 验收/截图/冒烟脚本、14 份交付文档、README、CI、截图 |
+| `54c3951` | 导航 widget key、idempotency、单局历史成绩榜修复；Playwright E2E |
 | 本提交 | 最终报告与进度 hash 回填 |
 
 **推荐启动命令**：
