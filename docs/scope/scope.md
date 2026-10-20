@@ -16,7 +16,7 @@
 | 5 | Episode Trace 与终止控制 | Release 1 | done |
 | 6 | MemoryAgent | Release 2 | done |
 | 7 | Benchmark 与指标 | Release 2 | done |
-| 8 | Streamlit 实验界面 | Release 3 | planned |
+| 8 | Streamlit 实验界面 | Release 3 | done（V11 本地网页预览） |
 | 9 | PlanningAgent v1 | Research Core | done |
 | 10 | ReflectionAgent | Deferred | planned |
 | 11 | Planning v1 Failure Analysis & Evaluation v2 | Research Core | done |
@@ -459,3 +459,18 @@ Spec [0018](../specs/0018-v5-six-map-measurement.md)
 - [x] 验证：1157 pytest passed、`mypy src` 0 issues、`ruff check .` 通过、`freeze verify` 9/9 unchanged、CI 全绿。
 
 边界：单模型、每图 3 seed、重复仅覆盖 12 图；不作跨模型排名或显著性断言。详见 `docs/v10/final-report.md`。
+
+### 23. V11 网页平台与阶段性交付 · done（本地网页预览，2026-10-20）
+
+按根目录 `研究提纲/V11：Agent-Arena 网页平台与阶段性交付.md` 执行。V10 规则、指标、Oracle、账本与历史 trace 保持只读。
+
+- [x] Batch 0：HEAD `eb2f64a` 审计、UI/runner/catalog 盘点、基线 1157 pytest passed。
+- [x] Batch 1–2：`web/RunService`、状态机、manifest/JSONL/result 持久化、取消、恢复、单局预算；30 图 catalog 与展示难度。
+- [x] Batch 3：可操作 Streamlit 网页，离线 30/30 图可启动/回放/导出，473 步。
+- [x] Batch 4：真实 MiMo 3 局（MAP-01/19/30），58 次已记录请求，结算 ¥0.04637556 + 未知预留 ¥0.073728 < ¥3。
+- [x] Batch 5–6：指标五态/失败解释/JSON/CSV、README、quickstart、user-guide、configuration、一键自检、CI。
+- [x] Batch 7：P1 全部落地；P2 可视化/成绩榜/启动脚本/截图完成，演示数据包 DEFERRED。
+- [x] 验证：1230 pytest passed、mypy 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations。
+- [x] 结论：`WEB_PREVIEW_READY`（本地单机预览）；不是公网生产就绪。macOS/Linux 实机未验证。
+
+详见 `docs/v11/final-report.md`、`docs/v11/release-checklist.md` 与 `docs/v11/safety-and-budget.md`。

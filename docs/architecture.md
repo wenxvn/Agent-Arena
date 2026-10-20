@@ -25,7 +25,8 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 | `src/agent_arena/llm/` | DecisionProvider、OpenAI-compatible/Ollama/Fake 适配器 | 环境状态和业务规则 |
 | `src/agent_arena/evaluation/` | Episode Runner、Trace 持久化、公开进展/事实、失败分析、指标和 benchmark | 修改 Agent 决策或世界规则 |
 | `prompts/` | 版本化的 Agent 指令模板 | 密钥和运行时配置 |
-| `src/agent_arena/ui/` | 只读回放 Trace、矩阵指标、错误热点和条件对照 | 启动 Episode/Benchmark、直接修改 Environment 内部状态 |
+| `src/agent_arena/ui/` | 本地网页平台：地图大厅、挑战配置、运行监控、结果回放、历史对照；保留只读研究视图 | 世界规则、模型调用细节、账本实现 |
+| `src/agent_arena/web/` | V11 服务层：RunService、持久化、预算、catalog、导出、自检；不依赖 Streamlit | Streamlit 渲染、地图规则 |
 
 ## 当前 MVP 闭环
 
@@ -48,7 +49,17 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 - Planning Trace 记录 `plan_id`、当前子目标、Planner 调用、重规划原因、监控信号、子目标完成和 Planner/Executor 成本。`planner_assisted` 仍是独立的规则路线辅助模式，不与 `planning` 结果合并。
 - Evaluation v2 在 `evaluation/progress.py` 中将公开状态变化与 episode-local 公共事实分开计数；`evaluation/failures.py` 只用规则生成自动失败信号，并保留人工标注入口。`planning/criteria.py` 负责结构化 `SuccessCriterion`，同时兼容 Planning v1 字符串条件。
 - Trace schema v2 为已执行步骤记录 `ProgressEvent`，旧 trace 缺失字段时仍可读取，但对应指标必须标记为不可用；失败分析 CLI 输出独立的 JSON/CSV 报告。
-- 核心实验仍通过本地 CLI 运行并输出 JSON/CSV。研究阶段另有只读 Streamlit MVP，读取本地 `runs/`、`results/`，不访问 `.env` 或调用 Provider；可配置并启动实验的完整界面仍属于 Release 3。
+- 核心实验仍通过本地 CLI 运行并输出 JSON/CSV。研究阶段另有只读 Streamlit MVP，读取本地 `runs/`、`results/`，不访问 `.env` 或调用 Provider；V11 起新增可操作的本地网页平台，通过 `web/RunService` 启动单局、持久化状态、取消与导出。
+
+## V11 网页平台边界
+
+- `src/agent_arena/web/` 是独立服务层：`RunService` 负责提交、排队、单 worker 执行、取消、恢复与查询；`RunStore` 负责 `runs/web/<run_id>/` 的原子 manifest、append-only JSONL 与 result；`RunBudget` 负责请求/token/费用门禁。
+- Streamlit 只做展示与操作，不直接创建环境或调用 Provider；任务事实来源始终是磁盘 manifest，不是 `st.session_state`。
+- 离线演示使用公开启发式规则策略，元数据显式标记 `public_heuristic_policy`，不得冒充模型挑战。
+- 真实模式复用 V10 `create_environment`、带类型公开契约、`scenario_v4` 请求语义与 MiMo 价格口径；每局独立预算，不读写 V10 账本。
+- 状态机：`CREATED -> QUEUED -> RUNNING -> {SUCCEEDED, FAILED, BUDGET_REACHED, CANCELLED, PROVIDER_ERROR, INTERRUPTED}`；指标五态独立显示。
+- 默认只监听 `127.0.0.1`；API Key 只从本机 `.env` 读取，网页不回显，不接受自定义 URL。
+- 30 图 ID、V10 规则、指标、Oracle 与历史冻结账本保持只读；展示难度只存在于 `web/catalog.py`。
 
 ## V3 Scenario 边界
 

@@ -1,168 +1,113 @@
 # Agent Arena
 
-Agent Arena 是一个用于学习和比较 LLM Agent 行为的轻量实验环境。它让 Agent 在确定、部分可观测的世界中观察、调用工具、接收反馈，并记录每一步的运行结果。
+Agent Arena 是一个用于学习、运行和比较 LLM Agent 行为的本地实验平台。它在确定、部分可观测的十世界里提供 30 张手工地图，记录每一步的公开观察、动作、结果与指标，并支持在浏览器中选图、配置 seed/预算、启动挑战、实时查看、回放和导出。
 
-当前已完成 Release 2、PlanningAgent v1 工程闭环和十世界三十图（飞船/灯塔/深海站/极地/金字塔/地铁/火山/丛林/月球/古堡 × 简单/中等/困难，见 `docs/specs/0007-*`～`0011-*`）：确定性世界、ReactAgent、MemoryAgent、PlanningAgent、不限步数执行循环、每局 JSON 运行记录，以及可重复的 benchmark 对照。
+![地图大厅](docs/v11/screenshots/01-home.png)
 
-V3 另有十个主题家族、三十个独立 Scenario 关卡，使用明确的 `--world` 与 `--world-version` allowlist，不改变旧世界和冻结的 V2 seeded 定义。机制、逐关验收、评分和限制见 [`docs/world-design-v3/README.md`](docs/world-design-v3/README.md)。
+## 快速开始（本地网页）
 
-离线重播全部 30 条公开 Oracle 路线（不连接模型服务）：
-
-```bash
-uv run python scripts/replay_v3_oracles.py
-```
-
-若要调用本机 Ollama 测试一个 V3 关卡，需明确选择 ReactAgent 和 V3 selector；这条命令会向已配置的本地模型发送请求：
+需要 Python 3.13、[uv](https://docs.astral.sh/uv/) 和 Git。
 
 ```bash
-uv run agent-arena run \
-  --provider ollama \
-  --agent react \
-  --world polar-escape \
-  --world-version polar-escape-world-v3-hard-zh \
-  --output-dir runs/v3
-```
-
-模型实验需单独记录配置与结果。离线 Oracle 路线成功不能作为真实模型通关证据。
-
-另外提供独立的 `planner_assisted` 实验模式：规划器只根据公开信息给出阶段和下一动作建议，模型仍需返回并执行合法的 JSON Action。它用于研究“公开辅助能否提高通关可靠性”，不能当作纯模型自主规划结果。
-
-项目维护入口见 [工作流](docs/workflow.md)，9 个 Skill 的职责见 [Skill 索引](skills/README.md)。
-
-## 快速开始
-
-安装依赖并运行默认的确定性演示：
-
-```bash
+git clone https://github.com/wenxvn/Agent-Arena.git
+cd Agent-Arena
 uv sync
-uv run agent-arena run
+uv run --with streamlit agent-arena web
 ```
 
-默认使用 Fake provider，不需要网络或 API Key。它会稳定完成逃生，并显示类似结果：
+打开 <http://127.0.0.1:8501>。
 
-```text
-本局结果：成功逃离飞船
-已执行动作：20
-无效模型输出：0
-运行记录：runs/episode_20260817T090501Z_react_seed-0_a1b2c3d4.json
-```
+首次使用建议点击首页的 **离线演示：MAP-01 · 破损的曙光号**：
 
-运行记录是 UTF-8 JSON 文件。文件名依次包含记录类型、UTC 时间、Agent、seed 和短 ID，因此可按时间浏览且不会重名。房间描述、决策说明和动作结果使用中文；`tool`、`outcome`、房间 id 等英文值是程序和后续统计使用的固定标识。
+- 不需要 API Key，不联网、不花钱；
+- 使用公开规则策略，**不是模型挑战**；
+- 可以完整走通：选图 → 运行 → 动作时间线 → 结果 → 回放 → JSON/CSV 导出。
 
-## Agent 模式
+Windows 可用 `powershell -ExecutionPolicy Bypass -File scripts/launch_web.ps1`；macOS/Linux 可用 `./scripts/launch_web.sh`。
 
-| 模式 | 用途 | 是否自主规划 |
-|---|---|---|
-| `react` | 基线 Agent，只根据当前公开观察和反馈决策 | 是，尚未证明稳定通关 |
-| `memory` | 在 ReactAgent 上加入结构化公开记忆，配 history/recovery/phase 公开上下文 | 是，Muse 在 9 配置 × 5 seeds 获 45/45 成功（见开发进度） |
-| `planning` | 事件触发的 Planner、PlanState、Executor 和 PlanMonitor | 是，真实 5 seeds 为 0/5，尚未证明有效 |
-| `planner_assisted` | 公开阶段状态和下一动作建议，模型仍返回 Action | 否，路线选择主要由确定性规划器辅助 |
-
-运行时可以显式指定 Agent，未指定时默认仍是 `react`：
+## 一键自检
 
 ```bash
-uv run agent-arena run --provider ollama --agent react --seed 0 --output-dir runs
-uv run agent-arena run --provider ollama --agent memory --seed 0 --output-dir runs
-uv run agent-arena run --provider ollama --agent planner_assisted --seed 0 --output-dir runs
+uv run python scripts/verify_v11.py
 ```
 
-`MemoryAgent` 默认使用 `memory_version=v2`。研究中的 `v3_spatial_event` 可通过 `--memory-version v3_spatial_event` 显式选择，目前仅完成离线验证。全局 API/token 硬预算门禁已实现；三次隔离 pilot 均未完成 episode，并在 provider error 后 fail-closed，v2 为 0/2、v3 未启动，S2 matched-pilot Gate 尚未通过。不要把 v3 离线验证视为行为收益证据，预算、删失与停止规则见 [`docs/research/v2/03-memory-v3.md`](docs/research/v2/03-memory-v3.md) 和 [`docs/research/v2/00-run-registry.md`](docs/research/v2/00-run-registry.md)。
-
-目前已真实验证的是 `qwen2.5:7b + planner_assisted`：固定 seed 0、1、2 共 3 局全部成功，平均 19 步，0 次非法输出，0 次环境拒绝。这个结果证明端到端辅助流程可用；纯 `react`/`memory` 的自主规划成功率仍需单独实验。
-
- PlanningAgent v1 已完成工程验证，并以相同模型、world、seed 和 30 步预算运行真实 5 seeds：首轮 0/5 成功，平均 28 次 Planner 调用、子目标完成率 0%；Evaluation v2 独立重跑仍为 0/5，平均 25.6 次 Planner 调用、调用比例 85.3%、State Progress 0。这说明当前主要问题仍是高层子目标到有效动作的桥接，不能把 Fake 或辅助模式结果当作自主规划能力。
-
-2026-10-11 起真实实验切到 OpenCode Zen 网关的 `muse-spark-1.3-contributor`：Memory + history5 + recovery + world-declared phase + E1（prompt hash `44229085`）+ 不限步的自主组合，在 9 配置（飞船/灯塔/深海站 × 简单/中等/困难）× 5 seeds 中每个配置至少有一次成功；原始 51 个 trace 含 46 次成功和 5 次 `provider_error`，按所有实际尝试计为 46/51（90.2%），去重后的 45 个配置才是 45/45。0 非法输出；均值步数飞船 70.4/140.8/165.4、灯塔 39.8/49.4/105.8、深海 26.8/42.2/83.6，三图全部随难度单调递增。旧 qwen 基线保留独立统计。
-
-后续十世界三十图矩阵 150/150 均有成功 trace，使用 E1-ON 基线；其中固定图存在网关失败后的重跑补齐，不能解读为首次尝试 150/150 稳定成功。flex pilot 与 seeded v2 变体分别记录为 30/30、15/15，且 seeded 长尾分析发现 v2 每图仅两种布局。新的 seeded v3 已离线冻结 lunar 90 / pyramid 30 个实例及 dev/test hash split，运行时与冻结清单 120/120 匹配；尚无 v3 模型行为评估，且 S2 matched-pilot Gate 未通过。具体实例、尝试分母与条件见 [开发进度](docs/scope/scope.md) 和 [V2-02 seeded 审计](docs/research/v2/02-bottleneck-audit.md)。
-
-## 使用 Ollama 本地模型
-
-项目的本地实验工作流使用 Ollama 的 `qwen2.5:7b`，不需要 API Key。先确保 Ollama 服务已启动且模型已下载：
+或：
 
 ```bash
-ollama pull qwen2.5:7b
-ollama list
+uv run agent-arena web --check
+```
+
+自检覆盖 30 图 catalog、30 图离线运行/回放/导出、预算门禁、脱敏、路径限制、崩溃恢复与导出字段一致性；不发送 Provider 请求。
+
+## 十世界三十图
+
+| 世界 | 简单 | 中等 | 困难 |
+|---|---|---|---|
+| 飞船 | MAP-01 破损的曙光号 | MAP-02 双重警报 | MAP-03 最后的百步 |
+| 灯塔 | MAP-04 潮汐密道 | MAP-05 三束信号 | MAP-06 暴风眼 |
+| 深海站 | MAP-07 阀门方向 | MAP-08 漏点诊断 | MAP-09 深海连锁故障 |
+| 极地 | MAP-10 最后一桶燃料 | MAP-11 失联的小队 | MAP-12 极夜三十天 |
+| 金字塔 | MAP-13 四神之门 | MAP-14 说谎的祭司 | MAP-15 会变化的迷宫 |
+| 地铁 | MAP-16 单线预约与节点容量 | MAP-17 早高峰 | MAP-18 故障传播 |
+| 火山 | MAP-19 温度临界点 | MAP-20 冷却网络 | MAP-21 喷发倒计时 |
+| 丛林 | MAP-22 无地图的丛林 | MAP-23 迷雾中的遗迹 | MAP-24 消失的道路 |
+| 月球 | MAP-25 第一次出舱 | MAP-26 失败的维修计划 | MAP-27 月球车 |
+| 古堡 | MAP-28 消失的王冠 | MAP-29 不可靠的证人 | MAP-30 午夜审判 |
+
+`MAP-01`～`MAP-30` 为稳定 ID。设计难度来自 V10；网页另提供人工可解释的 `display_difficulty`，不修改规则或历史数据。
+
+## 接入真实模型
+
+复制模板并在本机 `.env` 填写：
+
+```bash
+cp .env.example .env        # macOS / Linux
+Copy-Item .env.example .env # Windows PowerShell
+```
+
+```dotenv
+AGENT_ARENA_PROVIDER=openai
+OPENAI_API_KEY=你的密钥
+OPENAI_BASE_URL=https://api.xiaomimimo.com/v1
+OPENAI_MODEL=mimo-v2.6-flash
+```
+
+支持任何 OpenAI-compatible Responses API 网关；也保留本地 Ollama。网页不接受自定义 API URL，密钥只显示“已配置/未配置”。
+
+真实模式默认单局请求 60、费用上限 ¥1.00；只有 MiMo 有登记价时可执行金额硬门禁，其它模型以请求/token 上限为准。未知 usage、超时或连接异常会立即 fail-closed，不自动重试。
+
+## 网页能力
+
+- **地图大厅**：世界/难度/关键词筛选，公开目标、机制、预算、难度说明。
+- **挑战配置**：seed、离线/真实模式、Provider/模型、决策/请求/token/费用上限；真实付费前显式确认。
+- **运行监控**：状态、进度、实时动作时间线、token/费用、停止；刷新不会重复执行。
+- **结果与回放**：成功/失败/截断/取消/中断；指标五态、单位、范围、公式；逐步回放公开 Observation；版本 hash。
+- **历史与对照**：按地图/状态/模式/日期/模型筛选；仅同规则/指标版本允许直接对照；本地同模型成绩榜。
+- **导出**：回放 JSON、摘要 JSON、逐动作 CSV（UTF-8 BOM）。
+- **研究回放（只读）**：保留旧的单局回放、矩阵总览、错误热点、条件对照。
+
+更多：[快速开始](docs/v11/quickstart.md)、[用户指南](docs/v11/user-guide.md)、[配置](docs/v11/configuration.md)、[网页页面](docs/v11/ui-pages.md)、[安全与预算](docs/v11/safety-and-budget.md)。
+
+## CLI（可选）
+
+```bash
+uv run agent-arena run --provider fake          # 确定性 Legacy 演示
+uv run agent-arena run --provider ollama --agent memory --output-dir runs
+uv run agent-arena benchmark --provider ollama --episodes 3 --output-dir results
 uv run agent-arena verify-model --provider ollama
 ```
 
-再运行一局，并在终端查看每步的短理由、动作和环境结果：
+原 Legacy/V3 入口、benchmark、失败分析与只读研究视图均保留。
 
-```bash
-uv run agent-arena run --provider ollama --agent memory --output-dir runs
-```
+## 数据位置
 
-真实模型的完整思维链不会显示或保存；终端和 Trace 只保留不超过 280 个字符的 `decision_reason`，以及经过环境验证的 Action 和 ToolResult。每局完整步骤写入 `runs/episode_*.json`，benchmark 会在每局结束时打印该路径；`results/` 中的 benchmark JSON、CSV 只保存汇总和逐局指标。
+- 网页运行：`runs/web/<run_id>/`（`manifest.json`、`events.jsonl`、`result.json`）
+- V11 账本：`runs/web/_ledger/web_ledger.jsonl`
+- 自检报告：`runs/v11/selfcheck.json`
+- 历史研究：`runs/v8/`、`runs/v9/`、`runs/v10/`（只读，不清理）
+- `runs/`、`results/`、`logs/`、`.env` 均不入库
 
-可通过本机 `.env` 改写默认地址或模型名：
-
-```dotenv
-OLLAMA_BASE_URL=http://127.0.0.1:11434
-OLLAMA_MODEL=qwen2.5:7b
-```
-
-## 使用 OpenAI-compatible 远程模型
-
-真实模型调用必须显式指定，并且只在本机 `.env` 中保存密钥：
-
-```bash
-cp .env.example .env
-```
-
-在 `.env` 填入 OpenAI-compatible relay 的 `OPENAI_API_KEY`、`OPENAI_BASE_URL` 和 `OPENAI_MODEL`，并设置 `AGENT_ARENA_PROVIDER=openai`。密钥不能提交到 Git。
-
-先验证模型连接：
-
-```bash
-bash scripts/verify_model.sh
-```
-
-再运行一局远程实验：
-
-```bash
-uv run agent-arena run --provider openai --agent planner_assisted --output-dir runs
-```
-
-真实模型每次决策可能不同，因此结果可能是“成功逃离飞船”，也可能是“达到步数上限，未完成逃生”。后者表示 Agent 的探索策略尚不足，并不一定是配置或接口错误。
-
-不要把 `planner_assisted` 的成功与纯模型结果混在一起。规划建议会出现在模型当前请求的公开反馈中；如果模型每次都遵循唯一建议，实际路线选择就主要由规划器决定。
-
-## 运行 benchmark
-
-```bash
-uv run agent-arena benchmark --provider ollama --episodes 3 --output-dir results
-```
-
-未指定 `--agent` 时，会依次运行 ReactAgent 和 MemoryAgent，因此上例共执行 6 局。要单独运行规划辅助模式：
-
-```bash
-uv run agent-arena benchmark \
-  --provider ollama \
-  --agent planner_assisted \
-  --episodes 3 \
-  --output-dir results/planner-assisted
-```
-
-终端会在开始、每局开始、每次真实模型决策请求前、每个已执行动作后和每局结束时显示进度。每局最多 30 步；一次模型请求在网络异常时最多等待 30 秒，并可能重试两次。benchmark 输出 JSON 汇总、CSV 指标和每局 episode trace。
-
-结果文件名称类似：
-
-```text
-benchmark_20260817T090501Z_react-memory_10-seeds_20-episodes_a1b2c3d4.json
-benchmark_20260817T090501Z_react-memory_10-seeds_20-episodes_a1b2c3d4.csv
-```
-
-## 只读研究回放界面
-
-项目提供只读 Streamlit 页面，用于浏览已有 trace 和 benchmark：单局回放、矩阵总览、错误热点和条件对照。启动命令：
-
-```bash
-uv run --with streamlit streamlit run src/agent_arena/ui/app.py
-```
-
-`streamlit` 通过 `--with` 临时提供，不写入 `pyproject.toml` 或 `uv.lock`。页面只读取本地 `runs/`、`results/` 文件，不调用模型，也不能启动新实验。支持配置并运行 episode/benchmark 的完整交互式实验界面仍在开发计划中，见 [开发进度](docs/scope/scope.md)。
-
-## 验收与检查
+## 质量门禁
 
 ```bash
 uv run ruff check .
@@ -170,27 +115,34 @@ uv run mypy src
 uv run pytest -q
 uv run uv lock --check
 git diff --check
+uv run python -m agent_arena.v10.freeze verify
+uv run python -m agent_arena.v10.recompute --check
+uv run python -m agent_arena.v10.independent_check --check
 ```
 
-这些检查工具的输出由第三方提供，仍是英文：
+当前 V11 结果：1230 pytest passed、mypy 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations。详见 [测试报告](docs/v11/test-report.md)。
 
-- `All checks passed!`：代码规范检查通过。
-- `Success: no issues found`：类型检查通过。
-- `N passed`：全部自动测试通过。
+## 研究背景（简版）
+
+- V10 已完成 30 张原生运行时、154+172 指标、多 seed 基线与 8 项 Gate；30/30 `VALIDATED`（“测得住”，不等于模型能通关）。
+- V10 真实 MiMo：152 局有效，成功 57/152；结算 ¥2.27994884 + 未知预留 ¥0.13312000。
+- V11 真实 MiMo 冒烟：3 局（MAP-01/19/30），58 次已记录请求，结算 ¥0.04637556，未知预留 ¥0.073728；0 成功为环境规则/预算终局，未修改规则凑成功。
+- 完整实验历史见 [开发进度](docs/scope/scope.md)、[工程记录](docs/engineering-log.md) 与 `docs/v8`–`docs/v10`。
+
+## 边界
+
+- 单机、单用户、localhost 预览；**不是公网生产环境**。
+- 不做登录、云数据库、多用户、付费充值、跨模型排行榜。
+- 不修改 V8/V9/V10 冻结规则、账本或历史 trace。
+- 30 图规则成功 ≠ 模型能力；Oracle/规则策略不冒充模型。
+- macOS/Linux 启动说明已提供，但本次实际运行验证只在 Windows 11 完成。
 
 ## 文档入口
 
-- [研究总纲](研究总纲.md)：项目目标、研究边界与阶段路线。
-- [开发进度](docs/scope/scope.md)：已完成工作和后续计划。
-- [架构摘要](docs/architecture.md)：模块职责和数据流。
-- [ReactAgent 与执行循环设计](docs/specs/0003-react-agent-loop/index.md)：Action、终止条件与 Trace 契约。
-- [规划辅助 Agent 设计](docs/specs/0005-planner-assisted-agent/index.md)：公开规划建议、边界和验收条件。
-- [PlanningAgent v1 设计](docs/specs/0006-planning-agent-v1/index.md)：事件触发计划、Executor、PlanMonitor 和真实对照状态。
-- [本地模型通关复现记录](docs/model-passage-options.md)：真实 Ollama 运行结果、排查过程和后续任务。
-- [工程记录](docs/engineering-log.md)：重要验证、决策和阻塞记录。
-
-## 当前边界
-
-首个版本不引入 LangChain、RAG、向量数据库、多 Agent 编排、数据库或复杂前端。环境规则、Agent 策略、模型调用和运行记录保持独立，确保实验结果可以追溯和比较。
-
-当前尚未完成：PlanningAgent 的自主规划稳定通关、真实 `guarded` 行为对照、规划建议偏离后的真实模型验证、终点 `read_terminal` 误用与读码后迷路的提示消融、可配置并启动实验的完整交互式 Streamlit 界面、ReflectionAgent，以及多模型对照。只读研究回放界面已提供。纯模型自主通关已由 Muse + Memory + 公开上下文组合在 9 配置 × 5 seeds 证明（45/45），qwen 与 Planning 基线仍未通过。详细清单见 [开发进度](docs/scope/scope.md)。
+- [V11 快速开始](docs/v11/quickstart.md)
+- [V11 用户指南](docs/v11/user-guide.md)
+- [V11 最终报告](docs/v11/final-report.md)
+- [V11 发布检查清单](docs/v11/release-checklist.md)
+- [架构摘要](docs/architecture.md)
+- [开发进度](docs/scope/scope.md)
+- [研究总纲](研究总纲.md)

@@ -1726,3 +1726,27 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 验证：合并为 fast-forward（无冲突、无新 commit）；CI 在 `main` 上重新触发。
 
 关联提交：本次提交（分支 `main`）。
+
+## 2026-10-20 V11 本地网页平台与阶段性交付
+事件：按 `研究提纲/V11：Agent-Arena 网页平台与阶段性交付.md` 完成 Batch 0–7，新增本地网页平台与 `src/agent_arena/web/` 服务层；V10 规则、指标、Oracle、账本与历史 trace 保持只读。
+
+改动：
+- `web/`：不可变 `RunConfig`、状态机、`RunStore`（原子 manifest + JSONL + result）、`RunService`（单 worker、幂等、取消、恢复）、`RunBudget`（请求/token/费用/未知消费 fail-closed）、30 图 catalog 与展示难度、导出、历史对照、自检。
+- `ui/app.py`：升级为可操作网页（首页/配置/监控/结果/历史/设置），保留四个只读研究视图；支持 `?view=...&run=...` 深链。
+- `cli.py`：新增 `agent-arena web`，默认只监听 127.0.0.1，Streamlit 通过 `--with` 提供。
+- 文档：`docs/v11/` 14 份交付文档、30 图 UX 清单、展示难度表、最终报告；README 改为网页优先。
+- 测试：新增 73 个 V11 测试；CI 增加 `verify_v11.py`。
+
+结果：
+- 30/30 图离线可启动/回放/导出，473 步；一键自检 7/7。
+- 真实 MiMo 冒烟 3 局（MAP-01/19/30）：58 次已记录请求，结算 CNY 0.04637556 + 未知预留 0.073728 = 0.12010356，低于 ¥3；0 成功（环境规则/预算终局）。
+- 质量：1230 pytest passed、mypy 0 issues、ruff clean、uv lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、git diff --check 0。
+
+缺陷与修复：
+- `RunBudget.snapshot()` 的 limits 含 Decimal 导致 JSONL 写入失败；改为字符串并在存储层加 `default=str`，新增回归/集成测试；修复前 4 次未落盘请求按 ¥0.073728 预留上界记入 V11 账本。
+- Windows 原子替换瞬间读取 manifest 偶发 `PermissionError`；增加短重试。
+- Streamlit 1.66 的 `use_container_width` 弃用与指标“值”列 Arrow 混合类型；改用 `width="stretch"` 与字符串值。
+
+边界：单机单用户 localhost 预览，`WEB_PREVIEW_READY` 不等于公网生产就绪；macOS/Linux 实机未验证；真实成功率为 0/3，不修改规则凑成功，也不据此作能力结论。
+
+关联提交：本次 V11 提交（分支 `main`）。
