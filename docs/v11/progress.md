@@ -17,7 +17,7 @@
 
 - 离线矩阵：30/30 图可启动、可回放、可导出，473 步；
 - 一键自检：7/7 通过（catalog、offline_matrix、budget、redaction、paths、export、recovery）；
-- 全量测试：1239 passed；
+- 全量测试：1240 passed；
 - `ruff check .` / `mypy src` / `uv lock --check` / `git diff --check` 全部退出码 0；
 - V10 `freeze verify` 9/9 unchanged；`recompute --check` 1093/1093；`independent_check --check` 0 违规；
 - 真实 MiMo：3 局有效（MAP-01/19/30），58 次已记录请求，结算 ¥0.04637556，未知预留 ¥0.073728。
@@ -35,7 +35,7 @@
 - E2E 与 30 图映射脚本使用 `ignore_cleanup_errors`，避免 Windows 锁文件阻塞临时目录清理。
 - 新增深色模式截图（`08-home-dark.png`），截图总数 8 张。
 - 新增公开动作级失败归因与 `trace.jsonl`；历史补 Provider/Seed 筛选、2–4 局对照、成绩榜预算列。
-- Windows 干净克隆安装 176.9s（首次）/96.5s（复跑），无 `.env`，自检 7/7；Ubuntu CI `d51f472` success。
+- Windows 干净克隆安装 176.9s（首次）/87–96.5s（复跑），无 `.env`，自检 7/7；Ubuntu CI `b83755d` success。
 - 演示数据包、启动/桌面快捷方式模板、版本 `0.2.0`。
 
 ## 提交
@@ -47,7 +47,7 @@
 - `4d6a219`：CLI 测试平台差异修复（Ubuntu CI 转 success）；
 - `65806ef`：跨进程锁、失败归因、筛选/多局对照、Streamlit extra 锁定；
 - `e4fb40c`：shell 启动脚本可执行位；
-- `d51f472`：文件锁 mypy 跨平台修正；
+- `b83755d`：文件锁 mypy 跨平台修正；
 - `33732ab`：硬化文档、干净安装/Ubuntu CI 证据、演示包与 0.2.0；
 - 本提交：Streamlit 单例/深链导航修复、深色截图、E2E 清理（见 `git log -1`）。
 

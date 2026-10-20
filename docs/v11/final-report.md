@@ -60,8 +60,8 @@ uv run agent-arena web
 
 ### 干净安装 / 跨 OS
 
-- Windows 干净克隆 `d51f472`（无 `.env`）：`uv sync --extra web` + `web --check`，首次 **176.9 秒**、缓存复跑 **96.5 秒**，7/7；
-- Ubuntu GitHub Actions：`d51f472` **success**（lock/ruff/mypy/pytest/freeze/recompute/independent/verify_v11）；
+- Windows 干净克隆 `b83755d`（无 `.env`）：`uv sync --extra web` + `web --check`，首次 **176.9 秒**、缓存复跑 **87–96.5 秒**，7/7；
+- Ubuntu GitHub Actions：`b83755d` **success**（lock/ruff/mypy/pytest/freeze/recompute/independent/verify_v11）；
 - macOS 未实机验证。
 
 ## 4. 取消、刷新、并发、Provider 错误、费用保护是否通过
@@ -128,8 +128,8 @@ uv run agent-arena web
 
 ### OS 覆盖
 
-- **Windows 11**：已实测（干净安装 176.9s/96.5s、启动、离线 30 图、真实 3 局、浏览器六页、30 图映射）；
-- **Ubuntu**：GitHub Actions `d51f472` success（锁/ruff/mypy/pytest/freeze/recompute/independent/verify_v11）；
+- **Windows 11**：已实测（干净安装 176.9s/87–96.5s、启动、离线 30 图、真实 3 局、浏览器六页、30 图映射、深色/移动端截图）；
+- **Ubuntu**：GitHub Actions `b83755d` success（锁/ruff/mypy/pytest/freeze/recompute/independent/verify_v11）；
 - **macOS**：未实机验证；`.command` 与文档已提供。
 
 ## 7. 真实 API 调用、请求、花费、未知消费
@@ -155,10 +155,10 @@ uv run agent-arena web
 成立的依据：
 
 - P0 功能与主要 Gate 通过；P1 全部落地；P2 全部有实现或明确模板；
-- **1239 pytest passed**、mypy 0 issues、ruff clean、lock 0、`git diff --check` 0；
+- **1240 pytest passed**、mypy 0 issues、ruff clean、lock 0、`git diff --check` 0；
 - freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations；
 - 30/30 离线端到端 + 3/3 真实端到端 + 30/30 浏览器映射；
-- Windows 干净安装 176.9s/96.5s、无 `.env` 自检 7/7；Ubuntu CI 已 success；
+- Windows 干净安装 176.9s/87–96.5s、无 `.env` 自检 7/7；Ubuntu CI 已 success；
 - 无密钥/隐藏真值泄露测试通过；
 - 真实费用有硬门禁、未知消费封账；版本 `0.2.0`。
 

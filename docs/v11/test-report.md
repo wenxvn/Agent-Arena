@@ -10,7 +10,7 @@
 |---|---|---:|
 | `uv run ruff check .` | All checks passed | 0 |
 | `uv run mypy src` | 273 source files，0 issues | 0 |
-| `uv run pytest -q` | **1239 passed** | 0 |
+| `uv run pytest -q` | **1240 passed** | 0 |
 | `uv run uv lock --check` | Resolved 36 packages | 0 |
 | `git diff --check` | 无输出 | 0 |
 | `uv run python -m agent_arena.v10.freeze verify` | 9/9 unchanged | 0 |
@@ -63,8 +63,23 @@
 - 实际启动：`uv sync --extra web` 后 `uv run agent-arena web --headless --port 8501`；
 - 页面：首页、挑战配置、运行监控、结果与回放、历史与对照、设置与帮助；
 - 验证内容：中文渲染、30 图卡片、MAP-30 真实结果（46 步、¥0.0392、五态表）、运行时间线、导出按钮、Provider 状态、历史对照；
-- 截图：`docs/v11/screenshots/`；
+- 截图：`docs/v11/screenshots/`（8 张，含移动端与深色模式）；
 - 页面刷新不重复执行；`st.fragment` 自动刷新只读 manifest。
+
+### 连接检查（真实调用）
+
+`probe_live_provider` 对 MiMo 实际执行一次最小请求，返回：
+
+```json
+{"ok": true, "model": "mimo-v2.6-flash",
+ "detail": "连接检查成功；该检查本身可能产生极少量费用。"}
+```
+
+该请求不进入单局预算账本，属于人工验收调用。
+
+### Ollama
+
+本机 `127.0.0.1:11434` 未运行，`/api/tags` 连接被拒绝；Ollama 真实单局**未验证**，代码路径与 CLI 既有测试保留。
 
 ### 自动化浏览器 E2E（Playwright + 系统 Chrome）
 
@@ -91,14 +106,14 @@ uv run --with playwright --with streamlit python scripts/verify_v11_map_pages.py
 
 ### 干净安装（Windows）
 
-- 目标：`%TEMP%\agent-arena-clean`，`git clone` 本地 HEAD（`d51f472`），无 `.env`；
+- 目标：`%TEMP%\agent-arena-clean`，`git clone` 本地 HEAD（`b83755d`），无 `.env`；
 - `uv sync --extra web` + `uv run agent-arena web --check`；
 - 首次实测 **176.9 秒**（约 2.95 分钟），缓存复跑 **96.5 秒**；自检 7/7，无 API Key；
 - 证明“干净环境 + 无 Key 离线”路径，远低于 15 分钟体验目标。
 
 ### Ubuntu CI
 
-- GitHub Actions 在 `d51f472`（最终代码）上 **success**，包含 Ubuntu + Python 3.13 的 lock、ruff、mypy、pytest、freeze、recompute、independent 与 `verify_v11.py`；
+- GitHub Actions 在 `b83755d`（最终代码）上 **success**，包含 Ubuntu + Python 3.13 的 lock、ruff、mypy、pytest、freeze、recompute、independent 与 `verify_v11.py`；
 - 通过 GitHub API 观察，不依赖本机运行；
 - 已包含最终锁/筛选/归因改动；后续提交仍需重新观察。
 
@@ -125,8 +140,8 @@ uv run --with playwright --with streamlit python scripts/verify_v11_map_pages.py
 
 | 系统 | 状态 |
 |---|---|
-| Windows 11 | **已实测**（干净克隆安装 176.9s/96.5s、离线 30 图、真实 3 局、浏览器六页、30 图映射） |
-| Ubuntu | **CI 已实测**：`d51f472` GitHub Actions success（lock/ruff/mypy/pytest/freeze/recompute/independent/verify_v11）；后续提交需重跑 |
+| Windows 11 | **已实测**（干净克隆安装 176.9s/87–96.5s、离线 30 图、真实 3 局、浏览器六页、30 图映射） |
+| Ubuntu | **CI 已实测**：`b83755d` GitHub Actions success（lock/ruff/mypy/pytest/freeze/recompute/independent/verify_v11）；后续提交需重跑 |
 | macOS | 未执行；启动脚本与文档已提供，列为未验证 |
 
 不虚报跨系统通过；macOS 仍是明确缺口。

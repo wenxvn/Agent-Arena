@@ -9,7 +9,7 @@
 - [x] **模型 API 配置**：`.env.example`、OpenAI-compatible/MiMo、Ollama、零网络配置检查、显式连接检查、无 Key 离线演示；密钥只显示“已配置/未配置”；真实付费前勾选确认。**连接检查代码已提供，但未实际发送探测请求。**
 - [x] **结果输出**：稳定 `run_id`、地图、rule/metric hash、seed、模式、Agent、outcome、动作、公开观察、token/费用、失败原因；公开动作级失败归因；实时进度、历史回放、JSON/摘要/CSV/JSONL 导出。
 - [x] **错误处理与安全**：连接/超时/限流/模型不存在、非法动作、usage 缺失、预算耗尽、用户取消、刷新、中断、重复提交、未知费用均有状态与 fail-closed 处理；无自动无限重试；单 worker 串行；跨进程单实例锁。
-- [x] **README 与安装教程**：Windows PowerShell + macOS/Linux；无 Key 演示、真实 API、常见错误、日志位置、一键自检；Windows 干净克隆安装实测 176.9s（首次）/96.5s（缓存复跑）。
+- [x] **README 与安装教程**：Windows PowerShell + macOS/Linux；无 Key 演示、真实 API、常见错误、日志位置、一键自检；Windows 干净克隆安装实测 176.9s（首次）/87–96.5s（缓存复跑）。
 - [x] **一键验收**：`uv run python scripts/verify_v11.py` 或 `uv run agent-arena web --check`；7/7 通过；全量 pytest/ruff/mypy/lock 独立门禁；Ubuntu CI 已观察到 success。
 
 ## P1
@@ -29,13 +29,13 @@
 
 ## 质量与冻结
 
-- [x] `ruff check .` / `mypy src` / `pytest -q` / `uv lock --check` / `git diff --check` 全部退出码 0（1239 passed）。
+- [x] `ruff check .` / `mypy src` / `pytest -q` / `uv lock --check` / `git diff --check` 全部退出码 0（1240 passed）。
 - [x] `freeze verify` 9/9 unchanged；`recompute --check` 1093/1093；`independent_check --check` 0 违规。
 - [x] 未修改 V10 地图规则、成功条件、Oracle、指标公式或历史冻结账本。
 - [x] `runs/`、`.env`、账本、截图外的临时文件未进入 Git。
 - [x] 真实 API 使用独立 V11 账本：结算 ¥0.04637556 + 未知预留 ¥0.073728 < ¥3。
-- [x] Windows 干净克隆 + `uv sync --extra web` + `web --check`：176.9s（首次）/96.5s（复跑），无 `.env`，7/7。
-- [x] Ubuntu GitHub Actions：`d51f472` success。
+- [x] Windows 干净克隆 + `uv sync --extra web` + `web --check`：176.9s（首次）/87–96.5s（复跑），无 `.env`，7/7。
+- [x] Ubuntu GitHub Actions：`b83755d` success。
 
 ## 未完成 / 不作为门槛
 

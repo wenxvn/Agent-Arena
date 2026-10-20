@@ -32,7 +32,7 @@
 - Streamlit 锁定到 `[project.optional-dependencies].web`，`uv sync --extra web`；
 - 公开动作级失败归因（复用 V10 `MECHANISM_TOOLS`）与 `trace.jsonl` 导出；
 - 历史 Provider/Seed 筛选、2–4 局对照、成绩榜决策预算列；
-- Windows 干净克隆安装 176.9s（首次）/96.5s（复跑）、无 `.env` 自检 7/7；Ubuntu CI 已观察到 success；
+- Windows 干净克隆安装 176.9s（首次）/87–96.5s（复跑）、无 `.env` 自检 7/7；Ubuntu CI 已观察到 success；
 - 30 图网页深链映射 30/30；Playwright E2E 通过；
 - 演示数据包、启动脚本、桌面快捷方式模板、版本 `0.2.0`。
 
