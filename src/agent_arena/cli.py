@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import importlib.util
+import json
+import subprocess
+import sys
 from collections.abc import Callable
 from contextlib import nullcontext
 from pathlib import Path
@@ -1005,3 +1009,46 @@ def _load_environment(
     except ValueError as exc:
         typer.echo(str(exc), err=True)
         raise typer.Exit(code=2) from None
+
+
+@app.command(name="web")
+def web_command(
+    host: Annotated[str, typer.Option(help="仅允许回环地址。")] = "127.0.0.1",
+    port: Annotated[int, typer.Option(min=1, max=65535)] = 8501,
+    check: Annotated[bool, typer.Option("--check", help="运行零 API 一键自检后退出。")] = False,
+    headless: Annotated[bool, typer.Option(help="不自动打开浏览器。")] = False,
+) -> None:
+    """启动本地网页平台。"""
+
+    if check:
+        from agent_arena.web.selfcheck import run_checks
+
+        report = run_checks()
+        typer.echo(json.dumps(report, ensure_ascii=False, indent=2))
+        raise typer.Exit(code=0 if report["ok"] else 1)
+    if host not in {"127.0.0.1", "localhost", "::1"}:
+        typer.echo("默认只允许监听回环地址；远程访问需要另行设计安全边界。", err=True)
+        raise typer.Exit(code=2)
+    if importlib.util.find_spec("streamlit") is None:
+        typer.echo(
+            "未安装 streamlit。请使用：uv run --with streamlit agent-arena web",
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    app_path = Path(__file__).resolve().parent / "ui" / "app.py"
+    command = [
+        sys.executable,
+        "-m",
+        "streamlit",
+        "run",
+        str(app_path),
+        "--server.address",
+        host,
+        "--server.port",
+        str(port),
+        "--server.headless",
+        "true" if headless else "false",
+        "--client.toolbarMode",
+        "minimal",
+    ]
+    raise typer.Exit(code=subprocess.call(command))
