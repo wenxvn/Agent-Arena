@@ -356,10 +356,23 @@ def _inject_css(st: Any) -> None:
 
 
 def _set_nav(st: Any, view: str) -> None:
-    st.session_state["nav"] = view
+    # radio 的 widget key 是 ``nav``；不能在组件实例化后直接改。这里只登记下一次
+    # rerun 的目标，由 ``_apply_pending_nav`` 在组件创建前写入。
+    st.session_state["pending_nav"] = view
     _set_query_param(st, "view", view)
     if hasattr(st, "rerun"):
         st.rerun()
+
+
+def _apply_pending_nav(st: Any) -> None:
+    state = getattr(st, "session_state", None)
+    if state is None:
+        return
+    pending = state.get("pending_nav")
+    if pending in VIEWS:
+        state["nav"] = pending
+        if hasattr(state, "pop"):
+            state.pop("pending_nav", None)
 
 
 def _set_query_param(st: Any, key: str, value: str) -> None:
@@ -397,15 +410,12 @@ def _apply_deep_link(st: Any) -> None:
 
 
 def _nav(st: Any) -> str:
-    state = getattr(st, "session_state", {})
-    current = str(state.get("nav", VIEW_HOME)) if hasattr(state, "get") else VIEW_HOME
-    index = VIEWS.index(current) if current in VIEWS else 0
     try:
-        if hasattr(state, "__contains__") and "nav" in state:
-            return str(st.sidebar.radio("导航", VIEWS, key="nav"))
-        return str(st.sidebar.radio("导航", VIEWS, index=index, key="nav"))
+        selected = str(st.sidebar.radio("导航", VIEWS, key="nav"))
     except TypeError:  # 兼容旧测试的极简 stub
-        return str(st.sidebar.radio("导航", VIEWS))
+        selected = str(st.sidebar.radio("导航", VIEWS))
+    _set_query_param(st, "view", selected)
+    return selected
 
 
 def _world_options() -> dict[str, str]:
@@ -436,14 +446,19 @@ def _home(st: Any, service_getter: Any = get_service) -> None:
     )
     if st.button("离线演示：MAP-01 · 破损的曙光号（seed 0）", type="primary"):
         config = _default_config("MAP-01", 0, RunMode.OFFLINE, max_decisions=30)
+        nonce = str(st.session_state.get("quickstart_nonce", "0"))
         try:
             run_id = service_getter().create_run(
                 config,
-                idempotency_key=f"quickstart-offline-{config.map_id}-{config.environment_seed}",
+                idempotency_key=(
+                    f"quickstart-offline-{config.map_id}-"
+                    f"{config.environment_seed}-{nonce}"
+                ),
             )
         except (RunServiceError, ValueError) as exc:
             st.error(f"无法启动离线演示：{exc}")
         else:
+            st.session_state["quickstart_nonce"] = str(int(nonce) + 1)
             st.session_state["active_run"] = run_id
             _set_nav(st, VIEW_LIVE)
 
@@ -693,6 +708,7 @@ def _config_view(st: Any, service_getter: Any = get_service) -> None:
             st.error(f"配置被拒绝：{exc}")
         else:
             st.session_state["active_run"] = run_id
+            st.session_state["submit_nonce"] = str(int(nonce) + 1)
             st.success(f"已创建运行 {run_id}")
             _set_nav(st, VIEW_LIVE)
 
@@ -1096,28 +1112,31 @@ def _history_view(st: Any, service_getter: Any = get_service) -> None:
     st.subheader("两局对照")
     if len(filtered) < 2:
         st.info("至少需要两局同条件运行才能对照。")
-        return
-    labels = {f"{row.run_id} · {row.map_id} · {state_label(row.state)}": row for row in filtered}
-    names = list(labels)
-    left_name = st.selectbox("对照 A", names, index=0)
-    right_name = st.selectbox("对照 B", names, index=1)
-    left_row = labels[left_name]
-    right_row = labels[right_name]
-    verdict = compatibility(left_row, right_row)
-    if not verdict["compatible"]:
-        st.error(
-            "不可直接比较：" + "、".join(verdict["mismatches"])
-            + "。请只并排查看，不要当作同一条件对照。"
-        )
-    elif verdict["warnings"]:
-        st.warning("；".join(verdict["warnings"]))
     else:
-        st.success("同地图、同规则/指标版本、同模式，可直接对照。")
-    st.dataframe(
-        comparison_rows(left_row, right_row),
-        width="stretch",
-        hide_index=True,
-    )
+        labels = {
+            f"{row.run_id} · {row.map_id} · {state_label(row.state)}": row
+            for row in filtered
+        }
+        names = list(labels)
+        left_name = st.selectbox("对照 A", names, index=0)
+        right_name = st.selectbox("对照 B", names, index=1)
+        left_row = labels[left_name]
+        right_row = labels[right_name]
+        verdict = compatibility(left_row, right_row)
+        if not verdict["compatible"]:
+            st.error(
+                "不可直接比较：" + "、".join(verdict["mismatches"])
+                + "。请只并排查看，不要当作同一条件对照。"
+            )
+        elif verdict["warnings"]:
+            st.warning("；".join(verdict["warnings"]))
+        else:
+            st.success("同地图、同规则/指标版本、同模式，可直接对照。")
+        st.dataframe(
+            comparison_rows(left_row, right_row),
+            width="stretch",
+            hide_index=True,
+        )
 
     st.divider()
     st.subheader("本地同模型成绩榜（P2）")
@@ -1277,6 +1296,7 @@ def main() -> None:
             layout="wide",
         )
     _apply_deep_link(st)
+    _apply_pending_nav(st)
     nav = _nav(st)
     if nav in LEGACY_VIEWS:
         _research_view(st, nav)

@@ -17,10 +17,17 @@
 
 - 离线矩阵：30/30 图可启动、可回放、可导出，473 步；
 - 一键自检：7/7 通过（catalog、offline_matrix、budget、redaction、paths、export、recovery）；
-- 全量测试：1230 passed；
+- 全量测试：1231 passed；
 - `ruff check .` / `mypy src` / `uv lock --check` / `git diff --check` 全部退出码 0；
 - V10 `freeze verify` 9/9 unchanged；`recompute --check` 1093/1093；`independent_check --check` 0 违规；
 - 真实 MiMo：3 局有效（MAP-01/19/30），58 次已记录请求，结算 ¥0.04637556，未知预留 ¥0.073728。
+
+## 后续完善
+
+- 修复 Streamlit 导航 widget key 失效；程序化跳转改用 `pending_nav`。
+- 快速开始/配置页创建成功后递增 idempotency nonce，避免重复点击复用旧运行。
+- 单局历史页继续渲染本地同模型成绩榜。
+- 新增 `scripts/e2e_web.py`：Playwright + 系统 Chrome 覆盖首页 → 离线运行 → 结果 → 下载 JSON → 深链历史，本地通过。
 
 ## 提交
 

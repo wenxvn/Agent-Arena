@@ -303,3 +303,13 @@ def test_deep_link_sets_view_and_run() -> None:
     ui_app._apply_deep_link(stub)
     assert stub.session_state["nav"] == "结果与回放"
     assert stub.session_state["active_run"] == "web-20261020T024951Z-3e3249a7"
+
+
+def test_pending_nav_is_applied_before_widget() -> None:
+    from agent_arena.ui import app as ui_app
+
+    stub = _Stub()
+    stub.session_state["pending_nav"] = "挑战配置"
+    ui_app._apply_pending_nav(stub)
+    assert stub.session_state["nav"] == "挑战配置"
+    assert "pending_nav" not in stub.session_state

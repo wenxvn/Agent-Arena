@@ -10,14 +10,14 @@
 |---|---|---:|
 | `uv run ruff check .` | All checks passed | 0 |
 | `uv run mypy src` | 273 source files，0 issues | 0 |
-| `uv run pytest -q` | **1230 passed** | 0 |
+| `uv run pytest -q` | **1231 passed** | 0 |
 | `uv run uv lock --check` | Resolved 36 packages | 0 |
 | `git diff --check` | 无输出 | 0 |
 | `uv run python -m agent_arena.v10.freeze verify` | 9/9 unchanged | 0 |
 | `uv run python -m agent_arena.v10.recompute --check` | 1093/1093 match，30 图 | 0 |
 | `uv run python -m agent_arena.v10.independent_check --check` | 0 violations，144 seed 实例 | 0 |
 
-改动前基线：`1157 passed in 103.62s`。新增 73 个 V11 测试（Web 服务、执行、预算、catalog、导出、历史、UI 冒烟、自检、CLI）。
+改动前基线：`1157 passed in 103.62s`。新增 74 个 V11 测试（Web 服务、执行、预算、catalog、导出、历史、UI 冒烟、自检、CLI）。
 
 ## 2. 一键自检（零 API）
 
@@ -66,12 +66,31 @@
 - 截图：`docs/v11/screenshots/`；
 - 页面刷新不重复执行；`st.fragment` 自动刷新只读 manifest。
 
+### 自动化浏览器 E2E（Playwright + 系统 Chrome）
+
+```bash
+uv run --with playwright --with streamlit python scripts/e2e_web.py --start
+```
+
+流程：首页 → 离线演示 → 运行监控 → 查看结果 → 下载回放 JSON → 深链历史页。使用临时 `runs/web`，不污染本机数据。实测输出：
+
+```json
+{"ok": true, "state": "SUCCEEDED", "run_id": "web-20261020T061702Z-084056f6",
+ "steps": 15, "download_bytes": 24307}
+```
+
+该 E2E 发现并修复了两个真实 UI 缺陷：Streamlit radio widget key 在组件实例化后被写入导致导航失效（改为 `pending_nav` + rerun 前写入），以及单局历史页过早返回导致成绩榜不显示。
+
 ## 6. 修复的缺陷
 
 1. **Decimal 序列化**：`RunBudget.snapshot()` 的 limits 含 `Decimal`，写 JSONL 失败；改为字符串 + 存储层 `default=str`，新增回归测试与服务层集成测试。
 2. **Windows manifest 读竞争**：原子替换瞬间读取可能 `PermissionError`；增加 20 次短重试。
-3. **UI 截断**：首页“需自备 API”、费用小数、token 过长、历史表列过多；改为“需 API”、`¥0.0392`、k 缩写、精简列。
-4. **指标表缺范围**：补 `valid_range`，公式移到折叠区；`None` 显示为“—”，`CENSORED` 不写 0。
+3. **Streamlit 弃用/Arrow 混合类型**：`use_container_width=True` → `width="stretch"`；指标“值”列统一字符串，避免 Arrow 转换回退。
+4. **导航失效**：`st.session_state["nav"]` 在 radio 实例化后写入被 Streamlit 拒绝；改为 `pending_nav`，下一次 rerun 创建组件前写入。
+5. **重复点击复用旧运行**：快速开始/配置页的 idempotency nonce 永不变化；创建成功后递增 nonce，下一次点击生成新 run_id。
+6. **单局历史页无成绩榜**：对照区提前 `return`；改为只跳过对照，继续渲染本地成绩榜。
+7. **UI 截断**：首页“需自备 API”、费用小数、token 过长、历史表列过多；改为“需 API”、`¥0.0392`、k 缩写、精简列。
+8. **指标表缺范围**：补 `valid_range`，公式移到折叠区；`None` 显示为“—”，`CENSORED` 不写 0。
 
 ## 7. OS 覆盖
 

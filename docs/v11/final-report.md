@@ -65,6 +65,7 @@ uv run --with streamlit agent-arena web
 | usage 缺失 | 未知消费、停止 | `test_missing_usage_is_unknown_spend` |
 | 请求/token/费用上限 | 通过 | `test_web_budget.py`、`test_cost_cap_blocks_before_any_request` |
 | 未知消费全局记录 | 通过 | `unknown_spend_adjustment`，本次 ¥0.073728 |
+| 浏览器 E2E | 通过 | `scripts/e2e_web.py`：离线运行 15 步、下载 JSON 24,307 B、深链历史 |
 
 ## 5. 数据/密钥泄露、版本 hash 与指标五态
 
@@ -95,6 +96,7 @@ uv run --with streamlit agent-arena web
 - 网页细化：卡片、配置、监控、时间线、结果、失败解释、空状态、移动端基本响应式；
 - 历史筛选 + 同版本对照 + 版本不一致阻止：`web/history.py`、页面；
 - 新手引导：首页快速开始、规则折叠、费用提示、无 Key 演示。
+- 自动化浏览器 E2E：首页 → 离线运行 → 结果 → 下载 JSON → 深链历史；本地通过。
 
 ### P2
 
@@ -135,7 +137,7 @@ uv run --with streamlit agent-arena web
 成立的依据：
 
 - P0 全部通过；P1 全部落地；P2 除演示数据包外均完成；
-- 1229→**1230 pytest passed**、mypy 0 issues、ruff clean、lock 0、`git diff --check` 0；
+- 1229→**1231 pytest passed**、mypy 0 issues、ruff clean、lock 0、`git diff --check` 0；
 - freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations；
 - 30/30 离线端到端 + 3/3 真实端到端；
 - 无密钥/隐藏真值泄露测试通过；

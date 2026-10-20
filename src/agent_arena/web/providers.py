@@ -87,7 +87,10 @@ def provider_statuses() -> list[ProviderStatus]:
             model=settings.ollama_model,
             base_url_host=ollama_host,
             key_state="不需要",
-            detail="本地原生 API；需要先启动 Ollama 并拉取模型。",
+            detail=(
+                "本地原生 API；需要先启动 Ollama 并拉取模型。"
+                "网页只检查配置，不主动探测端口。"
+            ),
         ),
         ProviderStatus(
             provider_id=OFFLINE_PROVIDER,

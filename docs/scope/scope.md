@@ -470,7 +470,7 @@ Spec [0018](../specs/0018-v5-six-map-measurement.md)
 - [x] Batch 4：真实 MiMo 3 局（MAP-01/19/30），58 次已记录请求，结算 ¥0.04637556 + 未知预留 ¥0.073728 < ¥3。
 - [x] Batch 5–6：指标五态/失败解释/JSON/CSV、README、quickstart、user-guide、configuration、一键自检、CI。
 - [x] Batch 7：P1 全部落地；P2 可视化/成绩榜/启动脚本/截图完成，演示数据包 DEFERRED。
-- [x] 验证：1230 pytest passed、mypy 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations。
+- [x] 验证：1231 pytest passed、mypy 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations。
 - [x] 结论：`WEB_PREVIEW_READY`（本地单机预览）；不是公网生产就绪。macOS/Linux 实机未验证。
 
 详见 `docs/v11/final-report.md`、`docs/v11/release-checklist.md` 与 `docs/v11/safety-and-budget.md`。
