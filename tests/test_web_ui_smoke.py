@@ -18,11 +18,19 @@ from agent_arena.web.service import RunService
 
 
 class _Ctx:
+    def __init__(self, owner: _Stub | None = None) -> None:
+        self.owner = owner
+
     def __enter__(self) -> _Ctx:
         return self
 
     def __exit__(self, *args: object) -> bool:
         return False
+
+    def markdown(self, text: Any, **kwargs: Any) -> None:
+        del kwargs
+        if self.owner is not None:
+            self.owner._record("markdown", text)
 
     def selectbox(self, label: str, options: list[Any], index: int = 0, **kwargs: Any) -> Any:
         del label, kwargs
@@ -44,10 +52,32 @@ class _Ctx:
         del label, kwargs
         return False
 
+    def slider(self, label: str, low: int, high: int, default: int, **kwargs: Any) -> int:
+        del label, low, kwargs
+        return default
+
+    def radio(self, label: str, options: list[Any], index: int = 0, **kwargs: Any) -> Any:
+        del label, kwargs
+        return options[index] if options else ""
+
+    def multiselect(
+        self,
+        label: str,
+        options: list[Any],
+        default: list[Any] | None = None,
+        **kwargs: Any,
+    ) -> list[Any]:
+        del label, kwargs
+        return list(default or options[:2])
+
+    def tabs(self, labels: list[str], **kwargs: Any) -> list[_Ctx]:
+        del kwargs
+        return [_Ctx(self) for _ in labels]
+
     def __getattr__(self, name: str) -> Any:
         def noop(*args: Any, **kwargs: Any) -> _Ctx:
             del args, kwargs
-            return _Ctx()
+            return _Ctx(self)
 
         return noop
 
@@ -80,6 +110,10 @@ class _Sidebar:
     def slider(self, label: str, low: int, high: int, default: int, **kwargs: Any) -> int:
         del label, default, kwargs
         return high
+
+    def markdown(self, text: Any, **kwargs: Any) -> None:
+        del kwargs
+        self.owner._record("sidebar_markdown", text)
 
 
 class _Stub:
@@ -148,22 +182,23 @@ class _Stub:
     def line_chart(self, *args: Any, **kwargs: Any) -> None:
         del args, kwargs
 
-    def columns(self, count: int | list[float]) -> list[_Ctx]:
+    def columns(self, count: int | list[float], **kwargs: Any) -> list[_Ctx]:
+        del kwargs
         size = len(count) if isinstance(count, list) else count
-        return [_Ctx() for _ in range(size)]
+        return [_Ctx(self) for _ in range(size)]
 
     def container(self, *args: Any, **kwargs: Any) -> _Ctx:
         del args, kwargs
-        return _Ctx()
+        return _Ctx(self)
 
     def expander(self, label: str, *args: Any, **kwargs: Any) -> _Ctx:
         del args, kwargs
         self._record("expander", label)
-        return _Ctx()
+        return _Ctx(self)
 
     def spinner(self, *args: Any, **kwargs: Any) -> _Ctx:
         del args, kwargs
-        return _Ctx()
+        return _Ctx(self)
 
     def selectbox(self, label: str, options: list[Any], index: int = 0, **kwargs: Any) -> Any:
         del label, kwargs
@@ -206,6 +241,11 @@ class _Stub:
     def slider(self, label: str, low: int, high: int, default: int, **kwargs: Any) -> int:
         del label, low, default, kwargs
         return high
+
+    def tabs(self, labels: list[str], **kwargs: Any) -> list[_Ctx]:
+        del kwargs
+        self._record("tabs", list(labels))
+        return [_Ctx(self) for _ in labels]
 
     def rerun(self) -> None:
         self._record("rerun", "")
@@ -300,6 +340,44 @@ def test_settings_page_renders_provider_status(monkeypatch, tmp_path) -> None:
     text = " ".join(str(value) for _, value in stub.calls)
     assert "Provider 配置" in text
     assert "费用与预算边界" in text
+
+
+def test_home_paginates_map_lobby(monkeypatch, tmp_path) -> None:
+    """30 张图一次全渲染会很长；首页每页 9 张并给出翻页控件。"""
+
+    stub = _render(monkeypatch, tmp_path, "首页 / 地图大厅")
+    assert stub.session_state["home_page"] == 1
+    text = " ".join(str(value) for _, value in stub.calls)
+    assert "第 1 / 4 页" in text
+    assert "共 30 张" in text
+
+
+def test_home_shows_per_map_run_history(monkeypatch, tmp_path) -> None:
+    _prepare_runs(tmp_path / "web")
+    stub = _render(monkeypatch, tmp_path, "首页 / 地图大厅")
+    text = " ".join(str(value) for _, value in stub.calls)
+    assert "已跑 2 局 · 成功 2" in text
+
+
+def test_sidebar_footer_reports_active_run(monkeypatch, tmp_path) -> None:
+    run_id = _prepare_runs(tmp_path / "web")
+    stub = _render(monkeypatch, tmp_path, "结果与回放", run_id)
+    sidebar = " ".join(
+        str(value) for name, value in stub.calls if name == "sidebar_markdown"
+    )
+    assert "当前运行" in sidebar
+    assert "MAP-01" in sidebar
+
+
+def test_successful_run_is_not_labelled_as_failure(monkeypatch, tmp_path) -> None:
+    """成功局的机制归因只做复核说明，不能渲染成“失败归因”。"""
+
+    run_id = _prepare_runs(tmp_path / "web")
+    stub = _render(monkeypatch, tmp_path, "结果与回放", run_id)
+    text = " ".join(str(value) for _, value in stub.calls)
+    assert "挑战成功" in text
+    assert "失败归因" not in text
+    assert "机制复核" in text
 
 
 def test_deep_link_sets_view_and_run() -> None:

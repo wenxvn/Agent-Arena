@@ -74,12 +74,15 @@ def _start_server(port: int, runs_dir: Path) -> subprocess.Popen[bytes]:
 def _check_map(page: Any, url: str, map_id: str) -> None:
     target = f"{url}/?view=%E6%8C%91%E6%88%98%E9%85%8D%E7%BD%AE&map={map_id}"
     page.goto(target, wait_until="networkidle")
-    page.get_by_text("公开目标", exact=False).first.wait_for(timeout=30_000)
+    page.get_by_text("公开信息", exact=True).first.wait_for(timeout=30_000)
     body = page.locator("body").inner_text()
     assert map_id in body, f"{map_id} 未出现在页面"
     assert DISPLAY_TITLES[map_id] in body, f"{map_id} 标题未渲染"
-    page.get_by_text("公开规则与动作契约", exact=True).first.click()
+    # 公开规则与动作契约在同一组 tab 里；逐个点开确认内容真的渲染。
+    page.get_by_role("tab", name="动作契约").first.click()
     page.get_by_text("动作契约（字段类型必须匹配）", exact=True).first.wait_for(timeout=15_000)
+    page.get_by_role("tab", name="观察字段").first.click()
+    page.get_by_text("公开观察字段", exact=True).first.wait_for(timeout=15_000)
 
 
 def main() -> int:

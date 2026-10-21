@@ -103,12 +103,12 @@ def _run_flow(page: Page, url: str) -> dict[str, Any]:
         f"{url}/?view=%E5%8E%86%E5%8F%B2%E4%B8%8E%E5%AF%B9%E7%85%A7",
         wait_until="networkidle",
     )
-    page.get_by_text("本地同模型成绩榜（P2）", exact=True).first.wait_for(
+    page.get_by_text("本地同模型成绩榜", exact=True).first.wait_for(
         timeout=30_000
     )
     history = page.locator("body").inner_text()
     assert "历史与对照" in history
-    assert "本地同模型成绩榜（P2）" in history
+    assert "本地同模型成绩榜" in history
     return {
         "state": payload["result"]["state"],
         "run_id": payload["run"]["run_id"],
