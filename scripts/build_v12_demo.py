@@ -38,6 +38,45 @@ from agent_arena.web.service import RunService  # noqa: E402
 OUTPUT = ROOT / "docs" / "v12" / "demo"
 MAX_STEP_FIELDS = ("decision_index", "action", "result", "status")
 
+#: 演示包里的 ID 是**稳定占位符**：脚本可重复运行且不产生 diff。
+#: 真实运行会生成带时间戳的 ID；这里只用于让示例文件可提交、可对比。
+STABLE_EXPERIMENT_ID = "lab-20260101T000000Z-demo0001"
+STABLE_RUN_PREFIX = "web-20260101T000000Z-demo"
+STABLE_TIMESTAMP = "2026-01-01T00:00:00+00:00"
+#: 这些键带运行时间，归一化后才能让演示包可重复生成。
+TIME_KEYS = frozenset({"generated_at", "created_at", "updated_at", "started_at", "finished_at"})
+
+
+class _StableIds:
+    """把真实 experiment_id / run_id 映射成稳定占位符（保持一一对应）。"""
+
+    def __init__(self) -> None:
+        self._run_ids: dict[str, str] = {}
+
+    def convert(self, payload: Any) -> Any:
+        if isinstance(payload, dict):
+            return {
+                str(key): (
+                    STABLE_TIMESTAMP
+                    if str(key) in TIME_KEYS and value is not None
+                    else self.convert(value)
+                )
+                for key, value in payload.items()
+                if key not in {"path", "sha256"}
+            }
+        if isinstance(payload, list):
+            return [self.convert(item) for item in payload]
+        if isinstance(payload, str):
+            if payload.startswith("lab-") and len(payload) == 29:
+                return STABLE_EXPERIMENT_ID
+            if payload.startswith("web-") and len(payload) == 29:
+                if payload not in self._run_ids:
+                    index = len(self._run_ids) + 1
+                    self._run_ids[payload] = f"{STABLE_RUN_PREFIX}{index:04d}"
+                return self._run_ids[payload]
+            return payload
+        return payload
+
 
 def _write(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -86,6 +125,7 @@ def main() -> int:
         base / "web", recover=False, simulated_provider_factory=demo_provider_factory
     )
     lab = ExperimentService(base / "lab", run_service=runs, recover=False)
+    ids = _StableIds()
     try:
         experiment_id = lab.create_experiment(_spec(), idempotency_key="demo-assets")
         lab.submit(experiment_id)
@@ -99,32 +139,34 @@ def main() -> int:
         group = OUTPUT / "01-offline-basic-memory-planning"
         _write(
             group / "summary.json",
-            {
-                "note": DEMO_NOTE,
-                "mode": summary["mode"],
-                "experiment_id": experiment_id,
-                "state": summary["state"],
-                "executed": summary["executed"],
-                "valid_denominator": summary["valid_denominator"],
-                "categories": summary["categories"],
-                "arms": [
-                    {
-                        "agent_id": arm["agent_id"],
-                        "runs": arm["runs"],
-                        "successes": arm["successes"],
-                        "mean_requests": arm["mean_requests"],
-                        "mean_cost_cny": arm["mean_cost_cny"],
-                    }
-                    for arm in comparison["arms"]
-                ],
-                "verdict": comparison["verdict"],
-                "verdict_reasons": comparison["reasons"],
-                "verdict_notes": comparison["notes"],
-            },
+            ids.convert(
+                {
+                    "note": DEMO_NOTE,
+                    "mode": summary["mode"],
+                    "experiment_id": experiment_id,
+                    "state": summary["state"],
+                    "executed": summary["executed"],
+                    "valid_denominator": summary["valid_denominator"],
+                    "categories": summary["categories"],
+                    "arms": [
+                        {
+                            "agent_id": arm["agent_id"],
+                            "runs": arm["runs"],
+                            "successes": arm["successes"],
+                            "mean_requests": arm["mean_requests"],
+                            "mean_cost_cny": arm["mean_cost_cny"],
+                        }
+                        for arm in comparison["arms"]
+                    ],
+                    "verdict": comparison["verdict"],
+                    "verdict_reasons": comparison["reasons"],
+                    "verdict_notes": comparison["notes"],
+                }
+            ),
         )
-        _write(group / "comparison.json", comparison)
+        _write(group / "comparison.json", ids.convert(comparison))
         report = lab.report(experiment_id)
-        _write(group / "report.md", report)
+        _write(group / "report.md", ids.convert(report))
 
         # 02：一对轨迹对照（同图同 seed 的不同架构）
         pairs: list[dict[str, Any]] = []
@@ -163,7 +205,7 @@ def main() -> int:
             )
         _write(
             OUTPUT / "02-pairwise-diff" / "pairwise.json",
-            {"note": DEMO_NOTE, "pairs": pairs[:3]},
+            ids.convert({"note": DEMO_NOTE, "pairs": pairs[:3]}),
         )
 
         # 03：失败证据报告
@@ -172,21 +214,23 @@ def main() -> int:
         evidence = (critical + warnings)[:8]
         _write(
             OUTPUT / "03-failure-evidence" / "findings.json",
-            {
-                "note": DEMO_NOTE,
-                "experiment_id": experiment_id,
-                "total_findings": len(findings),
-                "critical": len(critical),
-                "warning": len(warnings),
-                "samples": [item.as_dict() for item in evidence],
-            },
+            ids.convert(
+                {
+                    "note": DEMO_NOTE,
+                    "experiment_id": experiment_id,
+                    "total_findings": len(findings),
+                    "critical": len(critical),
+                    "warning": len(warnings),
+                    "samples": [item.as_dict() for item in evidence],
+                }
+            ),
         )
         lines = [
             "# 失败证据样例（SIMULATED）",
             "",
             f"> {DEMO_NOTE}",
             "",
-            f"- 实验：`{experiment_id}`",
+            f"- 实验：`{STABLE_EXPERIMENT_ID}`",
             f"- 诊断总数：{len(findings)}（critical {len(critical)} / warning {len(warnings)}）",
             "",
             "| 地图 | 类别 | 严重度 | 证据步 | 说明 |",
@@ -195,7 +239,8 @@ def main() -> int:
         for item in evidence:
             steps = ", ".join(str(step) for step in item.evidence_steps) or "—"
             lines.append(
-                f"| {item.map_id} | `{item.category}` | {item.severity} | {steps} | {item.summary} |"
+                f"| {item.map_id} | `{item.category}` | {item.severity} | "
+                f"{steps} | {item.summary} |"
             )
         lines += [
             "",
@@ -218,8 +263,10 @@ def main() -> int:
                     "",
                     "| 目录 | 内容 |",
                     "|---|---|",
-                    "| `01-offline-basic-memory-planning/` | 三架构离线模拟对照：汇总、配对判定、可读报告 |",
-                    "| `02-pairwise-diff/` | 同图同 seed 的一对轨迹对照：首次差异、指标增量、可验证假设 |",
+                    "| `01-offline-basic-memory-planning/` | "
+                    "三架构离线模拟对照：汇总、配对判定、可读报告 |",
+                    "| `02-pairwise-diff/` | "
+                    "同图同 seed 的一对轨迹对照：首次差异、指标增量、可验证假设 |",
                     "| `03-failure-evidence/` | 失败证据样例：类别、严重度、证据步 |",
                     "",
                     "## 这些不是真实模型结果",

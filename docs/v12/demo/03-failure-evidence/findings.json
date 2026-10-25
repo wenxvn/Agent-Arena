@@ -1,6 +1,6 @@
 {
  "critical": 0,
- "experiment_id": "lab-20261025T105431Z-c3d0c415",
+ "experiment_id": "lab-20260101T000000Z-demo0001",
  "note": "演示脚本：动作由人工按公开规则编写，不是模型输出，也不是 Oracle；结果只用于展示对照、诊断与可视化链路。",
  "samples": [
   {
@@ -14,7 +14,7 @@
     1
    ],
    "map_id": "MAP-10",
-   "run_id": "web-20261025T105431Z-a3e1ba0d",
+   "run_id": "web-20260101T000000Z-demo0001",
    "severity": "warning",
    "source": "deterministic_trace_rule",
    "suggested_check": "检查机制阈值与顺序，而不是只看是否调用了工具。",
@@ -27,7 +27,7 @@
    "evidence_event_ids": [],
    "evidence_steps": [],
    "map_id": "MAP-10",
-   "run_id": "web-20261025T105432Z-8f5de247",
+   "run_id": "web-20260101T000000Z-demo0003",
    "severity": "warning",
    "source": "deterministic_trace_rule",
    "suggested_check": "先确认模型是否读懂了公开目标与动作契约。",
@@ -58,7 +58,7 @@
     12
    ],
    "map_id": "MAP-22",
-   "run_id": "web-20261025T105432Z-fe5211dc",
+   "run_id": "web-20260101T000000Z-demo0004",
    "severity": "warning",
    "source": "deterministic_trace_rule",
    "suggested_check": "检查是否在等待错误的前置条件或陷入无效探索。",
@@ -75,7 +75,7 @@
     10
    ],
    "map_id": "MAP-22",
-   "run_id": "web-20261025T105432Z-fe5211dc",
+   "run_id": "web-20260101T000000Z-demo0004",
    "severity": "warning",
    "source": "deterministic_trace_rule",
    "suggested_check": "检查机制阈值与顺序，而不是只看是否调用了工具。",
@@ -92,7 +92,7 @@
     10
    ],
    "map_id": "MAP-22",
-   "run_id": "web-20261025T105432Z-fe5211dc",
+   "run_id": "web-20260101T000000Z-demo0004",
    "severity": "warning",
    "source": "deterministic_trace_rule",
    "suggested_check": "记忆内容应包含走过的方位序列。",
@@ -127,7 +127,7 @@
     12
    ],
    "map_id": "MAP-22",
-   "run_id": "web-20261025T105432Z-e5e1ecf9",
+   "run_id": "web-20260101T000000Z-demo0005",
    "severity": "warning",
    "source": "deterministic_trace_rule",
    "suggested_check": "检查是否在等待错误的前置条件或陷入无效探索。",
@@ -160,7 +160,7 @@
     12
    ],
    "map_id": "MAP-22",
-   "run_id": "web-20261025T105433Z-676d1b6f",
+   "run_id": "web-20260101T000000Z-demo0006",
    "severity": "warning",
    "source": "deterministic_trace_rule",
    "suggested_check": "检查是否在等待错误的前置条件或陷入无效探索。",
@@ -177,7 +177,7 @@
     9
    ],
    "map_id": "MAP-22",
-   "run_id": "web-20261025T105433Z-676d1b6f",
+   "run_id": "web-20260101T000000Z-demo0006",
    "severity": "warning",
    "source": "deterministic_trace_rule",
    "suggested_check": "检查机制阈值与顺序，而不是只看是否调用了工具。",

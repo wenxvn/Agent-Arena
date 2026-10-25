@@ -8,13 +8,13 @@
     "first_divergence_summary": "两条轨迹的动作序列完全一致。",
     "left_agent": "basic.v1",
     "left_decisions": 2,
-    "left_run_id": "web-20261025T105431Z-a3e1ba0d",
+    "left_run_id": "web-20260101T000000Z-demo0001",
     "left_success": false,
     "pairing_key": "MAP-10|seed=0",
     "reasons": [],
     "right_agent": "memory.v1",
     "right_decisions": 2,
-    "right_run_id": "web-20261025T105431Z-f7ccc9bc",
+    "right_run_id": "web-20260101T000000Z-demo0002",
     "right_success": true,
     "stage_deltas": [
      {
@@ -116,13 +116,13 @@
     "first_divergence_summary": "第 2 步首次出现不同行为：basic.v1 move（MOVED_TO:split_1） vs memory.v1 write_memory（MEMORY_WRITTEN）",
     "left_agent": "basic.v1",
     "left_decisions": 12,
-    "left_run_id": "web-20261025T105432Z-fe5211dc",
+    "left_run_id": "web-20260101T000000Z-demo0004",
     "left_success": false,
     "pairing_key": "MAP-22|seed=0",
     "reasons": [],
     "right_agent": "memory.v1",
     "right_decisions": 12,
-    "right_run_id": "web-20261025T105432Z-e5e1ecf9",
+    "right_run_id": "web-20260101T000000Z-demo0005",
     "right_success": false,
     "stage_deltas": [
      {
@@ -402,13 +402,13 @@
     "first_divergence_summary": "第 1 步首次出现不同行为：basic.v1 replace（WRONG_PART） vs memory.v1 run_test（TEST_RESULT:T1=A）",
     "left_agent": "basic.v1",
     "left_decisions": 3,
-    "left_run_id": "web-20261025T105434Z-cf695891",
+    "left_run_id": "web-20260101T000000Z-demo0007",
     "left_success": false,
     "pairing_key": "MAP-26|seed=0",
     "reasons": [],
     "right_agent": "memory.v1",
     "right_decisions": 12,
-    "right_run_id": "web-20261025T105434Z-9e30c7c4",
+    "right_run_id": "web-20260101T000000Z-demo0008",
     "right_success": false,
     "stage_deltas": [
      {

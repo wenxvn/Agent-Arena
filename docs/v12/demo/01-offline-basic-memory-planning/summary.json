@@ -28,7 +28,7 @@
   "mechanism_failure": 3
  },
  "executed": 9,
- "experiment_id": "lab-20261025T105431Z-c3d0c415",
+ "experiment_id": "lab-20260101T000000Z-demo0001",
  "mode": "simulated",
  "note": "演示脚本：动作由人工按公开规则编写，不是模型输出，也不是 Oracle；结果只用于展示对照、诊断与可视化链路。",
  "state": "COMPLETED",
