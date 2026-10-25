@@ -1809,3 +1809,36 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 边界：只改展示层，未触碰 V8/V9/V10 冻结规则、账本与 trace；未新增任何真实 API 请求，未产生费用；`.streamlit/config.toml` 曾用于固定主题，因强制浅色会压掉深色模式而删除。
 
 关联提交：本次 V11 前端完善提交（分支 `main`）。
+
+## 2026-10-25 V12 Agent Arena Lab 1.0 离线交付
+
+事件：按 `研究提纲/V12Agent-Arena_V12_第二阶段完整执行提纲.md` 执行 Batch 0–13，交付多架构 Agent 实验层。起始 HEAD `258eadc`。
+
+新增（全部在 `src/agent_arena/lab/`、`src/agent_arena/ui/lab.py`、`scripts/*_v12*.py`、`examples/`）：
+
+- 版本化契约 `v12-lab-1`（`ExperimentSpec` / `MatrixCell` / `AgentIdentity` / `AgentDecision` / `Finding` / `ComparisonResult`）；
+- 统一 `AgentPolicy` + 受控 `DecisionGateway`（唯一模型出口，Planner/Reflection 额外请求共享同一 `RunBudget`）；
+- `basic.v1` / `memory.v1` / `planning.v1` / `reflection.v1` + 注册表 + 消融开关；
+- `AgentRunnerV12`：30 图完整执行路径，`provenance` + `agent_events` + V11 兼容 manifest/events/result；
+- `ExperimentService`：父 Experiment + 子 Run（复用 V11 `RunService`）、矩阵、串行队列、实验级预算、幂等、取消、按子局续跑；
+- `compare.py`：六类互斥分母、配对比较、`COMPARABLE`/`DESCRIPTIVE_ONLY`/`INCOMPARABLE`；
+- `diagnostics.py`：18 类证据级诊断 + 轨迹 Diff + 可验证假设；
+- `visualization.py`：六图专属 view-model + 24 图通用回退；
+- `report.py`：`runs.csv`/`metrics.csv`/`paired_comparison.csv`/`findings.csv` + Markdown 报告；
+- `ui/lab.py`：配置/监控/结果三页（含一键离线演示）；
+- `sdk.py` + `examples/custom_agent/`：第三方 Agent 接入与只读导入；
+- `scripts/verify_v12.py`、`demo_v12.py`、`run_v12_matrix.py`、`build_v12_demo.py`、`e2e_lab.py`、`capture_v12_screenshots.py`。
+
+关键修复：
+
+- V11 遗留测试缺陷：`test_home_shows_per_map_run_history` 依赖 `list_runs()[0]` 取"刚创建的第二局"，而 `created_at` 只精确到秒；改为直接使用第二个 `run_id`。
+- 可视化缺陷（自查发现）：MAP-22 把被拒绝的 `move` 画成"走过的边"（`camp → camp`）。改为只有位置真正改变才记边，被拒移动单列 `rejected_moves` 并在页面标注。
+- `ExperimentStore._json` 增加 Windows 原子替换瞬间的有限重试，避免父实验偶发 `ExperimentNotFound`。
+
+验证（Windows 11）：1433 pytest passed（新增 181 项 V12 测试）；`ruff` clean；`mypy src` 302 文件 0 issues；`uv lock --check` 0；`git diff --check` 0；`freeze verify` 9/9 unchanged；`recompute --check` 1093/1093；`independent_check --check` 0 violations；`verify_v11` 7/7；`verify_v12` 11/11；`e2e_web.py` 与 `e2e_lab.py` 均通过。
+
+真实 API：**未授权，未发出任何付费请求**。预登记 54 局矩阵（6 图 × 3 seed × 3 架构）与预算已冻结在 `docs/v12/experiment-protocol.md`；`LiveApproval` 默认未批准，`submit` 直接拒绝。
+
+结论：`LAB_1_0_OFFLINE_READY`。macOS 与 Ollama 未实测；可访问性自动检测未接入。详见 `docs/v12/final-report.md`、`docs/v12/validation-report.md`。
+
+下一步：等用户批准预算后跑 Pilot（3–6 局）→ 54 局主矩阵；macOS 实机验证。

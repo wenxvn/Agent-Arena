@@ -1,0 +1,189 @@
+{
+ "critical": 0,
+ "experiment_id": "lab-20261025T105431Z-c3d0c415",
+ "note": "演示脚本：动作由人工按公开规则编写，不是模型输出，也不是 Oracle；结果只用于展示对照、诊断与可视化链路。",
+ "samples": [
+  {
+   "category": "key_action_used_no_trigger",
+   "confidence_scope": "behavior_observed_not_internal_cause",
+   "detail": "",
+   "evidence_event_ids": [
+    "step-1"
+   ],
+   "evidence_steps": [
+    1
+   ],
+   "map_id": "MAP-10",
+   "run_id": "web-20261025T105431Z-a3e1ba0d",
+   "severity": "warning",
+   "source": "deterministic_trace_rule",
+   "suggested_check": "检查机制阈值与顺序，而不是只看是否调用了工具。",
+   "summary": "机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。"
+  },
+  {
+   "category": "key_action_never_attempted",
+   "confidence_scope": "behavior_observed_not_internal_cause",
+   "detail": "",
+   "evidence_event_ids": [],
+   "evidence_steps": [],
+   "map_id": "MAP-10",
+   "run_id": "web-20261025T105432Z-8f5de247",
+   "severity": "warning",
+   "source": "deterministic_trace_rule",
+   "suggested_check": "先确认模型是否读懂了公开目标与动作契约。",
+   "summary": "核心机制动作 ['load', 'unload'] 一次都没有调用。"
+  },
+  {
+   "category": "no_progress_window",
+   "confidence_scope": "behavior_observed_not_internal_cause",
+   "detail": "",
+   "evidence_event_ids": [
+    "step-5",
+    "step-6",
+    "step-7",
+    "step-8",
+    "step-9",
+    "step-10",
+    "step-11",
+    "step-12"
+   ],
+   "evidence_steps": [
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "map_id": "MAP-22",
+   "run_id": "web-20261025T105432Z-fe5211dc",
+   "severity": "warning",
+   "source": "deterministic_trace_rule",
+   "suggested_check": "检查是否在等待错误的前置条件或陷入无效探索。",
+   "summary": "连续 8 步公开进度没有变化。"
+  },
+  {
+   "category": "key_action_used_no_trigger",
+   "confidence_scope": "behavior_observed_not_internal_cause",
+   "detail": "",
+   "evidence_event_ids": [
+    "step-10"
+   ],
+   "evidence_steps": [
+    10
+   ],
+   "map_id": "MAP-22",
+   "run_id": "web-20261025T105432Z-fe5211dc",
+   "severity": "warning",
+   "source": "deterministic_trace_rule",
+   "suggested_check": "检查机制阈值与顺序，而不是只看是否调用了工具。",
+   "summary": "机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。"
+  },
+  {
+   "category": "memory_not_used",
+   "confidence_scope": "behavior_observed_not_internal_cause",
+   "detail": "",
+   "evidence_event_ids": [
+    "step-10"
+   ],
+   "evidence_steps": [
+    10
+   ],
+   "map_id": "MAP-22",
+   "run_id": "web-20261025T105432Z-fe5211dc",
+   "severity": "warning",
+   "source": "deterministic_trace_rule",
+   "suggested_check": "记忆内容应包含走过的方位序列。",
+   "summary": "写过记忆，但没有记录方位（bearing/path_state），无法用于返程。"
+  },
+  {
+   "category": "no_progress_window",
+   "confidence_scope": "behavior_observed_not_internal_cause",
+   "detail": "",
+   "evidence_event_ids": [
+    "step-3",
+    "step-4",
+    "step-5",
+    "step-6",
+    "step-7",
+    "step-8",
+    "step-9",
+    "step-10",
+    "step-11",
+    "step-12"
+   ],
+   "evidence_steps": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "map_id": "MAP-22",
+   "run_id": "web-20261025T105432Z-e5e1ecf9",
+   "severity": "warning",
+   "source": "deterministic_trace_rule",
+   "suggested_check": "检查是否在等待错误的前置条件或陷入无效探索。",
+   "summary": "连续 10 步公开进度没有变化。"
+  },
+  {
+   "category": "no_progress_window",
+   "confidence_scope": "behavior_observed_not_internal_cause",
+   "detail": "",
+   "evidence_event_ids": [
+    "step-4",
+    "step-5",
+    "step-6",
+    "step-7",
+    "step-8",
+    "step-9",
+    "step-10",
+    "step-11",
+    "step-12"
+   ],
+   "evidence_steps": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "map_id": "MAP-22",
+   "run_id": "web-20261025T105433Z-676d1b6f",
+   "severity": "warning",
+   "source": "deterministic_trace_rule",
+   "suggested_check": "检查是否在等待错误的前置条件或陷入无效探索。",
+   "summary": "连续 9 步公开进度没有变化。"
+  },
+  {
+   "category": "key_action_used_no_trigger",
+   "confidence_scope": "behavior_observed_not_internal_cause",
+   "detail": "",
+   "evidence_event_ids": [
+    "step-9"
+   ],
+   "evidence_steps": [
+    9
+   ],
+   "map_id": "MAP-22",
+   "run_id": "web-20261025T105433Z-676d1b6f",
+   "severity": "warning",
+   "source": "deterministic_trace_rule",
+   "suggested_check": "检查机制阈值与顺序，而不是只看是否调用了工具。",
+   "summary": "机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。"
+  }
+ ],
+ "total_findings": 27,
+ "warning": 21
+}

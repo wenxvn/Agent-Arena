@@ -1,0 +1,614 @@
+{
+ "note": "演示脚本：动作由人工按公开规则编写，不是模型输出，也不是 Oracle；结果只用于展示对照、诊断与可视化链路。",
+ "pairs": [
+  {
+   "diff": {
+    "first_divergence_anchor": "",
+    "first_divergence_step": null,
+    "first_divergence_summary": "两条轨迹的动作序列完全一致。",
+    "left_agent": "basic.v1",
+    "left_decisions": 2,
+    "left_run_id": "web-20261025T105431Z-a3e1ba0d",
+    "left_success": false,
+    "pairing_key": "MAP-10|seed=0",
+    "reasons": [],
+    "right_agent": "memory.v1",
+    "right_decisions": 2,
+    "right_run_id": "web-20261025T105431Z-f7ccc9bc",
+    "right_success": true,
+    "stage_deltas": [
+     {
+      "left_state": "VALID",
+      "left_value": 0.0,
+      "metric_id": "map10.v10.delivered_ratio",
+      "right_state": "VALID",
+      "right_value": 1.0
+     },
+     {
+      "left_state": "NOT_APPLICABLE",
+      "left_value": null,
+      "metric_id": "map10.v10.fuel_left",
+      "right_state": "VALID",
+      "right_value": 1
+     },
+     {
+      "left_state": "VALID",
+      "left_value": 0,
+      "metric_id": "map10.v10.mission_success",
+      "right_state": "VALID",
+      "right_value": 1
+     }
+    ],
+    "verdict": "COMPARABLE"
+   },
+   "environment_seed": 0,
+   "hypotheses": [
+    {
+     "kind": "evidence",
+     "text": "两条轨迹动作序列一致；差异只可能来自指标计算或终局判定。"
+    },
+    {
+     "kind": "evidence",
+     "text": "map10.v10.delivered_ratio：VALID=0.0 vs VALID=1.0。"
+    },
+    {
+     "kind": "evidence",
+     "text": "map10.v10.fuel_left：NOT_APPLICABLE=None vs VALID=1。"
+    },
+    {
+     "kind": "evidence",
+     "text": "map10.v10.mission_success：VALID=0 vs VALID=1。"
+    },
+    {
+     "kind": "hypothesis",
+     "text": "下一步可验证假设：在该配对 seed 上只改变一个架构开关，重复同一预算，观察首次差异步是否前移。"
+    }
+   ],
+   "left_agent": "basic.v1",
+   "left_steps": [
+    {
+     "action": {
+      "quantity": 10,
+      "tool": "load"
+     },
+     "decision_index": 1,
+     "result": "LOADED:10",
+     "status": "running"
+    },
+    {
+     "action": {
+      "to": "D",
+      "tool": "move"
+     },
+     "decision_index": 2,
+     "result": "OUT_OF_FUEL",
+     "status": "scenario_failure"
+    }
+   ],
+   "map_id": "MAP-10",
+   "note": "演示脚本：动作由人工按公开规则编写，不是模型输出，也不是 Oracle；结果只用于展示对照、诊断与可视化链路。",
+   "right_agent": "memory.v1",
+   "right_steps": [
+    {
+     "action": {
+      "quantity": 6,
+      "tool": "load"
+     },
+     "decision_index": 1,
+     "result": "LOADED:6",
+     "status": "running"
+    },
+    {
+     "action": {
+      "to": "D",
+      "tool": "move"
+     },
+     "decision_index": 2,
+     "result": "DELIVERED_IN_FULL",
+     "status": "scenario_success"
+    }
+   ]
+  },
+  {
+   "diff": {
+    "first_divergence_anchor": "current_sign=split_1",
+    "first_divergence_step": 2,
+    "first_divergence_summary": "第 2 步首次出现不同行为：basic.v1 move（MOVED_TO:split_1） vs memory.v1 write_memory（MEMORY_WRITTEN）",
+    "left_agent": "basic.v1",
+    "left_decisions": 12,
+    "left_run_id": "web-20261025T105432Z-fe5211dc",
+    "left_success": false,
+    "pairing_key": "MAP-22|seed=0",
+    "reasons": [],
+    "right_agent": "memory.v1",
+    "right_decisions": 12,
+    "right_run_id": "web-20261025T105432Z-e5e1ecf9",
+    "right_success": false,
+    "stage_deltas": [
+     {
+      "left_state": "VALID",
+      "left_value": 1,
+      "metric_id": "map22.v10.memory_writes",
+      "right_state": "VALID",
+      "right_value": 3
+     },
+     {
+      "left_state": "NOT_APPLICABLE",
+      "left_value": null,
+      "metric_id": "map22.v10.route_recall",
+      "right_state": "VALID",
+      "right_value": 1.0
+     }
+    ],
+    "verdict": "COMPARABLE"
+   },
+   "environment_seed": 0,
+   "hypotheses": [
+    {
+     "kind": "evidence",
+     "text": "首次有意义差异出现在第 2 步（锚点 current_sign=split_1）。"
+    },
+    {
+     "kind": "evidence",
+     "text": "map22.v10.memory_writes：VALID=1 vs VALID=3。"
+    },
+    {
+     "kind": "evidence",
+     "text": "map22.v10.route_recall：NOT_APPLICABLE=None vs VALID=1.0。"
+    },
+    {
+     "kind": "hypothesis",
+     "text": "下一步可验证假设：在该配对 seed 上只改变一个架构开关，重复同一预算，观察首次差异步是否前移。"
+    }
+   ],
+   "left_agent": "basic.v1",
+   "left_steps": [
+    {
+     "action": {
+      "tool": "observe_signpost"
+     },
+     "decision_index": 1,
+     "result": "SIGN_OBSERVED:camp",
+     "status": "running"
+    },
+    {
+     "action": {
+      "bearing": "west",
+      "tool": "move"
+     },
+     "decision_index": 2,
+     "result": "MOVED_TO:split_1",
+     "status": "running"
+    },
+    {
+     "action": {
+      "bearing": "west",
+      "tool": "move"
+     },
+     "decision_index": 3,
+     "result": "BEARING_NOT_AVAILABLE",
+     "status": "running"
+    },
+    {
+     "action": {
+      "tool": "observe_signpost"
+     },
+     "decision_index": 4,
+     "result": "SIGN_OBSERVED:split_1",
+     "status": "running"
+    },
+    {
+     "action": {
+      "bearing": "east",
+      "tool": "move"
+     },
+     "decision_index": 5,
+     "result": "MOVED_TO:camp",
+     "status": "running"
+    },
+    {
+     "action": {
+      "bearing": "east",
+      "tool": "move"
+     },
+     "decision_index": 6,
+     "result": "BEARING_NOT_AVAILABLE",
+     "status": "running"
+    },
+    {
+     "action": {
+      "bearing": "distinctive_feature",
+      "tool": "move"
+     },
+     "decision_index": 7,
+     "result": "BEARING_NOT_AVAILABLE",
+     "status": "running"
+    },
+    {
+     "action": {
+      "tool": "observe_signpost"
+     },
+     "decision_index": 8,
+     "result": "SIGN_OBSERVED:camp",
+     "status": "running"
+    },
+    {
+     "action": {
+      "tool": "return_to_camp"
+     },
+     "decision_index": 9,
+     "result": "RUIN_NOT_RECORDED",
+     "status": "running"
+    },
+    {
+     "action": {
+      "facts": [
+       {
+        "key": "last_action_result",
+        "value": "last_action_result"
+       }
+      ],
+      "tool": "write_memory"
+     },
+     "decision_index": 10,
+     "result": "MEMORY_WRITTEN",
+     "status": "running"
+    },
+    {
+     "action": {
+      "tool": "check_goal"
+     },
+     "decision_index": 11,
+     "result": "NOT_AT_RUIN",
+     "status": "running"
+    },
+    {
+     "action": {
+      "bearing": "map_id",
+      "tool": "move"
+     },
+     "decision_index": 12,
+     "result": "BEARING_NOT_AVAILABLE",
+     "status": "running"
+    }
+   ],
+   "map_id": "MAP-22",
+   "note": "演示脚本：动作由人工按公开规则编写，不是模型输出，也不是 Oracle；结果只用于展示对照、诊断与可视化链路。",
+   "right_agent": "memory.v1",
+   "right_steps": [
+    {
+     "action": {
+      "tool": "observe_signpost"
+     },
+     "decision_index": 1,
+     "result": "SIGN_OBSERVED:camp",
+     "status": "running"
+    },
+    {
+     "action": {
+      "facts": [
+       {
+        "key": "bearing",
+        "value": "west"
+       }
+      ],
+      "tool": "write_memory"
+     },
+     "decision_index": 2,
+     "result": "MEMORY_WRITTEN",
+     "status": "running"
+    },
+    {
+     "action": {
+      "bearing": "west",
+      "tool": "move"
+     },
+     "decision_index": 3,
+     "result": "MOVED_TO:split_1",
+     "status": "running"
+    },
+    {
+     "action": {
+      "facts": [
+       {
+        "key": "bearing",
+        "value": "west"
+       }
+      ],
+      "tool": "write_memory"
+     },
+     "decision_index": 4,
+     "result": "MEMORY_WRITTEN",
+     "status": "running"
+    },
+    {
+     "action": {
+      "bearing": "west",
+      "tool": "move"
+     },
+     "decision_index": 5,
+     "result": "BEARING_NOT_AVAILABLE",
+     "status": "running"
+    },
+    {
+     "action": {
+      "tool": "check_goal"
+     },
+     "decision_index": 6,
+     "result": "NOT_AT_RUIN",
+     "status": "running"
+    },
+    {
+     "action": {
+      "tool": "return_to_camp"
+     },
+     "decision_index": 7,
+     "result": "NOT_AT_CAMP",
+     "status": "running"
+    },
+    {
+     "action": {
+      "tool": "observe_signpost"
+     },
+     "decision_index": 8,
+     "result": "SIGN_OBSERVED:split_1",
+     "status": "running"
+    },
+    {
+     "action": {
+      "tool": "return_to_camp"
+     },
+     "decision_index": 9,
+     "result": "NOT_AT_CAMP",
+     "status": "running"
+    },
+    {
+     "action": {
+      "facts": [
+       {
+        "key": "key",
+        "value": "key"
+       }
+      ],
+      "tool": "write_memory"
+     },
+     "decision_index": 10,
+     "result": "MEMORY_WRITTEN",
+     "status": "running"
+    },
+    {
+     "action": {
+      "tool": "check_goal"
+     },
+     "decision_index": 11,
+     "result": "NOT_AT_RUIN",
+     "status": "running"
+    },
+    {
+     "action": {
+      "bearing": "map_id",
+      "tool": "move"
+     },
+     "decision_index": 12,
+     "result": "BEARING_NOT_AVAILABLE",
+     "status": "running"
+    }
+   ]
+  },
+  {
+   "diff": {
+    "first_divergence_anchor": "tick=2",
+    "first_divergence_step": 1,
+    "first_divergence_summary": "第 1 步首次出现不同行为：basic.v1 replace（WRONG_PART） vs memory.v1 run_test（TEST_RESULT:T1=A）",
+    "left_agent": "basic.v1",
+    "left_decisions": 3,
+    "left_run_id": "web-20261025T105434Z-cf695891",
+    "left_success": false,
+    "pairing_key": "MAP-26|seed=0",
+    "reasons": [],
+    "right_agent": "memory.v1",
+    "right_decisions": 12,
+    "right_run_id": "web-20261025T105434Z-9e30c7c4",
+    "right_success": false,
+    "stage_deltas": [
+     {
+      "left_state": "VALID",
+      "left_value": 0,
+      "metric_id": "map26.v10.mission_success",
+      "right_state": "CENSORED",
+      "right_value": null
+     },
+     {
+      "left_state": "VALID",
+      "left_value": 0,
+      "metric_id": "map26.v10.rollbacks",
+      "right_state": "VALID",
+      "right_value": 1
+     },
+     {
+      "left_state": "VALID",
+      "left_value": 3,
+      "metric_id": "map26.v10.spares_used",
+      "right_state": "VALID",
+      "right_value": 1
+     },
+     {
+      "left_state": "VALID",
+      "left_value": 2,
+      "metric_id": "map26.v10.wrong_swaps",
+      "right_state": "VALID",
+      "right_value": 1
+     }
+    ],
+    "verdict": "COMPARABLE"
+   },
+   "environment_seed": 0,
+   "hypotheses": [
+    {
+     "kind": "evidence",
+     "text": "首次有意义差异出现在第 1 步（锚点 tick=2）。"
+    },
+    {
+     "kind": "evidence",
+     "text": "map26.v10.mission_success：VALID=0 vs CENSORED=None。"
+    },
+    {
+     "kind": "evidence",
+     "text": "map26.v10.rollbacks：VALID=0 vs VALID=1。"
+    },
+    {
+     "kind": "evidence",
+     "text": "map26.v10.spares_used：VALID=3 vs VALID=1。"
+    },
+    {
+     "kind": "evidence",
+     "text": "map26.v10.wrong_swaps：VALID=2 vs VALID=1。"
+    },
+    {
+     "kind": "hypothesis",
+     "text": "下一步可验证假设：在该配对 seed 上只改变一个架构开关，重复同一预算，观察首次差异步是否前移。"
+    }
+   ],
+   "left_agent": "basic.v1",
+   "left_steps": [
+    {
+     "action": {
+      "part_id": "P1",
+      "tool": "replace"
+     },
+     "decision_index": 1,
+     "result": "WRONG_PART",
+     "status": "running"
+    },
+    {
+     "action": {
+      "part_id": "P2",
+      "tool": "replace"
+     },
+     "decision_index": 2,
+     "result": "PART_INSTALLED:P2",
+     "status": "running"
+    },
+    {
+     "action": {
+      "part_id": "P3",
+      "tool": "replace"
+     },
+     "decision_index": 3,
+     "result": "UNIT_UNRECOVERABLE",
+     "status": "scenario_failure"
+    }
+   ],
+   "map_id": "MAP-26",
+   "note": "演示脚本：动作由人工按公开规则编写，不是模型输出，也不是 Oracle；结果只用于展示对照、诊断与可视化链路。",
+   "right_agent": "memory.v1",
+   "right_steps": [
+    {
+     "action": {
+      "test_id": "T1",
+      "tool": "run_test"
+     },
+     "decision_index": 1,
+     "result": "TEST_RESULT:T1=A",
+     "status": "running"
+    },
+    {
+     "action": {
+      "test_id": "T2",
+      "tool": "run_test"
+     },
+     "decision_index": 2,
+     "result": "TEST_RESULT:T2=y",
+     "status": "running"
+    },
+    {
+     "action": {
+      "part_id": "P1",
+      "tool": "replace"
+     },
+     "decision_index": 3,
+     "result": "WRONG_PART",
+     "status": "running"
+    },
+    {
+     "action": {
+      "tool": "restart"
+     },
+     "decision_index": 4,
+     "result": "STILL_FAULTY",
+     "status": "running"
+    },
+    {
+     "action": {
+      "test_id": "F3",
+      "tool": "run_test"
+     },
+     "decision_index": 5,
+     "result": "UNKNOWN_TEST",
+     "status": "running"
+    },
+    {
+     "action": {
+      "log_id": "MAP-26",
+      "tool": "read_log"
+     },
+     "decision_index": 6,
+     "result": "LOG_READ:MAP-26",
+     "status": "running"
+    },
+    {
+     "action": {
+      "part_id": "MAP-26",
+      "tool": "replace"
+     },
+     "decision_index": 7,
+     "result": "UNKNOWN_PART",
+     "status": "running"
+    },
+    {
+     "action": {
+      "tool": "restart"
+     },
+     "decision_index": 8,
+     "result": "STILL_FAULTY",
+     "status": "running"
+    },
+    {
+     "action": {
+      "tool": "rollback"
+     },
+     "decision_index": 9,
+     "result": "ROLLED_BACK",
+     "status": "running"
+    },
+    {
+     "action": {
+      "test_id": "ROLLED_BACK",
+      "tool": "run_test"
+     },
+     "decision_index": 10,
+     "result": "UNKNOWN_TEST",
+     "status": "running"
+    },
+    {
+     "action": {
+      "log_id": "T2",
+      "tool": "read_log"
+     },
+     "decision_index": 11,
+     "result": "LOG_READ:T2",
+     "status": "running"
+    },
+    {
+     "action": {
+      "part_id": "T2",
+      "tool": "replace"
+     },
+     "decision_index": 12,
+     "result": "UNKNOWN_PART",
+     "status": "running"
+    }
+   ]
+  }
+ ]
+}

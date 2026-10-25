@@ -27,6 +27,7 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 | `prompts/` | 版本化的 Agent 指令模板 | 密钥和运行时配置 |
 | `src/agent_arena/ui/` | 本地网页平台：地图大厅、挑战配置、运行监控、结果回放、历史对照；保留只读研究视图 | 世界规则、模型调用细节、账本实现 |
 | `src/agent_arena/web/` | V11 服务层：RunService、持久化、预算、catalog、导出、自检；不依赖 Streamlit | Streamlit 渲染、地图规则 |
+| `src/agent_arena/lab/` | V12 Lab：策略契约与注册表、受控模型网关、单局 Runner、父实验与队列、配对比较、证据级诊断、六图 view-model、导出与报告、SDK | 修改 V10 规则、直接调 Provider、读写 V8/V9/V10 账本 |
 
 ## 当前 MVP 闭环
 
@@ -60,6 +61,15 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 - 状态机：`CREATED -> QUEUED -> RUNNING -> {SUCCEEDED, FAILED, BUDGET_REACHED, CANCELLED, PROVIDER_ERROR, INTERRUPTED}`；指标五态独立显示。
 - 默认只监听 `127.0.0.1`；API Key 只从本机 `.env` 读取，网页不回显，不接受自定义 URL。
 - 30 图 ID、V10 规则、指标、Oracle 与历史冻结账本保持只读；展示难度只存在于 `web/catalog.py`。
+
+## V12 Lab 边界
+
+- `src/agent_arena/lab/` 是第二阶段实验层，与 `web/` 并列而非替代：父实验 `ExperimentService` 只编排，真正执行仍由 `RunService` 承担。
+- 一条运行链路：`ExperimentSpec` → `preflight`（零请求）→ 父实验队列 → 子局 `RunConfig` → `AgentRunnerV12` → V10 Environment；动作一律经 `V8Action` 与 `environment.accepts`。
+- `AgentPolicy` 只拿到 `PublicObservation` / `AgentContext`；`DecisionGateway` 是唯一模型出口，Planner / Reflection 的额外请求共享同一 `RunBudget` 并计入账本。
+- 三种执行通道严格隔离：`OFFLINE`（公开启发式，V11 语义不变）、`SIMULATED`（确定性脚本 Provider，零费用、不写付费账本）、`LIVE`（真实模型，需显式 `LiveApproval`）。
+- 分析层只读已落盘 trace：`compare.py` 做分母与配对，`diagnostics.py` 出证据级 `Finding`，`visualization.py` 出六图 view-model，`report.py` 出可读报告与 CSV/JSON。
+- 不修改 `v10/`、`worlds/scenario_v8/`、V8/V9/V10 账本与历史 trace；`runs/lab/` 为新增输出目录，`runs/web/` 只新增可选 provenance 字段。
 
 ## V3 Scenario 边界
 

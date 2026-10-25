@@ -1,0 +1,31 @@
+# V12 风险登记册
+
+| ID | 风险 | 影响 | 概率 | 状态 | 缓解措施 |
+|---|---|---|---|---|---|
+| R-01 | 未获付费预算批准 | 真实 54 局矩阵无法执行 | 高 | **已发生** | 全部离线完成；标 `LIVE_VALIDATION_PENDING_APPROVAL`；不伪造真实成绩 |
+| R-02 | 模型输出不可复现 | 同 seed 重跑结果不同 | 高 | 已知 | 只保证环境 seed 配对；报告声明"模型输出不可完全复现" |
+| R-03 | 3 seed 样本过小 | 不能做显著性断言 | 确定 | 已知 | `DESCRIPTIVE_ONLY` 判定 + 报告显式声明 |
+| R-04 | Planner/Reflection 额外请求被漏计 | 成本对比失真 | 中 | **已缓解** | 单一网关 + `GatewayStats.purposes`；测试 `test_planning_extra_requests_are_counted` |
+| R-05 | 策略绕过网关直接调 SDK | 预算失控 | 低 | **已缓解** | `AgentPolicy` 拿不到 Provider；`lab/selfcheck.py` 检查 |
+| R-06 | 私有状态穿透到策略 | 实验无效 + 泄漏 | 中 | **已缓解** | `assert_public` 键名扫描 + 30 图执行后泄漏扫描 |
+| R-07 | 父实验与子局状态不一致 | 汇总错误 | 中 | **已缓解** | 父实验每步读磁盘 manifest；`selfcheck.parent_child` 逐子局比对 |
+| R-08 | 重复提交导致双计费 | 费用翻倍 | 中 | **已缓解** | 父幂等键 + 子局幂等键；`test_duplicate_submit_does_not_create_second_run_set` |
+| R-09 | Windows 原子替换瞬间读失败 | 父实验偶发 `ExperimentNotFound` | 中 | **已缓解** | `ExperimentStore._json` 有限重试；测试覆盖 |
+| R-10 | 子局被手工删除 | 父实验汇总缺失 | 低 | 已知 | `records()` 跳过并继续；报告标注未执行 |
+| R-11 | 未知消费后自动重试 | 重复计费 | 低 | **已缓解** | 未知消费立即 `unknown_spend_closed`，不自动重跑 |
+| R-12 | 模拟结果被误当真实成绩 | 结论造假 | 中 | **已缓解** | `mode=simulated` 贯穿 manifest/result/UI/报告；模拟不写付费账本 |
+| R-13 | 演示脚本被当作 Oracle | 误读能力 | 中 | **已缓解** | `lab/demo.py` 文档 + 报告 `DEMO_NOTE`；默认注册表不加载 |
+| R-14 | macOS 未实测 | 跨平台未知 | 确定 | `NOT_VERIFIED` | 文档披露；`.command` 保留 |
+| R-15 | Ollama 实机未跑 | 本地模型路径未验证 | 确定 | `NOT_VERIFIED` | 文档披露 |
+| R-16 | 浏览器 E2E 只在 Windows 本地通过 | CI 可能失败 | 中 | 已缓解 | CI job `continue-on-error: true`，且浏览器启动回退 chromium |
+| R-17 | 可视化把被拒移动画成边 | 误导"已探索" | 中 | **已修复** | 只有位置真正改变才记边；被拒移动单列 `rejected_moves` |
+| R-18 | 第三方插件是任意代码 | 安全边界被误解 | 中 | 已知 | 只支持本机 allowlist；文档明确"不是沙箱" |
+| R-19 | 地图规则被无意修改 | 冻结资产回归 | 低 | **已缓解** | `v10.freeze verify` 进自检与 CI |
+| R-20 | 指标跨版本混算 | 错误排名 | 中 | **已缓解** | `version_profile` 按图比对 hash + schema；不可比即拒绝配对 |
+
+## 状态说明
+
+- **已发生**：R-01（无预算批准）。
+- **已缓解**：有自动化测试或自检覆盖。
+- **已修复**：曾经存在、已修并有测试（R-17）。
+- **已知 / NOT_VERIFIED**：客观未验证，文档披露，不冒充通过。

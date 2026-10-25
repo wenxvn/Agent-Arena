@@ -475,3 +475,21 @@ Spec [0018](../specs/0018-v5-six-map-measurement.md)
 - [x] 结论：`WEB_PREVIEW_READY`（本地单机预览）；不是公网生产就绪。macOS 实机未验证。
 
 详见 `docs/v11/final-report.md`、`docs/v11/release-checklist.md` 与 `docs/v11/safety-and-budget.md`。
+
+### 24. V12 Agent Arena Lab 1.0（多架构实验、批量对照与行为诊断）· done（离线交付，2026-10-25）
+
+按根目录 `研究提纲/V12Agent-Arena_V12_第二阶段完整执行提纲.md` 执行 Batch 0–13。V8/V9/V10 冻结规则、账本与历史 trace 保持只读；V11 单局服务层与网页保留。
+
+- [x] Batch 0：HEAD `258eadc` 审计；发现并修复 V11 遗留的测试排序缺陷（`test_home_shows_per_map_run_history`）。
+- [x] Batch 1–2：ADR（父 Experiment + 子 Run）、`v12-lab-1` 契约、`DecisionGateway`、`AgentRunnerV12`；30/30 图 SIMULATED 完整执行路径。
+- [x] Batch 3：`basic.v1` / `memory.v1` / `planning.v1` + registry + 消融开关；`basic.v1` 与 V11 `execute_live` 在同一 Provider 下逐项一致。
+- [x] Batch 4–5：矩阵/队列/父子状态/实验级预算/幂等/续跑；六类分母、配对比较、三种可比性判定、五种导出。
+- [x] Batch 6–8：`reflection.v1`（公开触发器 + 限额）；18 类证据级诊断 + 轨迹 Diff；六图专属 view-model + 24 图通用回退。
+- [x] Batch 9：三个 Lab 网页页面（配置/监控/结果），浏览器 E2E 走通配置→预检→离线提交→对照→导出。
+- [x] Batch 10：`lab/sdk.py` + `examples/custom_agent/` + allowlist + 只读导入。
+- [x] Batch 11：`scripts/verify_v12.py` 11/11；CI `lab-e2e`；8 张截图；三组 Demo 包；13 项稳健性测试。
+- [x] Batch 13：`docs/v12/` 完整文档、README/architecture/scope 更新。
+- [ ] Batch 12：真实付费 Pilot 与 54 局主矩阵 —— **`PENDING_APPROVAL`**，未发出任何真实请求。
+- [x] 验证：1433 pytest passed、mypy 302 文件 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 11/11。
+
+边界：LAB_1_0_OFFLINE_READY；SIMULATED 成绩不代表模型能力；macOS/Ollama 未实测。详见 `docs/v12/final-report.md`。

@@ -1,0 +1,1789 @@
+{
+ "arms": [
+  {
+   "agent_id": "basic.v1",
+   "agent_version": "1.0.0",
+   "budget_censored": 1,
+   "cancelled": 0,
+   "cost_known_runs": 3,
+   "interrupted": 0,
+   "invalid_actions": 0,
+   "invalid_runs": 0,
+   "mean_cost_cny": 0.0,
+   "mean_decisions": 5.666667,
+   "mean_latency_ms": null,
+   "mean_requests": 5.666667,
+   "mechanism_failures": 2,
+   "metrics": {
+    "MAP-10": {
+     "map10.v10.delivered_ratio": {
+      "denominator": 6.0,
+      "direction": "higher",
+      "mean": 0.0,
+      "metric_id": "map10.v10.delivered_ratio",
+      "not_computed_reason": "",
+      "numerator": 0.0,
+      "pooled_ratio": 0.0,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "ratio",
+      "valid_count": 1
+     },
+     "map10.v10.fuel_left": {
+      "denominator": 0.0,
+      "direction": "higher",
+      "mean": null,
+      "metric_id": "map10.v10.fuel_left",
+      "not_computed_reason": "没有任何 VALID 取值；不补零",
+      "numerator": 0.0,
+      "pooled_ratio": null,
+      "role": "secondary",
+      "states": {
+       "NOT_APPLICABLE": 1
+      },
+      "unit": "fuel",
+      "valid_count": 0
+     },
+     "map10.v10.load_retries": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 0.0,
+      "metric_id": "map10.v10.load_retries",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "diagnostic",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     },
+     "map10.v10.mission_success": {
+      "denominator": null,
+      "direction": "higher",
+      "mean": 0.0,
+      "metric_id": "map10.v10.mission_success",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "primary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "ratio",
+      "valid_count": 1
+     }
+    },
+    "MAP-22": {
+     "map22.v10.goal_recorded": {
+      "denominator": null,
+      "direction": "higher",
+      "mean": 0.0,
+      "metric_id": "map22.v10.goal_recorded",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "ratio",
+      "valid_count": 1
+     },
+     "map22.v10.memory_writes": {
+      "denominator": null,
+      "direction": "none",
+      "mean": 1.0,
+      "metric_id": "map22.v10.memory_writes",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "diagnostic",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     },
+     "map22.v10.mission_success": {
+      "denominator": 0.0,
+      "direction": "higher",
+      "mean": null,
+      "metric_id": "map22.v10.mission_success",
+      "not_computed_reason": "没有任何 VALID 取值；不补零",
+      "numerator": 0.0,
+      "pooled_ratio": null,
+      "role": "primary",
+      "states": {
+       "CENSORED": 1
+      },
+      "unit": "ratio",
+      "valid_count": 0
+     },
+     "map22.v10.route_recall": {
+      "denominator": 0.0,
+      "direction": "higher",
+      "mean": null,
+      "metric_id": "map22.v10.route_recall",
+      "not_computed_reason": "没有任何 VALID 取值；不补零",
+      "numerator": 0.0,
+      "pooled_ratio": null,
+      "role": "secondary",
+      "states": {
+       "NOT_APPLICABLE": 1
+      },
+      "unit": "ratio",
+      "valid_count": 0
+     },
+     "map22.v10.wasted_moves": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 0.0,
+      "metric_id": "map22.v10.wasted_moves",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "guardrail",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     }
+    },
+    "MAP-26": {
+     "map26.v10.diagnosis_precision": {
+      "denominator": null,
+      "direction": "higher",
+      "mean": 0.0,
+      "metric_id": "map26.v10.diagnosis_precision",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "ratio",
+      "valid_count": 1
+     },
+     "map26.v10.mission_success": {
+      "denominator": null,
+      "direction": "higher",
+      "mean": 0.0,
+      "metric_id": "map26.v10.mission_success",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "primary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "ratio",
+      "valid_count": 1
+     },
+     "map26.v10.rollbacks": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 0.0,
+      "metric_id": "map26.v10.rollbacks",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "guardrail",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     },
+     "map26.v10.spares_used": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 3.0,
+      "metric_id": "map26.v10.spares_used",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     },
+     "map26.v10.wrong_swaps": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 2.0,
+      "metric_id": "map26.v10.wrong_swaps",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "guardrail",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     }
+    }
+   },
+   "provider_errors": 0,
+   "rejected_actions": 0,
+   "runs": 3,
+   "success_rate": 0.0,
+   "successes": 0,
+   "valid_denominator": 3
+  },
+  {
+   "agent_id": "memory.v1",
+   "agent_version": "1.0.0",
+   "budget_censored": 2,
+   "cancelled": 0,
+   "cost_known_runs": 3,
+   "interrupted": 0,
+   "invalid_actions": 0,
+   "invalid_runs": 0,
+   "mean_cost_cny": 0.0,
+   "mean_decisions": 8.666667,
+   "mean_latency_ms": null,
+   "mean_requests": 8.666667,
+   "mechanism_failures": 0,
+   "metrics": {
+    "MAP-10": {
+     "map10.v10.delivered_ratio": {
+      "denominator": 6.0,
+      "direction": "higher",
+      "mean": 1.0,
+      "metric_id": "map10.v10.delivered_ratio",
+      "not_computed_reason": "",
+      "numerator": 6.0,
+      "pooled_ratio": 1.0,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "ratio",
+      "valid_count": 1
+     },
+     "map10.v10.fuel_left": {
+      "denominator": null,
+      "direction": "higher",
+      "mean": 1.0,
+      "metric_id": "map10.v10.fuel_left",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "fuel",
+      "valid_count": 1
+     },
+     "map10.v10.load_retries": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 0.0,
+      "metric_id": "map10.v10.load_retries",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "diagnostic",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     },
+     "map10.v10.mission_success": {
+      "denominator": null,
+      "direction": "higher",
+      "mean": 1.0,
+      "metric_id": "map10.v10.mission_success",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "primary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "ratio",
+      "valid_count": 1
+     }
+    },
+    "MAP-22": {
+     "map22.v10.goal_recorded": {
+      "denominator": null,
+      "direction": "higher",
+      "mean": 0.0,
+      "metric_id": "map22.v10.goal_recorded",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "ratio",
+      "valid_count": 1
+     },
+     "map22.v10.memory_writes": {
+      "denominator": null,
+      "direction": "none",
+      "mean": 3.0,
+      "metric_id": "map22.v10.memory_writes",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "diagnostic",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     },
+     "map22.v10.mission_success": {
+      "denominator": 0.0,
+      "direction": "higher",
+      "mean": null,
+      "metric_id": "map22.v10.mission_success",
+      "not_computed_reason": "没有任何 VALID 取值；不补零",
+      "numerator": 0.0,
+      "pooled_ratio": null,
+      "role": "primary",
+      "states": {
+       "CENSORED": 1
+      },
+      "unit": "ratio",
+      "valid_count": 0
+     },
+     "map22.v10.route_recall": {
+      "denominator": 1.0,
+      "direction": "higher",
+      "mean": 1.0,
+      "metric_id": "map22.v10.route_recall",
+      "not_computed_reason": "",
+      "numerator": 1.0,
+      "pooled_ratio": 1.0,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "ratio",
+      "valid_count": 1
+     },
+     "map22.v10.wasted_moves": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 0.0,
+      "metric_id": "map22.v10.wasted_moves",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "guardrail",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     }
+    },
+    "MAP-26": {
+     "map26.v10.diagnosis_precision": {
+      "denominator": null,
+      "direction": "higher",
+      "mean": 0.0,
+      "metric_id": "map26.v10.diagnosis_precision",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "ratio",
+      "valid_count": 1
+     },
+     "map26.v10.mission_success": {
+      "denominator": 0.0,
+      "direction": "higher",
+      "mean": null,
+      "metric_id": "map26.v10.mission_success",
+      "not_computed_reason": "没有任何 VALID 取值；不补零",
+      "numerator": 0.0,
+      "pooled_ratio": null,
+      "role": "primary",
+      "states": {
+       "CENSORED": 1
+      },
+      "unit": "ratio",
+      "valid_count": 0
+     },
+     "map26.v10.rollbacks": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 1.0,
+      "metric_id": "map26.v10.rollbacks",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "guardrail",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     },
+     "map26.v10.spares_used": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 1.0,
+      "metric_id": "map26.v10.spares_used",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     },
+     "map26.v10.wrong_swaps": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 1.0,
+      "metric_id": "map26.v10.wrong_swaps",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "guardrail",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     }
+    }
+   },
+   "provider_errors": 0,
+   "rejected_actions": 4,
+   "runs": 3,
+   "success_rate": 0.333333,
+   "successes": 1,
+   "valid_denominator": 3
+  },
+  {
+   "agent_id": "planning.v1",
+   "agent_version": "1.0.0",
+   "budget_censored": 2,
+   "cancelled": 0,
+   "cost_known_runs": 3,
+   "interrupted": 0,
+   "invalid_actions": 0,
+   "invalid_runs": 0,
+   "mean_cost_cny": 0.0,
+   "mean_decisions": 8.333333,
+   "mean_latency_ms": null,
+   "mean_requests": 10.333333,
+   "mechanism_failures": 1,
+   "metrics": {
+    "MAP-10": {
+     "map10.v10.delivered_ratio": {
+      "denominator": 6.0,
+      "direction": "higher",
+      "mean": 0.0,
+      "metric_id": "map10.v10.delivered_ratio",
+      "not_computed_reason": "",
+      "numerator": 0.0,
+      "pooled_ratio": 0.0,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "ratio",
+      "valid_count": 1
+     },
+     "map10.v10.fuel_left": {
+      "denominator": null,
+      "direction": "higher",
+      "mean": 4.0,
+      "metric_id": "map10.v10.fuel_left",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "fuel",
+      "valid_count": 1
+     },
+     "map10.v10.load_retries": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 0.0,
+      "metric_id": "map10.v10.load_retries",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "diagnostic",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     },
+     "map10.v10.mission_success": {
+      "denominator": null,
+      "direction": "higher",
+      "mean": 0.0,
+      "metric_id": "map10.v10.mission_success",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "primary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "ratio",
+      "valid_count": 1
+     }
+    },
+    "MAP-22": {
+     "map22.v10.goal_recorded": {
+      "denominator": null,
+      "direction": "higher",
+      "mean": 0.0,
+      "metric_id": "map22.v10.goal_recorded",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "ratio",
+      "valid_count": 1
+     },
+     "map22.v10.memory_writes": {
+      "denominator": null,
+      "direction": "none",
+      "mean": 1.0,
+      "metric_id": "map22.v10.memory_writes",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "diagnostic",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     },
+     "map22.v10.mission_success": {
+      "denominator": 0.0,
+      "direction": "higher",
+      "mean": null,
+      "metric_id": "map22.v10.mission_success",
+      "not_computed_reason": "没有任何 VALID 取值；不补零",
+      "numerator": 0.0,
+      "pooled_ratio": null,
+      "role": "primary",
+      "states": {
+       "CENSORED": 1
+      },
+      "unit": "ratio",
+      "valid_count": 0
+     },
+     "map22.v10.route_recall": {
+      "denominator": 0.0,
+      "direction": "higher",
+      "mean": null,
+      "metric_id": "map22.v10.route_recall",
+      "not_computed_reason": "没有任何 VALID 取值；不补零",
+      "numerator": 0.0,
+      "pooled_ratio": null,
+      "role": "secondary",
+      "states": {
+       "NOT_APPLICABLE": 1
+      },
+      "unit": "ratio",
+      "valid_count": 0
+     },
+     "map22.v10.wasted_moves": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 0.0,
+      "metric_id": "map22.v10.wasted_moves",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "guardrail",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     }
+    },
+    "MAP-26": {
+     "map26.v10.diagnosis_precision": {
+      "denominator": null,
+      "direction": "higher",
+      "mean": 0.0,
+      "metric_id": "map26.v10.diagnosis_precision",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "ratio",
+      "valid_count": 1
+     },
+     "map26.v10.mission_success": {
+      "denominator": 0.0,
+      "direction": "higher",
+      "mean": null,
+      "metric_id": "map26.v10.mission_success",
+      "not_computed_reason": "没有任何 VALID 取值；不补零",
+      "numerator": 0.0,
+      "pooled_ratio": null,
+      "role": "primary",
+      "states": {
+       "CENSORED": 1
+      },
+      "unit": "ratio",
+      "valid_count": 0
+     },
+     "map26.v10.rollbacks": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 1.0,
+      "metric_id": "map26.v10.rollbacks",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "guardrail",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     },
+     "map26.v10.spares_used": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 1.0,
+      "metric_id": "map26.v10.spares_used",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "secondary",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     },
+     "map26.v10.wrong_swaps": {
+      "denominator": null,
+      "direction": "lower",
+      "mean": 1.0,
+      "metric_id": "map26.v10.wrong_swaps",
+      "not_computed_reason": "",
+      "numerator": null,
+      "pooled_ratio": null,
+      "role": "guardrail",
+      "states": {
+       "VALID": 1
+      },
+      "unit": "count",
+      "valid_count": 1
+     }
+    }
+   },
+   "provider_errors": 0,
+   "rejected_actions": 7,
+   "runs": 3,
+   "success_rate": 0.0,
+   "successes": 0,
+   "valid_denominator": 3
+  }
+ ],
+ "excluded_runs": [],
+ "experiment_id": "lab-20261025T105431Z-c3d0c415",
+ "experiment_state": "COMPLETED",
+ "generated_at": "2026-10-25T10:54:35+00:00",
+ "mode": "simulated",
+ "notes": [
+  "配对样本为 3（每个配对键一局）；这是描述性对照，不构成显著性结论。"
+ ],
+ "pairs": [
+  {
+   "environment_seed": 0,
+   "left_agent": "basic.v1",
+   "left_category": "mechanism_failure",
+   "left_cost_cny": 0.0,
+   "left_decisions": 2,
+   "left_requests": 2,
+   "left_run_id": "web-20261025T105431Z-a3e1ba0d",
+   "left_success": false,
+   "map_id": "MAP-10",
+   "pairing_key": "MAP-10|seed=0",
+   "reasons": [],
+   "right_agent": "memory.v1",
+   "right_category": "completed_success",
+   "right_cost_cny": 0.0,
+   "right_decisions": 2,
+   "right_requests": 2,
+   "right_run_id": "web-20261025T105431Z-f7ccc9bc",
+   "right_success": true,
+   "verdict": "COMPARABLE"
+  },
+  {
+   "environment_seed": 0,
+   "left_agent": "basic.v1",
+   "left_category": "mechanism_failure",
+   "left_cost_cny": 0.0,
+   "left_decisions": 2,
+   "left_requests": 2,
+   "left_run_id": "web-20261025T105431Z-a3e1ba0d",
+   "left_success": false,
+   "map_id": "MAP-10",
+   "pairing_key": "MAP-10|seed=0",
+   "reasons": [],
+   "right_agent": "planning.v1",
+   "right_category": "mechanism_failure",
+   "right_cost_cny": 0.0,
+   "right_decisions": 1,
+   "right_requests": 2,
+   "right_run_id": "web-20261025T105432Z-8f5de247",
+   "right_success": false,
+   "verdict": "COMPARABLE"
+  },
+  {
+   "environment_seed": 0,
+   "left_agent": "memory.v1",
+   "left_category": "completed_success",
+   "left_cost_cny": 0.0,
+   "left_decisions": 2,
+   "left_requests": 2,
+   "left_run_id": "web-20261025T105431Z-f7ccc9bc",
+   "left_success": true,
+   "map_id": "MAP-10",
+   "pairing_key": "MAP-10|seed=0",
+   "reasons": [],
+   "right_agent": "planning.v1",
+   "right_category": "mechanism_failure",
+   "right_cost_cny": 0.0,
+   "right_decisions": 1,
+   "right_requests": 2,
+   "right_run_id": "web-20261025T105432Z-8f5de247",
+   "right_success": false,
+   "verdict": "COMPARABLE"
+  },
+  {
+   "environment_seed": 0,
+   "left_agent": "basic.v1",
+   "left_category": "budget_censored",
+   "left_cost_cny": 0.0,
+   "left_decisions": 12,
+   "left_requests": 12,
+   "left_run_id": "web-20261025T105432Z-fe5211dc",
+   "left_success": false,
+   "map_id": "MAP-22",
+   "pairing_key": "MAP-22|seed=0",
+   "reasons": [],
+   "right_agent": "memory.v1",
+   "right_category": "budget_censored",
+   "right_cost_cny": 0.0,
+   "right_decisions": 12,
+   "right_requests": 12,
+   "right_run_id": "web-20261025T105432Z-e5e1ecf9",
+   "right_success": false,
+   "verdict": "COMPARABLE"
+  },
+  {
+   "environment_seed": 0,
+   "left_agent": "basic.v1",
+   "left_category": "budget_censored",
+   "left_cost_cny": 0.0,
+   "left_decisions": 12,
+   "left_requests": 12,
+   "left_run_id": "web-20261025T105432Z-fe5211dc",
+   "left_success": false,
+   "map_id": "MAP-22",
+   "pairing_key": "MAP-22|seed=0",
+   "reasons": [],
+   "right_agent": "planning.v1",
+   "right_category": "budget_censored",
+   "right_cost_cny": 0.0,
+   "right_decisions": 12,
+   "right_requests": 14,
+   "right_run_id": "web-20261025T105433Z-676d1b6f",
+   "right_success": false,
+   "verdict": "COMPARABLE"
+  },
+  {
+   "environment_seed": 0,
+   "left_agent": "memory.v1",
+   "left_category": "budget_censored",
+   "left_cost_cny": 0.0,
+   "left_decisions": 12,
+   "left_requests": 12,
+   "left_run_id": "web-20261025T105432Z-e5e1ecf9",
+   "left_success": false,
+   "map_id": "MAP-22",
+   "pairing_key": "MAP-22|seed=0",
+   "reasons": [],
+   "right_agent": "planning.v1",
+   "right_category": "budget_censored",
+   "right_cost_cny": 0.0,
+   "right_decisions": 12,
+   "right_requests": 14,
+   "right_run_id": "web-20261025T105433Z-676d1b6f",
+   "right_success": false,
+   "verdict": "COMPARABLE"
+  },
+  {
+   "environment_seed": 0,
+   "left_agent": "basic.v1",
+   "left_category": "mechanism_failure",
+   "left_cost_cny": 0.0,
+   "left_decisions": 3,
+   "left_requests": 3,
+   "left_run_id": "web-20261025T105434Z-cf695891",
+   "left_success": false,
+   "map_id": "MAP-26",
+   "pairing_key": "MAP-26|seed=0",
+   "reasons": [],
+   "right_agent": "memory.v1",
+   "right_category": "budget_censored",
+   "right_cost_cny": 0.0,
+   "right_decisions": 12,
+   "right_requests": 12,
+   "right_run_id": "web-20261025T105434Z-9e30c7c4",
+   "right_success": false,
+   "verdict": "COMPARABLE"
+  },
+  {
+   "environment_seed": 0,
+   "left_agent": "basic.v1",
+   "left_category": "mechanism_failure",
+   "left_cost_cny": 0.0,
+   "left_decisions": 3,
+   "left_requests": 3,
+   "left_run_id": "web-20261025T105434Z-cf695891",
+   "left_success": false,
+   "map_id": "MAP-26",
+   "pairing_key": "MAP-26|seed=0",
+   "reasons": [],
+   "right_agent": "planning.v1",
+   "right_category": "budget_censored",
+   "right_cost_cny": 0.0,
+   "right_decisions": 12,
+   "right_requests": 15,
+   "right_run_id": "web-20261025T105434Z-3ada7639",
+   "right_success": false,
+   "verdict": "COMPARABLE"
+  },
+  {
+   "environment_seed": 0,
+   "left_agent": "memory.v1",
+   "left_category": "budget_censored",
+   "left_cost_cny": 0.0,
+   "left_decisions": 12,
+   "left_requests": 12,
+   "left_run_id": "web-20261025T105434Z-9e30c7c4",
+   "left_success": false,
+   "map_id": "MAP-26",
+   "pairing_key": "MAP-26|seed=0",
+   "reasons": [],
+   "right_agent": "planning.v1",
+   "right_category": "budget_censored",
+   "right_cost_cny": 0.0,
+   "right_decisions": 12,
+   "right_requests": 15,
+   "right_run_id": "web-20261025T105434Z-3ada7639",
+   "right_success": false,
+   "verdict": "COMPARABLE"
+  }
+ ],
+ "per_map": [
+  {
+   "arms": [
+    {
+     "agent_id": "basic.v1",
+     "agent_version": "1.0.0",
+     "budget_censored": 0,
+     "cancelled": 0,
+     "cost_known_runs": 1,
+     "interrupted": 0,
+     "invalid_actions": 0,
+     "invalid_runs": 0,
+     "mean_cost_cny": 0.0,
+     "mean_decisions": 2.0,
+     "mean_latency_ms": null,
+     "mean_requests": 2.0,
+     "mechanism_failures": 1,
+     "metrics": {
+      "map10.v10.delivered_ratio": {
+       "denominator": 6.0,
+       "direction": "higher",
+       "mean": 0.0,
+       "metric_id": "map10.v10.delivered_ratio",
+       "not_computed_reason": "",
+       "numerator": 0.0,
+       "pooled_ratio": 0.0,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "ratio",
+       "valid_count": 1
+      },
+      "map10.v10.fuel_left": {
+       "denominator": 0.0,
+       "direction": "higher",
+       "mean": null,
+       "metric_id": "map10.v10.fuel_left",
+       "not_computed_reason": "没有任何 VALID 取值；不补零",
+       "numerator": 0.0,
+       "pooled_ratio": null,
+       "role": "secondary",
+       "states": {
+        "NOT_APPLICABLE": 1
+       },
+       "unit": "fuel",
+       "valid_count": 0
+      },
+      "map10.v10.load_retries": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 0.0,
+       "metric_id": "map10.v10.load_retries",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "diagnostic",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      },
+      "map10.v10.mission_success": {
+       "denominator": null,
+       "direction": "higher",
+       "mean": 0.0,
+       "metric_id": "map10.v10.mission_success",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "primary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "ratio",
+       "valid_count": 1
+      }
+     },
+     "provider_errors": 0,
+     "rejected_actions": 0,
+     "runs": 1,
+     "success_rate": 0.0,
+     "successes": 0,
+     "valid_denominator": 1
+    },
+    {
+     "agent_id": "memory.v1",
+     "agent_version": "1.0.0",
+     "budget_censored": 0,
+     "cancelled": 0,
+     "cost_known_runs": 1,
+     "interrupted": 0,
+     "invalid_actions": 0,
+     "invalid_runs": 0,
+     "mean_cost_cny": 0.0,
+     "mean_decisions": 2.0,
+     "mean_latency_ms": null,
+     "mean_requests": 2.0,
+     "mechanism_failures": 0,
+     "metrics": {
+      "map10.v10.delivered_ratio": {
+       "denominator": 6.0,
+       "direction": "higher",
+       "mean": 1.0,
+       "metric_id": "map10.v10.delivered_ratio",
+       "not_computed_reason": "",
+       "numerator": 6.0,
+       "pooled_ratio": 1.0,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "ratio",
+       "valid_count": 1
+      },
+      "map10.v10.fuel_left": {
+       "denominator": null,
+       "direction": "higher",
+       "mean": 1.0,
+       "metric_id": "map10.v10.fuel_left",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "fuel",
+       "valid_count": 1
+      },
+      "map10.v10.load_retries": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 0.0,
+       "metric_id": "map10.v10.load_retries",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "diagnostic",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      },
+      "map10.v10.mission_success": {
+       "denominator": null,
+       "direction": "higher",
+       "mean": 1.0,
+       "metric_id": "map10.v10.mission_success",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "primary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "ratio",
+       "valid_count": 1
+      }
+     },
+     "provider_errors": 0,
+     "rejected_actions": 0,
+     "runs": 1,
+     "success_rate": 1.0,
+     "successes": 1,
+     "valid_denominator": 1
+    },
+    {
+     "agent_id": "planning.v1",
+     "agent_version": "1.0.0",
+     "budget_censored": 0,
+     "cancelled": 0,
+     "cost_known_runs": 1,
+     "interrupted": 0,
+     "invalid_actions": 0,
+     "invalid_runs": 0,
+     "mean_cost_cny": 0.0,
+     "mean_decisions": 1.0,
+     "mean_latency_ms": null,
+     "mean_requests": 2.0,
+     "mechanism_failures": 1,
+     "metrics": {
+      "map10.v10.delivered_ratio": {
+       "denominator": 6.0,
+       "direction": "higher",
+       "mean": 0.0,
+       "metric_id": "map10.v10.delivered_ratio",
+       "not_computed_reason": "",
+       "numerator": 0.0,
+       "pooled_ratio": 0.0,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "ratio",
+       "valid_count": 1
+      },
+      "map10.v10.fuel_left": {
+       "denominator": null,
+       "direction": "higher",
+       "mean": 4.0,
+       "metric_id": "map10.v10.fuel_left",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "fuel",
+       "valid_count": 1
+      },
+      "map10.v10.load_retries": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 0.0,
+       "metric_id": "map10.v10.load_retries",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "diagnostic",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      },
+      "map10.v10.mission_success": {
+       "denominator": null,
+       "direction": "higher",
+       "mean": 0.0,
+       "metric_id": "map10.v10.mission_success",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "primary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "ratio",
+       "valid_count": 1
+      }
+     },
+     "provider_errors": 0,
+     "rejected_actions": 0,
+     "runs": 1,
+     "success_rate": 0.0,
+     "successes": 0,
+     "valid_denominator": 1
+    }
+   ],
+   "map_id": "MAP-10",
+   "pairs": 3,
+   "seeds": [
+    0
+   ]
+  },
+  {
+   "arms": [
+    {
+     "agent_id": "basic.v1",
+     "agent_version": "1.0.0",
+     "budget_censored": 1,
+     "cancelled": 0,
+     "cost_known_runs": 1,
+     "interrupted": 0,
+     "invalid_actions": 0,
+     "invalid_runs": 0,
+     "mean_cost_cny": 0.0,
+     "mean_decisions": 12.0,
+     "mean_latency_ms": null,
+     "mean_requests": 12.0,
+     "mechanism_failures": 0,
+     "metrics": {
+      "map22.v10.goal_recorded": {
+       "denominator": null,
+       "direction": "higher",
+       "mean": 0.0,
+       "metric_id": "map22.v10.goal_recorded",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "ratio",
+       "valid_count": 1
+      },
+      "map22.v10.memory_writes": {
+       "denominator": null,
+       "direction": "none",
+       "mean": 1.0,
+       "metric_id": "map22.v10.memory_writes",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "diagnostic",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      },
+      "map22.v10.mission_success": {
+       "denominator": 0.0,
+       "direction": "higher",
+       "mean": null,
+       "metric_id": "map22.v10.mission_success",
+       "not_computed_reason": "没有任何 VALID 取值；不补零",
+       "numerator": 0.0,
+       "pooled_ratio": null,
+       "role": "primary",
+       "states": {
+        "CENSORED": 1
+       },
+       "unit": "ratio",
+       "valid_count": 0
+      },
+      "map22.v10.route_recall": {
+       "denominator": 0.0,
+       "direction": "higher",
+       "mean": null,
+       "metric_id": "map22.v10.route_recall",
+       "not_computed_reason": "没有任何 VALID 取值；不补零",
+       "numerator": 0.0,
+       "pooled_ratio": null,
+       "role": "secondary",
+       "states": {
+        "NOT_APPLICABLE": 1
+       },
+       "unit": "ratio",
+       "valid_count": 0
+      },
+      "map22.v10.wasted_moves": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 0.0,
+       "metric_id": "map22.v10.wasted_moves",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "guardrail",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      }
+     },
+     "provider_errors": 0,
+     "rejected_actions": 0,
+     "runs": 1,
+     "success_rate": 0.0,
+     "successes": 0,
+     "valid_denominator": 1
+    },
+    {
+     "agent_id": "memory.v1",
+     "agent_version": "1.0.0",
+     "budget_censored": 1,
+     "cancelled": 0,
+     "cost_known_runs": 1,
+     "interrupted": 0,
+     "invalid_actions": 0,
+     "invalid_runs": 0,
+     "mean_cost_cny": 0.0,
+     "mean_decisions": 12.0,
+     "mean_latency_ms": null,
+     "mean_requests": 12.0,
+     "mechanism_failures": 0,
+     "metrics": {
+      "map22.v10.goal_recorded": {
+       "denominator": null,
+       "direction": "higher",
+       "mean": 0.0,
+       "metric_id": "map22.v10.goal_recorded",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "ratio",
+       "valid_count": 1
+      },
+      "map22.v10.memory_writes": {
+       "denominator": null,
+       "direction": "none",
+       "mean": 3.0,
+       "metric_id": "map22.v10.memory_writes",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "diagnostic",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      },
+      "map22.v10.mission_success": {
+       "denominator": 0.0,
+       "direction": "higher",
+       "mean": null,
+       "metric_id": "map22.v10.mission_success",
+       "not_computed_reason": "没有任何 VALID 取值；不补零",
+       "numerator": 0.0,
+       "pooled_ratio": null,
+       "role": "primary",
+       "states": {
+        "CENSORED": 1
+       },
+       "unit": "ratio",
+       "valid_count": 0
+      },
+      "map22.v10.route_recall": {
+       "denominator": 1.0,
+       "direction": "higher",
+       "mean": 1.0,
+       "metric_id": "map22.v10.route_recall",
+       "not_computed_reason": "",
+       "numerator": 1.0,
+       "pooled_ratio": 1.0,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "ratio",
+       "valid_count": 1
+      },
+      "map22.v10.wasted_moves": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 0.0,
+       "metric_id": "map22.v10.wasted_moves",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "guardrail",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      }
+     },
+     "provider_errors": 0,
+     "rejected_actions": 0,
+     "runs": 1,
+     "success_rate": 0.0,
+     "successes": 0,
+     "valid_denominator": 1
+    },
+    {
+     "agent_id": "planning.v1",
+     "agent_version": "1.0.0",
+     "budget_censored": 1,
+     "cancelled": 0,
+     "cost_known_runs": 1,
+     "interrupted": 0,
+     "invalid_actions": 0,
+     "invalid_runs": 0,
+     "mean_cost_cny": 0.0,
+     "mean_decisions": 12.0,
+     "mean_latency_ms": null,
+     "mean_requests": 14.0,
+     "mechanism_failures": 0,
+     "metrics": {
+      "map22.v10.goal_recorded": {
+       "denominator": null,
+       "direction": "higher",
+       "mean": 0.0,
+       "metric_id": "map22.v10.goal_recorded",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "ratio",
+       "valid_count": 1
+      },
+      "map22.v10.memory_writes": {
+       "denominator": null,
+       "direction": "none",
+       "mean": 1.0,
+       "metric_id": "map22.v10.memory_writes",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "diagnostic",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      },
+      "map22.v10.mission_success": {
+       "denominator": 0.0,
+       "direction": "higher",
+       "mean": null,
+       "metric_id": "map22.v10.mission_success",
+       "not_computed_reason": "没有任何 VALID 取值；不补零",
+       "numerator": 0.0,
+       "pooled_ratio": null,
+       "role": "primary",
+       "states": {
+        "CENSORED": 1
+       },
+       "unit": "ratio",
+       "valid_count": 0
+      },
+      "map22.v10.route_recall": {
+       "denominator": 0.0,
+       "direction": "higher",
+       "mean": null,
+       "metric_id": "map22.v10.route_recall",
+       "not_computed_reason": "没有任何 VALID 取值；不补零",
+       "numerator": 0.0,
+       "pooled_ratio": null,
+       "role": "secondary",
+       "states": {
+        "NOT_APPLICABLE": 1
+       },
+       "unit": "ratio",
+       "valid_count": 0
+      },
+      "map22.v10.wasted_moves": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 0.0,
+       "metric_id": "map22.v10.wasted_moves",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "guardrail",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      }
+     },
+     "provider_errors": 0,
+     "rejected_actions": 0,
+     "runs": 1,
+     "success_rate": 0.0,
+     "successes": 0,
+     "valid_denominator": 1
+    }
+   ],
+   "map_id": "MAP-22",
+   "pairs": 3,
+   "seeds": [
+    0
+   ]
+  },
+  {
+   "arms": [
+    {
+     "agent_id": "basic.v1",
+     "agent_version": "1.0.0",
+     "budget_censored": 0,
+     "cancelled": 0,
+     "cost_known_runs": 1,
+     "interrupted": 0,
+     "invalid_actions": 0,
+     "invalid_runs": 0,
+     "mean_cost_cny": 0.0,
+     "mean_decisions": 3.0,
+     "mean_latency_ms": null,
+     "mean_requests": 3.0,
+     "mechanism_failures": 1,
+     "metrics": {
+      "map26.v10.diagnosis_precision": {
+       "denominator": null,
+       "direction": "higher",
+       "mean": 0.0,
+       "metric_id": "map26.v10.diagnosis_precision",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "ratio",
+       "valid_count": 1
+      },
+      "map26.v10.mission_success": {
+       "denominator": null,
+       "direction": "higher",
+       "mean": 0.0,
+       "metric_id": "map26.v10.mission_success",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "primary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "ratio",
+       "valid_count": 1
+      },
+      "map26.v10.rollbacks": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 0.0,
+       "metric_id": "map26.v10.rollbacks",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "guardrail",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      },
+      "map26.v10.spares_used": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 3.0,
+       "metric_id": "map26.v10.spares_used",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      },
+      "map26.v10.wrong_swaps": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 2.0,
+       "metric_id": "map26.v10.wrong_swaps",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "guardrail",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      }
+     },
+     "provider_errors": 0,
+     "rejected_actions": 0,
+     "runs": 1,
+     "success_rate": 0.0,
+     "successes": 0,
+     "valid_denominator": 1
+    },
+    {
+     "agent_id": "memory.v1",
+     "agent_version": "1.0.0",
+     "budget_censored": 1,
+     "cancelled": 0,
+     "cost_known_runs": 1,
+     "interrupted": 0,
+     "invalid_actions": 0,
+     "invalid_runs": 0,
+     "mean_cost_cny": 0.0,
+     "mean_decisions": 12.0,
+     "mean_latency_ms": null,
+     "mean_requests": 12.0,
+     "mechanism_failures": 0,
+     "metrics": {
+      "map26.v10.diagnosis_precision": {
+       "denominator": null,
+       "direction": "higher",
+       "mean": 0.0,
+       "metric_id": "map26.v10.diagnosis_precision",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "ratio",
+       "valid_count": 1
+      },
+      "map26.v10.mission_success": {
+       "denominator": 0.0,
+       "direction": "higher",
+       "mean": null,
+       "metric_id": "map26.v10.mission_success",
+       "not_computed_reason": "没有任何 VALID 取值；不补零",
+       "numerator": 0.0,
+       "pooled_ratio": null,
+       "role": "primary",
+       "states": {
+        "CENSORED": 1
+       },
+       "unit": "ratio",
+       "valid_count": 0
+      },
+      "map26.v10.rollbacks": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 1.0,
+       "metric_id": "map26.v10.rollbacks",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "guardrail",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      },
+      "map26.v10.spares_used": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 1.0,
+       "metric_id": "map26.v10.spares_used",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      },
+      "map26.v10.wrong_swaps": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 1.0,
+       "metric_id": "map26.v10.wrong_swaps",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "guardrail",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      }
+     },
+     "provider_errors": 0,
+     "rejected_actions": 4,
+     "runs": 1,
+     "success_rate": 0.0,
+     "successes": 0,
+     "valid_denominator": 1
+    },
+    {
+     "agent_id": "planning.v1",
+     "agent_version": "1.0.0",
+     "budget_censored": 1,
+     "cancelled": 0,
+     "cost_known_runs": 1,
+     "interrupted": 0,
+     "invalid_actions": 0,
+     "invalid_runs": 0,
+     "mean_cost_cny": 0.0,
+     "mean_decisions": 12.0,
+     "mean_latency_ms": null,
+     "mean_requests": 15.0,
+     "mechanism_failures": 0,
+     "metrics": {
+      "map26.v10.diagnosis_precision": {
+       "denominator": null,
+       "direction": "higher",
+       "mean": 0.0,
+       "metric_id": "map26.v10.diagnosis_precision",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "ratio",
+       "valid_count": 1
+      },
+      "map26.v10.mission_success": {
+       "denominator": 0.0,
+       "direction": "higher",
+       "mean": null,
+       "metric_id": "map26.v10.mission_success",
+       "not_computed_reason": "没有任何 VALID 取值；不补零",
+       "numerator": 0.0,
+       "pooled_ratio": null,
+       "role": "primary",
+       "states": {
+        "CENSORED": 1
+       },
+       "unit": "ratio",
+       "valid_count": 0
+      },
+      "map26.v10.rollbacks": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 1.0,
+       "metric_id": "map26.v10.rollbacks",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "guardrail",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      },
+      "map26.v10.spares_used": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 1.0,
+       "metric_id": "map26.v10.spares_used",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "secondary",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      },
+      "map26.v10.wrong_swaps": {
+       "denominator": null,
+       "direction": "lower",
+       "mean": 1.0,
+       "metric_id": "map26.v10.wrong_swaps",
+       "not_computed_reason": "",
+       "numerator": null,
+       "pooled_ratio": null,
+       "role": "guardrail",
+       "states": {
+        "VALID": 1
+       },
+       "unit": "count",
+       "valid_count": 1
+      }
+     },
+     "provider_errors": 0,
+     "rejected_actions": 7,
+     "runs": 1,
+     "success_rate": 0.0,
+     "successes": 0,
+     "valid_denominator": 1
+    }
+   ],
+   "map_id": "MAP-26",
+   "pairs": 3,
+   "seeds": [
+    0
+   ]
+  }
+ ],
+ "reasons": [],
+ "schema_version": "v12-lab-1",
+ "verdict": "COMPARABLE"
+}

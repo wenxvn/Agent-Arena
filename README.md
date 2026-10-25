@@ -4,6 +4,28 @@ Agent Arena 是一个用于学习、运行和比较 LLM Agent 行为的本地实
 
 ![地图大厅](docs/v11/screenshots/01-home.png)
 
+## V12：Agent Arena Lab 1.0（多架构对照）
+
+同一模型、同一地图、同一 seed、同一预算，比较 **Basic / Memory / Planning** 三种
+Agent 架构的行为、成功率、成本与失败原因。
+
+```bash
+uv run python scripts/demo_v12.py          # 零 API Key、零费用的完整演示
+uv run python scripts/verify_v12.py        # 一键离线验收（11 项）
+```
+
+网页入口：`uv run agent-arena web` → 侧边栏 **Lab · 实验配置 / 实验监控 / 结果与对照**。
+
+![Lab 结果](docs/v12/screenshots/04-lab-results.png)
+
+- 预检**不发任何请求**；真实付费实验必须显式批准（`LiveApproval`），未批准只做预检。
+- 子局仍是 V11 的 `runs/web/<run_id>/`，父实验写 `runs/lab/<experiment_id>/`。
+- 诊断每条结论都指向具体 `decision` 事件；指标五态不补零、不跨版本求均值。
+- `SIMULATED` 结果明确标注"不是模型"，绝不混入真实成绩。
+
+详见 [V12 最终报告](docs/v12/final-report.md)、[实验协议](docs/v12/experiment-protocol.md)、
+[指标与归因](docs/v12/metrics-and-attribution.md)、[第三方接入](docs/v12/adapter-api.md)。
+
 ## 快速开始（本地网页）
 
 需要 Python 3.13、[uv](https://docs.astral.sh/uv/) 和 Git。
@@ -88,6 +110,7 @@ OPENAI_MODEL=mimo-v2.6-flash
 - **历史与对照**：按地图/状态/模式/日期/模型筛选；仅同规则/指标版本允许直接对照；本地同模型成绩榜。
 - **导出**：回放 JSON、摘要 JSON、逐动作 CSV（UTF-8 BOM）。
 - **研究回放（只读）**：保留旧的单局回放、矩阵总览、错误热点、条件对照。
+- **Lab 实验配置 / 监控 / 结果（V12）**：多地图 × 多架构 × 多 seed 矩阵，预检零请求、显式费用确认、父子状态、配对对照、五态指标、六图可视化、证据级诊断、Markdown/CSV/JSON 导出。
 
 更多：[快速开始](docs/v11/quickstart.md)、[用户指南](docs/v11/user-guide.md)、[配置](docs/v11/configuration.md)、[网页页面](docs/v11/ui-pages.md)、[安全与预算](docs/v11/safety-and-budget.md)。
 
@@ -105,8 +128,10 @@ uv run agent-arena verify-model --provider ollama
 ## 数据位置
 
 - 网页运行：`runs/web/<run_id>/`（`manifest.json`、`events.jsonl`、`result.json`）
+- V12 父实验：`runs/lab/<experiment_id>/`（`experiment.json`、`manifest.json`、`events.jsonl`、`summary.json`、`comparison.json`、`report.md`、`exports/`）
 - V11 账本：`runs/web/_ledger/web_ledger.jsonl`
-- 自检报告：`runs/v11/selfcheck.json`
+- 自检报告：`runs/v11/selfcheck.json`、`runs/v12/selfcheck.json`
+- 演示数据包（可提交）：`docs/v12/demo/`、`docs/v12/screenshots/`
 - 历史研究：`runs/v8/`、`runs/v9/`、`runs/v10/`（只读，不清理）
 - `runs/`、`results/`、`logs/`、`.env` 均不入库
 
@@ -121,16 +146,19 @@ git diff --check
 uv run python -m agent_arena.v10.freeze verify
 uv run python -m agent_arena.v10.recompute --check
 uv run python -m agent_arena.v10.independent_check --check
+uv run python scripts/verify_v11.py
+uv run python scripts/verify_v12.py
 ```
 
-当前 V11 结果：1240 pytest passed、mypy 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations。详见 [测试报告](docs/v11/test-report.md)。
+当前 V12 结果：**1433 pytest passed**、mypy 302 文件 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 11/11。详见 [V12 验证报告](docs/v12/validation-report.md)。
 
 ## 研究背景（简版）
 
 - V10 已完成 30 张原生运行时、154+172 指标、多 seed 基线与 8 项 Gate；30/30 `VALIDATED`（“测得住”，不等于模型能通关）。
 - V10 真实 MiMo：152 局有效，成功 57/152；结算 ¥2.27994884 + 未知预留 ¥0.13312000。
 - V11 真实 MiMo 冒烟：3 局（MAP-01/19/30），58 次已记录请求，结算 ¥0.04637556，未知预留 ¥0.073728；0 成功为环境规则/预算终局，未修改规则凑成功。
-- 完整实验历史见 [开发进度](docs/scope/scope.md)、[工程记录](docs/engineering-log.md) 与 `docs/v8`–`docs/v10`。
+- V12 完成多架构实验层（父实验 + 子局、三种架构 + 反思、六图诊断与可视化、第三方 SDK）；真实 54 局矩阵为 `PENDING_APPROVAL`，未发出任何真实请求。
+- 完整实验历史见 [开发进度](docs/scope/scope.md)、[工程记录](docs/engineering-log.md) 与 `docs/v8`–`docs/v12`。
 
 ## 边界
 
@@ -142,6 +170,11 @@ uv run python -m agent_arena.v10.independent_check --check
 
 ## 文档入口
 
+- [V12 最终报告](docs/v12/final-report.md)
+- [V12 实验协议](docs/v12/experiment-protocol.md)
+- [V12 指标与归因](docs/v12/metrics-and-attribution.md)
+- [V12 第三方接入 API](docs/v12/adapter-api.md)
+- [V12 验证报告](docs/v12/validation-report.md)
 - [V11 快速开始](docs/v11/quickstart.md)
 - [V11 用户指南](docs/v11/user-guide.md)
 - [V11 最终报告](docs/v11/final-report.md)
