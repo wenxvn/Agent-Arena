@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import sys
 import tempfile
@@ -46,9 +47,16 @@ STABLE_TIMESTAMP = "2026-01-01T00:00:00+00:00"
 #: 这些键带运行时间，归一化后才能让演示包可重复生成。
 TIME_KEYS = frozenset({"generated_at", "created_at", "updated_at", "started_at", "finished_at"})
 
+#: 运行 ID 的形态：`lab-20260101T000000Z-abcdef12` / `web-20260101T000000Z-abcdef12`。
+_RUN_ID_PATTERN = re.compile(r"\b(lab|web)-\d{8}T\d{6}Z-[0-9a-z]{8}\b")
+
 
 class _StableIds:
-    """把真实 experiment_id / run_id 映射成稳定占位符（保持一一对应）。"""
+    """把真实 experiment_id / run_id 映射成稳定占位符（保持一一对应）。
+
+    报告是 Markdown 字符串，ID 嵌在正文里，因此字符串分支必须做模式替换，
+    而不是只判断整串前缀。
+    """
 
     def __init__(self) -> None:
         self._run_ids: dict[str, str] = {}
@@ -67,15 +75,18 @@ class _StableIds:
         if isinstance(payload, list):
             return [self.convert(item) for item in payload]
         if isinstance(payload, str):
-            if payload.startswith("lab-") and len(payload) == 29:
-                return STABLE_EXPERIMENT_ID
-            if payload.startswith("web-") and len(payload) == 29:
-                if payload not in self._run_ids:
-                    index = len(self._run_ids) + 1
-                    self._run_ids[payload] = f"{STABLE_RUN_PREFIX}{index:04d}"
-                return self._run_ids[payload]
-            return payload
+            return _RUN_ID_PATTERN.sub(self._replace, payload)
         return payload
+
+    def _replace(self, match: re.Match[str]) -> str:
+        kind, _stamp, _suffix = match.group(0).split("-")
+        if kind == "lab":
+            return STABLE_EXPERIMENT_ID
+        original = match.group(0)
+        if original not in self._run_ids:
+            index = len(self._run_ids) + 1
+            self._run_ids[original] = f"{STABLE_RUN_PREFIX}{index:04d}"
+        return self._run_ids[original]
 
 
 def _write(path: Path, payload: Any) -> None:

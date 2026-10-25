@@ -1,6 +1,6 @@
 # 实验报告：demo-three-architectures
 
-- `experiment_id`：`lab-20261025T110922Z-0a441ce6`
+- `experiment_id`：`lab-20260101T000000Z-demo0001`
 - 状态：`COMPLETED`
 - 执行通道：**SIMULATED（离线模拟，不是模型）**：结论只说明调用链、预算与诊断链路可用，不代表任何真实模型能力。
 - 模型 / Provider：`simulated-agent-policy` / `simulated_scripted`
@@ -102,14 +102,14 @@
 ## 6. 代表性轨迹与证据
 
 - 共 27 条诊断（critical 0 / warning 21）。
-- `MAP-10` / `web-20261025T110922Z-5fddb493` · `key_action_used_no_trigger`：机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。（证据：step-1；建议核查：检查机制阈值与顺序，而不是只看是否调用了工具。）
-- `MAP-10` / `web-20261025T110923Z-d90d9c23` · `key_action_never_attempted`：核心机制动作 ['load', 'unload'] 一次都没有调用。（证据：无单步证据；建议核查：先确认模型是否读懂了公开目标与动作契约。）
-- `MAP-22` / `web-20261025T110923Z-385831c5` · `no_progress_window`：连续 8 步公开进度没有变化。（证据：step-5, step-6, step-7, step-8, step-9, step-10, step-11, step-12；建议核查：检查是否在等待错误的前置条件或陷入无效探索。）
-- `MAP-22` / `web-20261025T110923Z-385831c5` · `key_action_used_no_trigger`：机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。（证据：step-10；建议核查：检查机制阈值与顺序，而不是只看是否调用了工具。）
-- `MAP-22` / `web-20261025T110923Z-385831c5` · `memory_not_used`：写过记忆，但没有记录方位（bearing/path_state），无法用于返程。（证据：step-10；建议核查：记忆内容应包含走过的方位序列。）
-- `MAP-22` / `web-20261025T110923Z-53e84445` · `no_progress_window`：连续 10 步公开进度没有变化。（证据：step-3, step-4, step-5, step-6, step-7, step-8, step-9, step-10, step-11, step-12；建议核查：检查是否在等待错误的前置条件或陷入无效探索。）
-- `MAP-22` / `web-20261025T110924Z-fcbef483` · `no_progress_window`：连续 9 步公开进度没有变化。（证据：step-4, step-5, step-6, step-7, step-8, step-9, step-10, step-11, step-12；建议核查：检查是否在等待错误的前置条件或陷入无效探索。）
-- `MAP-22` / `web-20261025T110924Z-fcbef483` · `key_action_used_no_trigger`：机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。（证据：step-9；建议核查：检查机制阈值与顺序，而不是只看是否调用了工具。）
+- `MAP-10` / `web-20260101T000000Z-demo0001` · `key_action_used_no_trigger`：机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。（证据：step-1；建议核查：检查机制阈值与顺序，而不是只看是否调用了工具。）
+- `MAP-10` / `web-20260101T000000Z-demo0003` · `key_action_never_attempted`：核心机制动作 ['load', 'unload'] 一次都没有调用。（证据：无单步证据；建议核查：先确认模型是否读懂了公开目标与动作契约。）
+- `MAP-22` / `web-20260101T000000Z-demo0004` · `no_progress_window`：连续 8 步公开进度没有变化。（证据：step-5, step-6, step-7, step-8, step-9, step-10, step-11, step-12；建议核查：检查是否在等待错误的前置条件或陷入无效探索。）
+- `MAP-22` / `web-20260101T000000Z-demo0004` · `key_action_used_no_trigger`：机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。（证据：step-10；建议核查：检查机制阈值与顺序，而不是只看是否调用了工具。）
+- `MAP-22` / `web-20260101T000000Z-demo0004` · `memory_not_used`：写过记忆，但没有记录方位（bearing/path_state），无法用于返程。（证据：step-10；建议核查：记忆内容应包含走过的方位序列。）
+- `MAP-22` / `web-20260101T000000Z-demo0005` · `no_progress_window`：连续 10 步公开进度没有变化。（证据：step-3, step-4, step-5, step-6, step-7, step-8, step-9, step-10, step-11, step-12；建议核查：检查是否在等待错误的前置条件或陷入无效探索。）
+- `MAP-22` / `web-20260101T000000Z-demo0006` · `no_progress_window`：连续 9 步公开进度没有变化。（证据：step-4, step-5, step-6, step-7, step-8, step-9, step-10, step-11, step-12；建议核查：检查是否在等待错误的前置条件或陷入无效探索。）
+- `MAP-22` / `web-20260101T000000Z-demo0006` · `key_action_used_no_trigger`：机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。（证据：step-9；建议核查：检查机制阈值与顺序，而不是只看是否调用了工具。）
 
 ## 7. 六图可视化可用性
 
@@ -138,4 +138,4 @@ uv run python scripts/demo_v12.py
 uv run python scripts/verify_v12.py
 ```
 
-实验目录：`runs/lab/lab-20261025T110922Z-0a441ce6/`；子局仍在 `runs/web/<run_id>/`（V11 结构）。
+实验目录：`runs/lab/lab-20260101T000000Z-demo0001/`；子局仍在 `runs/web/<run_id>/`（V11 结构）。
