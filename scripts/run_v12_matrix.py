@@ -82,6 +82,48 @@ def _spec_from_args(args: argparse.Namespace) -> ExperimentSpec:
     )
 
 
+def _supplement(args: argparse.Namespace) -> int:
+    """补充实验：列出候选 / 新建并提交（原始实验不动）。"""
+
+    runs = RunService(WEB_RUNS, recover=False)
+    service = ExperimentService(LAB_RUNS, run_service=runs, recover=False)
+    try:
+        plan = service.supplement_candidates(args.supplement_of)
+        print(json.dumps(plan, ensure_ascii=False, indent=1))
+        if args.list_candidates or not args.submit:
+            if plan["count"] == 0:
+                print("没有需要补充的子局。")
+            else:
+                print(f"候选 {plan['count']} 局；加 --submit 才会创建并提交补充实验。")
+            return 0
+        experiment_id = service.create_supplement(
+            args.supplement_of,
+            reason=args.notes,
+            conditions=args.conditions,
+        )
+        service.submit(experiment_id)
+        manifest = service.wait(experiment_id, timeout=args.timeout)
+        summary = service.summary(experiment_id)
+        print(
+            json.dumps(
+                {
+                    "supplement_experiment_id": experiment_id,
+                    "source_experiment_id": args.supplement_of,
+                    "state": manifest.state.value,
+                    "counts": manifest.counts,
+                    "budget": manifest.budget,
+                    "executed": summary["executed"],
+                    "valid_denominator": summary["valid_denominator"],
+                },
+                ensure_ascii=False,
+                indent=1,
+            )
+        )
+        return 0 if manifest.state.value in {"COMPLETED", "PARTIAL"} else 1
+    finally:
+        runs.shutdown()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--spec", type=Path, default=None)
@@ -101,10 +143,31 @@ def main() -> int:
     parser.add_argument("--experiment-cost", type=float, default=10.0)
     parser.add_argument("--approval-cap", type=float, default=5.0)
     parser.add_argument("--i-have-budget-approval", action="store_true")
+    parser.add_argument(
+        "--supplement-of",
+        default=None,
+        help="从该实验新建补充实验（只重跑中断/Provider 错误/未知消费/未执行子局）",
+    )
+    parser.add_argument(
+        "--conditions",
+        nargs="+",
+        default=None,
+        help="补充实验只跑这些 condition_key（默认全部候选）",
+    )
+    parser.add_argument(
+        "--list-candidates",
+        action="store_true",
+        help="只列出需要补充的子局，不创建实验",
+    )
     parser.add_argument("--submit", action="store_true")
     parser.add_argument("--idempotency-key", default=None)
     parser.add_argument("--timeout", type=float, default=1_800.0)
     args = parser.parse_args()
+
+    if args.supplement_of or args.list_candidates:
+        if not args.supplement_of:
+            parser.error("--list-candidates 需要同时给出 --supplement-of")
+        return _supplement(args)
 
     spec = _spec_from_args(args)
     result = preflight(spec)

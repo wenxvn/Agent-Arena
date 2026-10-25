@@ -229,7 +229,7 @@ def _run_dirs() -> list[str]:
 
 
 def _replay_view(st: Any) -> None:
-    st.subheader("单局回放")
+    st.header("单局回放")
     options = _run_dirs()
     if not options:
         st.info("runs/ 下还没有实验目录。")
@@ -266,7 +266,7 @@ def _replay_view(st: Any) -> None:
 
 
 def _matrix_view(st: Any) -> None:
-    st.subheader("矩阵总览")
+    st.header("矩阵总览")
     options = _run_dirs()
     if not options:
         st.info("runs/ 下还没有实验目录。")
@@ -294,7 +294,7 @@ def _matrix_view(st: Any) -> None:
 
 
 def _hotspot_view(st: Any) -> None:
-    st.subheader("错误热点")
+    st.header("错误热点")
     st.caption("T4 三类：终点工具误用 / 重复读码 / 读码后游荡（只用公开字段）。")
     options = _run_dirs()
     if not options:
@@ -327,7 +327,7 @@ def _hotspot_view(st: Any) -> None:
 
 
 def _compare_view(st: Any) -> None:
-    st.subheader("条件对照")
+    st.header("条件对照")
     path_a = st.sidebar.text_input("对照 A benchmark CSV", "results/")
     path_b = st.sidebar.text_input("对照 B benchmark CSV", "results/")
     st.write(
@@ -592,7 +592,7 @@ def _home(st: Any, service_getter: Any = get_service) -> None:
         ],
     )
 
-    st.subheader("快速开始")
+    st.header("快速开始")
     quick = st.columns(4)
     with quick[0]:
         with st.container(border=True):
@@ -639,7 +639,7 @@ def _home(st: Any, service_getter: Any = get_service) -> None:
             if st.button("打开 Lab", width="stretch"):
                 _set_nav(st, VIEW_LAB_CONFIG)
 
-    st.subheader("地图大厅")
+    st.header("地图大厅")
     filters = st.columns([1.2, 1, 2])
     world_label = filters[0].selectbox("世界", list(_world_options()), index=0)
     difficulty = filters[1].selectbox(
@@ -842,7 +842,7 @@ def _config_view(st: Any, service_getter: Any = get_service) -> None:
             st.warning(detail["watch_out"])
 
     detail = web_catalog.map_detail(item.map_id, int(seed))
-    st.subheader("公开信息")
+    st.header("公开信息")
     rule_tab, contract_tab, field_tab, version_tab = st.tabs(
         ["公开规则", "动作契约", "观察字段", "版本与 hash"]
     )
@@ -878,7 +878,7 @@ def _config_view(st: Any, service_getter: Any = get_service) -> None:
         )
         st.caption("hash 用于判断两局是否可直接对照；页面不会修改它们。")
 
-    st.subheader("运行参数")
+    st.header("运行参数")
     mode_column, budget_column = st.columns([1, 1.5], gap="large")
     with mode_column:
         mode_label_choice = st.radio(
@@ -1048,7 +1048,7 @@ def _live_panel(st: Any, service: RunService, run_id: str) -> None:
     except Exception as exc:  # noqa: BLE001 - missing/corrupt run
         st.error(f"无法读取运行 {run_id}：{exc}")
         return
-    st.subheader(f"运行 {run_id}")
+    st.header(f"运行 {run_id}")
     st.markdown(
         theme.chip_row(
             [
@@ -1114,7 +1114,7 @@ def _live_panel(st: Any, service: RunService, run_id: str) -> None:
     steps = replay["steps"]
     if replay["events_skipped"]:
         st.warning(f"日志中有 {replay['events_skipped']} 行损坏，已跳过但保留其余记录。")
-    st.subheader("动作时间线")
+    st.header("动作时间线")
     if not steps:
         st.markdown(
             theme.empty_state("⏳", "还没有动作", "运行在队列中或刚刚开始；自动刷新会持续更新。"),
@@ -1248,7 +1248,7 @@ def _result_view(st: Any, service_getter: Any = get_service) -> None:
     title = str(result.get("title") or manifest.get("title") or "")
     state_value = str(result.get("state") or status.state.value)
     succeeded = state_value == RunState.SUCCEEDED.value or bool(result.get("success"))
-    st.subheader(f"{result.get('map_id') or manifest.get('map_id')} · {title}")
+    st.header(f"{result.get('map_id') or manifest.get('map_id')} · {title}")
     st.markdown(
         theme.chip_row(
             [
@@ -1331,7 +1331,7 @@ def _result_view(st: Any, service_getter: Any = get_service) -> None:
     _metrics_table(st, result)
     _observation_chart(st, replay["steps"])
 
-    st.subheader("逐步回放")
+    st.header("逐步回放")
     steps = replay["steps"]
     if not steps:
         st.markdown(
@@ -1354,7 +1354,7 @@ def _result_view(st: Any, service_getter: Any = get_service) -> None:
 
     _downloads(st, manifest, result, steps)
 
-    st.subheader("版本与安全")
+    st.header("版本与安全")
     hashes = [
         ("scenario_hash", str(result.get("scenario_hash") or "—")),
         ("rule_hash", str(result.get("rule_hash") or "—")),
@@ -1417,7 +1417,7 @@ def _metrics_table(st: Any, result: dict[str, Any]) -> None:
         )
     if not rows:
         return
-    st.subheader("指标（五态）")
+    st.header("指标（五态）")
     st.dataframe(rows, width="stretch", hide_index=True)
     st.caption("CENSORED / N/A / 缺失不会被渲染成 0。")
     with st.expander("指标公式"):
@@ -1451,7 +1451,7 @@ def _observation_chart(st: Any, steps: list[dict[str, Any]]) -> None:
             series[key] = values
     if not series:
         return
-    st.subheader("公开状态走势")
+    st.header("公开状态走势")
     st.caption("只画公开 Observation 中每步都出现的数值字段，不做插值。")
     key = st.selectbox("字段", sorted(series))
     _line_chart(st, key, series[key])
@@ -1504,7 +1504,7 @@ def _downloads(
     result: dict[str, Any],
     steps: list[dict[str, Any]],
 ) -> None:
-    st.subheader("导出")
+    st.header("导出")
     run_id = str(manifest.get("run_id", "run"))
     document = replay_document(manifest, result, steps)
     with st.container(border=True):
@@ -1630,7 +1630,7 @@ def _history_view(st: Any, service_getter: Any = get_service) -> None:
             _set_nav(st, VIEW_RESULT)
         _history_export(st, filtered, export_column)
 
-    st.subheader("多局对照（2–4 局）")
+    st.header("多局对照（2–4 局）")
     if len(filtered) < 2:
         st.info("至少需要两局同条件运行才能对照。")
     else:
@@ -1665,7 +1665,7 @@ def _history_view(st: Any, service_getter: Any = get_service) -> None:
                 hide_index=True,
             )
 
-    st.subheader("本地同模型成绩榜")
+    st.header("本地同模型成绩榜")
     rows = leaderboard(filtered)
     if not rows:
         st.info("暂无可排行的终局运行。")
@@ -1720,7 +1720,7 @@ def _settings_view(st: Any) -> None:
         "设置与帮助",
         "Provider 状态只读；密钥只从本机 .env 或环境变量读取，页面不会显示、回显或提交密钥。",
     )
-    st.subheader("Provider 配置")
+    st.header("Provider 配置")
     statuses = provider_statuses()
     st.dataframe(
         [
@@ -1764,7 +1764,15 @@ def _settings_view(st: Any) -> None:
             max_cost_cny=Decimal(str(MAX_COST_CNY)),
         )
         st.write("平台硬上限（页面与 API 均不可突破）：")
-        st.json(limits.public_dict())
+        # 用表格而不是 st.json：后者的工具栏含无名称的图标按钮（V12 a11y 审计）。
+        st.dataframe(
+            [
+                {"项目": key, "取值": str(value)}
+                for key, value in limits.public_dict().items()
+            ],
+            width="stretch",
+            hide_index=True,
+        )
         st.write(
             "请求前先检查请求数、token 预算与（可得时）费用上限；Provider 未返回 usage "
             "时立即按未知消费停止，不自动重试。"

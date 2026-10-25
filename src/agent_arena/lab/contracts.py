@@ -255,6 +255,11 @@ class ExperimentSpec(BaseModel):
     preflight_only: bool = True
     approval: LiveApproval = Field(default_factory=LiveApproval)
     created_at: str = Field(default_factory=utc_now)
+    #: 只运行这些条件（`condition_key`）。空表示整张矩阵；补充实验用它挑子集。
+    only_conditions: list[str] = Field(default_factory=list)
+    #: 补充实验的来源：原始 `experiment_id`；普通实验为 None。
+    supplement_of: str | None = Field(default=None, max_length=80)
+    supplement_reason: str = Field(default="", max_length=600)
 
     # ---------------------------------------------------------------- validators
     @field_validator("maps")
@@ -332,20 +337,22 @@ class ExperimentSpec(BaseModel):
     def matrix(self) -> tuple[MatrixCell, ...]:
         cells: list[MatrixCell] = []
         seeds = self.resolved_seeds()
+        wanted = set(self.only_conditions)
         for map_id in self.maps:
             for seed in seeds:
                 for arm in self.agent_arms:
-                    cells.append(
-                        MatrixCell(
-                            matrix_index=len(cells),
-                            map_id=map_id,
-                            environment_seed=seed,
-                            agent_id=arm.agent_id,
-                            agent_version="",
-                            agent_config=dict(arm.config),
-                            agent_config_hash=arm.config_hash,
-                        )
+                    cell = MatrixCell(
+                        matrix_index=len(cells),
+                        map_id=map_id,
+                        environment_seed=seed,
+                        agent_id=arm.agent_id,
+                        agent_version="",
+                        agent_config=dict(arm.config),
+                        agent_config_hash=arm.config_hash,
                     )
+                    if wanted and cell.condition_key not in wanted:
+                        continue
+                    cells.append(cell.model_copy(update={"matrix_index": len(cells)}))
         return tuple(cells)
 
     def with_agent_versions(
@@ -371,6 +378,8 @@ class ExperimentSpec(BaseModel):
                 "mode": self.mode.value,
                 "budget": self.budget.as_dict(),
                 "comparison": self.comparison.as_dict(),
+                "only_conditions": sorted(self.only_conditions),
+                "supplement_of": self.supplement_of,
             }
         )
 
@@ -386,6 +395,7 @@ class ExperimentSpec(BaseModel):
             "approval": self.approval.as_dict(),
             "arms": [arm.as_dict() for arm in self.agent_arms],
             "fingerprint": self.fingerprint(),
+            "only_conditions": list(self.only_conditions),
         }
 
 

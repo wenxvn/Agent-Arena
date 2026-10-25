@@ -796,7 +796,7 @@ class ExperimentService:
     # ------------------------------------------------------------------- queries
     def _spec(self, experiment_id: str) -> ExperimentSpec:
         payload = self.store.load_spec(experiment_id)
-        payload = {key: value for key, value in payload.items() if key not in {
+        derived = {
             "seeds",
             "seed_source",
             "arms",
@@ -804,7 +804,8 @@ class ExperimentService:
             "matrix",
             "matrix_size",
             "agent_versions",
-        }}
+        }
+        payload = {key: value for key, value in payload.items() if key not in derived}
         payload["experiment_id"] = experiment_id
         return ExperimentSpec.model_validate(payload)
 
@@ -917,6 +918,9 @@ class ExperimentService:
             "counts": dict(manifest.counts),
             "generated_at": utc_now(),
             "pending_category": CATEGORY_PENDING,
+            "only_conditions": list(spec.only_conditions),
+            "supplement_of": spec.supplement_of,
+            "supplement_reason": spec.supplement_reason,
         }
 
     def comparison(self, experiment_id: str) -> dict[str, Any]:
@@ -1059,6 +1063,106 @@ class ExperimentService:
             "experiments": len(self.store.list_ids()),
             "active": self._active,
         }
+
+    # -------------------------------------------------------------- supplement
+    def supplement_candidates(self, experiment_id: str) -> dict[str, Any]:
+        """列出**需要补充**的子局：中断、Provider 错误、未知消费、未执行。
+
+        已完成 / 已取消 / 机制失败的子局**不在**候选里：前者不该重跑，
+        后两者是真实结果，补跑会污染分母。
+        """
+
+        manifest = self.store.load_manifest(experiment_id)
+        spec = self._spec(experiment_id)
+        cells = {cell.matrix_index: cell for cell in spec.matrix()}
+        by_index = {
+            int(item.get("matrix_index", -1)): item for item in manifest.children
+        }
+        rows: list[dict[str, Any]] = []
+        for index, cell in sorted(cells.items()):
+            child = by_index.get(index)
+            if child is None:
+                reason = "not_executed"
+            elif bool(child.get("cost_unknown")):
+                reason = "unknown_spend"
+            elif str(child.get("state")) == RunState.INTERRUPTED.value:
+                reason = "interrupted"
+            elif str(child.get("state")) == RunState.PROVIDER_ERROR.value:
+                reason = "provider_error"
+            else:
+                continue
+            rows.append(
+                {
+                    "matrix_index": index,
+                    "condition_key": cell.condition_key,
+                    "map_id": cell.map_id,
+                    "environment_seed": cell.environment_seed,
+                    "agent_id": cell.agent_id,
+                    "reason": reason,
+                    "source_run_id": (child or {}).get("run_id"),
+                    "source_state": (child or {}).get("state"),
+                }
+            )
+        return {
+            "source_experiment_id": experiment_id,
+            "source_state": manifest.state.value,
+            "candidates": rows,
+            "count": len(rows),
+            "excluded_note": (
+                "已取消、机制失败、预算截尾、成功均不补跑；它们是有意义的结果。"
+            ),
+        }
+
+    def create_supplement(
+        self,
+        source_experiment_id: str,
+        *,
+        name: str | None = None,
+        reason: str = "",
+        conditions: list[str] | None = None,
+        idempotency_key: str | None = None,
+    ) -> str:
+        """新建一个**独立**的补充实验，只跑需要补充的子局。
+
+        原始实验、账本与 run 记录一律不动；新实验的 ``supplement_of`` 指向来源，
+        报告与汇总都会显示这一关系。补跑产生新的 ``run_id``。
+        """
+
+        plan = self.supplement_candidates(source_experiment_id)
+        candidates = plan["candidates"]
+        if not candidates:
+            raise ExperimentError(
+                "该实验没有需要补充的子局（无中断/Provider 错误/未知消费/未执行）。"
+            )
+        if conditions is not None:
+            wanted = set(conditions)
+            candidates = [item for item in candidates if item["condition_key"] in wanted]
+            if not candidates:
+                raise ExperimentError("指定的条件都不在补充候选里。")
+        source_spec = self._spec(source_experiment_id)
+        new_name = name or f"{source_spec.name} · supplement"
+        note = reason or (
+            "补充实验：只重跑原始实验里中断 / Provider 错误 / 未知消费 / 未执行的子局；"
+            f"来源 {source_experiment_id}。"
+        )
+        spec = source_spec.model_copy(
+            update={
+                "experiment_id": "",
+                "name": new_name,
+                "notes": f"{source_spec.notes}\n{note}".strip(),
+                "only_conditions": [item["condition_key"] for item in candidates],
+                "supplement_of": source_experiment_id,
+                "supplement_reason": note,
+                "preflight_only": source_spec.preflight_only,
+                "created_at": utc_now(),
+            }
+        )
+        # 补充实验必须重新走预检：矩阵变小但仍需预算与版本检查。
+        result = preflight(spec)
+        if not result.ok:
+            raise ExperimentError("补充实验预检未通过：" + "；".join(result.blockers))
+        key = idempotency_key or f"supplement:{source_experiment_id}:{spec.fingerprint()[:12]}"
+        return self.create_experiment(spec, idempotency_key=key)
 
 
 def default_experiment_service(

@@ -53,7 +53,7 @@ _CSS = """
   --aa-accent: #4c6ef5;
   --aa-accent-2: #7c5cff;
   --aa-success: #12a150;
-  --aa-warning: #e08c1a;
+  --aa-warning: #d08218;
   --aa-danger: #e5484d;
   --aa-info: #2f80ed;
   --aa-line: rgba(120, 132, 155, .24);
@@ -63,6 +63,27 @@ _CSS = """
   --aa-shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 8px 24px rgba(16, 24, 40, .06);
   --aa-radius: 16px;
   --aa-mono: ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, monospace;
+  /* 文字/图标专用色：与填充色分开，保证 WCAG AA 4.5:1（V12 可访问性审计）。
+     填充与边框仍用上面的 --aa-*，它们只需 3:1。 */
+  --aa-accent-text: #3b5bdb;
+  --aa-accent-2-text: #6341d9;
+  --aa-success-text: #0a7a3d;
+  --aa-warning-text: #8a5200;
+  --aa-danger-text: #c22a2f;
+  --aa-info-text: #1a63c9;
+  --aa-neutral-text: #5f6b7d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --aa-accent-text: #8ea2ff;
+    --aa-accent-2-text: #b39cff;
+    --aa-success-text: #3ddc97;
+    --aa-warning-text: #f5b544;
+    --aa-danger-text: #ff8b8f;
+    --aa-info-text: #6aa9ff;
+    --aa-neutral-text: #a9b3c6;
+  }
 }
 
 /* ---------------------------------------------------------------- 版式 */
@@ -78,18 +99,34 @@ h1 {
   line-height: 1.22;
   margin: .1rem 0 .35rem !important;
 }
-h2 { font-size: 1.34rem !important; font-weight: 720; margin-top: 1.1rem !important; }
-h3 {
+/* 语义层级：h1 = 页面标题，h2 = 区块，h3 = 区块内小节。
+   V12 可访问性审计要求标题层级不跳级（h1 → h2 → h3），因此视觉尺寸与语义级别
+   解耦：h2 沿用原来的“左侧强调条”外观，h3 更小且无强调条。 */
+h2 {
   font-size: 1.06rem !important;
   font-weight: 700;
   padding-left: .62rem;
   border-left: 3px solid var(--aa-accent);
   margin: 1.55rem 0 .7rem !important;
 }
+h3 {
+  font-size: 1rem !important;
+  font-weight: 680;
+  margin: 1.1rem 0 .5rem !important;
+}
 [data-testid="stCaptionContainer"] p { opacity: .74; font-size: .85rem; }
 [data-testid="stMarkdownContainer"] p { line-height: 1.62; }
 hr { margin: 1.5rem 0 !important; opacity: .45; }
 code { font-family: var(--aa-mono); font-size: .84em; }
+
+/* ------------------------------------------------------------ 焦点可见性 */
+/* 键盘用户的焦点必须可见（WCAG 2.4.7）。这里只加强焦点环，
+   不覆盖 Streamlit 自身的焦点样式，也不抑制任何轮廓。 */
+:where(a, button, summary, [role="button"], [role="tab"], input, select, textarea):focus-visible {
+  outline: 2px solid var(--aa-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
 
 /* ------------------------------------------------------------ 侧边栏 */
 [data-testid="stSidebar"] { border-right: 1px solid var(--aa-line-soft); }
@@ -128,7 +165,7 @@ code { font-family: var(--aa-mono); font-size: .84em; }
   box-shadow: inset 0 0 0 1px rgba(76, 110, 245, .28);
 }
 [data-testid="stSidebar"] [data-testid="stRadioOption"][data-selected="true"] p {
-  font-weight: 680; color: var(--aa-accent);
+  font-weight: 680; color: var(--aa-accent-text);
 }
 .aa-side-card {
   border: 1px solid var(--aa-line-soft); border-radius: 12px;
@@ -145,7 +182,7 @@ code { font-family: var(--aa-mono); font-size: .84em; }
 .aa-eyebrow {
   display: inline-flex; align-items: center; gap: 7px;
   font-size: .7rem; font-weight: 700; letter-spacing: .16em;
-  text-transform: uppercase; color: var(--aa-accent);
+  text-transform: uppercase; color: var(--aa-accent-text);
   margin-bottom: 2px;
 }
 .aa-eyebrow::before {
@@ -188,23 +225,23 @@ code { font-family: var(--aa-mono); font-size: .84em; }
   background: var(--aa-surface-2); color: inherit; opacity: .92;
 }
 .aa-chip-accent {
-  color: var(--aa-accent); border-color: rgba(76, 110, 245, .32);
+  color: var(--aa-accent-text); border-color: rgba(76, 110, 245, .32);
   background: rgba(76, 110, 245, .10);
 }
 .aa-chip-success {
-  color: var(--aa-success); border-color: rgba(18, 161, 80, .3);
+  color: var(--aa-success-text); border-color: rgba(18, 161, 80, .3);
   background: rgba(18, 161, 80, .10);
 }
 .aa-chip-warning {
-  color: var(--aa-warning); border-color: rgba(224, 140, 26, .32);
+  color: var(--aa-warning-text); border-color: rgba(224, 140, 26, .32);
   background: rgba(224, 140, 26, .12);
 }
 .aa-chip-danger {
-  color: var(--aa-danger); border-color: rgba(229, 72, 77, .3);
+  color: var(--aa-danger-text); border-color: rgba(229, 72, 77, .3);
   background: rgba(229, 72, 77, .10);
 }
 .aa-chip-info {
-  color: var(--aa-info); border-color: rgba(47, 128, 237, .3);
+  color: var(--aa-info-text); border-color: rgba(47, 128, 237, .3);
   background: rgba(47, 128, 237, .10);
 }
 .aa-chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }

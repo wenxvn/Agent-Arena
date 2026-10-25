@@ -397,6 +397,44 @@ def check_redaction() -> dict[str, Any]:
             runs.shutdown()
 
 
+def check_a11y() -> dict[str, Any]:
+    """可访问性：主题对比度 + 焦点样式（离线部分；浏览器部分见 scripts/a11y_v12.py）。"""
+
+    from agent_arena.lab.a11y import (
+        audit_focus_css,
+        audit_theme_tokens,
+    )
+    from agent_arena.ui.theme import stylesheet
+
+    theme_report = audit_theme_tokens()
+    assert theme_report["ok"], theme_report["text_failures"]
+    assert theme_report["ui_ok"], theme_report["ui_failures"]
+    focus = audit_focus_css(stylesheet())
+    assert focus["ok"], focus["issues"]
+    return {
+        "tokens_checked": theme_report["checked"],
+        "text_failures": 0,
+        "ui_failures": 0,
+        "focus_visible": focus["has_focus_visible"],
+    }
+
+
+def check_theme_tokens_in_css() -> dict[str, Any]:
+    """审计用的 token 名必须真的出现在样式表里（避免审计与实现脱节）。"""
+
+    from agent_arena.ui.theme import stylesheet
+
+    css = stylesheet()
+    missing = [
+        name
+        for name in ("accent", "accent-2", "success", "warning", "danger", "info", "neutral")
+        if f"--aa-{name}-text" not in css
+    ]
+    assert not missing, f"样式表缺少文字 token：{missing}"
+    assert "--aa-warning-text" in css
+    return {"tokens": 7, "missing": 0}
+
+
 def run_checks(*, report_path: Path | None = None) -> dict[str, Any]:
     checks = [
         _check("catalog", check_catalog),
@@ -410,6 +448,8 @@ def run_checks(*, report_path: Path | None = None) -> dict[str, Any]:
         _check("visualization", check_visualization),
         _check("export_recompute", check_export_recompute),
         _check("redaction", check_redaction),
+        _check("a11y", check_a11y),
+        _check("theme_tokens_in_css", check_theme_tokens_in_css),
     ]
     failed = [item for item in checks if not item["ok"]]
     report = {

@@ -137,6 +137,9 @@ class _Stub:
     def subheader(self, text: Any) -> None:
         self._record("subheader", text)
 
+    def header(self, text: Any) -> None:
+        self._record("header", text)
+
     def write(self, text: Any) -> None:
         self._record("write", text)
 
@@ -307,7 +310,9 @@ def test_home_renders_cards_and_quickstart(monkeypatch, tmp_path) -> None:
     stub = _render(monkeypatch, tmp_path, "首页 / 地图大厅")
     titles = [str(value) for name, value in stub.calls if name == "title"]
     assert any("十世界三十图" in title for title in titles)
-    assert any("地图大厅" in str(value) for name, value in stub.calls if name == "subheader")
+    # 区块标题用语义正确的 h2（st.header）；V12 修正了原来的 h1→h3 跳级。
+    sections = [str(value) for name, value in stub.calls if name == "header"]
+    assert any("地图大厅" in value for value in sections)
 
 
 def test_config_renders_public_rules_without_starting(monkeypatch, tmp_path) -> None:

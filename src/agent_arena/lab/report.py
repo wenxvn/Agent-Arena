@@ -297,6 +297,17 @@ def build_report(
         f"- 矩阵 = {len(summary.get('maps') or [])} 图 × {len(summary.get('seeds') or [])} seed × "
         f"{len(summary.get('arms') or [])} 实验臂 = {summary.get('total_cells')} 局。",
         "- 执行方式：单 worker 串行；每局独立请求/token/费用门禁。",
+    ]
+    supplement_of = summary.get("supplement_of")
+    if supplement_of:
+        lines += [
+            "",
+            f"> **补充实验**：来源 `{supplement_of}`；"
+            f"只重跑 {summary.get('total_cells')} 个需要补充的条件。",
+            f"> 原因：{summary.get('supplement_reason') or '—'}",
+            "> 原始实验的记录与账本未被修改；补跑产生新的 run_id，不覆盖历史。",
+        ]
+    lines += [
         "",
         "## 2. 不可比声明与数据口径",
         "",

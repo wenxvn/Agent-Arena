@@ -44,6 +44,9 @@ class _StubStreamlit:
     def subheader(self, text: object) -> None:
         self.calls.append(("subheader", text))
 
+    def header(self, text: object) -> None:
+        self.calls.append(("header", text))
+
     def write(self, text: object) -> None:
         self.calls.append(("write", text))
 
@@ -72,6 +75,7 @@ def _run_with_stub(radio: str, inputs: dict[str, str]) -> list[tuple[str, object
                 "title",
                 "caption",
                 "subheader",
+                "header",
                 "write",
                 "table",
                 "info",
