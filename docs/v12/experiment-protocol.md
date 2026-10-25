@@ -1,6 +1,6 @@
 # V12 实验协议（预登记）
 
-- **状态**：矩阵与门禁已冻结；**真实执行 = `PENDING_APPROVAL`**（未获付费预算批准）
+- **状态**：矩阵与门禁已冻结；**真实执行已完成**（Pilot 6 局 + 主矩阵 54 局 + 版本复跑 9 局，结算 ¥1.82140020）
 - **schema**：`v12-lab-1`
 - **登记日期**：2026-10-25
 - **对应代码**：`src/agent_arena/lab/contracts.py`（`ExperimentSpec`）、`lab/experiment.py`（`preflight`）
@@ -142,11 +142,22 @@ runs/lab/<experiment_id>/
 runs/web/<run_id>/    # V11 子局结构（新增可选 provenance 字段）
 ```
 
-## 10. 真实执行前置（当前阻塞）
+## 10. 真实执行（已授权并完成）
 
-- [ ] 用户书面批准费用上限（`LiveApproval.approved=true` + `approved_by` + `max_cost_cny`）；
-- [ ] 先跑 3–6 局 Pilot，覆盖 Basic/Memory/Planning 与至少两图；
-- [ ] Pilot 通过后跑 54 局；
-- [ ] 若只批准部分预算，按固定优先顺序执行可覆盖子集，并明确标注"矩阵不完整"。
+- [x] 用户书面批准费用上限（`LiveApproval.approved=true` + `approved_by` + `max_cost_cny=6.00`）；
+- [x] 先跑 6 局 Pilot，覆盖 Basic/Memory/Planning 与两图；
+- [x] Pilot 通过后跑 54 局主矩阵（6 图 × 3 seed × 3 架构）；
+- [x] 发现 DCR-V12-01 后，用**版本复跑**重测 MAP-22 九局（不与旧版本配对）；
+- [x] 未超预算：结算 ¥1.82140020 / 批准 ¥6.00；未知消费 ¥0。
 
-当前状态：**`LIVE_VALIDATION_PENDING_APPROVAL`**。未获批准，未发出任何真实请求。
+状态：**已完成**。明细见 `mimo-results.md` 与 `dcr/DCR-V12-01.md`、`dcr/DCR-V12-02.md`。
+
+## 11. 版本与复跑口径
+
+| 场景 | 入口 | 是否重跑已完成局 | 是否与旧版本配对 |
+|---|---|---|---|
+| 续跑（进程中断/未执行） | `--resume <id>` | 否 | 是（同版本） |
+| 补充实验（失败/未执行/取消） | `--supplement-of <id>` | 否 | 是（同版本） |
+| 版本复跑（契约/提示变更后重测） | `--rerun-of <id> --conditions ...` | **是** | **否**（`prompt_hash` 已变） |
+
+三条路径都新建独立实验、都不修改源实验的 manifest/账本/run 记录。

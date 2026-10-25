@@ -1842,3 +1842,44 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 结论：`LAB_1_0_OFFLINE_READY`。macOS 与 Ollama 未实测；可访问性自动检测未接入。详见 `docs/v12/final-report.md`、`docs/v12/validation-report.md`。
 
 下一步：等用户批准预算后跑 Pilot（3–6 局）→ 54 局主矩阵；macOS 实机验证。
+（后续进展见下方 2026-10-25 第二条记录。）
+
+## 2026-10-25 V12 补充工程项 + 真实 API 验证（MiMo 71 局）
+
+事件：用户指示「mac、ollama 以后再说，先把其他的做完，你可以用 API」。据此完成剩余工程项并执行真实实验。
+
+离线段：
+
+- 可访问性自动审计：`lab/a11y.py`（WCAG 对比度公式、主题 token、DOM 规则、键盘规则）+ `scripts/a11y_v12.py`（离线主题 + 可选 Playwright 6 页浅/深色）；`verify_v12` 增加 `a11y` 与 `theme_tokens_in_css`。
+- 补充实验：`supplement_candidates`（中断/Provider 错误/未知消费/取消/未执行）+ `create_supplement`；原实验不动、重新预检、幂等。
+- 版本复跑：`create_version_rerun`（允许重跑已完成条件，用于契约/提示变更后的重测；不与旧版本配对）。
+
+修复的真实缺陷：
+
+1. **主题对比度**：`--aa-warning` 白底 2.65:1（低于 3:1）；accent 4.32 / success 3.37 / danger 3.91 / info 3.87 / neutral 3.02 均低于 AA 4.5:1。拆出 `--aa-*-text` 文字 token（浅/深两套，`prefers-color-scheme` 切换），全部 ≥ 4.5:1；填充色微调至 ≥ 3:1。
+2. **标题层级**：`h1 → h3` 跳级（`st.title` + `st.subheader`）。区块标题改 `st.header`（h2），原「左侧强调条」样式移到 h2，外观不变。
+3. **无名称按钮**：`st.json` 工具栏图标按钮无 aria-label。费用边界改表格渲染。
+4. **审计误报**：折叠 expander 内控件、同名锚点链接被误判。改 `checkVisibility` + `details:not([open])`，用元素标识去重。
+5. **父实验陈旧链接**（真实事故）：主矩阵首跑 CLI 等待 1800s 超时 → 进程退出 → 执行线程被杀；子局被 RunService 收尾为 CANCELLED，父 manifest 仍写 QUEUED。新增 `_reconcile_children` 以磁盘 run manifest 为准刷新；`--timeout` 默认 0；新增 `--resume` / `--rerun-of`。
+6. **DCR-V12-01 接口缺陷**：MAP-22 `write_memory` 96.2% 被拒（175/182，`INVALID_MEMORY_PAYLOAD`）。根因：`facts: list[dict]` 渲染成 `[{"<key>": <value>}]`，未说明必须 `{"key": str, "value": str}`。修复：`lab/contract_v12.py`（`v12-contract-1`）只对含 `facts` 的图追加精确形状说明，写入 `provenance.contract_augmentation`，改变 `prompt_hash`；V10/V11 与环境校验不动。复测拒绝率 96.2% → 0%。
+7. **DCR-V12-02 口径缺陷**：`route_recall` 要求 `key ∈ {bearing, path_state}`，公开规则未表达。诊断层新增 `memory_key_not_in_metric`（`metric_coverage_not_behavior`），MAP-22 记忆假设本轮判为不可回答。
+
+真实执行（MiMo `mimo-v2.6-flash`，单 worker 串行，每局 ¥0.50 / 90 请求门禁）：
+
+| 实验 | 局数 | 状态 | 请求 | 结算 CNY |
+|---|---:|---|---:|---:|
+| Pilot `lab-20261025T120139Z-f9b93d5a` | 6 | COMPLETED | 131 | 0.09949940 |
+| 主矩阵 `lab-20261025T120807Z-3aaedd0f` | 54 | COMPLETED | 1 507 | 1.47181116 |
+| 契约修复复跑 `lab-20261025T134724Z-fa696780` | 9 | COMPLETED | 424 | 0.21606796 |
+| 补充（取消局）`lab-20261025T134136Z-bfe16b0f` | 1 | COMPLETED | 41 | 0.03376040 |
+| 探针 `lab-20261025T125039Z-28494088` | 1 | COMPLETED | — | 0.00026128 |
+
+合计 **71 局、2 103 请求、CNY ¥1.82140020、未知消费 ¥0**，未超 ¥6.00 批准上限。账本 `run_started` 71 = `run_settled` 71。
+
+主矩阵结论（每条件 1 局、3 seed，描述性）：54/54 完成、有效分母 53、成功 24（basic 7 / memory 8 / planning 9）。MAP-08 与 MAP-26 天花板（9/9 成功，测不出差异）；MAP-16 planning 2/3（basic/memory 0/3，但请求 3 倍）；MAP-18 memory 2/3（其余 0/3，方向与 MAP-16 相反）；MAP-22 受 DCR-V12-01/02 阻塞；MAP-30 0/9 且 8 局截尾（属「没测完」）。成本结构：memory 最贵（0.0331/局），planning 0.0282，basic 0.0205；planning 被拒动作最少（20 vs 103/85）。
+
+验证：1489 pytest passed、`mypy src` 304 文件 0 issues、`ruff check .` 通过、`uv lock --check` 0、`git diff --check` 0、`freeze verify` 9/9 unchanged、`recompute --check` 1093/1093、`independent_check --check` 0 violations、`verify_v11` 7/7、`verify_v12` 15/15、`a11y_v12 --browser` 0 critical/serious/moderate、`e2e_web` 与 `e2e_lab` 均通过。
+
+结论：`LAB_1_0_READY`。macOS 与 Ollama 按用户指示暂缓；MAP-22 记忆假设与 MAP-30 能力判为不可回答，原因已定位到具体接口/预算问题。详见 `docs/v12/final-report.md`、`docs/v12/mimo-results.md`、`docs/v12/dcr/DCR-V12-01.md`、`docs/v12/dcr/DCR-V12-02.md`。
+
+下一步：DCR-V12-02 决策 → MAP-30 提高预算重测 → MAP-16/18 增加 replicate。

@@ -123,7 +123,56 @@ V12 **没有**发明新指标。所有数值来自 V10 各图的 `v10_metrics()`
 `diff_hypotheses` 只给三类行：`evidence`（已有证据）、`gap`（不足证据）、
 `hypothesis`（下一次可验证假设）。
 
-## 5. 可复算性
+## 6. 可访问性
+
+V12 新增自动审计（`scripts/a11y_v12.py` + `src/agent_arena/lab/a11y.py`），分三层：
+
+| 层 | 规则 | 可离线运行 |
+|---|---|---|
+| 主题对比度 | 文字 token ≥ 4.5:1（WCAG AA）、填充/边框 ≥ 3:1，浅色与深色各查一遍 | 是 |
+| 焦点样式 | 样式表不得抑制轮廓，必须有 `:focus-visible` | 是 |
+| 浏览器 DOM/键盘 | 可交互元素必须有可访问名、页面必须有 h1、标题不跳级、图片有 alt、Tab 焦点必须前进且可见 | 需 Playwright |
+
+**审计发现并修复的真实缺陷**（不是"补一个报告"）：
+
+1. `--aa-warning` 在白底只有 **2.65:1**，低于 3:1；其余 tone 文字色（accent 4.32、success 3.37、
+   danger 3.91、info 3.87、neutral 3.02）也低于 AA 4.5:1。修复：拆出 `--aa-*-text`
+   文字 token（浅色/深色两套，经 `prefers-color-scheme` 切换），填充色保留原值；
+   `--aa-warning` 填充色微调到 3.05:1。
+2. 页面标题层级是 `h1 → h3`（`st.title` + `st.subheader`），跳级。修复：区块标题改用
+   `st.header`（h2），并把原来的"左侧强调条"视觉样式移到 h2，外观不变、语义正确。
+3. `st.json` 的工具栏含无名称图标按钮。修复：费用边界改用表格渲染。
+4. 审计脚本自身有两处误报（折叠 expander 内的按钮被当成可见；同名锚点链接被当成焦点陷阱），
+   已改为 `checkVisibility` + `details:not([open])` 判定，并用元素标识而非"标签+文本"去重。
+
+**已知框架限制**：`<html lang>` 由 Streamlit 前端固定为 `en`，应用层无法覆盖；中文内容
+需要屏幕阅读器手动切换语言。已在报告中单列，不计为通过也不计为失败。
+
+当前结果：主题 22 个 token 全部通过，焦点样式通过，浏览器 6 页 × 浅色/深色
+**critical 0 / serious 0 / moderate 0**（仅剩上述 `lang` 框架限制）。
+
+## 7. 补充实验（中断/未知消费子局）
+
+`ExperimentService.supplement_candidates()` 只把四类子局列为候选：
+
+| 子局状态 | 是否补跑 | 原因 |
+|---|---|---|
+| `INTERRUPTED` | 是 | 进程中断，没有终局判定 |
+| `PROVIDER_ERROR` | 是 | 基础设施失败，不是策略结果 |
+| `cost_unknown=true` | 是 | 消费未知，需要独立账本重测 |
+| 未执行（`pending`） | 是 | 计划内但没跑 |
+| `SUCCEEDED` / 机制失败 / 预算截尾 / 取消 | **否** | 都是有意义的结果，补跑会污染分母 |
+
+`create_supplement()` 会：
+
+- 新建**独立**实验（新 `experiment_id`、新 `run_id`），原实验 manifest、账本与 run 记录一律不动；
+- 写入 `supplement_of` / `supplement_reason`，指纹因此不同；
+- 只跑候选条件（`only_conditions`），并重新走预检（预算与版本检查）；
+- 幂等键 = `supplement:<源实验>:<指纹前 12 位>`，重复调用返回同一补充实验。
+
+报告与汇总都会显示"补充实验：来源 `<id>`"，并声明"原始实验的记录与账本未被修改"。
+
+## 8. 可复算性
 
 - `summary.json` 的有效分母可从 `exports/runs.csv` 独立重算（`scripts/verify_v12.py` 的
   `export_recompute` 检查项即此）；

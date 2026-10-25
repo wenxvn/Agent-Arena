@@ -38,6 +38,8 @@ CATEGORY_LABELS: dict[str, str] = {
     "frame_mismatch": "整帧调度语义错误",
     "window_violation": "错失公开窗口",
     "memory_not_used": "未使用公开记忆通道",
+    "memory_payload_rejected": "记忆载荷结构不合规（接口问题）",
+    "memory_key_not_in_metric": "记忆键名不在指标口径内（口径问题）",
     "blind_swap": "未诊断就换件",
     "unsupported_accusation": "证据链不完整就指控",
     "not_enough_evidence": "证据不足",
@@ -482,33 +484,78 @@ def _map22(steps: list[dict[str, Any]], run_id: str, result: dict[str, Any]) -> 
         step for step in writes if not _negative(str(step.get("result") or ""))
     ]
     bearing_notes = 0
-    for step in accepted_writes:
+    metric_keys = 0
+    rejected_payload = 0
+    for step in writes:
+        result_text = str(step.get("result") or "")
+        if result_text == "INVALID_MEMORY_PAYLOAD":
+            rejected_payload += 1
         action = step.get("action") or {}
         for fact in action.get("facts") or []:
-            if isinstance(fact, dict) and fact.get("key") in {"bearing", "path_state"}:
+            if not isinstance(fact, dict):
+                continue
+            key = fact.get("key")
+            if key in {"bearing", "path_state"}:
                 bearing_notes += 1
-    if not accepted_writes:
+                metric_keys += 1
+    if rejected_payload:
         findings.append(
             _finding(
-                category="memory_not_used",
-                severity="warning",
+                category="memory_payload_rejected",
+                severity="critical" if rejected_payload >= max(3, len(writes) // 2) else "warning",
                 map_id="MAP-22",
                 run_id=run_id,
-                summary="整局没有写入任何公开记忆；返程只能依赖 5 步历史窗口。",
-                steps=[],
-                suggested_check="对照启用记忆的臂，看 wasted_moves 与返程成功率。",
+                summary=(
+                    f"{rejected_payload}/{len(writes)} 次 write_memory 因 facts 结构不合规被拒"
+                    "（接口问题，不是记忆能力）。"
+                ),
+                steps=[
+                    int(step.get("decision_index") or 0)
+                    for step in writes
+                    if str(step.get("result") or "") == "INVALID_MEMORY_PAYLOAD"
+                ][:8],
+                detail="环境要求每条 fact 恰好是 {\"key\": str, \"value\": str}。",
+                suggested_check=(
+                    "核对公开契约是否把嵌套字段名写清楚（DCR-V12-01）；"
+                    "修好后应另立实验，不与旧版本配对。"
+                ),
+                confidence_scope="interface_not_behavior",
             )
         )
-    elif bearing_notes == 0:
+    if not accepted_writes:
+        if not rejected_payload:
+            findings.append(
+                _finding(
+                    category="memory_not_used",
+                    severity="warning",
+                    map_id="MAP-22",
+                    run_id=run_id,
+                    summary="整局没有写入任何公开记忆；返程只能依赖 5 步历史窗口。",
+                    steps=[],
+                    suggested_check="对照启用记忆的臂，看 wasted_moves 与返程成功率。",
+                )
+            )
+    elif metric_keys == 0:
         findings.append(
             _finding(
-                category="memory_not_used",
+                category="memory_key_not_in_metric",
                 severity="warning",
                 map_id="MAP-22",
                 run_id=run_id,
-                summary="写过记忆，但没有记录方位（bearing/path_state），无法用于返程。",
+                summary=(
+                    "记忆写入成功，但没有使用指标口径内的键（bearing / path_state），"
+                    "因此 route_recall 为 NOT_APPLICABLE。"
+                ),
                 steps=[int(step.get("decision_index") or 0) for step in accepted_writes[:5]],
-                suggested_check="记忆内容应包含走过的方位序列。",
+                detail=(
+                    "公开规则只要求 {key,value}，未说明哪个键会被指标读取；"
+                    "这是口径问题，不代表没有记忆（DCR-V12-02）。"
+                ),
+                suggested_check=(
+                    "若要指标可读，写入 key=bearing（单个方位）或 key=path_state"
+                    "（逗号分隔的方位序列）。"
+                ),
+                confidence_scope="metric_coverage_not_behavior",
             )
         )
     if _tool(steps[0]) == "return_to_camp" and not result.get("success"):

@@ -103,6 +103,48 @@ def _wait(service: ExperimentService, experiment_id: str, timeout: float) -> Any
         time.sleep(interval)
 
 
+def _version_rerun(args: argparse.Namespace) -> int:
+    """版本复跑：在当前代码/契约版本下重跑源实验的指定条件。"""
+
+    if not args.conditions:
+        print("--rerun-of 需要 --conditions（condition_key 列表）。", file=sys.stderr)
+        return 2
+    runs = RunService(WEB_RUNS, recover=False)
+    service = ExperimentService(LAB_RUNS, run_service=runs, recover=False)
+    try:
+        experiment_id = service.create_version_rerun(
+            args.rerun_of,
+            conditions=list(args.conditions),
+            reason=args.notes,
+            name=args.name if args.name != "cli-matrix" else None,
+        )
+        print(json.dumps({"rerun_experiment_id": experiment_id}, ensure_ascii=False, indent=1))
+        if not args.submit:
+            print("仅创建；加 --submit 才会入队。")
+            return 0
+        service.submit(experiment_id)
+        manifest = _wait(service, experiment_id, args.timeout)
+        summary = service.summary(experiment_id)
+        print(
+            json.dumps(
+                {
+                    "rerun_experiment_id": experiment_id,
+                    "source_experiment_id": args.rerun_of,
+                    "state": manifest.state.value,
+                    "counts": manifest.counts,
+                    "budget": manifest.budget,
+                    "executed": summary["executed"],
+                    "valid_denominator": summary["valid_denominator"],
+                },
+                ensure_ascii=False,
+                indent=1,
+            )
+        )
+        return 0 if manifest.state.value in {"COMPLETED", "PARTIAL"} else 1
+    finally:
+        runs.shutdown()
+
+
 def _resume(args: argparse.Namespace) -> int:
     """续跑已有实验：只排尚未执行的子局；已结束/未知消费的子局不自动重跑。"""
 
@@ -213,6 +255,11 @@ def main() -> int:
         help="续跑已有实验（只排尚未执行的子局；已结束/未知消费子局不自动重跑）",
     )
     parser.add_argument(
+        "--rerun-of",
+        default=None,
+        help="版本复跑：在**当前**代码/契约版本下重跑源实验的指定条件（独立实验，不与旧版本配对）",
+    )
+    parser.add_argument(
         "--supplement-of",
         default=None,
         help="从该实验新建补充实验（只重跑中断/Provider 错误/未知消费/取消/未执行子局）",
@@ -240,6 +287,8 @@ def main() -> int:
 
     if args.resume:
         return _resume(args)
+    if args.rerun_of:
+        return _version_rerun(args)
     if args.supplement_of or args.list_candidates:
         if not args.supplement_of:
             parser.error("--list-candidates 需要同时给出 --supplement-of")

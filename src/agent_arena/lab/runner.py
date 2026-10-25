@@ -31,6 +31,7 @@ from agent_arena.lab.adapters import (
     PublicEpisodeContext,
     PublicObservation,
 )
+from agent_arena.lab.contract_v12 import augment_prompt, provenance_block
 from agent_arena.lab.contracts import AGENT_CONTRACT_VERSION, config_hash
 from agent_arena.lab.gateway import (
     DecisionGateway,
@@ -138,6 +139,9 @@ def run_lab_episode(
         config.map_id, environment_seed=config.environment_seed
     )
     system = system_prompt(config.map_id, environment)
+    # DCR-V12-01：为"形状可见、内部字段名不可见"的动作字段补充公开说明。
+    # 补丁只影响 V12 的 prompt，并写入 provenance；V10/V11 的提示不受影响。
+    system, contract_hints = augment_prompt(system, environment)
     rules_hook = getattr(environment, "public_rules", None)
     public_rules = tuple(rules_hook()) if callable(rules_hook) else ()
     provenance = agent_provenance(config.agent, config.agent_config, system)
@@ -403,6 +407,7 @@ def run_lab_episode(
         },
         "gateway": gateway.stats.snapshot(),
         "policy": _policy_snapshot(policy),
+        "contract_augmentation": provenance_block(contract_hints),
     }
     payload["agent_events"] = agent_events
     payload["attribution"] = attribute_steps(

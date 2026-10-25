@@ -17,14 +17,32 @@
 | `uv run python -m agent_arena.v10.recompute --check` | `{"checks":1093,"maps_covered":30,"match":1093,"mismatch":0}` | 0 |
 | `uv run python -m agent_arena.v10.independent_check --check` | `{"maps":30,"seed_instances":144,"violations":0,"seed_distinct_ok":30,"deterministic_ok":30}` | 0 |
 | `uv run python scripts/verify_v11.py` | `ok: true, failed: 0`（7 项） | 0 |
-| `uv run python scripts/verify_v12.py` | `ok: true, failed: 0`（11 项） | 0 |
+| `uv run python scripts/verify_v12.py` | `ok: true, failed: 0`（**15 项**） | 0 |
+| `uv run python scripts/a11y_v12.py --browser --start` | `ok: true`；critical 0 / serious 0 / moderate 0 | 0 |
 
 ### pytest 增长
 
 | 阶段 | 用例数 |
 |---|---|
 | V12 起点（HEAD） | 1252 passed + **1 failed**（`test_home_shows_per_map_run_history`） |
-| V12 完成 | **1433 passed, 0 failed**（新增 181 项 V12 测试） |
+| V12 离线交付 | 1433 passed |
+| 可访问性 + 补充实验 | 1469 passed |
+| DCR-V12-01 契约补丁 + 版本复跑 | **1489 passed** |
+
+## 2.0 真实模型执行（MiMo）
+
+| 项 | 值 |
+|---|---|
+| 授权 | 用户明确指示"可以用 API" |
+| 实验数 | 5（Pilot / 主矩阵 / 契约修复复跑 / 补充 / 探针） |
+| 局数 | 71 |
+| 请求 | 2 103 |
+| 结算 | **CNY ¥1.82140020** |
+| 未知消费 | **¥0.00** |
+| 批准上限 | ¥6.00（未超） |
+| 账本一致性 | `run_started` 71 = `run_settled` 71；每局 `result.usage` 与账本一致 |
+
+明细见 `mimo-results.md`；原始报告与 CSV 在 `docs/v12/real-runs/`。
 
 > 起点那 1 个失败是测试自身缺陷：`_prepare_runs` 用 `service.list_runs()[0]` 取"刚创建的第二局"，
 > 而 `created_at` 只精确到秒，同秒两局的排序不稳定。改为直接使用第二个 `run_id`。
@@ -45,6 +63,28 @@
 | `visualization` | PASS | 6 图 view-model 全部可用、类型正确、无隐藏真值 |
 | `export_recompute` | PASS | 6 行 runs.csv、39 行 metrics.csv、有效分母可复算 |
 | `redaction` | PASS | 8 个导出文件、0 密钥回显 |
+| `a11y` | PASS | 22 个 token × 2 方案全部 ≥ AA；焦点样式合规 |
+| `theme_tokens_in_css` | PASS | 7 个 `--aa-*-text` 都真实出现在样式表里 |
+
+## 2.1 可访问性审计（`scripts/a11y_v12.py --browser --start`）
+
+| 层 | 结果 |
+|---|---|
+| 主题对比度 | 22 个 token（11 文字 + 10 填充 + 2 正文）× 2 方案，0 失败 |
+| 焦点样式 | 无 `outline` 抑制；存在 `:focus-visible` |
+| 浏览器 DOM（6 页） | 0 critical / 0 serious / 0 moderate |
+| 键盘（每页 12 次 Tab） | 焦点全部前进、全部可见；0 陷阱 |
+| 浅色 / 深色 | 两者都 0 问题 |
+
+审计过程中修复的 4 个真实缺陷（详见 `metrics-and-attribution.md` §6）：
+
+1. `--aa-warning` 白底 2.65:1（低于 3:1），其余 tone 文字色低于 AA 4.5:1 → 拆出
+   `--aa-*-text` 文字 token（浅/深两套）；
+2. 标题层级 `h1 → h3` 跳级 → 区块标题改 `st.header`（h2），视觉样式迁移到 h2；
+3. `st.json` 工具栏的无名称图标按钮 → 改为表格；
+4. 审计脚本自身的 2 处误报（折叠 expander、同名锚点）→ 修正可见性与去重判定。
+
+**已知框架限制**：`<html lang>` 固定为 `en`（Streamlit 前端控制），已单列不计入通过。
 
 ## 3. 浏览器端到端
 
@@ -98,9 +138,11 @@
 
 | 项 | 状态 | 原因 |
 |---|---|---|
-| macOS 实机 | `NOT_VERIFIED` | 无可用机器 |
-| Ollama 实机 | `NOT_VERIFIED` | 本机未运行 Ollama |
-| 真实 54 局矩阵 | `PENDING_APPROVAL` | 未获付费预算批准 |
-| 键盘导航 / 对比度自动检测 | 人工项 | 未接入 axe 等工具 |
-| 移动端真机 | `NOT_VERIFIED` | 只有 430px 视口截图 |
+| macOS 实机 | `NOT_VERIFIED` | 用户指示暂缓 |
+| Ollama 实机 | `NOT_VERIFIED` | 用户指示暂缓 |
+| MAP-22 记忆假设 | **不可回答** | DCR-V12-02：`route_recall` 键名口径与公开信息未对齐 |
+| MAP-30 能力 | **不可回答** | 8/9 局在 90 请求内截尾 |
+| 反思独立小矩阵 | NOT_RUN | 需单独预算批准 |
 | Provider 账单对账 | 未做 | 超出 V12 范围 |
+| `<html lang>` | 框架限制 | Streamlit 前端固定 `en` |
+| 移动端真机 | `NOT_VERIFIED` | 只有 430px 视口截图 |

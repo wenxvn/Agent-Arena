@@ -1,8 +1,8 @@
 # V12 发布检查清单
 
 - **评估日期**：2026-10-25
-- **结论**：`LAB_1_0_OFFLINE_READY`（P0 + P1 + P2 离线交付完成）
-- **不是**：`LAB_1_0_READY`（真实模型矩阵未执行）
+- **结论**：`LAB_1_0_READY`（P0 + P1 + P2 全部交付；真实模型矩阵已执行）
+- **不是**：公网生产就绪（单机本地，无登录/多租户）
 
 ## P0 —— `LAB_CORE_READY`
 
@@ -12,7 +12,7 @@
 | `basic.v1` / `memory.v1` / `planning.v1` | DONE | `lab/policies/*`、`tests/test_v12_policies.py` |
 | 实验矩阵与批量队列 | DONE | `lab/experiment.py` |
 | 可比较结果（配对 + 不可比声明） | DONE | `lab/compare.py` |
-| 预算安全（单局 + 实验级 + 未知消费） | DONE | `test_v12_experiment.py`、`test_v12_robustness.py` |
+| 预算安全（单局 + 实验级 + 未知消费） | DONE | 真实 71 局：0 未知消费、未超 ¥6 |
 | V11 回归保持通过 | DONE | `validation-report.md` §4 |
 
 **Gate：`LAB_CORE_READY` = 通过。**
@@ -38,8 +38,10 @@
 | 截图（桌面/窄屏/深色） | DONE | `docs/v12/screenshots/`（8 张） |
 | Demo 包（三组） | DONE | `docs/v12/demo/` |
 | 压力/故障测试 | DONE | `tests/test_v12_robustness.py` |
-| 跨平台 | PARTIAL | Windows 实测；Ubuntu CI；macOS `NOT_VERIFIED` |
-| 可访问性自动检测 | PARTIAL | 人工项，未接入工具 |
+| 跨平台 | PARTIAL | Windows 实测；Ubuntu CI；macOS 按用户指示暂缓 |
+| 可访问性自动检测 | DONE | `scripts/a11y_v12.py`：对比度（22 token × 2 方案）+ 焦点样式 + 6 页 DOM/键盘（浅色/深色），0 critical / 0 serious / 0 moderate |
+| 补充实验流程 | DONE | `supplement_candidates` / `create_supplement` / `create_version_rerun`；19 项测试 |
+| 真实 API 验证 | DONE | 71 局、¥1.82140020、0 未知消费；详见 `mimo-results.md` |
 
 ## 交付物 A–I（对应提纲 §10）
 
@@ -53,16 +55,18 @@
 | F | 第三方 Python Agent 示例、只读导入、API 文档 | DONE |
 | G | 一键离线验收、CI/E2E、V11 兼容回归、截图、无 Key 演示包 | DONE |
 | H | `docs/v12/` 审计/ADR/协议/进度/验证/Checklist/Final | DONE |
-| I | 真实 Pilot + 54 局矩阵 | **`PENDING_APPROVAL`** |
+| I | 真实 Pilot + 54 局矩阵 | **DONE**（Pilot 6 局 + 主矩阵 54 局 + 契约修复复跑 9 局；明细见 `mimo-results.md`） |
 
 ## 明确未完成（不冒充通过）
 
-- [ ] 真实付费 Pilot（3–6 局）与 54 局主矩阵 —— 等预算批准
-- [ ] macOS 实机验证
-- [ ] Ollama 实机单局
-- [ ] 可访问性自动检测（axe-core 等）
+- [ ] MAP-22 记忆假设 —— DCR-V12-02：`route_recall` 键名口径未与公开信息对齐
+- [ ] MAP-30 能力 —— 8/9 局截尾，需 ≥200 请求/局的独立实验
+- [ ] 反思独立小矩阵 —— 需单独预算批准，未混入主矩阵
+- [ ] 重复次数 —— 有梯度的 MAP-16/MAP-18 各需 2–3 个 replicate
+- [ ] macOS 实机 / Ollama 实机 —— 按用户指示暂缓
 - [ ] 移动端真机
 - [ ] Provider 账单对账
+- [ ] `<html lang>` 本地化 —— Streamlit 前端固定为 `en`，应用层无法覆盖（已披露）
 
 ## 发布动作
 

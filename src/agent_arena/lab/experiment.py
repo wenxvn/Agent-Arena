@@ -1170,6 +1170,59 @@ class ExperimentService:
             ),
         }
 
+    def create_version_rerun(
+        self,
+        source_experiment_id: str,
+        *,
+        conditions: list[str],
+        reason: str,
+        name: str | None = None,
+        idempotency_key: str | None = None,
+    ) -> str:
+        """在**新版本**（例如修了公开契约/提示）下重跑指定条件。
+
+        与 `create_supplement` 的区别：
+
+        - 补充实验只跑"失败/未执行"的子局，目的是补齐分母；
+        - 版本复跑**允许重跑已完成的子局**，目的是在新版本下重新测量，
+          因此它一定是独立实验，且**不与旧版本配对**。
+
+        原始实验一律不动；新实验通过 `supplement_of` / `supplement_reason` 记录来源，
+        报告会显式声明"跨版本不配对"。
+        """
+
+        source_spec = self._spec(source_experiment_id)
+        available = {cell.condition_key for cell in source_spec.matrix()}
+        wanted = list(dict.fromkeys(conditions))
+        unknown = [item for item in wanted if item not in available]
+        if unknown:
+            raise ExperimentError(
+                "这些条件不属于源实验：" + "、".join(unknown[:5])
+            )
+        if not wanted:
+            raise ExperimentError("版本复跑必须显式给出至少一个条件。")
+        new_name = name or f"{source_spec.name} · rerun-v2"
+        note = reason or "版本复跑：在新契约/提示版本下重新测量同一批条件。"
+        spec = source_spec.model_copy(
+            update={
+                "experiment_id": "",
+                "name": new_name,
+                "notes": f"{source_spec.notes}\n{note}".strip(),
+                "only_conditions": wanted,
+                "supplement_of": source_experiment_id,
+                "supplement_reason": note,
+                "created_at": utc_now(),
+            }
+        )
+        result = preflight(spec)
+        if not result.ok:
+            raise ExperimentError("版本复跑预检未通过：" + "；".join(result.blockers))
+        key = (
+            idempotency_key
+            or f"rerun:{source_experiment_id}:{spec.fingerprint()[:12]}"
+        )
+        return self.create_experiment(spec, idempotency_key=key)
+
     def create_supplement(
         self,
         source_experiment_id: str,

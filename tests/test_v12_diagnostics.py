@@ -176,6 +176,8 @@ def test_map22_flags_missing_memory() -> None:
 
 
 def test_map22_memory_without_bearing_is_flagged() -> None:
+    """写入成功但键名不在指标口径内 → 单独一类诊断（不是"没用记忆"）。"""
+
     steps = [
         _step(
             1,
@@ -186,8 +188,39 @@ def test_map22_memory_without_bearing_is_flagged() -> None:
         )
     ]
     findings = diagnose_run(map_id="MAP-22", run_id="r", steps=steps, result=_result())
-    memory = [item for item in findings if item.category == "memory_not_used"]
-    assert memory and "方位" in memory[0].summary
+    categories = {item.category for item in findings}
+    assert "memory_key_not_in_metric" in categories
+    assert "memory_not_used" not in categories
+    metric_finding = next(
+        item for item in findings if item.category == "memory_key_not_in_metric"
+    )
+    assert "bearing" in metric_finding.summary or "bearing" in metric_finding.detail
+    assert metric_finding.confidence_scope == "metric_coverage_not_behavior"
+
+
+def test_map22_rejected_payload_is_an_interface_finding() -> None:
+    steps = [
+        _step(
+            1,
+            "write_memory",
+            result="INVALID_MEMORY_PAYLOAD",
+            action_extra={"facts": [{"at_sign": "x"}]},
+            observation={"moves_used": 1},
+        )
+    ]
+    findings = diagnose_run(map_id="MAP-22", run_id="r", steps=steps, result=_result())
+    payload = [item for item in findings if item.category == "memory_payload_rejected"]
+    assert payload
+    assert payload[0].confidence_scope == "interface_not_behavior"
+
+
+def test_map22_no_writes_at_all_is_memory_not_used() -> None:
+    steps = [
+        _step(1, "move", observation={"moves_used": 1, "current_sign": "a"}),
+        _step(2, "move", observation={"moves_used": 2, "current_sign": "b"}),
+    ]
+    findings = diagnose_run(map_id="MAP-22", run_id="r", steps=steps, result=_result())
+    assert any(item.category == "memory_not_used" for item in findings)
 
 
 def test_map26_flags_blind_swap() -> None:

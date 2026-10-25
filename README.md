@@ -11,7 +11,8 @@ Agent 架构的行为、成功率、成本与失败原因。
 
 ```bash
 uv run python scripts/demo_v12.py          # 零 API Key、零费用的完整演示
-uv run python scripts/verify_v12.py        # 一键离线验收（11 项）
+uv run python scripts/verify_v12.py        # 一键离线验收（13 项）
+uv run python scripts/a11y_v12.py --browser --start   # 可访问性审计（需 Playwright）
 ```
 
 网页入口：`uv run agent-arena web` → 侧边栏 **Lab · 实验配置 / 实验监控 / 结果与对照**。
@@ -150,7 +151,7 @@ uv run python scripts/verify_v11.py
 uv run python scripts/verify_v12.py
 ```
 
-当前 V12 结果：**1433 pytest passed**、mypy 302 文件 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 11/11。详见 [V12 验证报告](docs/v12/validation-report.md)。
+当前 V12 结果：**1469 pytest passed**、mypy 303 文件 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 13/13。详见 [V12 验证报告](docs/v12/validation-report.md)。
 
 ## 研究背景（简版）
 

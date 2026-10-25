@@ -2,7 +2,7 @@
 
 - **更新日期**：2026-10-25
 - **起点 HEAD**：`258eadc5039309859fc0385d61650e266e6ab488`
-- **总状态**：`LAB_1_0_OFFLINE_READY`（P0 + P1 + P2 全部离线交付；真实付费矩阵 `PENDING_APPROVAL`）
+- **总状态**：`LAB_1_0_READY`（P0 + P1 + P2 全部交付；真实模型矩阵已执行：71 局、¥1.82140020、0 未知消费）
 
 ## Batch 0（P0）仓库审计
 
@@ -66,6 +66,7 @@
 | V12-04-05 幂等启动 | DONE | `test_create_is_idempotent_by_key`、`test_duplicate_submit_does_not_create_second_run_set` |
 | V12-04-06 断点续跑以子局为单位 | DONE | `test_resume_after_interruption_fills_gaps`、`test_resume_only_runs_pending_children` |
 | V12-04-07 CLI/Python API + append-only 事件 | DONE | `scripts/run_v12_matrix.py`、`runs/lab/<id>/events.jsonl` |
+| 补充实验流程（中断/未知消费/未执行 → 新实验） | DONE | `supplement_candidates` / `create_supplement`、`tests/test_v12_supplement.py`（11 项） |
 
 **Gate 4**：通过。预检零请求（`test_dry_run_does_not_touch_disk`）；54 局 dry-run 通过（`test_fifty_four_cell_dry_run_is_zero_cost`）。
 
@@ -158,7 +159,7 @@
 |---|---|---|
 | V12-11-01 `scripts/verify_v12.py` | DONE | 11/11 通过 |
 | V12-11-02 CI 浏览器 E2E | DONE | `.github/workflows/ci.yml` `lab-e2e`（`continue-on-error`） |
-| V12-11-03 430px/桌面/深色截图 + 可访问性 | DONE（部分） | 8 张截图；键盘/对比度仍为人工项 |
+| V12-11-03 430px/桌面/深色截图 + 可访问性 | DONE | 8 张截图；新增 `lab/a11y.py` + `scripts/a11y_v12.py`（对比度/焦点/DOM/键盘），修复 4 个真实缺陷 |
 | V12-11-04 Windows/Ubuntu/macOS | PARTIAL | Windows 实测；Ubuntu 由 CI 覆盖；**macOS `NOT_VERIFIED`** |
 | V12-11-05 mypy/Ruff/pytest/lock/freeze/复算/独立检查 | DONE | 见 `validation-report.md` |
 | V12-11-06 三组 Demo 包 | DONE | `docs/v12/demo/` |
@@ -168,12 +169,16 @@
 
 ## Batch 12 真实 API 验证
 
-**状态：`PENDING_APPROVAL`。未发出任何真实付费请求。**
+**状态：已获用户授权（"可以用 API"），Pilot 与主矩阵已执行。** 明细见 `docs/v12/mimo-results.md`。
 
-- 预登记矩阵与预算已冻结（`experiment-protocol.md`）；
-- `LiveApproval` 默认为未批准，`submit` 直接抛 `LiveApprovalRequired`；
-- `preflight_only` 默认为 `true`；
-- 需用户批准后才能跑 Pilot（3–6 局）与 54 局主矩阵。
+| 任务 | 状态 | 说明 |
+|---|---|---|
+| V12-12-01 展示规格与预算并记录批准 | DONE | `LiveApproval(approved=True, approved_by="user", max_cost_cny=6.00)`；预检零请求 |
+| V12-12-02 3–6 局 Pilot | DONE | 6 局（MAP-22/26 × 3 架构 × seed 0），131 请求，¥0.0995，0 未知消费 |
+| V12-12-03 预登记 54 局主矩阵 | DONE | 六图 × 3 seed × 3 架构 |
+| V12-12-04 Provider/环境/策略/预算失败分开编码 | DONE | 六类分母 + `Finding.confidence_scope` |
+| V12-12-05 反思独立小矩阵 | NOT_RUN | 需单独预算批准；未混入主矩阵 |
+| V12-12-06 核对 usage 与本地费用估算 | DONE | 见 `mimo-results.md` 成本小节 |
 
 ## Batch 13 验收与文档
 
@@ -184,10 +189,26 @@
 | V12-13-03 final-report | DONE | `final-report.md` |
 | V12-13-04 可复现演示脚本 | DONE | `scripts/demo_v12.py`（退出码 0） |
 | V12-13-05 diff/安全/冻结/hash 审核 | DONE | `validation-report.md` §6 |
-| V12-13-06 阶段标记 + 下一阶段 backlog | DONE | `final-report.md` §9 |
+| V12-13-06 阶段标记 + 下一阶段 backlog | DONE | `final-report.md` §NEXT |
+
+## 交付后追加（用户指示"先把其他的做完，可以用 API"）
+
+| 项 | 状态 | 证据 |
+|---|---|---|
+| 可访问性自动审计（主题对比度 / 焦点 / DOM / 键盘） | DONE | `lab/a11y.py` + `scripts/a11y_v12.py`；25 项测试；修复 4 个真实缺陷 |
+| 补充实验流程（中断 / Provider 错误 / 未知消费 / 取消 / 未执行） | DONE | `supplement_candidates` / `create_supplement`；14 项测试 |
+| 版本复跑（新契约版本下重跑已完成条件） | DONE | `create_version_rerun`；5 项测试 |
+| 父实验子局链接对账（真实事故回归） | DONE | `_reconcile_children`；`test_stale_child_link_is_reconciled_from_real_run_state` |
+| CLI `--resume` / `--rerun-of` / `--supplement-of` / `--timeout 0` | DONE | `scripts/run_v12_matrix.py` |
+| 真实 Pilot 6 局 | DONE | ¥0.09949940 |
+| 真实主矩阵 54 局 | DONE | ¥1.47181116 |
+| DCR-V12-01 契约补丁 + MAP-22 复跑 9 局 | DONE | 拒绝率 96.2% → 0%；¥0.21606796 |
+| DCR-V12-01 / DCR-V12-02 记录 | DONE | `docs/v12/dcr/` |
+| 真实结果档案（脱敏） | DONE | `docs/v12/real-runs/` |
 
 ## 下一步入口
 
-1. 等用户批准预算 → 跑 Pilot → 54 局；
-2. macOS 实机验证；
-3. 可访问性自动检测（对比度/键盘）。
+1. DCR-V12-02 决策（`route_recall` 口径与公开信息对齐）
+2. MAP-30 提高预算重测
+3. MAP-16 / MAP-18 增加 replicate
+4. macOS / Ollama（按用户指示暂缓）

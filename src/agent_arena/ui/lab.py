@@ -322,7 +322,7 @@ def _config_view(st: Any, get_lab: Callable[[], Any]) -> None:
     _render_preflight(st, result)
 
     st.divider()
-    st.subheader("提交")
+    st.header("提交")
     service = _lab(get_lab)
     if isinstance(service, Exception):
         st.error(f"实验服务不可用：{service}")
@@ -696,9 +696,9 @@ def _result_view(st: Any, get_lab: Callable[[], Any]) -> None:
 
     tabs = st.tabs(["概览", "逐局明细", "可视化", "证据与差异", "导出"])
     with tabs[0]:
-        st.subheader("实验臂汇总")
+        st.header("实验臂汇总")
         _render_arm_table(st, comparison)
-        st.subheader("类别分布")
+        st.header("类别分布")
         st.dataframe(
             [
                 {"类别": CATEGORY_LABELS.get(key, key), "局数": value}
@@ -742,14 +742,14 @@ def _result_view(st: Any, get_lab: Callable[[], Any]) -> None:
     with tabs[3]:
         run_ids = [str(record["run_id"]) for record in records]
         findings = service.findings(experiment_id)
-        st.subheader("失败诊断（确定性规则）")
+        st.header("失败诊断（确定性规则）")
         if run_ids:
             only = st.selectbox("只看某一局（可选）", ["全部", *run_ids])
             selected = findings if only == "全部" else [f for f in findings if f.run_id == only]
         else:
             selected = findings
         _render_findings(st, selected)
-        st.subheader("两条轨迹对照")
+        st.header("两条轨迹对照")
         if len(run_ids) >= 2:
             left = st.selectbox("A 局", run_ids, index=0)
             right = st.selectbox("B 局", run_ids, index=1)

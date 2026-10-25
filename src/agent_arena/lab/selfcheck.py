@@ -435,6 +435,78 @@ def check_theme_tokens_in_css() -> dict[str, Any]:
     return {"tokens": 7, "missing": 0}
 
 
+def check_contract_augmentation() -> dict[str, Any]:
+    """DCR-V12-01：`facts` 契约补丁只在需要的图上生效，并写入 provenance。"""
+
+    from agent_arena.lab.contract_v12 import (
+        CONTRACT_AUGMENTATION_VERSION,
+        augment_prompt,
+    )
+    from agent_arena.lab.runner import run_lab_episode
+    from agent_arena.lab.simulated import SimulatedDecisionProvider
+    from agent_arena.web.prompting import system_prompt
+
+    applied: list[str] = []
+    clean: list[str] = []
+    for item in cards():
+        environment = create_environment(item.map_id)
+        base = system_prompt(item.map_id, environment)
+        augmented, hints = augment_prompt(base, environment)
+        if hints:
+            applied.append(item.map_id)
+            assert augmented != base
+            assert '{"key": "<str>", "value": "<str>"}' in augmented
+        else:
+            clean.append(item.map_id)
+            assert augmented == base
+    assert "MAP-22" in applied, "MAP-22 必须命中 facts 补丁"
+
+    environment = create_environment("MAP-22")
+    provider = SimulatedDecisionProvider(map_id="MAP-22", shapes=environment.SHAPES)
+    outcome = run_lab_episode(
+        _config("MAP-22", "basic.v1", decisions=2), provider=provider
+    )
+    block = outcome.result["provenance"]["contract_augmentation"]
+    assert block["applied"] is True
+    assert block["version"] == CONTRACT_AUGMENTATION_VERSION
+    return {
+        "augmented": applied,
+        "unchanged": len(clean),
+        "version": CONTRACT_AUGMENTATION_VERSION,
+    }
+
+
+def check_supplement_flow() -> dict[str, Any]:
+    """补充实验：候选只含中断/Provider 错误/未知消费/取消/未执行，且源实验不动。"""
+
+    with tempfile.TemporaryDirectory(prefix="agent-arena-v12-supp-") as temporary:
+        runs, lab = _experiment_service(Path(temporary))
+        try:
+            experiment_id = lab.create_experiment(_matrix_spec())
+            # 未提交：全部未执行。
+            plan = lab.supplement_candidates(experiment_id)
+            assert plan["count"] == 6, plan["count"]
+            assert {item["reason"] for item in plan["candidates"]} == {"not_executed"}
+
+            lab.submit(experiment_id)
+            lab.wait(experiment_id, timeout=600)
+            assert lab.supplement_candidates(experiment_id)["count"] == 0
+
+            conditions = [
+                cell.condition_key for cell in lab._spec(experiment_id).matrix()
+            ]
+            rerun_id = lab.create_version_rerun(
+                experiment_id, conditions=conditions[:2], reason="selfcheck"
+            )
+            spec = lab._spec(rerun_id)
+            assert spec.supplement_of == experiment_id
+            assert len(spec.matrix()) == 2
+            assert rerun_id != experiment_id
+            return {"candidates_before": 6, "rerun_cells": 2}
+        finally:
+            runs.shutdown()
+
+
 def run_checks(*, report_path: Path | None = None) -> dict[str, Any]:
     checks = [
         _check("catalog", check_catalog),
@@ -450,6 +522,8 @@ def run_checks(*, report_path: Path | None = None) -> dict[str, Any]:
         _check("redaction", check_redaction),
         _check("a11y", check_a11y),
         _check("theme_tokens_in_css", check_theme_tokens_in_css),
+        _check("contract_augmentation", check_contract_augmentation),
+        _check("supplement_flow", check_supplement_flow),
     ]
     failed = [item for item in checks if not item["ok"]]
     report = {
