@@ -53,21 +53,32 @@ def _services(tmp_path: Path, **kwargs: Any) -> tuple[RunService, ExperimentServ
 
 def _mark_child(
     lab: ExperimentService,
+    runs: RunService,
     experiment_id: str,
     matrix_index: int,
     *,
     state: str,
     cost_unknown: bool = False,
 ) -> None:
-    """把某个子局改成"需要补充"的状态（模拟中断 / Provider 错误）。"""
+    """把某个子局的**真实 run** 改成"需要补充"的状态。
+
+    父实验的 `children` 是快照，会被 `_reconcile_children` 用真实 run 状态覆盖；
+    所以测试必须改 run manifest（事实来源），而不是改父实验链接。
+    """
 
     manifest = lab.store.load_manifest(experiment_id)
-    for child in manifest.children:
-        if int(child["matrix_index"]) == matrix_index:
-            child["state"] = state
-            child["cost_unknown"] = cost_unknown
-            child["success"] = False
-    lab.store.save_manifest(manifest)
+    target = next(
+        item for item in manifest.children if int(item["matrix_index"]) == matrix_index
+    )
+    run_id = str(target["run_id"])
+    run_manifest = runs.store.load_manifest(run_id)
+    run_manifest["state"] = state
+    if cost_unknown:
+        budget = run_manifest.get("budget")
+        budget = dict(budget) if isinstance(budget, dict) else {}
+        budget["cost_unknown"] = True
+        run_manifest["budget"] = budget
+    runs.store.save_manifest(run_manifest)
 
 
 def test_no_candidates_when_all_completed(tmp_path: Path) -> None:
@@ -90,7 +101,7 @@ def test_interrupted_child_becomes_candidate(tmp_path: Path) -> None:
         experiment_id = lab.create_experiment(_spec())
         lab.submit(experiment_id)
         lab.wait(experiment_id, timeout=300)
-        _mark_child(lab, experiment_id, 0, state=RunState.INTERRUPTED.value)
+        _mark_child(lab, runs, experiment_id, 0, state=RunState.INTERRUPTED.value)
         plan = lab.supplement_candidates(experiment_id)
         assert plan["count"] == 1
         assert plan["candidates"][0]["reason"] == "interrupted"
@@ -106,7 +117,8 @@ def test_unknown_spend_child_becomes_candidate(tmp_path: Path) -> None:
         lab.submit(experiment_id)
         lab.wait(experiment_id, timeout=300)
         _mark_child(
-            lab, experiment_id, 1, state=RunState.PROVIDER_ERROR.value, cost_unknown=True
+            lab, runs, experiment_id, 1,
+            state=RunState.PROVIDER_ERROR.value, cost_unknown=True,
         )
         plan = lab.supplement_candidates(experiment_id)
         assert plan["count"] == 1
@@ -133,8 +145,11 @@ def test_supplement_creates_new_experiment_without_touching_source(tmp_path: Pat
         source_id = lab.create_experiment(_spec())
         lab.submit(source_id)
         lab.wait(source_id, timeout=300)
-        _mark_child(lab, source_id, 0, state=RunState.INTERRUPTED.value)
-        source_before = lab.status(source_id).as_dict()
+        _mark_child(lab, runs, source_id, 0, state=RunState.INTERRUPTED.value)
+        # 在补跑之前先对账一次，让 source_before 反映真实状态；
+        # 之后 create_supplement 不应再改变源实验的任何内容。
+        source_before = lab.supplement_candidates(source_id)
+        source_manifest_before = lab.status(source_id).as_dict()
         source_runs_before = len(runs.list_runs())
 
         supplement_id = lab.create_supplement(source_id, reason="中断补跑")
@@ -150,11 +165,14 @@ def test_supplement_creates_new_experiment_without_touching_source(tmp_path: Pat
         assert manifest.state is ExperimentState.COMPLETED
         assert manifest.counts["total"] == 1
 
-        # 原实验的 manifest 与子局记录未被改写（除我们手动标记的那一处）。
+        # 原实验的 manifest 与子局记录未被改写。
         source_after = lab.status(source_id).as_dict()
-        assert source_after["children"] == source_before["children"]
-        assert source_after["state"] == source_before["state"]
+        assert source_after["children"] == source_manifest_before["children"]
+        assert source_after["state"] == source_manifest_before["state"]
+        assert source_after["budget"] == source_manifest_before["budget"]
+        # 补跑只新增 1 个 run，不覆盖历史。
         assert len(runs.list_runs()) == source_runs_before + 1
+        assert source_before["count"] == 1
     finally:
         runs.shutdown()
 
@@ -165,7 +183,7 @@ def test_supplement_summary_and_report_declare_lineage(tmp_path: Path) -> None:
         source_id = lab.create_experiment(_spec())
         lab.submit(source_id)
         lab.wait(source_id, timeout=300)
-        _mark_child(lab, source_id, 1, state=RunState.INTERRUPTED.value)
+        _mark_child(lab, runs, source_id, 1, state=RunState.INTERRUPTED.value)
         supplement_id = lab.create_supplement(source_id, reason="中断补跑")
         lab.submit(supplement_id)
         lab.wait(supplement_id, timeout=300)
@@ -236,6 +254,66 @@ def test_only_conditions_survives_json_round_trip() -> None:
     assert reloaded.fingerprint() == spec.fingerprint()
 
 
+def test_cancelled_child_becomes_candidate(tmp_path: Path) -> None:
+    """取消的子局没有终局判定，可以补跑（且必须是显式动作）。"""
+
+    runs, lab = _services(tmp_path)
+    try:
+        experiment_id = lab.create_experiment(_spec())
+        lab.submit(experiment_id)
+        lab.wait(experiment_id, timeout=300)
+        _mark_child(lab, runs, experiment_id, 0, state=RunState.CANCELLED.value)
+        plan = lab.supplement_candidates(experiment_id)
+        assert plan["count"] == 1
+        assert plan["candidates"][0]["reason"] == "cancelled"
+    finally:
+        runs.shutdown()
+
+
+def test_stale_child_link_is_reconciled_from_real_run_state(tmp_path: Path) -> None:
+    """父实验链接可能停在 QUEUED，而真实 run 已经结束；必须以磁盘为准。
+
+    这是真实事故的回归测试：CLI 等待超时退出 → 执行线程被杀 → 子局被 RunService
+    收尾为 CANCELLED，但父实验来不及回写，链接仍写 QUEUED。
+    """
+
+    runs, lab = _services(tmp_path)
+    try:
+        experiment_id = lab.create_experiment(_spec())
+        lab.submit(experiment_id)
+        lab.wait(experiment_id, timeout=300)
+        # 人为把某个已结束子局的链接改回 QUEUED（模拟父实验没来得及回写）。
+        manifest = lab.store.load_manifest(experiment_id)
+        target = manifest.children[0]
+        real_state = target["state"]
+        target["state"] = RunState.QUEUED.value
+        target["outcome"] = None
+        target["success"] = False
+        lab.store.save_manifest(manifest)
+
+        plan = lab.supplement_candidates(experiment_id)
+        # 对账后应恢复成真实状态，因此不再算"未完成"候选。
+        assert plan["count"] == 0, plan["candidates"]
+        reconciled = lab.status(experiment_id)
+        assert reconciled.children[0]["state"] == real_state
+    finally:
+        runs.shutdown()
+
+
+def test_unfinished_child_is_candidate(tmp_path: Path) -> None:
+    """父实验里的非终态子局（QUEUED/RUNNING 残留）必须算作待补充。"""
+
+    runs, lab = _services(tmp_path)
+    try:
+        experiment_id = lab.create_experiment(_spec())
+        # 未提交：没有 child 链接，两个子局都是 not_executed。
+        plan = lab.supplement_candidates(experiment_id)
+        assert {item["reason"] for item in plan["candidates"]} == {"not_executed"}
+        assert plan["count"] == 2
+    finally:
+        runs.shutdown()
+
+
 def test_supplement_requires_preflight_ok(tmp_path: Path) -> None:
     """补充实验若继承到不合法预算，必须拒绝而不是静默提交。"""
 
@@ -247,7 +325,10 @@ def test_supplement_requires_preflight_ok(tmp_path: Path) -> None:
         payload["budget"]["experiment_request_cap"] = 5
         payload["budget"]["per_run_request_cap"] = 20
         lab.store.write_json(source_id, "experiment.json", payload)
-        with pytest.raises(Exception):
+        # 规格本身在 schema 层就被拒绝（单局上限 > 实验上限）——这正是"入队前拒绝"。
+        from pydantic import ValidationError
+
+        with pytest.raises(ValidationError):
             lab.create_supplement(source_id)
     finally:
         runs.shutdown()

@@ -339,12 +339,56 @@ class ExperimentService:
                 "进程在实验进行中退出；已完成的子局保留，未开始的子局需显式续跑。"
             )
             manifest.finished_at = utc_now()
+            self._reconcile_children(manifest)
             self.store.save_manifest(manifest)
             self.store.append_event(
                 experiment_id, {"event": "experiment_interrupted", "reason": "process_restart"}
             )
             interrupted.append(experiment_id)
         return {"interrupted": interrupted}
+
+    def _reconcile_children(self, manifest: ExperimentManifest) -> list[str]:
+        """用**真实 run 状态**刷新父实验的子局链接，返回被修正的 matrix_index。
+
+        背景：父实验的 `children` 是写入时的快照。如果进程在子局执行中途退出，
+        子局可能已经被 `RunService` 收尾（例如被取消/中断），但父实验来不及回写，
+        链接会停在 `QUEUED`。此时以磁盘上的 run manifest 为准，避免把"已结束"
+        误当成"还在跑"。
+        """
+
+        fixed: list[str] = []
+        for child in manifest.children:
+            run_id = str(child.get("run_id") or "")
+            if not run_id:
+                continue
+            try:
+                status = self.run_service.get_run(run_id)
+            except Exception:  # noqa: BLE001 - 子局被删时保留原样
+                continue
+            actual = status.state.value
+            if str(child.get("state")) == actual:
+                continue
+            child["state"] = actual
+            child["outcome"] = status.outcome
+            child["success"] = actual == RunState.SUCCEEDED.value
+            budget = status.budget if isinstance(status.budget, dict) else {}
+            requests = budget.get("requests")
+            if isinstance(requests, int):
+                child["requests"] = max(int(child.get("requests") or 0), requests)
+            cost = budget.get("cost_settled_cny")
+            if cost is not None and child.get("cost_settled_cny") is None:
+                child["cost_settled_cny"] = str(cost)
+            if budget.get("cost_unknown"):
+                child["cost_unknown"] = True
+            fixed.append(str(child.get("matrix_index")))
+        if fixed:
+            manifest.counts = self._counts(manifest)
+            self._refresh_budget(manifest)
+            self.store.append_event(
+                manifest.experiment_id,
+                {"event": "children_reconciled", "matrix_indexes": fixed},
+            )
+        return fixed
 
     # -------------------------------------------------------------------- create
     def create_experiment(
@@ -856,6 +900,8 @@ class ExperimentService:
 
     def records(self, experiment_id: str) -> list[dict[str, Any]]:
         manifest = self.store.load_manifest(experiment_id)
+        if self._reconcile_children(manifest):
+            self.store.save_manifest(manifest)
         records: list[dict[str, Any]] = []
         for child in manifest.children:
             run_id = str(child.get("run_id") or "")
@@ -1066,13 +1112,18 @@ class ExperimentService:
 
     # -------------------------------------------------------------- supplement
     def supplement_candidates(self, experiment_id: str) -> dict[str, Any]:
-        """列出**需要补充**的子局：中断、Provider 错误、未知消费、未执行。
+        """列出**需要补充**的子局：中断、Provider 错误、未知消费、取消、未执行。
 
-        已完成 / 已取消 / 机制失败的子局**不在**候选里：前者不该重跑，
-        后两者是真实结果，补跑会污染分母。
+        已完成 / 机制失败 / 预算截尾**不在**候选里：前两者是真实结果，补跑会污染
+        分母；预算截尾若要重测应另立提高预算的新实验。
+
+        先与真实 run 状态对账，避免父实验里陈旧链接（例如进程中断后残留的
+        `QUEUED`）把"已结束"误当成"待补充"或反之。
         """
 
         manifest = self.store.load_manifest(experiment_id)
+        if self._reconcile_children(manifest):
+            self.store.save_manifest(manifest)
         spec = self._spec(experiment_id)
         cells = {cell.matrix_index: cell for cell in spec.matrix()}
         by_index = {
@@ -1089,6 +1140,11 @@ class ExperimentService:
                 reason = "interrupted"
             elif str(child.get("state")) == RunState.PROVIDER_ERROR.value:
                 reason = "provider_error"
+            elif str(child.get("state")) == RunState.CANCELLED.value:
+                # 进程中断/用户取消都没有终局判定，可以补跑（且必须是显式动作）。
+                reason = "cancelled"
+            elif str(child.get("state")) not in TERMINAL_CHILD_STATES:
+                reason = "unfinished"
             else:
                 continue
             rows.append(
@@ -1109,7 +1165,8 @@ class ExperimentService:
             "candidates": rows,
             "count": len(rows),
             "excluded_note": (
-                "已取消、机制失败、预算截尾、成功均不补跑；它们是有意义的结果。"
+                "已完成、机制失败、预算截尾均不补跑：它们是真实结果，补跑会污染分母。"
+                "预算截尾若需重测，应另立提高单局预算的新实验。"
             ),
         }
 

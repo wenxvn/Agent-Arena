@@ -21,8 +21,10 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from decimal import Decimal
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -82,6 +84,68 @@ def _spec_from_args(args: argparse.Namespace) -> ExperimentSpec:
     )
 
 
+def _wait(service: ExperimentService, experiment_id: str, timeout: float) -> Any:
+    """等待父实验进入终态；``timeout<=0`` 表示不设上限。
+
+    为什么默认不设上限：父实验的执行线程是进程内的 daemon 线程。CLI 一旦退出，
+    线程随之被杀，父实验会停在 RUNNING 且留下一个孤儿 QUEUED 子局。宁可等，
+    也不要让调用方"以为跑完了"。
+    """
+
+    if timeout and timeout > 0:
+        return service.wait(experiment_id, timeout=timeout)
+    interval = 2.0
+    while True:
+        manifest = service.store.load_manifest(experiment_id)
+        thread = service._threads.get(experiment_id)
+        if manifest.terminal and not (thread is not None and thread.is_alive()):
+            return manifest
+        time.sleep(interval)
+
+
+def _resume(args: argparse.Namespace) -> int:
+    """续跑已有实验：只排尚未执行的子局；已结束/未知消费的子局不自动重跑。"""
+
+    runs = RunService(WEB_RUNS, recover=False)
+    service = ExperimentService(LAB_RUNS, run_service=runs, recover=False)
+    try:
+        before = service.status(args.resume)
+        print(
+            json.dumps(
+                {
+                    "experiment_id": args.resume,
+                    "state_before": before.state.value,
+                    "counts_before": before.counts,
+                },
+                ensure_ascii=False,
+                indent=1,
+            )
+        )
+        if not args.submit:
+            print("仅查看状态；加 --submit 才会续跑。")
+            return 0
+        service.submit(args.resume, resume=True)
+        manifest = _wait(service, args.resume, args.timeout)
+        summary = service.summary(args.resume)
+        print(
+            json.dumps(
+                {
+                    "experiment_id": args.resume,
+                    "state": manifest.state.value,
+                    "counts": manifest.counts,
+                    "budget": manifest.budget,
+                    "executed": summary["executed"],
+                    "valid_denominator": summary["valid_denominator"],
+                },
+                ensure_ascii=False,
+                indent=1,
+            )
+        )
+        return 0 if manifest.state.value in {"COMPLETED", "PARTIAL"} else 1
+    finally:
+        runs.shutdown()
+
+
 def _supplement(args: argparse.Namespace) -> int:
     """补充实验：列出候选 / 新建并提交（原始实验不动）。"""
 
@@ -102,7 +166,7 @@ def _supplement(args: argparse.Namespace) -> int:
             conditions=args.conditions,
         )
         service.submit(experiment_id)
-        manifest = service.wait(experiment_id, timeout=args.timeout)
+        manifest = _wait(service, experiment_id, args.timeout)
         summary = service.summary(experiment_id)
         print(
             json.dumps(
@@ -144,9 +208,14 @@ def main() -> int:
     parser.add_argument("--approval-cap", type=float, default=5.0)
     parser.add_argument("--i-have-budget-approval", action="store_true")
     parser.add_argument(
+        "--resume",
+        default=None,
+        help="续跑已有实验（只排尚未执行的子局；已结束/未知消费子局不自动重跑）",
+    )
+    parser.add_argument(
         "--supplement-of",
         default=None,
-        help="从该实验新建补充实验（只重跑中断/Provider 错误/未知消费/未执行子局）",
+        help="从该实验新建补充实验（只重跑中断/Provider 错误/未知消费/取消/未执行子局）",
     )
     parser.add_argument(
         "--conditions",
@@ -161,9 +230,16 @@ def main() -> int:
     )
     parser.add_argument("--submit", action="store_true")
     parser.add_argument("--idempotency-key", default=None)
-    parser.add_argument("--timeout", type=float, default=1_800.0)
+    parser.add_argument(
+        "--timeout",
+        type=float,
+        default=0.0,
+        help="等待秒数；0 表示一直等到父实验进入终态（推荐用于长矩阵）",
+    )
     args = parser.parse_args()
 
+    if args.resume:
+        return _resume(args)
     if args.supplement_of or args.list_candidates:
         if not args.supplement_of:
             parser.error("--list-candidates 需要同时给出 --supplement-of")
@@ -192,7 +268,7 @@ def main() -> int:
         except ExperimentBusy as exc:
             print(str(exc), file=sys.stderr)
             return 2
-        manifest = service.wait(experiment_id, timeout=args.timeout)
+        manifest = _wait(service, experiment_id, args.timeout)
         summary = service.summary(experiment_id)
         comparison = service.comparison(experiment_id)
         print(
