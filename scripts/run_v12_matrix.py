@@ -1,0 +1,157 @@
+"""V12 矩阵 CLI：预检、提交与结果查看（与网页走同一服务层）。
+
+用法：
+
+    # 只预检（零请求）
+    uv run python scripts/run_v12_matrix.py --maps MAP-22 MAP-26 \
+        --agents basic.v1 memory.v1 planning.v1
+
+    # 提交离线模拟矩阵并等待完成
+    uv run python scripts/run_v12_matrix.py --submit --seeds 0
+
+    # 从 JSON 规格文件提交（字段见 docs/v12/experiment-protocol.md）
+    uv run python scripts/run_v12_matrix.py --spec my-spec.json --submit
+
+真实付费实验必须显式加 ``--i-have-budget-approval`` 并设置 ``--approval-cap``；
+默认 ``preflight_only=True``，不会发出任何请求。
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from decimal import Decimal
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+
+from agent_arena.lab.contracts import (  # noqa: E402
+    AgentArm,
+    ComparisonPolicy,
+    ExperimentBudget,
+    ExperimentMode,
+    ExperimentSpec,
+    LiveApproval,
+)
+from agent_arena.lab.experiment import (  # noqa: E402
+    ExperimentBusy,
+    ExperimentService,
+    LiveApprovalRequired,
+    preflight,
+)
+from agent_arena.lab.paths import LAB_RUNS, WEB_RUNS  # noqa: E402
+from agent_arena.web.schemas import (  # noqa: E402
+    SIMULATED_MODEL,
+    SIMULATED_PROVIDER,
+)
+from agent_arena.web.service import RunService  # noqa: E402
+
+
+def _spec_from_args(args: argparse.Namespace) -> ExperimentSpec:
+    if args.spec:
+        payload = json.loads(Path(args.spec).read_text(encoding="utf-8"))
+        return ExperimentSpec.model_validate(payload)
+    simulated = args.provider == SIMULATED_PROVIDER
+    approved = bool(args.i_have_budget_approval)
+    return ExperimentSpec(
+        name=args.name,
+        notes=args.notes,
+        maps=args.maps,
+        agent_arms=[AgentArm(agent_id=agent) for agent in args.agents],
+        environment_seeds=args.seeds,
+        provider_id=args.provider,
+        model=SIMULATED_MODEL if simulated else args.model,
+        mode=ExperimentMode.SIMULATED if simulated else ExperimentMode.LIVE,
+        budget=ExperimentBudget(
+            per_run_request_cap=args.requests,
+            per_run_decision_cap=args.decisions,
+            per_run_cost_cap_cny=Decimal(str(args.per_run_cost)),
+            experiment_request_cap=args.experiment_requests,
+            experiment_cost_cap_cny=Decimal(str(args.experiment_cost)),
+        ),
+        comparison=ComparisonPolicy(),
+        preflight_only=not simulated and not approved,
+        approval=LiveApproval(
+            approved=approved,
+            approved_by="cli" if approved else "",
+            max_cost_cny=Decimal(str(args.approval_cap)) if approved else None,
+            note="由 CLI 显式确认" if approved else "",
+        ),
+    )
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--spec", type=Path, default=None)
+    parser.add_argument("--name", default="cli-matrix")
+    parser.add_argument("--notes", default="")
+    parser.add_argument("--maps", nargs="+", default=["MAP-22", "MAP-26"])
+    parser.add_argument(
+        "--agents", nargs="+", default=["basic.v1", "memory.v1", "planning.v1"]
+    )
+    parser.add_argument("--seeds", nargs="+", type=int, default=[0])
+    parser.add_argument("--provider", default=SIMULATED_PROVIDER)
+    parser.add_argument("--model", default="mimo-v2.6-flash")
+    parser.add_argument("--decisions", type=int, default=20)
+    parser.add_argument("--requests", type=int, default=60)
+    parser.add_argument("--per-run-cost", type=float, default=1.0)
+    parser.add_argument("--experiment-requests", type=int, default=2_000)
+    parser.add_argument("--experiment-cost", type=float, default=10.0)
+    parser.add_argument("--approval-cap", type=float, default=5.0)
+    parser.add_argument("--i-have-budget-approval", action="store_true")
+    parser.add_argument("--submit", action="store_true")
+    parser.add_argument("--idempotency-key", default=None)
+    parser.add_argument("--timeout", type=float, default=1_800.0)
+    args = parser.parse_args()
+
+    spec = _spec_from_args(args)
+    result = preflight(spec)
+    print(json.dumps(result.as_dict(), ensure_ascii=False, indent=1))
+    if not result.ok:
+        print("预检未通过：不会创建或提交实验。", file=sys.stderr)
+        return 1
+    if not args.submit:
+        print("仅预检完成（未创建实验）。加 --submit 才会入队。")
+        return 0
+
+    runs = RunService(WEB_RUNS, recover=False)
+    service = ExperimentService(LAB_RUNS, run_service=runs, recover=False)
+    try:
+        key = args.idempotency_key or f"cli:{spec.fingerprint()[:12]}"
+        experiment_id = service.create_experiment(spec, idempotency_key=key)
+        try:
+            service.submit(experiment_id)
+        except LiveApprovalRequired as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
+        except ExperimentBusy as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
+        manifest = service.wait(experiment_id, timeout=args.timeout)
+        summary = service.summary(experiment_id)
+        comparison = service.comparison(experiment_id)
+        print(
+            json.dumps(
+                {
+                    "experiment_id": experiment_id,
+                    "state": manifest.state.value,
+                    "counts": manifest.counts,
+                    "budget": manifest.budget,
+                    "verdict": comparison["verdict"],
+                    "reasons": comparison["reasons"],
+                    "executed": summary["executed"],
+                    "valid_denominator": summary["valid_denominator"],
+                },
+                ensure_ascii=False,
+                indent=1,
+            )
+        )
+        return 0 if manifest.state.value in {"COMPLETED", "PARTIAL"} else 1
+    finally:
+        runs.shutdown()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

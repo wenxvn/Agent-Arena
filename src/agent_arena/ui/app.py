@@ -20,6 +20,8 @@ from pathlib import Path
 from typing import Any
 
 from agent_arena import __version__
+from agent_arena.lab.paths import LAB_RUNS
+from agent_arena.ui import lab as lab_ui
 from agent_arena.ui import theme
 from agent_arena.ui.present import (
     aggregate_traces,
@@ -31,6 +33,7 @@ from agent_arena.ui.present import (
     summarize_trace,
     trace_overview,
 )
+from agent_arena.ui.runtime import get_lab_service as _get_shared_lab_service
 from agent_arena.ui.runtime import get_service as _get_shared_service
 from agent_arena.ui.runtime import reset_service as _reset_shared_service
 from agent_arena.v10.baselines.suite import decision_budget
@@ -86,6 +89,9 @@ ROOT = Path(__file__).resolve().parent.parent.parent.parent
 RUNS_DIR = ROOT / "runs"
 RESULTS_DIR = ROOT / "results"
 WEB_RUNS_DIR = Path(os.environ.get("AGENT_ARENA_WEB_RUNS_DIR", str(RUNS_DIR / "web")))
+LAB_RUNS_DIR = Path(
+    os.environ.get("AGENT_ARENA_LAB_RUNS_DIR", str(LAB_RUNS))
+)
 MAX_SCAN_FILES = 400
 PAGE_SIZE = 30
 K_BUDGETS = [30, 60, 100, 150, 200]
@@ -96,6 +102,9 @@ VIEW_CONFIG = "挑战配置"
 VIEW_LIVE = "运行监控"
 VIEW_RESULT = "结果与回放"
 VIEW_HISTORY = "历史与对照"
+VIEW_LAB_CONFIG = lab_ui.LAB_CONFIG
+VIEW_LAB_MONITOR = lab_ui.LAB_MONITOR
+VIEW_LAB_RESULT = lab_ui.LAB_RESULT
 VIEW_RESEARCH = "研究回放（只读）"
 VIEW_SETTINGS = "设置与帮助"
 VIEWS = [
@@ -104,9 +113,13 @@ VIEWS = [
     VIEW_LIVE,
     VIEW_RESULT,
     VIEW_HISTORY,
+    VIEW_LAB_CONFIG,
+    VIEW_LAB_MONITOR,
+    VIEW_LAB_RESULT,
     VIEW_RESEARCH,
     VIEW_SETTINGS,
 ]
+LAB_VIEWS = set(lab_ui.LAB_VIEWS)
 LEGACY_VIEWS = {"单局回放", "矩阵总览", "错误热点", "条件对照"}
 RESEARCH_VIEWS = ["单局回放", "矩阵总览", "错误热点", "条件对照"]
 
@@ -125,6 +138,10 @@ def _load_streamlit() -> Any:
 
 def get_service() -> RunService:
     return _get_shared_service(WEB_RUNS_DIR)
+
+
+def get_lab_service() -> Any:
+    return _get_shared_lab_service(WEB_RUNS_DIR, LAB_RUNS_DIR)
 
 
 def reset_service() -> None:
@@ -576,7 +593,7 @@ def _home(st: Any, service_getter: Any = get_service) -> None:
     )
 
     st.subheader("快速开始")
-    quick = st.columns(3)
+    quick = st.columns(4)
     with quick[0]:
         with st.container(border=True):
             st.markdown(
@@ -610,6 +627,17 @@ def _home(st: Any, service_getter: Any = get_service) -> None:
             )
             if st.button("打开历史", width="stretch"):
                 _set_nav(st, VIEW_HISTORY)
+    with quick[3]:
+        with st.container(border=True):
+            st.markdown(
+                theme.chip_row([theme.chip("V12", "accent"), theme.chip("多架构", "info")])
+                + "<div class='aa-card-title'>Lab 架构对照</div>"
+                "<div class='aa-card-goal'>同一模型、同一地图、同一 seed，"
+                "比较 Basic / Memory / Planning 的行为、成本与失败原因。</div>",
+                unsafe_allow_html=True,
+            )
+            if st.button("打开 Lab", width="stretch"):
+                _set_nav(st, VIEW_LAB_CONFIG)
 
     st.subheader("地图大厅")
     filters = st.columns([1.2, 1, 2])
@@ -1827,6 +1855,8 @@ def main() -> None:
         _result_view(st)
     elif nav == VIEW_HISTORY:
         _history_view(st)
+    elif nav in LAB_VIEWS:
+        lab_ui.render(st, get_lab_service, nav)
     elif nav == VIEW_SETTINGS:
         _settings_view(st)
     elif nav == VIEW_RESEARCH:

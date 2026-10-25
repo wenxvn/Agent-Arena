@@ -24,6 +24,7 @@ from agent_arena.web.providers import build_live_provider
 from agent_arena.web.safety import classify_exception, error_hint
 from agent_arena.web.schemas import (
     ALLOWED_TRANSITIONS,
+    LEGACY_LIVE_AGENT,
     SCHEMA_VERSION,
     TERMINAL_STATES,
     RunConfig,
@@ -41,6 +42,20 @@ Runner = Callable[..., ExecutionOutcome]
 ProviderFactory = Callable[[RunConfig], DecisionProvider]
 
 _ACTIVE_OWNERS: set[str] = set()
+
+
+def _default_lab_runner(*args: Any, **kwargs: Any) -> Any:
+    """延迟导入 Lab runner：V11 单局路径不因 V12 模块缺失而不可用。"""
+
+    from agent_arena.lab.runner import run_lab_episode
+
+    return run_lab_episode(*args, **kwargs)
+
+
+def _default_simulated_provider(config: RunConfig) -> DecisionProvider:
+    from agent_arena.lab.simulated import build_simulated_provider
+
+    return build_simulated_provider(config)
 
 
 class RunServiceError(RuntimeError):
@@ -65,6 +80,8 @@ class RunService:
         offline_runner: Runner = execute_offline,
         live_runner: Runner = execute_live,
         provider_factory: ProviderFactory = build_live_provider,
+        lab_runner: Runner = _default_lab_runner,
+        simulated_provider_factory: ProviderFactory = _default_simulated_provider,
     ) -> None:
         self.store = RunStore(base_dir)
         self._owner = owner_id or f"{os.getpid()}-{uuid4().hex[:8]}"
@@ -77,6 +94,8 @@ class RunService:
         self._offline_runner = offline_runner
         self._live_runner = live_runner
         self._provider_factory = provider_factory
+        self._lab_runner = lab_runner
+        self._simulated_provider_factory = simulated_provider_factory
         self._instance_lock = SingleInstanceLock(self.store.base / ".service.lock")
         self._instance_lock.acquire()
         _ACTIVE_OWNERS.add(self._owner)
@@ -285,6 +304,24 @@ class RunService:
                     config,
                     on_event=on_event,
                     should_stop=cancel_event.is_set,
+                )
+            elif config.mode is RunMode.SIMULATED:
+                provider = self._simulated_provider_factory(config)
+                outcome = self._lab_runner(
+                    config,
+                    provider=provider,
+                    on_event=on_event,
+                    should_stop=cancel_event.is_set,
+                    run_id=run_id,
+                )
+            elif config.agent != LEGACY_LIVE_AGENT:
+                provider = self._provider_factory(config)
+                outcome = self._lab_runner(
+                    config,
+                    provider=provider,
+                    on_event=on_event,
+                    should_stop=cancel_event.is_set,
+                    run_id=run_id,
                 )
             else:
                 provider = self._provider_factory(config)

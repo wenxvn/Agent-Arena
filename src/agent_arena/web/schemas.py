@@ -24,10 +24,19 @@ OFFLINE_PROVIDER = "offline_public_policy"
 OFFLINE_MODEL = "public-heuristic-policy"
 LIVE_PROVIDERS = ("openai_compatible", "ollama")
 
+#: V12 新增的模拟通道。与 ``OFFLINE`` 完全隔离：``OFFLINE`` 仍是公开启发式策略，
+#: 这里跑的是受控 Fake/Scripted Provider 下的 Lab Agent，成绩只能标 SIMULATED。
+SIMULATED_PROVIDER = "simulated_scripted"
+SIMULATED_MODEL = "simulated-agent-policy"
+
+#: V11 唯一的内置真实执行器 id；V12 的 Lab 策略使用 ``<name>.v1`` 形式。
+LEGACY_LIVE_AGENT = "v10_action_loop"
+
 
 class RunMode(StrEnum):
     OFFLINE = "offline"
     LIVE = "live"
+    SIMULATED = "simulated"
 
 
 class RunState(StrEnum):
@@ -84,6 +93,11 @@ class RunConfig(BaseModel):
     provider_id: str = Field(min_length=1, max_length=64)
     model: str = Field(min_length=1, max_length=120)
     agent: str = Field(default="v10_action_loop", min_length=1, max_length=64)
+    #: V12 Lab 策略的显式配置（消融开关在这里表达；空 dict = 用注册表默认值）。
+    agent_config: dict[str, Any] = Field(default_factory=dict)
+    #: 父实验与矩阵位置（V11 单局为空）。
+    experiment_id: str | None = Field(default=None, max_length=80)
+    matrix_index: int | None = Field(default=None, ge=0, le=10_000)
     policy_seed: int = Field(default=0, ge=0, le=9_999)
     max_decisions: int = Field(ge=1, le=200)
     max_requests: int = Field(ge=1, le=200)
@@ -124,8 +138,31 @@ class RunConfig(BaseModel):
                 raise ValueError("离线模式必须使用公开规则策略，不得伪装成模型挑战。")
             if self.agent != "public_heuristic_policy":
                 raise ValueError("离线模式的 agent 必须是 public_heuristic_policy。")
-        elif self.provider_id not in LIVE_PROVIDERS:
-            raise ValueError(f"真实模式只支持 {', '.join(LIVE_PROVIDERS)}。")
+        elif self.mode is RunMode.SIMULATED:
+            if self.provider_id != SIMULATED_PROVIDER or self.model != SIMULATED_MODEL:
+                raise ValueError(
+                    "模拟模式必须使用 simulated_scripted / simulated-agent-policy。"
+                )
+            from agent_arena.lab.registry import get_agent
+
+            try:
+                registration = get_agent(self.agent)
+            except KeyError:
+                raise ValueError(f"模拟模式只接受已注册的 Lab 策略：{self.agent}") from None
+            registration.normalize_config(self.agent_config)
+        else:
+            if self.provider_id not in LIVE_PROVIDERS:
+                raise ValueError(f"真实模式只支持 {', '.join(LIVE_PROVIDERS)}。")
+            from agent_arena.lab.registry import get_agent
+
+            if self.agent != LEGACY_LIVE_AGENT:
+                # V11 只实现了一种真实执行器；显式拒绝未知 agent，避免静默按
+                # ``v10_action_loop`` 运行而让结果被误读成别的架构。
+                try:
+                    registration = get_agent(self.agent)
+                except KeyError:
+                    raise ValueError(f"未注册的 agent：{self.agent}") from None
+                registration.normalize_config(self.agent_config)
         if self.max_output_tokens > self.max_input_tokens:
             raise ValueError("max_output_tokens 不能大于 max_input_tokens。")
         return self
@@ -235,10 +272,13 @@ def _optional_str(value: Any) -> str | None:
 
 __all__ = [
     "ALLOWED_TRANSITIONS",
+    "LEGACY_LIVE_AGENT",
     "LIVE_PROVIDERS",
     "OFFLINE_MODEL",
     "OFFLINE_PROVIDER",
     "SCHEMA_VERSION",
+    "SIMULATED_MODEL",
+    "SIMULATED_PROVIDER",
     "TERMINAL_STATES",
     "RunConfig",
     "RunMode",

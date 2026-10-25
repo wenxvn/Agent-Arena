@@ -272,8 +272,9 @@ def _prepare_runs(base: Path) -> str:
     try:
         run_id = service.create_run(_config())
         service.wait(run_id, timeout=60)
-        service.create_run(_config(seed=1))
-        service.wait(service.list_runs()[0].run_id, timeout=60)
+        # 直接等待第二个 run_id：created_at 只到秒，同秒内两局无法靠排序区分。
+        second = service.create_run(_config(seed=1))
+        service.wait(second, timeout=60)
         return run_id
     finally:
         service.shutdown()
