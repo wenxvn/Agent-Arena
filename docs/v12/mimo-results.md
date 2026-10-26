@@ -26,7 +26,13 @@
 | replicate-16-18（A） | 18 | COMPLETED | 4 | 14 | 0 | 0 | 224 | 0.21588532 |
 | replicate-16-18-b（B） | 18 | COMPLETED | 3 | 14 | 1 | 0 | 276 | 0.23927140 |
 | （探针，不参与分析） | 1 | COMPLETED | 1 | 0 | 0 | 0 | 3 | 0.00026128 |
-| **合计（14 个实验）** | **147** | — | **45** | **74** | **26** | **2** | **5 505** | **5.34053584** |
+| ablation-memory-on | 2 | COMPLETED | 0 | 2 | 0 | 0 | 21 | 0.03034648 |
+| ablation-memory-off | 2 | COMPLETED | 0 | 2 | 0 | 0 | 21 | 0.02151340 |
+| ablation-planning-on | 2 | COMPLETED | 1 | 1 | 0 | 0 | 35 | 0.03018364 |
+| ablation-planning-off | 2 | COMPLETED | 0 | 2 | 0 | 0 | 19 | 0.00788636 |
+| ablation-reflection-on | 2 | COMPLETED | 1 | 1 | 0 | 0 | 20 | 0.00476456 |
+| ablation-reflection-off | 2 | COMPLETED | 1 | 1 | 0 | 0 | 20 | 0.00156984 |
+| **合计（20 个实验）** | **159** | — | **48** | **83** | **26** | **2** | **5 641** | **5.43680012** |
 
 账本 `run_started` = `run_settled` = 125；**未知消费 ¥0**；批准上限 ¥6.00，未超。
 `experiment_id` 与逐局 `run_id` 均可追溯（`runs/lab/`、`runs/web/`）。
@@ -173,6 +179,17 @@ seed 2 还直接通关（`wasted_moves` 34 → 8）。这说明 DCR-V12-03 的�
 仍要说明：3 局、每条件 1 次、与之前版本跨配置**不配对**；这只是机制验证，
 不是"Memory 架构更好"的证据。
 
+### 4.4 三条开关消融（提纲 §4.3）
+
+Memory / Planning / Reflection 的 on-off 对照各 2 局（MAP-16 或 MAP-18，seed 0/1），
+明细见 `ablations.md`：
+
+| 对照 | 结局是否不同 | 代价 | 结论 |
+|---|---|---|---|
+| Memory on/off（MAP-18） | 否（2/2 相同终止码） | 费用 +41%，Agent 事件 1 → 9–12 | 记忆通道工作、本组无收益 |
+| Planning on/off（MAP-16） | 是（1/2 vs 0/2） | 请求 2.4×，费用 3–6× | 方向为正，样本不足 |
+| Reflection on/off（MAP-16） | 否（2/2 相同） | 微 | **触发器从未激活**（DCR-V12-05） |
+
 ## 5. 失败归因
 
 主矩阵 139 条诊断 + 扩展实验的诊断，类别分布（主矩阵）：
@@ -203,10 +220,10 @@ seed 2 还直接通关（`wasted_moves` 34 → 8）。这说明 DCR-V12-03 的�
 | 项 | 值 |
 |---|---|
 | 批准上限 | CNY ¥6.00 |
-| 实际结算（14 个实验，147 局） | **CNY ¥5.34053584** |
+| 实际结算（20 个实验，159 局） | **CNY ¥5.43680012** |
 | 未知消费 | **¥0.00** |
 | 账本 | `runs/web/_ledger/web_ledger.jsonl`（append-only） |
-| 一致性 | 147 `run_started` = 147 `run_settled`；每局 `result.usage` 与账本一致 |
+| 一致性 | 159 `run_started` = 159 `run_settled`；每局 `result.usage` 与账本一致 |
 
 **未做**：Provider 后台账单对账（超出 V12 范围，已披露）。
 

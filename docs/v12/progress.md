@@ -1,8 +1,8 @@
 # V12 进度与证据
 
-- **更新日期**：2026-10-25
+- **更新日期**：2026-10-26
 - **起点 HEAD**：`258eadc5039309859fc0385d61650e266e6ab488`
-- **总状态**：`LAB_1_0_READY`（P0 + P1 + P2 全部交付；真实模型实验 14 个、147 局、¥5.34053584、0 未知消费）
+- **总状态**：`LAB_1_0_READY`（P0 + P1 + P2 全部交付；真实模型实验 20 个、159 局、¥5.43680012、0 未知消费）
 
 ## Batch 0（P0）仓库审计
 
@@ -104,7 +104,7 @@
 | V12-07-03 六图专属证据规则 | DONE | `_map08/_map16/_map18/_map22/_map26/_map30` |
 | V12-07-04 事件序列对照（不用第 n 步硬减） | DONE | `test_pairwise_diff_handles_length_mismatch_without_naive_subtraction` |
 | V12-07-05 首次差异/失败链路/证据不足/下一次假设 | DONE | `pairwise_diff` + `diff_hypotheses` |
-| V12-07-06 LLM 解说默认关闭 | DONE（未实现可选路径） | 核心诊断零 API；文档声明 |
+| V12-07-06 LLM 解说默认关闭 | DONE（可选路径未实现） | 核心诊断零 API；提纲标注"可选"，未实现已在 `gap-audit.md` 披露 |
 | V12-07-07 正负 fixture | DONE | `tests/test_v12_diagnostics.py` 22 项含否定用例 |
 
 **Gate 7**：通过。
@@ -157,7 +157,7 @@
 
 | 任务 | 状态 | 证据 |
 |---|---|---|
-| V12-11-01 `scripts/verify_v12.py` | DONE | 11/11 通过 |
+| V12-11-01 `scripts/verify_v12.py` | DONE | 15/15 通过 |
 | V12-11-02 CI 浏览器 E2E | DONE | `.github/workflows/ci.yml` `lab-e2e`（`continue-on-error`） |
 | V12-11-03 430px/桌面/深色截图 + 可访问性 | DONE | 8 张截图；新增 `lab/a11y.py` + `scripts/a11y_v12.py`（对比度/焦点/DOM/键盘），修复 4 个真实缺陷 |
 | V12-11-04 Windows/Ubuntu/macOS | PARTIAL | Windows 实测；Ubuntu 由 CI 覆盖；**macOS `NOT_VERIFIED`** |
@@ -177,8 +177,8 @@
 | V12-12-02 3–6 局 Pilot | DONE | 6 局（MAP-22/26 × 3 架构 × seed 0），131 请求，¥0.0995，0 未知消费 |
 | V12-12-03 预登记 54 局主矩阵 | DONE | 六图 × 3 seed × 3 架构，54/54，¥1.4718 |
 | V12-12-04 Provider/环境/策略/预算失败分开编码 | DONE | 六类分母 + `Finding.confidence_scope` + 约束阶梯（DCR-V12-04） |
-| V12-12-05 反思独立小矩阵 | NOT_RUN | 需单独预算批准；未混入主矩阵 |
-| V12-12-06 核对 usage 与本地费用估算 | DONE | 125 局 `run_started` = `run_settled`；结算 ¥4.9247；未知 ¥0 |
+| V12-12-05 反思独立小矩阵 | DONE | 12 局消融（¥0.09626428）；**两臂 `reflection_triggered` 均为 0**（触发器未激活，DCR-V12-05） |
+| V12-12-06 核对 usage 与本地费用估算 | DONE | 159 局 `run_started` = `run_settled`；结算 ¥5.43680012；未知 ¥0 |
 | 衍生实验：补充 / 版本复跑 / 预算扩展 / 重复 | DONE | 4 类各 1 条真实产物；`--supplement-of` / `--rerun-of` / `--budget-ext-of` / `--replicate-of` |
 | 接口与口径缺陷（DCR-V12-01/02/03/04） | DONE | 复测：拒绝率 96.2%→0%、`route_recall` 从 N/A→VALID、约束阶梯量化 |
 
@@ -211,7 +211,7 @@
 | MAP-22 契约修复复跑 9 局 + 口径对齐复跑 9 局 | DONE | ¥0.21606796 / ¥0.23872508 |
 | MAP-30 预算扩展（180 请求）+ token 扩展（600k） | DONE | ¥1.09918720 / ¥1.49856088 |
 | MAP-16 / MAP-18 种子覆盖（seed 3 / 3,4） | DONE | ¥0.00632096 + ¥0.00846188 / ¥0.07019220 |
-| 重复实验 18 局（翻转率 22.2%） | DONE | ¥0.21588532 |
+| 重复实验 36 局（2 次观测翻转 22.2%、3 次观测 27.8%） | DONE | ¥0.45515672 |
 | DCR-V12-01…04 记录 | DONE | `docs/v12/dcr/` |
 | 真实结果档案（脱敏） | DONE | `docs/v12/real-runs/` |
 
@@ -222,3 +222,23 @@
 3. MAP-30 三档预算固定 + 预检提示可跑回合数
 4. Provider 账单对账
 5. macOS / Ollama（按用户指示暂缓）
+
+## 提纲对照收尾（2026-10-26 第二次）
+
+按执行提纲逐项复核，补齐三项原先未做的实验并新增差距清单：
+
+| 项 | 状态 | 证据 |
+|---|---|---|
+| §4.3-1 Memory 关闭/开启 | DONE | MAP-18 seed 0/1 各 2 局；结局 2/2 相同，费用 +41%，事件 1 → 9–12 —— `ablations.md` §1 |
+| §4.3-2 Planning 关闭/开启 | DONE | MAP-16 seed 0/1 各 2 局；1/2 vs 0/2，请求 2.4× —— `ablations.md` §2 |
+| §4.3-3 Reflection 触发/关闭 | DONE（对照无效） | 两臂 `reflection_triggered` = 0；触发器未激活 —— DCR-V12-05 |
+| V12-12-05 反思独立小矩阵 | DONE | 同上，12 局 ¥0.09626428 |
+| 逐项差距清单 | DONE | `docs/v12/gap-audit.md`（5 项未完成 + 3 项部分完成，全部有原因） |
+| `scripts/run_v12_ablations.py` | DONE | 预检零请求；串行提交 6 个独立实验 |
+
+未完成项（均已披露，见 `gap-audit.md`）：macOS / Ollama 实机（用户暂缓）、
+Provider 后台账单对账（需控制台）、可选 LLM 解说（提纲标"可选"）、
+CI 浏览器 E2E 非门禁、大历史量分页压力测试、真机读屏测试。
+
+真实实验累计：**20 个实验 / 159 局 / 5 641 请求 / ¥5.43680012 / 未知 ¥0**，
+剩余 ¥0.5632 主动保留。

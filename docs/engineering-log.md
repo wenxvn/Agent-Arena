@@ -1924,3 +1924,21 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 验证：**1525 pytest passed**、`mypy src` 306 文件 0 issues、`ruff check .` 通过、`freeze verify` 9/9 unchanged、`recompute` 1093/1093、`independent` 0 violations、`verify_v11` 7/7、`verify_v12` 15/15、`a11y` 0 critical/serious/moderate、`e2e_web` / `e2e_lab` 均通过。
 
 下一步：重复扩到 3 次/条件并固定采样；`route_log` 默认化评估；MAP-30 三档预算固定；Provider 账单对账。详见 `docs/v12/final-report.md`、`docs/v12/mimo-results.md`、`docs/v12/dcr/`。
+
+## 2026-10-26 提纲逐项复核：补齐三条开关消融、产出差距清单
+
+事件：用户问"提纲中还有哪些没做"。据此把执行提纲逐条对照，补做其中仍可执行的三条附加对照（提纲 §4.3），并把差距写成可审计清单。
+
+补做（12 局 / 136 请求 / ¥0.09626428）：
+
+- **Memory 关闭/开启**（MAP-18 seed 0/1）：两臂终止码完全相同，费用从 ¥0.0215 升到 ¥0.0303，Agent 事件 1 → 9–12。结论是"记忆通道在工作，但在这两个 seed 上不改变结果、只增加成本"。
+- **Planning 关闭/开启**（MAP-16 seed 0/1）：开启 1/2 成功、关闭 0/2；请求 17–18 vs 7–12（Planner 额外调用全部计费）。方向与主矩阵一致，仍在翻转率之内。
+- **Reflection 触发/关闭**（MAP-16 seed 0/1）：两臂结局相同（1/2），且 `reflection_triggered` **均为 0**——MAP-16 seed 0 第 6 步就 `DEADLOCK`，低于公开触发器阈值。记为 **DCR-V12-05**（触发器未激活，不是反思无效）。
+
+新增 `scripts/run_v12_ablations.py`：预检零请求、串行提交 6 个独立实验（`condition_key` 不含 config hash，同 agent 不同 config 不能同实验，故按开关各建实验、按 (map, seed) 跨实验配对）。
+
+新增 `docs/v12/gap-audit.md`：逐项列出提纲状态——5 项未完成（macOS、Ollama、Provider 后台对账、可选 LLM 解说、CI E2E 非门禁）、3 项部分完成（大历史分页压力、六图 fixture 部分合成、真机读屏）、以及本轮补齐的 4 项。
+
+累计：**20 个实验 / 159 局 / 5 641 请求 / ¥5.43680012 / 未知 ¥0**，剩余 ¥0.5632 主动保留未用。
+
+验证：1525 pytest passed、`mypy src` 306 文件 0 issues、`ruff check .` 通过、`verify_v12` 15/15、`verify_v11` 7/7、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations。
