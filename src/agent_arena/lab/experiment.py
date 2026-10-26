@@ -895,6 +895,20 @@ class ExperimentService:
             "agent_versions",
         }
         payload = {key: value for key, value in payload.items() if key not in derived}
+        # 兼容：V13 开发中间版本曾把派生值写进 `sampling` / `protocol`（嵌套模型是
+        # `extra="forbid"`）。读回时剥掉这些派生键，保证旧文件仍可打开。
+        if isinstance(payload.get("sampling"), dict):
+            payload["sampling"] = {
+                key: value
+                for key, value in payload["sampling"].items()
+                if key != "deterministic_claim"
+            }
+        if isinstance(payload.get("protocol"), dict):
+            payload["protocol"] = {
+                key: value
+                for key, value in payload["protocol"].items()
+                if key != "fingerprint"
+            }
         payload["experiment_id"] = experiment_id
         return ExperimentSpec.model_validate(payload)
 

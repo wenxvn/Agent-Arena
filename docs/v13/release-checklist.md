@@ -116,7 +116,22 @@ uv run --with playwright --with streamlit python scripts/a11y_v12.py --browser -
 | `diagnosis-taxonomy.md` | 分层归因 |
 | `reflection-trigger-probe.json` | Reflection 真触发证据 |
 
-## 7. 回滚办法
+## 7. 截图
+
+`scripts/capture_v13_screenshots.py` 自动启动临时 Streamlit + 系统 Chrome 生成
+（数据来自临时目录的 SIMULATED 演示 + 只读 V12 历史，不含密钥或隐藏真值）：
+
+| 文件 | 内容 |
+|---|---|
+| `docs/v13/screenshots/01-lab-stability.png` | 稳定性与效度（V12 历史，1440px） |
+| `docs/v13/screenshots/02-lab-stability-mobile.png` | 稳定性与效度（430px 窄屏） |
+| `docs/v13/screenshots/03-lab-audit.png` | 报告与审计（含展开的结论摘要） |
+| `docs/v13/screenshots/04-lab-ledger-audit.png` | 账本审计（演示目录下 0 条目 + 明确提示；真实 159 局审计见 `data-and-cost-audit.md`） |
+| `docs/v13/screenshots/05-lab-sdk-selfcheck.png` | SDK 自检 8 项全部通过 |
+| `docs/v13/screenshots/06-lab-audit-dark.png` | 报告与审计（深色） |
+| `docs/v13/screenshots/07-lab-results-pairs.png` | 结果页新增的配对明细表 |
+
+## 8. 回滚办法
 
 每个批次一个 commit；回滚只需 `git revert <commit>`，不涉及数据迁移：
 

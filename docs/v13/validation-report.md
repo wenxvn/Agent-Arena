@@ -69,11 +69,17 @@ V13 对 E2E 的增量：
 
 - `e2e_lab` 现在覆盖 **5 页**（原 3 页 + 稳定性与效度 + 报告与审计），并在报告与审计页
   真的点「运行 SDK 自检」并断言 `SDK 自检全部通过`；
-- `a11y_v12` 的页面清单加入两个新页面，浅/深主题各审一遍。
+- `a11y_v12` 的页面清单加入两个新页面，浅/深主题各审一遍；
+- `scripts/capture_v13_screenshots.py` 生成 7 张截图（含 430px 窄屏与深色），
+  写入 `docs/v13/screenshots/`。
 
-**过程中修掉的一个真实缺陷**：新增页面最初没有加进 `ui/app.py` 的 `VIEWS`，
-侧边栏不显示、`?view=` 深链也无效。E2E 第一次跑就失败（`waiting for get_by_text("六图效度")`），
-定位后补上 `VIEW_LAB_STABILITY` / `VIEW_LAB_AUDIT`。
+**过程中修掉的两个真实缺陷**：
+
+1. 新增页面最初没有加进 `ui/app.py` 的 `VIEWS`，侧边栏不显示、`?view=` 深链也无效
+   → E2E 首次运行超时（`waiting for get_by_text("六图效度")`），补 `VIEW_LAB_STABILITY` / `VIEW_LAB_AUDIT`。
+2. 报告与审计页最初只有「生成 V13 报告」按钮，点完只出现下载链接（截图里是一片空白）
+   → 改为在按钮下方直接展开「结论摘要（分级 + 锚点）」；账本页在 0 条目时补明确提示
+   （演示目录不写付费账本，真实 159 局审计要跑脚本）。
 
 ### 2.2 CI（GitHub Actions）
 
@@ -177,3 +183,5 @@ UI 在数字旁明确写出"按当前载入的记录集计算"。
 | 6 | 稳定性页翻转率与文档 25% 不一致 | E2E 截图/文本核对 | UI 明写"按当前载入记录集计算"，文档固定 3 份子集口径 |
 | 7 | 懒加载首页与全量排序不一致（`created_at` 相同则顺序随机） | 自查 `RunIndex.page(lazy=True)` vs `lazy=False` 逐行比对 | 排序键改为 `(created_at, run_id)` 降序，并加回归测试 `test_index_lazy_page_matches_full_page` |
 | 8 | `list_runs` 每次 rerun 都全量解析 manifest | 阅读 V11 代码时发现（`discover()`） | 改为走 `RunIndex`（字段与 `_summary` 对齐，新增 `_summary_from_entry`） |
+| 9 | V13 开发中间版本的 `experiment.json` 读不回（`sampling.deterministic_claim` 越界） | 打开本机 22 个历史实验时 `_spec` 抛 `ValidationError` | `_spec` 读回时剥掉 `sampling.deterministic_claim` / `protocol.fingerprint`，22/22 全部可读 |
+| 10 | 报告与审计页点完「生成报告」只有下载链接（截图空白） | 截图审查 | 结论摘要直接展开在按钮下方；账本 0 条目时补提示 |

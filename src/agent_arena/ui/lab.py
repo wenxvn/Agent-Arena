@@ -932,20 +932,34 @@ def _stability_view(st: Any, get_lab: Callable[[], Any]) -> None:
 
     options = _experiment_options(service)
     records: list[dict[str, Any]] = []
+    runtime_id = ""
     if options:
         labels = list(options)
         default = str(st.session_state.get("lab_experiment_id", ""))
         index = next((i for i, label in enumerate(labels) if options[label] == default), 0)
         choice = st.selectbox("实验（可选）", labels, index=index)
-        experiment_id = options[choice]
-        st.session_state["lab_experiment_id"] = experiment_id
-        records = service.records(experiment_id)
-        st.caption(f"当前实验 `{experiment_id}`：{len(records)} 局已执行。")
+        runtime_id = options[choice]
+        st.session_state["lab_experiment_id"] = runtime_id
+        records = service.records(runtime_id)
+        st.caption(f"当前实验 `{runtime_id}`：{len(records)} 局已执行。")
     else:
         st.info("还没有本机实验；下面用 V12 历史（只读）做稳定性与效度分析。")
 
+    # 有本机实验时，允许显式切到 V12 历史：小样本演示实验的效度表几乎全空，
+    # 而历史分析（138 局）才是有信息量的。默认仍用当前实验，避免"看起来像新结果"。
     source = "RUNTIME" if records else "HISTORICAL"
-    analysis_records = records or load_v12_history()
+    if records:
+        picked = st.radio(
+            "分析数据来源",
+            ["当前实验", "V12 历史（只读）"],
+            horizontal=True,
+            help="切换不会修改任何数据；历史来源会明确标注 HISTORICAL。",
+        )
+        if picked.startswith("V12"):
+            source = "HISTORICAL"
+    analysis_records = load_v12_history() if source == "HISTORICAL" else records
+    if source == "HISTORICAL":
+        st.caption("当前分析的是 V12 历史逐局 CSV（只读，138 局），不是你刚跑的实验。")
     report = replicate_variability(analysis_records, min_obs=2, source=source)
     theme.stat_tiles(
         st,
@@ -1024,7 +1038,9 @@ def _stability_view(st: Any, get_lab: Callable[[], Any]) -> None:
                 "有效分母": row["valid_denominator"],
                 "成功": row["successes"],
                 "截尾": row["budget_censored"],
-                "成功率": row["success_rate"],
+                "成功率": (
+                    "—" if row["success_rate"] is None else row["success_rate"]
+                ),
             }
             for row in validity["maps"]
         ]
@@ -1077,7 +1093,9 @@ def _stability_view(st: Any, get_lab: Callable[[], Any]) -> None:
                     "适用图": item["applicable_map_count"],
                     "已观测图": item["observed_map_count"],
                     "可测局": item["measurable_runs"],
-                    "成功率": item["success_rate"],
+                    "成功率": (
+                        "—" if item["success_rate"] is None else item["success_rate"]
+                    ),
                     "证据等级": item["evidence_level"],
                 }
                 for item in profile["dimensions"]
@@ -1166,6 +1184,19 @@ def _audit_view(st: Any, get_lab: Callable[[], Any]) -> None:
                 )
             markdown = st.session_state.get("lab_v13_report")
             if markdown:
+                # 结论摘要直接展开（下载按钮旁边），避免"只有按钮没有内容"。
+                summary_lines: list[str] = []
+                for line in str(markdown).splitlines():
+                    if line.startswith("## 0."):
+                        summary_lines = [line]
+                        continue
+                    if summary_lines:
+                        if line.startswith("## 1."):
+                            break
+                        summary_lines.append(line)
+                if summary_lines:
+                    with st.container(border=True):
+                        st.markdown("\n".join(summary_lines))
                 st.download_button(
                     "下载 report_v13.md",
                     data=str(markdown).encode("utf-8"),
@@ -1212,6 +1243,12 @@ def _audit_view(st: Any, get_lab: Callable[[], Any]) -> None:
                 ("父/子", f"{audit.parents}/{audit.child_links}", "子局链接数", "neutral"),
             ],
         )
+        if audit.entries == 0:
+            st.info(
+                "这个数据目录里**没有真实付费运行**（`runs/web/_ledger` 为空或不存在）："
+                "离线演示与 SIMULATED 不写付费账本。要审计 V12 的 159 局，请在主仓库目录下运行"
+                "`uv run python scripts/audit_v13_ledger.py --write`。"
+            )
         if audit.issues:
             for issue in audit.issues:
                 st.warning(issue)
