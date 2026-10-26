@@ -103,6 +103,8 @@ def _spec_from_args(args: argparse.Namespace) -> ExperimentSpec:
             max_cost_cny=Decimal(str(args.approval_cap)) if approved else None,
             note="由 CLI 显式确认" if approved else "",
         ),
+        # V13：独立重复次数（默认 1，保持 V12 行为）。
+        replicates=int(getattr(args, "replicates", 1) or 1),
     )
 
 
@@ -257,6 +259,158 @@ def _version_rerun(args: argparse.Namespace) -> int:
             )
         )
         return 0 if manifest.state.value in {"COMPLETED", "PARTIAL"} else 1
+    finally:
+        runs.shutdown()
+
+
+def _repeats(args: argparse.Namespace) -> int:
+    """V13：把 N 次独立重复放进同一个新实验（每份重复有独立 condition_key）。"""
+
+    if not args.conditions:
+        print("--repeats-of 需要 --conditions（condition_key 列表）。", file=sys.stderr)
+        return 2
+    if not args.repeats or args.repeats < 2:
+        print("--repeats-of 需要 --repeats >= 2。", file=sys.stderr)
+        return 2
+    runs = RunService(WEB_RUNS, recover=False)
+    service = ExperimentService(LAB_RUNS, run_service=runs, recover=False)
+    try:
+        experiment_id = service.create_replicates(
+            args.repeats_of,
+            conditions=list(args.conditions),
+            repeats=int(args.repeats),
+            reason=args.notes,
+            name=args.name if args.name != "cli-matrix" else None,
+        )
+        spec = service.spec(experiment_id)
+        print(
+            json.dumps(
+                {
+                    "replicates_experiment_id": experiment_id,
+                    "source_experiment_id": args.repeats_of,
+                    "replicates": spec.replicates,
+                    "cells": len(spec.matrix()),
+                },
+                ensure_ascii=False,
+                indent=1,
+            )
+        )
+        if not args.submit:
+            print("仅创建；加 --submit 才会入队。")
+            return 0
+        service.submit(experiment_id)
+        manifest = _wait(service, experiment_id, args.timeout)
+        summary = service.summary(experiment_id)
+        print(
+            json.dumps(
+                {
+                    "replicates_experiment_id": experiment_id,
+                    "state": manifest.state.value,
+                    "counts": manifest.counts,
+                    "budget": manifest.budget,
+                    "categories": summary["categories"],
+                },
+                ensure_ascii=False,
+                indent=1,
+            )
+        )
+        return 0 if manifest.state.value in {"COMPLETED", "PARTIAL"} else 1
+    finally:
+        runs.shutdown()
+
+
+def _ablation(args: argparse.Namespace) -> int:
+    """V13：按标准模板创建 control/treatment 两个独立父实验（只差一个开关）。"""
+
+    from agent_arena.lab.v13.ablation import ABLATION_TEMPLATES, build_ablation_specs
+
+    template = ABLATION_TEMPLATES.get(args.ablation)
+    if template is None:
+        print(
+            "未知消融模板："
+            + args.ablation
+            + "；可用："
+            + "、".join(sorted(ABLATION_TEMPLATES)),
+            file=sys.stderr,
+        )
+        return 2
+    if not args.seeds:
+        print("--ablation 需要 --seeds（显式环境 seed）。", file=sys.stderr)
+        return 2
+    check = template.check()
+    print(json.dumps({"template": template.as_dict()}, ensure_ascii=False, indent=1))
+    if not check.ok:
+        print("该模板不是单开关消融，拒绝创建：" + "；".join(check.reasons), file=sys.stderr)
+        return 2
+    simulated = args.provider == SIMULATED_PROVIDER
+    approved = bool(args.i_have_budget_approval)
+    control, treatment = build_ablation_specs(
+        template,
+        maps=list(args.maps),
+        seeds=[int(seed) for seed in args.seeds],
+        replicates=int(args.replicates or 3),
+        mode=ExperimentMode.SIMULATED if simulated else ExperimentMode.LIVE,
+        provider_id=args.provider,
+        model=SIMULATED_MODEL if simulated else args.model,
+        budget=ExperimentBudget(
+            per_run_request_cap=args.requests,
+            per_run_decision_cap=args.decisions,
+            per_run_cost_cap_cny=Decimal(str(args.per_run_cost)),
+            experiment_request_cap=args.experiment_requests,
+            experiment_cost_cap_cny=Decimal(str(args.experiment_cost)),
+        ),
+        name_prefix=args.name if args.name != "cli-matrix" else template.template_id,
+    )
+    if not simulated:
+        approval = LiveApproval(
+            approved=approved,
+            approved_by="cli" if approved else "",
+            max_cost_cny=Decimal(str(args.approval_cap)) if approved else None,
+            note="由 CLI 显式确认" if approved else "",
+        )
+        control = control.model_copy(
+            update={"approval": approval, "preflight_only": not approved}
+        )
+        treatment = treatment.model_copy(
+            update={"approval": approval, "preflight_only": not approved}
+        )
+    preflights = []
+    for spec in (control, treatment):
+        result = preflight(spec)
+        preflights.append({"name": spec.name, **result.as_dict()})
+    print(json.dumps({"preflight": preflights}, ensure_ascii=False, indent=1))
+    if not all(item["ok"] for item in preflights):
+        print("预检未通过：不会创建或提交实验。", file=sys.stderr)
+        return 1
+    if not args.submit:
+        print("仅预检完成（未创建实验）。加 --submit 才会入队（单 worker 串行）。")
+        return 0
+    runs = RunService(WEB_RUNS, recover=False)
+    service = ExperimentService(LAB_RUNS, run_service=runs, recover=False)
+    created: list[str] = []
+    try:
+        for spec in (control, treatment):
+            key = f"ablation:{template.template_id}:{spec.fingerprint()[:12]}"
+            experiment_id = service.create_experiment(spec, idempotency_key=key)
+            created.append(experiment_id)
+            try:
+                service.submit(experiment_id)
+            except (LiveApprovalRequired, ExperimentBusy) as exc:
+                print(str(exc), file=sys.stderr)
+                return 2
+            manifest = _wait(service, experiment_id, args.timeout)
+            print(
+                json.dumps(
+                    {
+                        "experiment_id": experiment_id,
+                        "arm": spec.agent_arms[0].label,
+                        "state": manifest.state.value,
+                        "counts": manifest.counts,
+                    },
+                    ensure_ascii=False,
+                )
+            )
+        return 0
     finally:
         runs.shutdown()
 
@@ -420,6 +574,28 @@ def main() -> int:
         action="store_true",
         help="只列出需要补充的子局，不创建实验",
     )
+    parser.add_argument(
+        "--replicates",
+        type=int,
+        default=1,
+        help="V13：同一条件的独立重复次数（1 = V12 行为；上限 10）",
+    )
+    parser.add_argument(
+        "--repeats-of",
+        default=None,
+        help="V13：从该实验新建一个包含 N 次独立重复的实验（需 --repeats 与 --conditions）",
+    )
+    parser.add_argument(
+        "--repeats",
+        type=int,
+        default=0,
+        help="V13：--repeats-of 的重复次数（>=2）",
+    )
+    parser.add_argument(
+        "--ablation",
+        default=None,
+        help="V13：按模板创建 control/treatment 两个独立实验（见 docs/v13/experiment-protocol.md）",
+    )
     parser.add_argument("--submit", action="store_true")
     parser.add_argument("--idempotency-key", default=None)
     parser.add_argument(
@@ -438,6 +614,10 @@ def main() -> int:
         return _budget_extension(args)
     if args.replicate_of:
         return _replicate(args)
+    if args.repeats_of:
+        return _repeats(args)
+    if args.ablation:
+        return _ablation(args)
     if args.supplement_of or args.list_candidates:
         if not args.supplement_of:
             parser.error("--list-candidates 需要同时给出 --supplement-of")

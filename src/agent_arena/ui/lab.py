@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from decimal import Decimal
+from pathlib import Path
 from typing import Any
 
 from agent_arena.lab.compare import CATEGORY_LABELS
@@ -41,7 +42,9 @@ from agent_arena.web.schemas import SIMULATED_MODEL, SIMULATED_PROVIDER
 LAB_CONFIG = "Lab · 实验配置"
 LAB_MONITOR = "Lab · 实验监控"
 LAB_RESULT = "Lab · 结果与对照"
-LAB_VIEWS = [LAB_CONFIG, LAB_MONITOR, LAB_RESULT]
+LAB_STABILITY = "Lab · 稳定性与效度"
+LAB_AUDIT = "Lab · 报告与审计"
+LAB_VIEWS = [LAB_CONFIG, LAB_MONITOR, LAB_RESULT, LAB_STABILITY, LAB_AUDIT]
 
 PROVIDER_LABELS: dict[str, str] = {
     SIMULATED_PROVIDER: "模拟执行（Fake/Scripted，不联网、不花钱）",
@@ -251,6 +254,11 @@ def _render_preflight(st: Any, result: Any) -> None:
             ),
         ],
     )
+    if getattr(result, "replicates", 1) > 1:
+        st.caption(
+            f"重复口径：{result.conditions} 个条件 × {result.cells_per_condition} 次独立重采样 = "
+            f"{result.cells} 局。重复**不是**新的环境 seed，不能当作地图泛化样本。"
+        )
     for warning in result.warnings:
         st.info(warning)
     for note in result.notes:
@@ -852,21 +860,442 @@ def _result_view(st: Any, get_lab: Callable[[], Any]) -> None:
                 )
 
 
+def _stability_view(st: Any, get_lab: Callable[[], Any]) -> None:
+    from agent_arena.lab.v13.capability import capability_markdown, capability_profile
+    from agent_arena.lab.v13.history import load_v12_history
+    from agent_arena.lab.v13.stability import (
+        replicate_variability,
+        seed_blocks,
+    )
+    from agent_arena.lab.v13.validity import (
+        LONG_HORIZON_MAPS,
+        budget_capacity,
+        map30_ladder,
+        six_map_audit,
+        validity_markdown,
+    )
+
+    theme.page_head(
+        st,
+        "Agent Arena Lab",
+        "稳定性与效度",
+        "同一配置多次运行到底波动多大？哪些图能区分能力、哪些是天花板或截尾？"
+        "本页只读已落盘记录与 V12 历史，不发送任何请求。",
+    )
+    service = _lab(get_lab)
+    if isinstance(service, Exception):
+        st.error(f"实验服务不可用：{service}")
+        return
+
+    st.markdown(
+        theme.banner(
+            "统计单位：重复 ≠ 新 seed",
+            detail=(
+                "分组键是 (map, seed, agent)。同一 seed 的 N 次重复只说明抽样波动，"
+                "不能当作 N 张地图实例。"
+            ),
+            tone_name="warning",
+            code="DESCRIPTIVE_ONLY",
+        ),
+        unsafe_allow_html=True,
+    )
+
+    options = _experiment_options(service)
+    records: list[dict[str, Any]] = []
+    if options:
+        labels = list(options)
+        default = str(st.session_state.get("lab_experiment_id", ""))
+        index = next((i for i, label in enumerate(labels) if options[label] == default), 0)
+        choice = st.selectbox("实验（可选）", labels, index=index)
+        experiment_id = options[choice]
+        st.session_state["lab_experiment_id"] = experiment_id
+        records = service.records(experiment_id)
+        st.caption(f"当前实验 `{experiment_id}`：{len(records)} 局已执行。")
+    else:
+        st.info("还没有本机实验；下面用 V12 历史（只读）做稳定性与效度分析。")
+
+    source = "RUNTIME" if records else "HISTORICAL"
+    analysis_records = records or load_v12_history()
+    report = replicate_variability(analysis_records, min_obs=2, source=source)
+    theme.stat_tiles(
+        st,
+        [
+            ("可比分组", str(report["comparable_groups"]), "观测 ≥ 2 的条件", "accent"),
+            (
+                "翻转率",
+                "—" if report["flip_rate"] is None else str(report["flip_rate"]),
+                "结局出现变化的组占比",
+                "warning" if report["flip_rate"] else "success",
+            ),
+            (
+                "排除分组",
+                str(report["excluded_not_comparable"]),
+                "跨版本 / 跨预算 / 跨模型",
+                "warning" if report["excluded_not_comparable"] else "neutral",
+            ),
+            ("观测", str(report["records"]), f"来源 {source}", "info"),
+        ],
+    )
+    if report["flip_rate"] is not None and report["flip_rate"] >= 0.2:
+        st.warning(
+            f"翻转率 {report['flip_rate']} ≥ 20%：单次观测不足以下架构结论，"
+            "需要 ≥3 次重复并保持同版本、同预算。"
+        )
+    if report["observations_per_group"] in ([], [1]):
+        st.info("当前只有单次观测：稳定性**未知**，不能声称可重复。")
+
+    with st.expander("逐条件重复明细", expanded=False):
+        st.dataframe(
+            [
+                {
+                    "条件": row["group_key"],
+                    "次数": row["observations"],
+                    "有效": row["valid_observations"],
+                    "成功": row["successes"],
+                    "截尾": row["censored"],
+                    "结局序列": " → ".join(
+                        CATEGORY_LABELS.get(item, item) for item in row["categories"]
+                    ),
+                    "可比": "／".join(row["mismatch"]) or "是",
+                    "证据": row["evidence"],
+                }
+                for row in report["rows"]
+            ]
+        )
+    with st.expander("按 seed 分块（重复不是新块）", expanded=False):
+        st.dataframe(
+            [
+                {
+                    "地图": block["map_id"],
+                    "seed": block["environment_seed"],
+                    "实验臂": arm["agent_id"],
+                    "观测": arm["observations"],
+                    "成功": arm["successes"],
+                }
+                for block in seed_blocks(analysis_records)
+                for arm in block["arms"]
+            ]
+        )
+
+    st.divider()
+    st.header("六图效度（构念层）")
+    validity = six_map_audit(analysis_records)
+    st.dataframe(
+        [
+            {
+                "地图": row["map_id"],
+                "标签": row["composite"],
+                "有效分母": row["valid_denominator"],
+                "成功": row["successes"],
+                "截尾": row["budget_censored"],
+                "成功率": row["success_rate"],
+            }
+            for row in validity["maps"]
+        ]
+    )
+    for item in validity["recommendations"]:
+        st.caption(f"{item['map_id']}：{item['recommendation']}（{item['why']}）")
+    st.caption(validity["note"])
+
+    if any(map_id == "MAP-30" for map_id in {str(r.get("map_id")) for r in analysis_records}):
+        st.divider()
+        st.header("MAP-30 预算阶梯")
+        ladder = map30_ladder(analysis_records)
+        st.dataframe(
+            [
+                {
+                    "档位": tier["tier"],
+                    "局数": tier["runs"],
+                    "成功": tier["successes"],
+                    "截尾": tier["censored"],
+                    "到法庭被拒": tier["accusation_rejected"],
+                    "中途失败": tier["midway"],
+                }
+                for tier in ladder["tiers"]
+            ]
+        )
+        capacity = budget_capacity(
+            [r for r in analysis_records if str(r.get("map_id")) == "MAP-30"],
+            input_token_cap=600_000,
+            request_cap=180,
+        )
+        if capacity.get("available"):
+            low, high = capacity["estimated_supported_decisions"]
+            st.caption(
+                f"按已观测 token/决策分布估算：600k 输入 token 约可支撑 {low}–{high} 个决策。"
+                f"{capacity['note']}"
+            )
+        else:
+            st.caption(capacity.get("reason", ""))
+        st.info(ladder["candidate_note"])
+    st.caption(
+        "长观测地图：" + "、".join(LONG_HORIZON_MAPS) + "（预检只给请求/费用上界，不承诺耗时）"
+    )
+
+    with st.expander("能力画像（机制维度，不平均 326 个指标）", expanded=False):
+        profile = capability_profile(analysis_records)
+        st.dataframe(
+            [
+                {
+                    "维度": item["label"],
+                    "适用图": item["applicable_map_count"],
+                    "已观测图": item["observed_map_count"],
+                    "可测局": item["measurable_runs"],
+                    "成功率": item["success_rate"],
+                    "证据等级": item["evidence_level"],
+                }
+                for item in profile["dimensions"]
+            ]
+        )
+        st.caption(profile["label_note"])
+        if st.button("生成能力画像 Markdown", width="stretch"):
+            st.session_state["lab_capability_md"] = capability_markdown(profile)
+        if st.session_state.get("lab_capability_md"):
+            st.download_button(
+                "下载 capability-profile.md",
+                data=str(st.session_state["lab_capability_md"]).encode("utf-8"),
+                file_name="capability-profile.md",
+                mime="text/markdown",
+            )
+        if st.button("生成效度报告 Markdown", width="stretch"):
+            st.session_state["lab_validity_md"] = validity_markdown(validity)
+        if st.session_state.get("lab_validity_md"):
+            st.download_button(
+                "下载 map-validity.md",
+                data=str(st.session_state["lab_validity_md"]).encode("utf-8"),
+                file_name="map-validity.md",
+                mime="text/markdown",
+            )
+
+
+def _audit_view(st: Any, get_lab: Callable[[], Any]) -> None:
+    from agent_arena.lab.v13.ledger import (
+        audit_ledger,
+        ledger_markdown,
+        read_bill_csv,
+        reconcile_bill,
+    )
+    from agent_arena.lab.v13.report import (
+        build_report_v13,
+        report_payload,
+    )
+    from agent_arena.lab.v13.sdkcheck import run_sdk_checks
+    from agent_arena.lab.v13.taxonomy import taxonomy_report
+
+    theme.page_head(
+        st,
+        "Agent Arena Lab",
+        "报告与审计",
+        "模板化离线报告、本地账本一致性、可选后台账单对账与第三方 SDK 自检。"
+        "全部只读：不写账本、不联网、不调用模型。",
+    )
+    service = _lab(get_lab)
+    if isinstance(service, Exception):
+        st.error(f"实验服务不可用：{service}")
+        return
+    options = _experiment_options(service)
+    tabs = st.tabs(["实验报告", "账本审计", "SDK 自检"])
+
+    with tabs[0]:
+        if not options:
+            st.info("还没有实验；先跑一组离线演示再回来生成报告。")
+        else:
+            labels = list(options)
+            choice = st.selectbox("实验", labels, index=0)
+            experiment_id = options[choice]
+            st.caption(f"experiment_id：`{experiment_id}`")
+            if st.button("生成 V13 报告", type="primary", width="stretch"):
+                experiment = service.store.load_spec(experiment_id)
+                summary = service.summary(experiment_id)
+                comparison = service.comparison(experiment_id)
+                records = service.records(experiment_id)
+                findings = service.findings(experiment_id)
+                taxonomy = taxonomy_report(records, findings)
+                markdown = build_report_v13(
+                    experiment=experiment,
+                    summary=summary,
+                    comparison=comparison,
+                    records=records,
+                    findings=findings,
+                    taxonomy=taxonomy,
+                    protocol=experiment.get("protocol"),
+                )
+                st.session_state["lab_v13_report"] = markdown
+                st.session_state["lab_v13_payload"] = report_payload(
+                    experiment=experiment,
+                    summary=summary,
+                    comparison=comparison,
+                    records=records,
+                    taxonomy=taxonomy,
+                )
+            markdown = st.session_state.get("lab_v13_report")
+            if markdown:
+                st.download_button(
+                    "下载 report_v13.md",
+                    data=str(markdown).encode("utf-8"),
+                    file_name=f"{experiment_id}-report-v13.md",
+                    mime="text/markdown",
+                )
+                import json as _json
+
+                st.download_button(
+                    "下载 report_v13.json",
+                    data=_json.dumps(
+                        st.session_state.get("lab_v13_payload") or {},
+                        ensure_ascii=False,
+                        indent=1,
+                    ).encode("utf-8"),
+                    file_name=f"{experiment_id}-report-v13.json",
+                    mime="application/json",
+                )
+                with st.expander("报告预览"):
+                    st.markdown(str(markdown))
+
+    with tabs[1]:
+        from agent_arena.lab.paths import LAB_RUNS, WEB_RUNS
+
+        web_base = getattr(
+            getattr(getattr(service, "run_service", None), "store", None), "base", None
+        )
+        lab_base = getattr(getattr(service, "store", None), "base", None) or LAB_RUNS
+        ledger_path = Path(web_base or WEB_RUNS) / "_ledger" / "web_ledger.jsonl"
+        audit = audit_ledger(
+            ledger_path=ledger_path, lab_dir=Path(lab_base), web_dir=Path(web_base or WEB_RUNS)
+        )
+        theme.stat_tiles(
+            st,
+            [
+                ("条目", str(audit.entries), f"started {audit.started}", "info"),
+                (
+                    "已结算 CNY",
+                    audit.cost_settled_cny,
+                    f"未知消费 {len(audit.unknown_spend_runs)}",
+                    "accent",
+                ),
+                ("孤儿任务", str(len(audit.orphan_runs)), "只有 started 没有收尾", "warning"),
+                ("父/子", f"{audit.parents}/{audit.child_links}", "子局链接数", "neutral"),
+            ],
+        )
+        if audit.issues:
+            for issue in audit.issues:
+                st.warning(issue)
+        else:
+            st.success("本地账本结构一致（不代表后台账单已核对）。")
+        st.caption("上传的账单只在本页内存中对账，不写入任何目录。")
+        uploader = getattr(st, "file_uploader", None)
+        uploaded = (
+            uploader("后台账单 CSV（可选，需脱敏）", type=["csv"])
+            if callable(uploader)
+            else None
+        )
+        reconciliation: dict[str, Any] | None = None
+        if uploaded is not None and hasattr(uploaded, "getvalue"):
+            text = uploaded.getvalue().decode("utf-8-sig", errors="replace")
+            import tempfile
+
+            with tempfile.TemporaryDirectory(prefix="agent-arena-bill-") as temporary:
+                path = Path(temporary) / "bill.csv"
+                path.write_text(text, encoding="utf-8")
+                parsed = read_bill_csv(path)
+                if parsed["problems"]:
+                    st.error("；".join(parsed["problems"]))
+                else:
+                    reconciliation = reconcile_bill(
+                        audit, path, ledger_rows=read_bill_csv_rows(text)
+                    )
+        if reconciliation is None:
+            reconciliation = reconcile_bill(audit, None)
+        st.markdown(
+            theme.banner(
+                str(reconciliation.get("status")),
+                detail=str(reconciliation.get("note") or ""),
+                tone_name=(
+                    "success"
+                    if str(reconciliation.get("status")).startswith("RECONCILED")
+                    else "warning"
+                ),
+                code="read-only",
+            ),
+            unsafe_allow_html=True,
+        )
+        for item in reconciliation.get("mismatches") or []:
+            st.caption(f"`{item.get('run_id')}`：{item.get('reason')}")
+        if st.button("生成账本审计 Markdown", width="stretch"):
+            st.session_state["lab_ledger_md"] = ledger_markdown(audit, reconciliation)
+        if st.session_state.get("lab_ledger_md"):
+            st.download_button(
+                "下载 data-and-cost-audit.md",
+                data=str(st.session_state["lab_ledger_md"]).encode("utf-8"),
+                file_name="data-and-cost-audit.md",
+                mime="text/markdown",
+            )
+
+    with tabs[2]:
+        st.caption(
+            "自检覆盖：契约版本、公开观察、动作校验、生命周期钩子、预算、异常隔离、"
+            "模拟模式与版本标识。只在本机加载受信任插件，不是沙箱。"
+        )
+        if st.button("运行 SDK 自检", width="stretch"):
+            report = run_sdk_checks()
+            st.session_state["lab_sdk_report"] = report
+        report = st.session_state.get("lab_sdk_report")
+        if isinstance(report, dict):
+            st.dataframe(
+                [
+                    {"检查": item["name"], "通过": item["ok"], "说明": item["detail"]}
+                    for item in report.get("checks") or []
+                ]
+            )
+            if report.get("ok"):
+                st.success("SDK 自检全部通过")
+            else:
+                st.error(f"SDK 自检失败 {report.get('failed')} 项")
+
+
+def read_bill_csv_rows(text: str) -> list[dict[str, Any]]:
+    """把上传的账单文本解析成账本行（只用于内存对账，不落盘）。"""
+
+    import csv
+    import io as _io
+
+    rows: list[dict[str, Any]] = []
+    for raw in csv.DictReader(_io.StringIO(text)):
+        run_id = str(raw.get("run_id") or "").strip()
+        if not run_id:
+            continue
+        rows.append(
+            {
+                "event": "run_settled",
+                "run_id": run_id,
+                "cost_settled_cny": str(raw.get("amount") or ""),
+                "cost_unknown": False,
+            }
+        )
+    return rows
+
+
 def render(st: Any, get_lab: Callable[[], Any], view: str) -> None:
     if view == LAB_CONFIG:
         _config_view(st, get_lab)
     elif view == LAB_MONITOR:
         _monitor_view(st, get_lab)
+    elif view == LAB_STABILITY:
+        _stability_view(st, get_lab)
+    elif view == LAB_AUDIT:
+        _audit_view(st, get_lab)
     else:
         _result_view(st, get_lab)
 
 
 __all__ = [
+    "LAB_AUDIT",
     "LAB_CONFIG",
     "LAB_MONITOR",
     "LAB_RESULT",
+    "LAB_STABILITY",
     "LAB_VIEWS",
     "MODE_NOTE",
     "PROVIDER_LABELS",
+    "read_bill_csv_rows",
     "render",
 ]
