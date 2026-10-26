@@ -217,7 +217,7 @@ class RunIndex:
             entry = _entry(manifest)
             cache[run_id] = (mtime, entry)
             entries.append(entry)
-        entries.sort(key=lambda item: item["created_at"], reverse=True)
+        entries.sort(key=lambda item: (item["created_at"], item["run_id"]), reverse=True)
         self._cache = cache
         self._entries = entries
         self._signature = signature

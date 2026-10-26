@@ -492,25 +492,57 @@ class RunService:
         since: str | None = None,
         limit: int | None = None,
     ) -> list[RunSummary]:
-        manifests, _ = self.store.discover()
-        rows: list[RunSummary] = []
-        for manifest in manifests:
-            if map_id and manifest.get("map_id") != map_id:
-                continue
-            if state and manifest.get("state") != state:
-                continue
-            if mode and manifest.get("mode") != mode:
-                continue
-            if provider_id and manifest.get("provider_id") != provider_id:
-                continue
-            if model and manifest.get("model") != model:
-                continue
-            created = str(manifest.get("created_at") or "")
-            if since and created[:10] < since[:10]:
-                continue
-            rows.append(self._summary(manifest))
-        rows.sort(key=lambda item: item.created_at, reverse=True)
+        """历史列表（V13 起走只读索引）。
+
+        行为与 V11 一致（同样的筛选与排序），但底层用 ``web.index.RunIndex``：
+        文件没变时不重复解析 manifest，因此 Streamlit 每次 rerun 不再全量读盘。
+        需要"总数 + 分页"时用 ``page_runs``。
+        """
+
+        from agent_arena.web.index import RunIndex
+
+        index = getattr(self, "_run_index", None)
+        if index is None:
+            index = RunIndex(self.store.base)
+            self._run_index = index
+        rows = [
+            self._summary_from_entry(entry)
+            for entry in index.filter(
+                map_id=map_id or "",
+                state=state or "",
+                mode=mode or "",
+                provider_id=provider_id or "",
+                model=model or "",
+                since=since or "",
+            )
+        ]
         return rows[:limit] if limit else rows
+
+    def _summary_from_entry(self, entry: dict[str, Any]) -> RunSummary:
+        """由索引条目构造 ``RunSummary``（字段与 ``_summary`` 对齐）。"""
+
+        return RunSummary(
+            run_id=str(entry.get("run_id", "")),
+            map_id=str(entry.get("map_id", "")),
+            world=str(entry.get("world", "")),
+            mode=str(entry.get("mode", "")),
+            provider_id=str(entry.get("provider_id", "")),
+            model=str(entry.get("model", "")),
+            environment_seed=int(entry.get("environment_seed") or 0),
+            state=str(entry.get("state", "")),
+            outcome=entry.get("outcome"),
+            success=bool(entry.get("success")),
+            decisions=int(entry.get("decisions") or 0),
+            decision_budget=int(entry.get("decision_budget") or 0),
+            created_at=str(entry.get("created_at", "")),
+            finished_at=entry.get("finished_at"),
+            cost_settled_cny=entry.get("cost_settled_cny"),
+            cost_unknown=bool(entry.get("cost_unknown")),
+            rule_hash=entry.get("rule_hash"),
+            metric_hash=entry.get("metric_hash"),
+            metric_schema_hash=entry.get("metric_schema_hash"),
+            display_title=DISPLAY_TITLES.get(str(entry.get("map_id", "")), ""),
+        )
 
     def page_runs(
         self,

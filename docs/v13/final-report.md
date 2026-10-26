@@ -121,7 +121,7 @@ result + provenance + agent_events
 
 | 项 | 值 |
 |---|---|
-| pytest | **1638 passed**（V13 新增 113 项） |
+| pytest | **1639 passed**（V13 新增 114 项） |
 | ruff | All checks passed |
 | mypy | 323 文件 0 issues |
 | V10 冻结 | 9/9 unchanged |

@@ -62,6 +62,26 @@ def test_index_caches_until_directory_changes(tmp_path: Path) -> None:
     assert index.stats.runs == 21
 
 
+def test_index_lazy_page_matches_full_page(tmp_path: Path) -> None:
+    """懒加载第一页与全量排序必须逐行一致（否则翻页会跳记录）。"""
+
+    base = _history(tmp_path, 30)
+    index = RunIndex(base)
+    lazy = index.page(offset=0, limit=10)
+    full = index.page(offset=0, limit=10, lazy=False)
+    assert lazy.get("lazy") is True
+    assert [row["run_id"] for row in lazy["rows"]] == [
+        row["run_id"] for row in full["rows"]
+    ]
+    assert lazy["total"] == full["total"]
+    # 中间页也要一致（同 created_at 的并列项按 run_id 降序打破）。
+    lazy_mid = index.page(offset=20, limit=10)
+    full_mid = index.page(offset=20, limit=10, lazy=False)
+    assert [row["run_id"] for row in lazy_mid["rows"]] == [
+        row["run_id"] for row in full_mid["rows"]
+    ]
+
+
 def test_page_rows_pure_function() -> None:
     rows = [{"run_id": str(index)} for index in range(7)]
     page = page_rows(rows, offset=5, limit=10)

@@ -1,6 +1,6 @@
 # V13 实验报告：v13-demo
 
-- `experiment_id`：`lab-20261026T123446Z-cf687cd5`
+- `experiment_id`：`lab-20261026T144054Z-258a2120`
 - 数据来源：`SIMULATED` — **SIMULATED**：确定性脚本 Provider，只验证调用链/预算/诊断，不代表任何真实模型能力。
 - 状态：`COMPLETED`；执行通道：`simulated`
 - 模型 / Provider：`simulated-agent-policy` / `simulated_scripted`
@@ -12,11 +12,11 @@
 ## 0. 结论摘要（分级 + 锚点）
 
 - `INSUFFICIENT`（范围：截尾比例 1.0） 有效分母 16 局，成功 0 局；可比性判定 `COMPARABLE`。  
-  锚点：`experiment:lab-20261026T123446Z-cf687cd5`
+  锚点：`experiment:lab-20261026T144054Z-258a2120`
 - `TENTATIVE`（范围：重复不是新的环境 seed） 同条件重复的结局翻转率为 0.0（0/8 组）；单次观测不足以下架构结论。  
-  锚点：`experiment:lab-20261026T123446Z-cf687cd5`
+  锚点：`experiment:lab-20261026T144054Z-258a2120`
 - `TENTATIVE` 3 个实验臂出现反向、零提升或成本升高，已如实保留。  
-  锚点：`experiment:lab-20261026T123446Z-cf687cd5`
+  锚点：`experiment:lab-20261026T144054Z-258a2120`
 
 ## 1. 研究问题与预注册
 
@@ -56,30 +56,30 @@
 
 | run_id | 地图 | seed | 实验臂 | 类别 | 锚点 |
 |---|---|---:|---|---|---|
-| `web-20261026T123446Z-b2e7342b` | MAP-22 | 0 | `basic.v1` | `budget_censored` | `run:web-20261026T123446Z-b2e7342b` |
-| `web-20261026T123446Z-e7978af1` | MAP-22 | 0 | `memory.v2` | `budget_censored` | `run:web-20261026T123446Z-e7978af1` |
-| `web-20261026T123446Z-5982b007` | MAP-22 | 0 | `planning.v2` | `budget_censored` | `run:web-20261026T123446Z-5982b007` |
-| `web-20261026T123447Z-754d80ee` | MAP-22 | 0 | `reflection.v2` | `budget_censored` | `run:web-20261026T123447Z-754d80ee` |
-| `web-20261026T123447Z-f1c894b2` | MAP-22 | 0 | `basic.v1` | `budget_censored` | `run:web-20261026T123447Z-f1c894b2` |
-| `web-20261026T123447Z-48306370` | MAP-22 | 0 | `memory.v2` | `budget_censored` | `run:web-20261026T123447Z-48306370` |
-| `web-20261026T123448Z-1a2c4524` | MAP-22 | 0 | `planning.v2` | `budget_censored` | `run:web-20261026T123448Z-1a2c4524` |
-| `web-20261026T123448Z-07c6c351` | MAP-22 | 0 | `reflection.v2` | `budget_censored` | `run:web-20261026T123448Z-07c6c351` |
-| `web-20261026T123449Z-d1e9c71c` | MAP-16 | 0 | `basic.v1` | `budget_censored` | `run:web-20261026T123449Z-d1e9c71c` |
-| `web-20261026T123449Z-78c27153` | MAP-16 | 0 | `memory.v2` | `budget_censored` | `run:web-20261026T123449Z-78c27153` |
-| `web-20261026T123450Z-49e5393e` | MAP-16 | 0 | `planning.v2` | `budget_censored` | `run:web-20261026T123450Z-49e5393e` |
-| `web-20261026T123450Z-83e0adf3` | MAP-16 | 0 | `reflection.v2` | `budget_censored` | `run:web-20261026T123450Z-83e0adf3` |
-| `web-20261026T123451Z-897ff62d` | MAP-16 | 0 | `basic.v1` | `budget_censored` | `run:web-20261026T123451Z-897ff62d` |
-| `web-20261026T123451Z-c5b47c56` | MAP-16 | 0 | `memory.v2` | `budget_censored` | `run:web-20261026T123451Z-c5b47c56` |
-| `web-20261026T123452Z-381f9838` | MAP-16 | 0 | `planning.v2` | `budget_censored` | `run:web-20261026T123452Z-381f9838` |
-| `web-20261026T123452Z-4819e893` | MAP-16 | 0 | `reflection.v2` | `budget_censored` | `run:web-20261026T123452Z-4819e893` |
+| `web-20261026T144054Z-fb5d5229` | MAP-22 | 0 | `basic.v1` | `budget_censored` | `run:web-20261026T144054Z-fb5d5229` |
+| `web-20261026T144054Z-25d1215c` | MAP-22 | 0 | `memory.v2` | `budget_censored` | `run:web-20261026T144054Z-25d1215c` |
+| `web-20261026T144054Z-451a2005` | MAP-22 | 0 | `planning.v2` | `budget_censored` | `run:web-20261026T144054Z-451a2005` |
+| `web-20261026T144055Z-255381b5` | MAP-22 | 0 | `reflection.v2` | `budget_censored` | `run:web-20261026T144055Z-255381b5` |
+| `web-20261026T144055Z-fd283beb` | MAP-22 | 0 | `basic.v1` | `budget_censored` | `run:web-20261026T144055Z-fd283beb` |
+| `web-20261026T144055Z-4d021b7b` | MAP-22 | 0 | `memory.v2` | `budget_censored` | `run:web-20261026T144055Z-4d021b7b` |
+| `web-20261026T144055Z-dfea524c` | MAP-22 | 0 | `planning.v2` | `budget_censored` | `run:web-20261026T144055Z-dfea524c` |
+| `web-20261026T144056Z-f634b5e2` | MAP-22 | 0 | `reflection.v2` | `budget_censored` | `run:web-20261026T144056Z-f634b5e2` |
+| `web-20261026T144056Z-e737b57b` | MAP-16 | 0 | `basic.v1` | `budget_censored` | `run:web-20261026T144056Z-e737b57b` |
+| `web-20261026T144056Z-9f6bd097` | MAP-16 | 0 | `memory.v2` | `budget_censored` | `run:web-20261026T144056Z-9f6bd097` |
+| `web-20261026T144057Z-fc7ec835` | MAP-16 | 0 | `planning.v2` | `budget_censored` | `run:web-20261026T144057Z-fc7ec835` |
+| `web-20261026T144057Z-28f84b93` | MAP-16 | 0 | `reflection.v2` | `budget_censored` | `run:web-20261026T144057Z-28f84b93` |
+| `web-20261026T144057Z-32cd5ef2` | MAP-16 | 0 | `basic.v1` | `budget_censored` | `run:web-20261026T144057Z-32cd5ef2` |
+| `web-20261026T144058Z-56506dc4` | MAP-16 | 0 | `memory.v2` | `budget_censored` | `run:web-20261026T144058Z-56506dc4` |
+| `web-20261026T144058Z-83a5ca73` | MAP-16 | 0 | `planning.v2` | `budget_censored` | `run:web-20261026T144058Z-83a5ca73` |
+| `web-20261026T144059Z-4864ee44` | MAP-16 | 0 | `reflection.v2` | `budget_censored` | `run:web-20261026T144059Z-4864ee44` |
 
 ## 4. 负面结果（如实保留）
 
 | 实验臂 | 原因 | 锚点 |
 |---|---|---|
-| `memory.v2` | 成功率与基线相同（0.0），没有可观察提升 | `run:web-20261026T123446Z-e7978af1`、`run:web-20261026T123447Z-48306370`、`run:web-20261026T123449Z-78c27153` |
-| `planning.v2` | 成功率与基线相同（0.0），没有可观察提升 | `run:web-20261026T123446Z-5982b007`、`run:web-20261026T123448Z-1a2c4524`、`run:web-20261026T123450Z-49e5393e` |
-| `reflection.v2` | 成功率与基线相同（0.0），没有可观察提升 | `run:web-20261026T123447Z-754d80ee`、`run:web-20261026T123448Z-07c6c351`、`run:web-20261026T123450Z-83e0adf3` |
+| `memory.v2` | 成功率与基线相同（0.0），没有可观察提升 | `run:web-20261026T144054Z-25d1215c`、`run:web-20261026T144055Z-4d021b7b`、`run:web-20261026T144056Z-9f6bd097` |
+| `planning.v2` | 成功率与基线相同（0.0），没有可观察提升 | `run:web-20261026T144054Z-451a2005`、`run:web-20261026T144055Z-dfea524c`、`run:web-20261026T144057Z-fc7ec835` |
+| `reflection.v2` | 成功率与基线相同（0.0），没有可观察提升 | `run:web-20261026T144055Z-255381b5`、`run:web-20261026T144056Z-f634b5e2`、`run:web-20261026T144057Z-28f84b93` |
 
 ## 5. 成本
 
@@ -96,26 +96,26 @@
 
 | 地图 | run_id | 类别 | 证据步 | 摘要 |
 |---|---|---|---|---|
-| MAP-22 | `web-20261026T123446Z-b2e7342b` | `no_progress_window` | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 | 连续 16 步公开进度没有变化。 |
-| MAP-22 | `web-20261026T123446Z-b2e7342b` | `key_action_used_no_trigger` | 5, 10, 15 | 机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。 |
-| MAP-22 | `web-20261026T123446Z-b2e7342b` | `memory_key_not_in_metric` | 5, 10, 15 | 记忆写入成功，但没有使用指标口径内的键（bearing / path_state），因此 route_recall 为 NOT_APPLICABLE。 |
-| MAP-22 | `web-20261026T123446Z-b2e7342b` | `budget_censored` | — | 预算/动作上限耗尽，指标按 CENSORED 处理。 |
-| MAP-22 | `web-20261026T123446Z-e7978af1` | `no_progress_window` | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 | 连续 16 步公开进度没有变化。 |
-| MAP-22 | `web-20261026T123446Z-e7978af1` | `budget_censored` | — | 预算/动作上限耗尽，指标按 CENSORED 处理。 |
-| MAP-22 | `web-20261026T123446Z-5982b007` | `no_progress_window` | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 | 连续 16 步公开进度没有变化。 |
-| MAP-22 | `web-20261026T123446Z-5982b007` | `key_action_used_no_trigger` | 4, 8, 12 | 机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。 |
-| MAP-22 | `web-20261026T123446Z-5982b007` | `memory_key_not_in_metric` | 4, 8, 12 | 记忆写入成功，但没有使用指标口径内的键（bearing / path_state），因此 route_recall 为 NOT_APPLICABLE。 |
-| MAP-22 | `web-20261026T123446Z-5982b007` | `budget_censored` | — | 预算/动作上限耗尽，指标按 CENSORED 处理。 |
-| MAP-22 | `web-20261026T123447Z-754d80ee` | `no_progress_window` | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 | 连续 16 步公开进度没有变化。 |
-| MAP-22 | `web-20261026T123447Z-754d80ee` | `key_action_used_no_trigger` | 4, 8, 12 | 机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。 |
-| MAP-22 | `web-20261026T123447Z-754d80ee` | `memory_key_not_in_metric` | 4, 8, 12 | 记忆写入成功，但没有使用指标口径内的键（bearing / path_state），因此 route_recall 为 NOT_APPLICABLE。 |
-| MAP-22 | `web-20261026T123447Z-754d80ee` | `budget_censored` | — | 预算/动作上限耗尽，指标按 CENSORED 处理。 |
-| MAP-22 | `web-20261026T123447Z-f1c894b2` | `no_progress_window` | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 | 连续 16 步公开进度没有变化。 |
-| MAP-22 | `web-20261026T123447Z-f1c894b2` | `key_action_used_no_trigger` | 5, 10, 15 | 机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。 |
-| MAP-22 | `web-20261026T123447Z-f1c894b2` | `memory_key_not_in_metric` | 5, 10, 15 | 记忆写入成功，但没有使用指标口径内的键（bearing / path_state），因此 route_recall 为 NOT_APPLICABLE。 |
-| MAP-22 | `web-20261026T123447Z-f1c894b2` | `budget_censored` | — | 预算/动作上限耗尽，指标按 CENSORED 处理。 |
-| MAP-22 | `web-20261026T123447Z-48306370` | `no_progress_window` | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 | 连续 16 步公开进度没有变化。 |
-| MAP-22 | `web-20261026T123447Z-48306370` | `budget_censored` | — | 预算/动作上限耗尽，指标按 CENSORED 处理。 |
+| MAP-22 | `web-20261026T144054Z-fb5d5229` | `no_progress_window` | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 | 连续 16 步公开进度没有变化。 |
+| MAP-22 | `web-20261026T144054Z-fb5d5229` | `key_action_used_no_trigger` | 5, 10, 15 | 机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。 |
+| MAP-22 | `web-20261026T144054Z-fb5d5229` | `memory_key_not_in_metric` | 5, 10, 15 | 记忆写入成功，但没有使用指标口径内的键（bearing / path_state），因此 route_recall 为 NOT_APPLICABLE。 |
+| MAP-22 | `web-20261026T144054Z-fb5d5229` | `budget_censored` | — | 预算/动作上限耗尽，指标按 CENSORED 处理。 |
+| MAP-22 | `web-20261026T144054Z-25d1215c` | `no_progress_window` | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 | 连续 16 步公开进度没有变化。 |
+| MAP-22 | `web-20261026T144054Z-25d1215c` | `budget_censored` | — | 预算/动作上限耗尽，指标按 CENSORED 处理。 |
+| MAP-22 | `web-20261026T144054Z-451a2005` | `no_progress_window` | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 | 连续 16 步公开进度没有变化。 |
+| MAP-22 | `web-20261026T144054Z-451a2005` | `key_action_used_no_trigger` | 4, 8, 12 | 机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。 |
+| MAP-22 | `web-20261026T144054Z-451a2005` | `memory_key_not_in_metric` | 4, 8, 12 | 记忆写入成功，但没有使用指标口径内的键（bearing / path_state），因此 route_recall 为 NOT_APPLICABLE。 |
+| MAP-22 | `web-20261026T144054Z-451a2005` | `budget_censored` | — | 预算/动作上限耗尽，指标按 CENSORED 处理。 |
+| MAP-22 | `web-20261026T144055Z-255381b5` | `no_progress_window` | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 | 连续 16 步公开进度没有变化。 |
+| MAP-22 | `web-20261026T144055Z-255381b5` | `key_action_used_no_trigger` | 4, 8, 12 | 机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。 |
+| MAP-22 | `web-20261026T144055Z-255381b5` | `memory_key_not_in_metric` | 4, 8, 12 | 记忆写入成功，但没有使用指标口径内的键（bearing / path_state），因此 route_recall 为 NOT_APPLICABLE。 |
+| MAP-22 | `web-20261026T144055Z-255381b5` | `budget_censored` | — | 预算/动作上限耗尽，指标按 CENSORED 处理。 |
+| MAP-22 | `web-20261026T144055Z-fd283beb` | `no_progress_window` | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 | 连续 16 步公开进度没有变化。 |
+| MAP-22 | `web-20261026T144055Z-fd283beb` | `key_action_used_no_trigger` | 5, 10, 15 | 机制动作被接受，但核心机制仍未触发（阈值/时序未达成）。 |
+| MAP-22 | `web-20261026T144055Z-fd283beb` | `memory_key_not_in_metric` | 5, 10, 15 | 记忆写入成功，但没有使用指标口径内的键（bearing / path_state），因此 route_recall 为 NOT_APPLICABLE。 |
+| MAP-22 | `web-20261026T144055Z-fd283beb` | `budget_censored` | — | 预算/动作上限耗尽，指标按 CENSORED 处理。 |
+| MAP-22 | `web-20261026T144055Z-4d021b7b` | `no_progress_window` | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 | 连续 16 步公开进度没有变化。 |
+| MAP-22 | `web-20261026T144055Z-4d021b7b` | `budget_censored` | — | 预算/动作上限耗尽，指标按 CENSORED 处理。 |
 
 ## 7. 重复稳定性
 
@@ -166,4 +166,4 @@ uv run python scripts/verify_v13.py          # 离线一键验收
 uv run python scripts/demo_v13.py            # 零 Key 演示（SIMULATED）
 ```
 
-实验目录：`runs/lab/lab-20261026T123446Z-cf687cd5/`；子局仍在 `runs/web/<run_id>/`。
+实验目录：`runs/lab/lab-20261026T144054Z-258a2120/`；子局仍在 `runs/web/<run_id>/`。

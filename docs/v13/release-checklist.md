@@ -38,7 +38,7 @@ uv run agent-arena web
 | `lab/policies/reflection_v2.py` | 暴露/触发/冷却/额度/误触发/恢复 + trigger-only |
 | `lab/v13/`（新包，10 模块） | 可比性、稳定性、消融、效度、归因、画像、报告、账本、SDK 自检、压测 |
 | `web/index.py`（新） | 只读索引：懒加载首页、增量刷新、服务端分页、聚合 |
-| `web/service.py` | `page_runs` / `aggregate_runs` / `invalidate_index` |
+| `web/service.py` | `page_runs` / `aggregate_runs` / `invalidate_index`；`list_runs` 改走只读索引（不再每次全量解析 manifest） |
 | `web/schemas.py` | `RunConfig.replicate_index` |
 | `ui/lab.py` | 5 页；预检重复口径；稳定性/效度页；报告/审计页 |
 | `scripts/` | `verify_v13.py`、`demo_v13.py`、`summarize_v13_repeats.py`、`audit_v13_ledger.py`、`audit_v13_maps.py`、`stress_v13_history.py`；`run_v12_matrix.py` 新增 `--replicates` / `--repeats-of` / `--ablation` |

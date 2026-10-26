@@ -126,7 +126,7 @@
 | 09-03 重复实验视图 | DONE | 翻转率、截尾数、可比性、`DESCRIPTIVE_ONLY` 提示 |
 | 09-04 六图可视化边界 | DONE | MAP-22 被拒移动单列、不计边（V12 已修，V13 未回退） |
 | 09-05 预检/门禁/授权状态 | DONE | 配置页 stat tiles + 重复口径提示 + 授权状态 |
-| 09-06 分页与状态保持 | DONE | `web/index.py`（懒加载 + 增量刷新）+ `RunService.page_runs` |
+| 09-06 分页与状态保持 | DONE | `web/index.py`（懒加载 + 增量刷新 + 服务端分页）；`RunService.list_runs` 也改为走索引 |
 | 09-07 主题/窄屏/键盘审计 | PARTIAL | 离线审计沿用 V12（0 critical/serious/moderate）；**本机未跑浏览器审计**（见 gap） |
 
 ## Batch 10｜报告与账本

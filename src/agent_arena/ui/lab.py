@@ -743,6 +743,36 @@ def _result_view(st: Any, get_lab: Callable[[], Any]) -> None:
             ]
             or [{"类别": "尚未执行", "局数": 0}]
         )
+        st.header("配对明细（可比性逐对可见）")
+        pairs = comparison.get("pairs") or []
+        if pairs:
+            st.dataframe(
+                [
+                    {
+                        "地图": pair.get("map_id"),
+                        "seed": pair.get("environment_seed"),
+                        "A": pair.get("left_agent"),
+                        "B": pair.get("right_agent"),
+                        "判定": pair.get("verdict"),
+                        "不可比原因": "；".join(pair.get("reasons") or []),
+                        "A 类别": CATEGORY_LABELS.get(str(pair.get("left_category")), ""),
+                        "B 类别": CATEGORY_LABELS.get(str(pair.get("right_category")), ""),
+                        "A 决策": pair.get("left_decisions"),
+                        "B 决策": pair.get("right_decisions"),
+                        "A 请求": pair.get("left_requests"),
+                        "B 请求": pair.get("right_requests"),
+                        "A 费用": _cost(pair.get("left_cost_cny")),
+                        "B 费用": _cost(pair.get("right_cost_cny")),
+                    }
+                    for pair in pairs
+                ]
+            )
+            st.caption(
+                "配对键是 `(map_id, environment_seed)`；重复按 `replicate_index` 对齐。"
+                "`INCOMPARABLE` 的配对不给差值，只并列展示。"
+            )
+        else:
+            st.caption("没有可配对的条件（地图/seed 未对齐，或只有一个实验臂）。")
         _render_metrics(st, comparison)
     with tabs[1]:
         if records:

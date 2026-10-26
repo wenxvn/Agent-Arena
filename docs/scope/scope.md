@@ -516,6 +516,6 @@ Spec [0018](../specs/0018-v5-six-map-measurement.md)
 - [x] Batch 11：SDK 8 项接入自检 + 异常隔离 + 旧 `act()` 签名兼容 + `docs/v13/sdk-guide.md`。
 - [x] Batch 12：1 000 / 5 000 条合成历史压测（懒加载首页 18 ms / 31 ms；已建索引翻页 0.1 ms / 0.4 ms）；CI 加 `verify_v13` 步骤。
 - [x] Batch 13：`docs/v13/` 全套（audit / protocol / progress / decisions / 三份 study / core-evidence / map-validity / map30 / taxonomy / capability / live-budget-proposal / data-and-cost-audit / performance / validation / gap / final / release-checklist / demo）。
-- [x] 验证：**1638 pytest passed**、mypy 323 文件 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 15/15、`verify_v13` 18/18、`e2e_lab` 通过、`e2e_web` 通过。
+- [x] 验证：**1639 pytest passed**、mypy 323 文件 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 15/15、`verify_v13` 18/18、`e2e_lab` 通过、`e2e_web` 通过。
 
 边界：`LAB_1_1_ENGINEERING_READY` 指 P0/P1/P2 工程交付完成；**真实模型效果仍是 `WAITING_USER_APPROVAL`**（V12 的 ¥6 已结束，余额不挪用）。CI 浏览器 E2E 仍非阻断（`NOT_VERIFIED`），Provider 后台账单对账为 `BLOCKED_EXTERNAL`。详见 `docs/v13/final-report.md` 与 `docs/v13/gap-audit.md`。

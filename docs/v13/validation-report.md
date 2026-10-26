@@ -10,7 +10,7 @@
 |---|---|---|
 | `uv run ruff check .` | **All checks passed!** | 全仓库 |
 | `uv run mypy src` | **Success: no issues found in 323 source files** | |
-| `uv run pytest -q` | **1638 passed**（110.51s） | V13 新增 113 项 |
+| `uv run pytest -q` | **1639 passed**（132.91s） | V13 新增 114 项 |
 | `uv lock --check` | 无变更 | `uv.lock` 未改 |
 | `git diff --check` | 无输出 | |
 | `python -m agent_arena.v10.freeze verify` | **9/9 unchanged** | 冻结区未动 |
@@ -37,10 +37,10 @@ V13 新增模块全部有类型注解；第一轮出现 10 个 `union-attr` / �
 
 ```text
 $ uv run pytest -q
-1638 passed in 110.51s (0:01:50)
+1639 passed in 132.91s (0:02:12)
 ```
 
-其中 V12 基线 1525 项全部保留通过；V13 新增 **113 项**：
+其中 V12 基线 1525 项全部保留通过；V13 新增 **114 项**：
 
 | 文件 | 项数 | 覆盖 |
 |---|---:|---|
@@ -50,10 +50,10 @@ $ uv run pytest -q
 | `test_v13_policies.py` | 23 | memory.v2 / planning.v2 / reflection.v2 机制 |
 | `test_v13_analysis.py` | 17 | 消融模板、证据包、效度、归因、画像 |
 | `test_v13_report_ledger.py` | 19 | 报告快照/分级/脱敏、账本审计、账单对账 |
-| `test_v13_runtime.py` | 12 | 分页索引、SDK 自检、压测隔离、一键验收 |
+| `test_v13_runtime.py` | 13 | 分页索引（含懒加载与全量逐行一致）、SDK 自检、压测隔离、一键验收 |
 | `test_v13_ui.py` | 5 | 两个新页面 stub 冒烟 |
 
-> 113 项 = 上述 8 个文件的用例数之和；`pytest -k v13` 实测 **113 passed**。
+> 114 项 = 上述 8 个文件的用例数之和；`pytest -k v13` 实测 **114 passed**。
 
 ## 2. 浏览器端到端与可访问性
 
@@ -169,9 +169,11 @@ UI 在数字旁明确写出"按当前载入的记录集计算"。
 
 | # | 缺陷 | 如何发现 | 修复 |
 |---|---|---|---|
-| 1 | `public_dict()` 把派生字段塞进 `sampling`/`protocol`，破坏 JSON 往返 | `pytest` 出现 2 个 V12 回归失败（`test_json_spec_file_round_trip`、`test_only_conditions_survives_json_round_trip`） | 派生值改为按需计算（`report._sampling_claim`），`public_dict` 只输出可往返字段 |
+| 1 | `public_dict()` 把派生字段塞进 `sampling`/`protocol`，破坏 JSON 往返 | `pytest` 出现 2 个 V12 回归失败（`test_json_spec_file_round_trip`、`test_only_conditions_survives_json_round_trip`，当时 `2 failed, 1636 passed`） | 派生值改为按需计算（`report._sampling_claim`），`public_dict` 只输出可往返字段 |
 | 2 | 新增两个 Lab 页面没加进 `ui/app.py` 的 `VIEWS` | `e2e_lab` 首次运行超时（找不到「六图效度」） | 补 `VIEW_LAB_STABILITY` / `VIEW_LAB_AUDIT` |
 | 3 | 压测把"安全软件首次扫描"算成代码开销 | 1 000 条冷构建 10–14 s，与 5 000 条不成比例 | 测量前预热，报告写明读法 |
 | 4 | `pathlib.is_dir()` 对 5 000 目录耗 1.6 s | 逐段计时定位 | 改 `os.scandir`（`entry.is_dir()` 来自枚举）；冷构建 48 s → 3.3 s |
 | 5 | 证据包把同 `agent_id` 不同配置合成一臂 | 自查 `MAP-22` 的 memory 混合了契约修复前后 | 按 `agent@config_hash` 分臂 |
 | 6 | 稳定性页翻转率与文档 25% 不一致 | E2E 截图/文本核对 | UI 明写"按当前载入记录集计算"，文档固定 3 份子集口径 |
+| 7 | 懒加载首页与全量排序不一致（`created_at` 相同则顺序随机） | 自查 `RunIndex.page(lazy=True)` vs `lazy=False` 逐行比对 | 排序键改为 `(created_at, run_id)` 降序，并加回归测试 `test_index_lazy_page_matches_full_page` |
+| 8 | `list_runs` 每次 rerun 都全量解析 manifest | 阅读 V11 代码时发现（`discover()`） | 改为走 `RunIndex`（字段与 `_summary` 对齐，新增 `_summary_from_entry`） |

@@ -18,31 +18,37 @@
 ### 信息搜集
 - 代表指标：`map22.v10.mission_success`, `map22.v10.goal_recorded`, `map22.v10.memory_writes`, `map22.v10.route_recall`, `map22.v10.wasted_moves`
 - 未观测地图：MAP-01, MAP-02, MAP-06, MAP-08, MAP-14, MAP-15, MAP-21, MAP-25, MAP-26
+- 等级理由：截尾 8/8（≥30%）：成功率会被截尾压低，不当作能力分数。
 - 缺失机制不记为 0；`success_rate=None` 表示证据不足，不是「能力为零」。
 
 ### 记忆 / 状态追踪
 - 代表指标：`map22.v10.mission_success`, `map22.v10.goal_recorded`, `map22.v10.memory_writes`, `map22.v10.route_recall`, `map22.v10.wasted_moves`
 - 未观测地图：MAP-01, MAP-03, MAP-11, MAP-23, MAP-24, MAP-28
+- 等级理由：截尾 8/8（≥30%）：成功率会被截尾压低，不当作能力分数。
 - 缺失机制不记为 0；`success_rate=None` 表示证据不足，不是「能力为零」。
 
 ### 规划 / 重规划
 - 代表指标：`map16.v10.mission_success`, `map16.v10.committed_ticks`, `map16.v10.deadlock_count`, `map16.v10.legal_action_rate`, `map16.v10.makespan_gap`
 - 未观测地图：MAP-05, MAP-10, MAP-12, MAP-13, MAP-17, MAP-18, MAP-24, MAP-25, MAP-27
+- 等级理由：截尾 8/8（≥30%）：成功率会被截尾压低，不当作能力分数。
 - 缺失机制不记为 0；`success_rate=None` 表示证据不足，不是「能力为零」。
 
 ### 资源约束
 - 代表指标：`map16.v10.mission_success`, `map16.v10.committed_ticks`, `map16.v10.deadlock_count`, `map16.v10.legal_action_rate`, `map16.v10.makespan_gap`
 - 未观测地图：MAP-02, MAP-04, MAP-07, MAP-09, MAP-10, MAP-12, MAP-17, MAP-18, MAP-19, MAP-20, MAP-26, MAP-30
+- 等级理由：截尾 8/8（≥30%）：成功率会被截尾压低，不当作能力分数。
 - 缺失机制不记为 0；`success_rate=None` 表示证据不足，不是「能力为零」。
 
 ### 故障恢复
 - 代表指标：—
 - 未观测地图：MAP-04, MAP-05, MAP-07, MAP-09, MAP-11, MAP-19, MAP-20, MAP-21, MAP-29
+- 等级理由：该维度适用地图在本批数据里一局都没跑过。
 - 缺失机制不记为 0；`success_rate=None` 表示证据不足，不是「能力为零」。
 
 ### 证据推理
 - 代表指标：—
 - 未观测地图：MAP-03, MAP-06, MAP-08, MAP-13, MAP-14, MAP-15, MAP-23, MAP-27, MAP-28, MAP-29, MAP-30
+- 等级理由：该维度适用地图在本批数据里一局都没跑过。
 - 缺失机制不记为 0；`success_rate=None` 表示证据不足，不是「能力为零」。
 
 ## 限制

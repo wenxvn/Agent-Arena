@@ -2001,7 +2001,7 @@ V8/V9/V10 冻结规则、账本与历史 trace 只读；V11 单局语义与 V12 
 - `MatrixCell.replicate_index`：`0` 时 `condition_key` 与 V12 **逐字一致**，`>0` 追加 `|rep=<n>`；
   `pairing_key` 仍忽略重复编号（重复不是新 seed）。
 - 一次真实缺陷：第一版把 `deterministic_claim` 塞进 `sampling` 的 `public_dict`，导致 V12 的两个
-  round-trip 测试失败（`1638 passed` 之前出现 2 failed）。改为"派生值按需计算"，`public_dict` 保持可往返。
+  round-trip 测试失败（当时 `2 failed, 1636 passed`）。改为"派生值按需计算"，`public_dict` 保持可往返。
 
 ### 策略层（v1 一字未改）
 
@@ -2044,7 +2044,7 @@ V8/V9/V10 冻结规则、账本与历史 trace 只读；V11 单局语义与 V12 
 
 ### 验证
 
-`1638 pytest passed`（V13 新增 113 项）、mypy 323 文件 0 issues、ruff clean、lock 0、
+`1639 pytest passed`（V13 新增 114 项）、mypy 323 文件 0 issues、ruff clean、lock 0、
 freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、
 `verify_v12` 15/15、`verify_v13` 18/18、`e2e_web` 通过、`e2e_lab` 通过（含两个新页面与 SDK 自检）、
 `a11y_v12 --browser` 0 critical/serious/moderate。

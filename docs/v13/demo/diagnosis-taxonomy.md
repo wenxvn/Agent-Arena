@@ -19,19 +19,19 @@
 
 | run_id | 地图 | 实验臂 | 主层 | 证据步 | 摘要 |
 |---|---|---|---|---|---|
-| `web-20261026T123446Z-b2e7342b` | MAP-22 | `basic.v1` | `MEASUREMENT_COVERAGE` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 测量覆盖问题（不是能力）；共 4 条证据级诊断。 |
-| `web-20261026T123446Z-e7978af1` | MAP-22 | `memory.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 2 条证据级诊断。 |
-| `web-20261026T123446Z-5982b007` | MAP-22 | `planning.v2` | `MEASUREMENT_COVERAGE` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 测量覆盖问题（不是能力）；共 4 条证据级诊断。 |
-| `web-20261026T123447Z-754d80ee` | MAP-22 | `reflection.v2` | `MEASUREMENT_COVERAGE` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 测量覆盖问题（不是能力）；共 4 条证据级诊断。 |
-| `web-20261026T123447Z-f1c894b2` | MAP-22 | `basic.v1` | `MEASUREMENT_COVERAGE` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 测量覆盖问题（不是能力）；共 4 条证据级诊断。 |
-| `web-20261026T123447Z-48306370` | MAP-22 | `memory.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 2 条证据级诊断。 |
-| `web-20261026T123448Z-1a2c4524` | MAP-22 | `planning.v2` | `MEASUREMENT_COVERAGE` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 测量覆盖问题（不是能力）；共 4 条证据级诊断。 |
-| `web-20261026T123448Z-07c6c351` | MAP-22 | `reflection.v2` | `MEASUREMENT_COVERAGE` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 测量覆盖问题（不是能力）；共 4 条证据级诊断。 |
-| `web-20261026T123449Z-d1e9c71c` | MAP-16 | `basic.v1` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 7 条证据级诊断。 |
-| `web-20261026T123449Z-78c27153` | MAP-16 | `memory.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 7 条证据级诊断。 |
-| `web-20261026T123450Z-49e5393e` | MAP-16 | `planning.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 8 条证据级诊断。 |
-| `web-20261026T123450Z-83e0adf3` | MAP-16 | `reflection.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 5 条证据级诊断。 |
-| `web-20261026T123451Z-897ff62d` | MAP-16 | `basic.v1` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 7 条证据级诊断。 |
-| `web-20261026T123451Z-c5b47c56` | MAP-16 | `memory.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 7 条证据级诊断。 |
-| `web-20261026T123452Z-381f9838` | MAP-16 | `planning.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 8 条证据级诊断。 |
-| `web-20261026T123452Z-4819e893` | MAP-16 | `reflection.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 5 条证据级诊断。 |
+| `web-20261026T144054Z-fb5d5229` | MAP-22 | `basic.v1` | `MEASUREMENT_COVERAGE` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 测量覆盖问题（不是能力）；共 4 条证据级诊断。 |
+| `web-20261026T144054Z-25d1215c` | MAP-22 | `memory.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 2 条证据级诊断。 |
+| `web-20261026T144054Z-451a2005` | MAP-22 | `planning.v2` | `MEASUREMENT_COVERAGE` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 测量覆盖问题（不是能力）；共 4 条证据级诊断。 |
+| `web-20261026T144055Z-255381b5` | MAP-22 | `reflection.v2` | `MEASUREMENT_COVERAGE` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 测量覆盖问题（不是能力）；共 4 条证据级诊断。 |
+| `web-20261026T144055Z-fd283beb` | MAP-22 | `basic.v1` | `MEASUREMENT_COVERAGE` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 测量覆盖问题（不是能力）；共 4 条证据级诊断。 |
+| `web-20261026T144055Z-4d021b7b` | MAP-22 | `memory.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 2 条证据级诊断。 |
+| `web-20261026T144055Z-dfea524c` | MAP-22 | `planning.v2` | `MEASUREMENT_COVERAGE` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 测量覆盖问题（不是能力）；共 4 条证据级诊断。 |
+| `web-20261026T144056Z-f634b5e2` | MAP-22 | `reflection.v2` | `MEASUREMENT_COVERAGE` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 测量覆盖问题（不是能力）；共 4 条证据级诊断。 |
+| `web-20261026T144056Z-e737b57b` | MAP-16 | `basic.v1` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 7 条证据级诊断。 |
+| `web-20261026T144056Z-9f6bd097` | MAP-16 | `memory.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 7 条证据级诊断。 |
+| `web-20261026T144057Z-fc7ec835` | MAP-16 | `planning.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 8 条证据级诊断。 |
+| `web-20261026T144057Z-28f84b93` | MAP-16 | `reflection.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 5 条证据级诊断。 |
+| `web-20261026T144057Z-32cd5ef2` | MAP-16 | `basic.v1` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 7 条证据级诊断。 |
+| `web-20261026T144058Z-56506dc4` | MAP-16 | `memory.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 7 条证据级诊断。 |
+| `web-20261026T144058Z-83a5ca73` | MAP-16 | `planning.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 8 条证据级诊断。 |
+| `web-20261026T144059Z-4864ee44` | MAP-16 | `reflection.v2` | `BUDGET_CENSORED` | 1, 2, 3, 4, 5, 6, 7, 8 | 主层 预算截尾（没测完）；共 5 条证据级诊断。 |
