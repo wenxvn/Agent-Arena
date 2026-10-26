@@ -33,6 +33,8 @@ ROOT = Path(__file__).resolve().parents[1]
 LAB_CONFIG = "Lab · 实验配置"
 LAB_MONITOR = "Lab · 实验监控"
 LAB_RESULT = "Lab · 结果与对照"
+LAB_STABILITY = "Lab · 稳定性与效度"
+LAB_AUDIT = "Lab · 报告与审计"
 
 
 def _wait_port(port: int, timeout: float = 40.0) -> None:
@@ -121,7 +123,32 @@ def _run_flow(page: Page, url: str) -> dict[str, Any]:
     assert "SIMULATED" in result_body
     assert "COMPARABLE" in result_body or "DESCRIPTIVE_ONLY" in result_body
 
-    # 5. 导出报告并校验内容。
+    # 5. V13：稳定性与效度页（翻转率/效度/能力画像）。
+    _goto_view(page, url, LAB_STABILITY)
+    page.get_by_text("六图效度", exact=False).first.wait_for(timeout=60_000)
+    stability_body = page.locator("body").inner_text()
+    assert "翻转率" in stability_body
+    assert "六图效度" in stability_body
+    assert "重复" in stability_body
+
+    # 6. V13：报告与审计页（报告 / 账本 / SDK 自检）。
+    _goto_view(page, url, LAB_AUDIT)
+    page.get_by_text("模板化离线报告", exact=False).first.wait_for(timeout=60_000)
+    audit_body = page.locator("body").inner_text()
+    assert "账本审计" in audit_body
+    assert "SDK 自检" in audit_body
+    page.get_by_role("tab", name="SDK 自检").first.click()
+    page.wait_for_timeout(600)
+    page.get_by_role("button", name=re.compile("运行 SDK 自检")).first.click()
+    page.get_by_text(re.compile("SDK 自检全部通过|SDK 自检失败")).first.wait_for(
+        timeout=60_000
+    )
+    sdk_body = page.locator("body").inner_text()
+    assert "SDK 自检全部通过" in sdk_body, "SDK 自检未通过"
+
+    # 7. 导出报告并校验内容。
+    _goto_view(page, url, LAB_RESULT)
+    page.get_by_text("实验臂汇总", exact=True).first.wait_for(timeout=60_000)
     page.get_by_role("tab", name="导出").first.click()
     page.wait_for_timeout(800)
     page.get_by_role("button", name=re.compile("生成导出文件")).first.click()
@@ -142,6 +169,9 @@ def _run_flow(page: Page, url: str) -> dict[str, Any]:
         "monitor_state": "COMPLETED",
         "report_bytes": Path(path).stat().st_size,
         "report_lines": len(report.splitlines()),
+        "v13_stability_page": True,
+        "v13_audit_page": True,
+        "v13_sdk_selfcheck": True,
     }
 
 

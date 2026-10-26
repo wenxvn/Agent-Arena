@@ -432,7 +432,7 @@ def check_ledger_tooling() -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="agent-arena-v13-ledger-") as temporary:
         root = Path(temporary)
         ledger = root / "ledger.jsonl"
-        rows = [
+        rows: list[dict[str, Any]] = [
             {"event": "run_started", "run_id": "run-1", "reserved_cny": "0.5"},
             {"event": "run_settled", "run_id": "run-1", "requests": 10, "input_tokens": 1000,
              "output_tokens": 100, "cost_settled_cny": "0.0123", "cost_unknown": False},

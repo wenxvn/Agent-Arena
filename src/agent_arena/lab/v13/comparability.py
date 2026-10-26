@@ -71,7 +71,8 @@ def _hash(value: Any) -> str:
 def comparability_profile(record: dict[str, Any]) -> dict[str, Any]:
     """从一条 run record 提取可比性画像（只读、可序列化）。"""
 
-    sampling = record.get("sampling") if isinstance(record.get("sampling"), dict) else {}
+    sampling_raw = record.get("sampling")
+    sampling: dict[str, Any] = sampling_raw if isinstance(sampling_raw, dict) else {}
     profile = {
         "map_id": str(record.get("map_id") or ""),
         "environment_seed": int(record.get("environment_seed") or 0),

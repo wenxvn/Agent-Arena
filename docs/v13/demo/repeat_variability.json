@@ -1,0 +1,293 @@
+{
+ "always_success_conditions": [],
+ "comparable_groups": 8,
+ "excluded_keys": [],
+ "excluded_not_comparable": 0,
+ "flip_rate": 0.0,
+ "groups": 8,
+ "groups_with_flip": 0,
+ "min_obs": 2,
+ "observations_per_group": [
+  2
+ ],
+ "per_map": {
+  "MAP-16": {
+   "comparable_groups": 4,
+   "flip_rate": 0.0,
+   "flipped_groups": 0,
+   "observations": 8
+  },
+  "MAP-22": {
+   "comparable_groups": 4,
+   "flip_rate": 0.0,
+   "flipped_groups": 0,
+   "observations": 8
+  }
+ },
+ "records": 16,
+ "rows": [
+  {
+   "agent_id": "basic.v1",
+   "categories": [
+    "budget_censored",
+    "budget_censored"
+   ],
+   "censored": 2,
+   "comparable": true,
+   "cost_max_cny": 0.0,
+   "cost_min_cny": 0.0,
+   "cost_unknown": false,
+   "decisions_max": 16,
+   "decisions_min": 16,
+   "environment_seed": 0,
+   "evidence": "DESCRIPTIVE_ONLY",
+   "flipped": false,
+   "group_key": "MAP-16|seed=0|basic.v1",
+   "invalid": 0,
+   "map_id": "MAP-16",
+   "mismatch": [],
+   "observations": 2,
+   "replicate_indexes": [
+    0,
+    1
+   ],
+   "run_ids": [
+    "web-20261026T123449Z-d1e9c71c",
+    "web-20261026T123451Z-897ff62d"
+   ],
+   "successes": 0,
+   "valid_observations": 2
+  },
+  {
+   "agent_id": "memory.v2",
+   "categories": [
+    "budget_censored",
+    "budget_censored"
+   ],
+   "censored": 2,
+   "comparable": true,
+   "cost_max_cny": 0.0,
+   "cost_min_cny": 0.0,
+   "cost_unknown": false,
+   "decisions_max": 16,
+   "decisions_min": 16,
+   "environment_seed": 0,
+   "evidence": "DESCRIPTIVE_ONLY",
+   "flipped": false,
+   "group_key": "MAP-16|seed=0|memory.v2",
+   "invalid": 0,
+   "map_id": "MAP-16",
+   "mismatch": [],
+   "observations": 2,
+   "replicate_indexes": [
+    0,
+    1
+   ],
+   "run_ids": [
+    "web-20261026T123449Z-78c27153",
+    "web-20261026T123451Z-c5b47c56"
+   ],
+   "successes": 0,
+   "valid_observations": 2
+  },
+  {
+   "agent_id": "planning.v2",
+   "categories": [
+    "budget_censored",
+    "budget_censored"
+   ],
+   "censored": 2,
+   "comparable": true,
+   "cost_max_cny": 0.0,
+   "cost_min_cny": 0.0,
+   "cost_unknown": false,
+   "decisions_max": 16,
+   "decisions_min": 16,
+   "environment_seed": 0,
+   "evidence": "DESCRIPTIVE_ONLY",
+   "flipped": false,
+   "group_key": "MAP-16|seed=0|planning.v2",
+   "invalid": 0,
+   "map_id": "MAP-16",
+   "mismatch": [],
+   "observations": 2,
+   "replicate_indexes": [
+    0,
+    1
+   ],
+   "run_ids": [
+    "web-20261026T123450Z-49e5393e",
+    "web-20261026T123452Z-381f9838"
+   ],
+   "successes": 0,
+   "valid_observations": 2
+  },
+  {
+   "agent_id": "reflection.v2",
+   "categories": [
+    "budget_censored",
+    "budget_censored"
+   ],
+   "censored": 2,
+   "comparable": true,
+   "cost_max_cny": 0.0,
+   "cost_min_cny": 0.0,
+   "cost_unknown": false,
+   "decisions_max": 16,
+   "decisions_min": 16,
+   "environment_seed": 0,
+   "evidence": "DESCRIPTIVE_ONLY",
+   "flipped": false,
+   "group_key": "MAP-16|seed=0|reflection.v2",
+   "invalid": 0,
+   "map_id": "MAP-16",
+   "mismatch": [],
+   "observations": 2,
+   "replicate_indexes": [
+    0,
+    1
+   ],
+   "run_ids": [
+    "web-20261026T123450Z-83e0adf3",
+    "web-20261026T123452Z-4819e893"
+   ],
+   "successes": 0,
+   "valid_observations": 2
+  },
+  {
+   "agent_id": "basic.v1",
+   "categories": [
+    "budget_censored",
+    "budget_censored"
+   ],
+   "censored": 2,
+   "comparable": true,
+   "cost_max_cny": 0.0,
+   "cost_min_cny": 0.0,
+   "cost_unknown": false,
+   "decisions_max": 16,
+   "decisions_min": 16,
+   "environment_seed": 0,
+   "evidence": "DESCRIPTIVE_ONLY",
+   "flipped": false,
+   "group_key": "MAP-22|seed=0|basic.v1",
+   "invalid": 0,
+   "map_id": "MAP-22",
+   "mismatch": [],
+   "observations": 2,
+   "replicate_indexes": [
+    0,
+    1
+   ],
+   "run_ids": [
+    "web-20261026T123446Z-b2e7342b",
+    "web-20261026T123447Z-f1c894b2"
+   ],
+   "successes": 0,
+   "valid_observations": 2
+  },
+  {
+   "agent_id": "memory.v2",
+   "categories": [
+    "budget_censored",
+    "budget_censored"
+   ],
+   "censored": 2,
+   "comparable": true,
+   "cost_max_cny": 0.0,
+   "cost_min_cny": 0.0,
+   "cost_unknown": false,
+   "decisions_max": 16,
+   "decisions_min": 16,
+   "environment_seed": 0,
+   "evidence": "DESCRIPTIVE_ONLY",
+   "flipped": false,
+   "group_key": "MAP-22|seed=0|memory.v2",
+   "invalid": 0,
+   "map_id": "MAP-22",
+   "mismatch": [],
+   "observations": 2,
+   "replicate_indexes": [
+    0,
+    1
+   ],
+   "run_ids": [
+    "web-20261026T123446Z-e7978af1",
+    "web-20261026T123447Z-48306370"
+   ],
+   "successes": 0,
+   "valid_observations": 2
+  },
+  {
+   "agent_id": "planning.v2",
+   "categories": [
+    "budget_censored",
+    "budget_censored"
+   ],
+   "censored": 2,
+   "comparable": true,
+   "cost_max_cny": 0.0,
+   "cost_min_cny": 0.0,
+   "cost_unknown": false,
+   "decisions_max": 16,
+   "decisions_min": 16,
+   "environment_seed": 0,
+   "evidence": "DESCRIPTIVE_ONLY",
+   "flipped": false,
+   "group_key": "MAP-22|seed=0|planning.v2",
+   "invalid": 0,
+   "map_id": "MAP-22",
+   "mismatch": [],
+   "observations": 2,
+   "replicate_indexes": [
+    0,
+    1
+   ],
+   "run_ids": [
+    "web-20261026T123446Z-5982b007",
+    "web-20261026T123448Z-1a2c4524"
+   ],
+   "successes": 0,
+   "valid_observations": 2
+  },
+  {
+   "agent_id": "reflection.v2",
+   "categories": [
+    "budget_censored",
+    "budget_censored"
+   ],
+   "censored": 2,
+   "comparable": true,
+   "cost_max_cny": 0.0,
+   "cost_min_cny": 0.0,
+   "cost_unknown": false,
+   "decisions_max": 16,
+   "decisions_min": 16,
+   "environment_seed": 0,
+   "evidence": "DESCRIPTIVE_ONLY",
+   "flipped": false,
+   "group_key": "MAP-22|seed=0|reflection.v2",
+   "invalid": 0,
+   "map_id": "MAP-22",
+   "mismatch": [],
+   "observations": 2,
+   "replicate_indexes": [
+    0,
+    1
+   ],
+   "run_ids": [
+    "web-20261026T123447Z-754d80ee",
+    "web-20261026T123448Z-07c6c351"
+   ],
+   "successes": 0,
+   "valid_observations": 2
+  }
+ ],
+ "schema": "v13-repeat-variability-1",
+ "source": "SIMULATED",
+ "units": {
+  "group": "(map_id, environment_seed, agent_id)",
+  "observation": "一次独立重采样（replicate_index 递增）",
+  "warning": "重复次数 ≠ 环境 seed 数：同一 seed 的 3 次重复只说明抽样波动，不能当作 3 张地图实例的泛化证据。"
+ }
+}

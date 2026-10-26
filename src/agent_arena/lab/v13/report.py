@@ -47,6 +47,18 @@ def anchor_experiment(experiment_id: str) -> str:
     return f"experiment:{experiment_id}"
 
 
+def _sampling_claim(sampling: dict[str, Any]) -> str:
+    """由采样登记推导对外口径（不在 `public_dict` 里存派生字段）。"""
+
+    support = str(sampling.get("support") or "UNKNOWN")
+    seed_requested = sampling.get("seed_requested")
+    if support == "SUPPORTED" and seed_requested is not None:
+        return "SEED_ACCEPTED_BUT_OUTPUT_NOT_GUARANTEED"
+    if support == "UNSUPPORTED":
+        return "UNSUPPORTED"
+    return "UNKNOWN"
+
+
 @dataclass
 class Conclusion:
     level: str
@@ -80,8 +92,8 @@ def _source_label(mode: str) -> tuple[str, str]:
     return SOURCE_HISTORICAL, "**HISTORICAL**：只读历史记录，不是本轮新跑。"
 
 
-def _denominator(records: list[dict[str, Any]]) -> dict[str, int]:
-    counts = {
+def _denominator(records: list[dict[str, Any]]) -> dict[str, Any]:
+    counts: dict[str, Any] = {
         "all_attempted": len(records),
         "evaluable": 0,
         "uncensored_finished": 0,
@@ -301,6 +313,7 @@ def build_report_v13(
             "- **未预注册协议**：本报告属于 `ad_hoc` 分析，结论强度上限为 `TENTATIVE`。"
         )
     sampling = experiment.get("sampling") or {}
+    sampling_claim = _sampling_claim(sampling)
     lines += [
         "",
         "## 2. 设置与可比较性",
@@ -308,7 +321,7 @@ def build_report_v13(
         f"- 配对判定：`{comparison.get('verdict')}`",
         *[f"  - 不可比原因：{reason}" for reason in comparison.get("reasons") or []],
         f"- 采样参数登记：support=`{sampling.get('support', 'UNKNOWN')}`，"
-        f"对外口径 `{sampling.get('deterministic_claim', 'UNKNOWN')}`"
+        f"对外口径 `{sampling_claim}`"
         "（环境 seed 固定 ≠ 模型输出可复现）",
         "- 有效分母只含：完成且成功 / 机制失败 / 预算截尾；Provider 错误、取消、"
         "中断、策略异常**不计入**。",

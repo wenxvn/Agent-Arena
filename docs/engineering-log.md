@@ -1985,3 +1985,74 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 - `ExperimentService.spec()`：新增公开只读入口，脚本不再调用私有 `_spec`。
 
 验证：1525 pytest passed、mypy 306 文件 0 issues、ruff clean、`verify_v12` 15/15、`verify_v11` 7/7、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`git diff --check` 通过。
+
+## 2026-10-26 · V13 Agent Arena Lab 1.1（第二阶段深化，Batch 0–13）
+
+按 `研究提纲/V13Agent-Arena_V13_第二阶段深化执行提纲.md` 执行。**本轮 0 局真实付费请求、CNY 0**；
+真实模型效果保持 `WAITING_USER_APPROVAL`（V12 的 ¥6 授权已结束，余额不挪用）。
+V8/V9/V10 冻结规则、账本与历史 trace 只读；V11 单局语义与 V12 Lab 保留可用。
+
+### 契约层（只增字段，不改 `schema_version`）
+
+- `SamplingProvenance`（temperature / top_p / seed_requested + `support` 三态）：对外口径
+  永不返回 `deterministic`；服务端接受 seed 也只写 `SEED_ACCEPTED_BUT_OUTPUT_NOT_GUARANTEED`。
+- `ProtocolManifest`：预注册协议（问题 / 主次指标 / 停止规则）参与实验指纹。
+- `ExperimentSpec`：新增 `replicates` / `sampling` / `protocol` / `experiment_kind` / `contract_version`。
+- `MatrixCell.replicate_index`：`0` 时 `condition_key` 与 V12 **逐字一致**，`>0` 追加 `|rep=<n>`；
+  `pairing_key` 仍忽略重复编号（重复不是新 seed）。
+- 一次真实缺陷：第一版把 `deterministic_claim` 塞进 `sampling` 的 `public_dict`，导致 V12 的两个
+  round-trip 测试失败（`1638 passed` 之前出现 2 failed）。改为"派生值按需计算"，`public_dict` 保持可往返。
+
+### 策略层（v1 一字未改）
+
+- `memory.v2`：路线只从**被接受**的公开 `move` 累积（被拒/非法只计数）；`route_mode`
+  显式区分 `env_write`（占 1 次决策、成功/失败入账）与 `context_only`（0 动作）；
+  记录 `loops` / `backtracks`；`bottleneck()` 给五类确定性分类。
+- `planning.v2`：`adaptive` / `initial_only` / `periodic` 三模式 + `min_steps_between_plans`（TTL 下限）
+  + `budget_aware`；TTL 挡下写 `planner_deferred_ttl`，预算挡下写 `planner_skipped_budget`；
+  `plan_requests` 逐请求记 token/延迟。
+- `reflection.v2`：`eligible` / `triggered` / `blocked_cooldown` / `blocked_quota` /
+  `false_triggers` / `recoveries` 分开计数；`triggered == 0` → `NO_TREATMENT_EXPOSURE`；
+  `trigger_only=True` 只判定不请求（0 请求对照臂）。
+
+### 分析层（`lab/v13/`，只读）
+
+- `comparability.py`：14 维画像 + `single_switch_check`（多开关 → 拒绝归因）+ 跨实验配对
+  （按 `(map, seed, replicate_index)`）+ 跨版本硬拒绝。
+- `stability.py`：复算 V12 的 **22.22%** / **25.00%**（排除 6 组跨版本）；Wilson 描述区间；
+  按 seed 分块；导出 `repeat_variability.csv/json/md`。
+- `ablation.py`：7 个单开关模板（全部 `single_switch_ok`）+ `build_evidence_pack`（按
+  `agent@config_hash` 分臂，避免把版本比较当消融）。
+- `validity.py`：六图构念标签（08/26 `CEILING`、16/18/22 `SUITABLE`、30 `CENSORED`）+
+  MAP-30 三档阶梯 + `budget_capacity`（只从观测分布估算回合数）。
+- `taxonomy.py`：七层归因，接口/测量永不计入能力分母；4 组 8 个正反例 fixture。
+- `capability.py`：六维机制画像，缺失机制 `success_rate=None`，`label_status=agent_reviewed`。
+- `report.py`：零 LLM，四级结论 + `experiment:/run:/decision:` 锚点 + 负面结果保留。
+- `ledger.py`：本地账本 159/159 配对、0 孤儿、0 重复结算；按 `mode` 拆 live/simulated；
+  无账单时 `NO_EXTERNAL_BILL_PROVIDED`。
+- `sdkcheck.py` / `perf.py` / `history.py`：SDK 8 项自检、1k/5k 压测、只读历史装载。
+
+### 性能与 UI
+
+- `web/index.py`：懒加载首页（只 stat 目录 + 读当前页）+ mtime 增量刷新 + 30s 签名 TTL +
+  服务端分页/聚合；`RunService.invalidate_index()` 在新建/收尾时失效缓存。
+- 两次真实性能修正：① 首次测量被安全软件扫描放大 10–80 倍 → 改为测量前预热并在报告写明读法；
+  ② `pathlib.is_dir()` 对 5 000 目录要 1.6 秒 → 改用 `os.scandir`（`entry.is_dir()` 来自枚举），
+  冷构建从 48 s 降到 3.3 s。
+- `ui/lab.py` 扩到五页；新增「稳定性与效度」「报告与审计」；`scripts/e2e_lab.py` 覆盖两页 + SDK 自检；
+  `scripts/a11y_v12.py` 的页面清单加入两页。
+
+### 验证
+
+`1638 pytest passed`（V13 新增 113 项）、mypy 323 文件 0 issues、ruff clean、lock 0、
+freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、
+`verify_v12` 15/15、`verify_v13` 18/18、`e2e_web` 通过、`e2e_lab` 通过（含两个新页面与 SDK 自检）、
+`a11y_v12 --browser` 0 critical/serious/moderate。
+
+### 未完成（如实记录）
+
+- CI 浏览器 E2E 仍 `continue-on-error`：本轮未推送远端，无"CI 连续可靠通过"证据（`NOT_VERIFIED`）；
+- Provider 后台账单对账 `BLOCKED_EXTERNAL`（无账单文件）；
+- 真实模型效果 `WAITING_USER_APPROVAL`（方案 A/B/C 见 `docs/v13/live-budget-proposal.md`）。
+
+详见 `docs/v13/final-report.md`、`docs/v13/gap-audit.md`、`docs/v13/validation-report.md`。

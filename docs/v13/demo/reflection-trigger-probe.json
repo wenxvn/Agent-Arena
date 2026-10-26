@@ -1,0 +1,58 @@
+{
+ "schema": "v13-reflection-probe-1",
+ "mode": "simulated",
+ "note": "SIMULATED 探针：用固定脚本动作制造重复动作触发；不是 Oracle 解，也不代表真实模型会触发。",
+ "state": "BUDGET_REACHED",
+ "triggered": 2,
+ "eligible": 2,
+ "exposure": "TREATMENT_TRIGGERED",
+ "events": [
+  {
+   "event": "agent_event",
+   "decision_index": 4,
+   "agent_id": "reflection.v2",
+   "kind": "reflection",
+   "agent_event": "reflection_empty",
+   "summary": "反思请求返回空建议（trigger=repeated_action），已计费但不注入。",
+   "payload": {
+    "trigger": "repeated_action",
+    "evidence": {
+     "action": "{\"tool\": \"observe_signpost\"}",
+     "repeat_count": 3,
+     "steps": [
+      1,
+      2,
+      3
+     ]
+    }
+   },
+   "requests": 1,
+   "input_tokens": 202,
+   "output_tokens": 7
+  },
+  {
+   "event": "agent_event",
+   "decision_index": 8,
+   "agent_id": "reflection.v2",
+   "kind": "reflection",
+   "agent_event": "reflection_empty",
+   "summary": "反思请求返回空建议（trigger=repeated_action），已计费但不注入。",
+   "payload": {
+    "trigger": "repeated_action",
+    "evidence": {
+     "action": "{\"tool\": \"observe_signpost\"}",
+     "repeat_count": 3,
+     "steps": [
+      5,
+      6,
+      7
+     ]
+    }
+   },
+   "requests": 1,
+   "input_tokens": 202,
+   "output_tokens": 7
+  }
+ ],
+ "requests": 10
+}

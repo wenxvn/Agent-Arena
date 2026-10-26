@@ -1,0 +1,119 @@
+{
+ "counts": [
+  1000,
+  5000
+ ],
+ "events_per_run": 20,
+ "note": "压力数据是合成的，放在临时目录，永不进入真实账本；所有耗时为本机实测，不代表 CI 或用户机器。",
+ "results": [
+  {
+   "environment": {
+    "label": "STRESS_DATA:1000",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.3"
+   },
+   "export_bytes": 559780,
+   "index_bytes_estimate": 320000,
+   "peak_memory_kib": 1443.26,
+   "runs": 1000,
+   "schema": "v13-performance-1",
+   "timings": [
+    {
+     "detail": "首次构建（文件已在页缓存；含 JSON 解析）",
+     "label": "index_cold_build",
+     "milliseconds": 499.31
+    },
+    {
+     "detail": "强制重建：只重读 mtime 变化的文件",
+     "label": "index_rebuild_incremental",
+     "milliseconds": 203.19
+    },
+    {
+     "detail": "",
+     "label": "page_first_50",
+     "milliseconds": 0.1
+    },
+    {
+     "detail": "全新索引的第一页（只读当前页 manifest）",
+     "label": "page_first_50_lazy_new_index",
+     "milliseconds": 18.45
+    },
+    {
+     "detail": "",
+     "label": "page_offset_1000",
+     "milliseconds": 0.13
+    },
+    {
+     "detail": "",
+     "label": "filter_map_state",
+     "milliseconds": 0.11
+    },
+    {
+     "detail": "",
+     "label": "aggregate",
+     "milliseconds": 0.77
+    },
+    {
+     "detail": "",
+     "label": "export_json_bytes",
+     "milliseconds": 8.11
+    }
+   ]
+  },
+  {
+   "environment": {
+    "label": "STRESS_DATA:5000",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.3"
+   },
+   "export_bytes": 2798907,
+   "index_bytes_estimate": 1600000,
+   "peak_memory_kib": 7277.86,
+   "runs": 5000,
+   "schema": "v13-performance-1",
+   "timings": [
+    {
+     "detail": "首次构建（文件已在页缓存；含 JSON 解析）",
+     "label": "index_cold_build",
+     "milliseconds": 3317.93
+    },
+    {
+     "detail": "强制重建：只重读 mtime 变化的文件",
+     "label": "index_rebuild_incremental",
+     "milliseconds": 1173.35
+    },
+    {
+     "detail": "",
+     "label": "page_first_50",
+     "milliseconds": 0.41
+    },
+    {
+     "detail": "全新索引的第一页（只读当前页 manifest）",
+     "label": "page_first_50_lazy_new_index",
+     "milliseconds": 30.71
+    },
+    {
+     "detail": "",
+     "label": "page_offset_1000",
+     "milliseconds": 0.85
+    },
+    {
+     "detail": "",
+     "label": "filter_map_state",
+     "milliseconds": 0.55
+    },
+    {
+     "detail": "",
+     "label": "aggregate",
+     "milliseconds": 3.87
+    },
+    {
+     "detail": "",
+     "label": "export_json_bytes",
+     "milliseconds": 53.29
+    }
+   ]
+  }
+ ],
+ "schema": "v13-performance-report-1"
+}

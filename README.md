@@ -4,6 +4,43 @@ Agent Arena 是一个用于学习、运行和比较 LLM Agent 行为的本地实
 
 ![地图大厅](docs/v11/screenshots/01-home.png)
 
+## V13：Agent Arena Lab 1.1（可信、可复现、可诊断）
+
+在 V12 Lab 1.0 之上回答下一层问题：**这些架构差异到底可不可信、机制有没有被激活、
+能不能在预算内复现。**
+
+```bash
+uv run python scripts/verify_v13.py       # 一键离线验收（18 项，零请求）
+uv run python scripts/demo_v13.py         # 零 API Key、零费用的完整演示
+```
+
+网页入口：`uv run agent-arena web` → 侧边栏 **Lab · 实验配置 / 实验监控 /
+结果与对照 / 稳定性与效度 / 报告与审计**（五页）。
+
+V13 的真实增量（不是重复 V12）：
+
+- **重复身份**：同一条件可在一个实验内做 N 次独立重复（`replicate_index`），
+  重复不会被幂等去重，也不会被当成新的环境 seed；
+- **可比性协议**：14 维画像 + 单变量检查；多开关同时改会被**拒绝**做因果比较；
+  版本比较（`memory.v1 → v2`）与单因子消融被显式区分；
+- **采样登记**：temperature / top_p / seed 的支持状态三态；**永不**宣称 deterministic；
+- **稳定性分析**：翻转率 + Wilson 描述区间 + 按 seed 分块 + 跨版本排除；
+- **三个 v2 策略**：`memory.v2`（只记被接受的移动、`env_write`/`context_only` 显式区分）、
+  `planning.v2`（三模式 + TTL + 预算感知）、`reflection.v2`（可验证激活，
+  零触发报 `NO_TREATMENT_EXPOSURE`）；
+- **七层失败归因**：接口/测量问题**永不**计入能力分母；
+- **六维机制画像**：不对 326 个异质指标做平均，缺失机制不补 0；
+- **六图构念效度**：`SUITABLE` / `CEILING` / `CENSORED` 复合标签 + 选图建议；
+- **模板化报告**：零 LLM，四级结论 + 逐数字锚点，负面结果保留；
+- **账本审计**：只读一致性检查 + 可选脱敏账单对账（无账单明确标注）。
+
+**本轮没有新的真实付费请求**（0 局 / CNY 0）。V12 的 ¥6 授权已结束，余额不挪用；
+真实模型验证状态是 `WAITING_USER_APPROVAL`，方案见
+[V13 LIVE 预算申请](docs/v13/live-budget-proposal.md)。
+
+详见 [V13 最终报告](docs/v13/final-report.md)、[实验协议](docs/v13/experiment-protocol.md)、
+[差距审计](docs/v13/gap-audit.md)、[交付清单](docs/v13/release-checklist.md)。
+
 ## V12：Agent Arena Lab 1.0（多架构对照）
 
 同一模型、同一地图、同一 seed、同一预算，比较 **Basic / Memory / Planning** 三种

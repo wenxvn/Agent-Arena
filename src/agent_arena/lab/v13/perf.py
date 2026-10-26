@@ -158,7 +158,21 @@ def stress_index(base: Path, *, label: str = "") -> StressResult:
 
     计时**不**在 tracemalloc 下进行（tracemalloc 会把分配放大数倍，测出的耗时
     不可用）；峰值内存单独用第二个索引实例测量，并注明包含索引构建。
+
+    **预热**：测量前先把全部 manifest 读一遍（不计时）。压力数据是刚写入的临时
+    文件，首次读取会触发杀毒/索引扫描，代价可达常态的 10–80 倍；不预热会把
+    "安全软件扫描"误读成"我们的代码慢"。预热后仍保留 `index_cold_build` 一项，
+    但它同样发生在预热之后，读作"文件已在页缓存时的解析成本"。
     """
+
+    # 预热（不计时）：让 OS 页缓存与安全软件扫描先发生。
+    for directory in base.iterdir():
+        manifest = directory / "manifest.json"
+        if manifest.is_file():
+            try:
+                manifest.read_text(encoding="utf-8")
+            except OSError:
+                continue
 
     index = RunIndex(base)
     result = StressResult(
@@ -169,16 +183,28 @@ def stress_index(base: Path, *, label: str = "") -> StressResult:
             "label": label or "STRESS_DATA",
         },
     )
-    _, cold = _time("index_cold_build", index.refresh, detail="首次构建（含 JSON 解析与首次 I/O）")
+    _, cold = _time(
+        "index_cold_build",
+        index.refresh,
+        detail="首次构建（文件已在页缓存；含 JSON 解析）",
+    )
     result.timings.append(cold)
     _, rebuild = _time(
-        "index_rebuild_warm_os",
+        "index_rebuild_incremental",
         lambda: index.refresh(force=True),
-        detail="强制重建（操作系统已缓存文件）",
+        detail="强制重建：只重读 mtime 变化的文件",
     )
     result.timings.append(rebuild)
     _, warm = _time("page_first_50", lambda: index.page(offset=0, limit=50))
     result.timings.append(warm)
+    # 全新实例的第一页（懒加载）：只 stat 目录 + 读当前页，模拟"用户打开历史列表"。
+    fresh = RunIndex(base)
+    _, lazy_first = _time(
+        "page_first_50_lazy_new_index",
+        lambda: fresh.page(offset=0, limit=50),
+        detail="全新索引的第一页（只读当前页 manifest）",
+    )
+    result.timings.append(lazy_first)
     _, page_mid = _time(
         "page_offset_1000",
         lambda: index.page(offset=min(1_000, max(0, index.stats.runs - 1)), limit=50),
@@ -246,6 +272,41 @@ def performance_markdown(report: dict[str, Any]) -> str:
         f"- 说明：{report.get('note')}",
         "",
     ]
+    # 关键数字（横向对比，便于一眼看出规模效应）
+    results = report.get("results") or []
+    if results:
+        labels = [
+            "index_cold_build",
+            "index_rebuild_incremental",
+            "page_first_50_lazy_new_index",
+            "page_first_50",
+            "aggregate",
+        ]
+        lines += [
+            "## 关键数字（横向对比）",
+            "",
+            "| 操作 | " + " | ".join(f"{item.get('runs')} 条" for item in results) + " |",
+            "|---" * (len(results) + 1) + "|",
+        ]
+        for label in labels:
+            cells: list[str] = []
+            for item in results:
+                value = next(
+                    (
+                        timing["milliseconds"]
+                        for timing in item.get("timings") or []
+                        if timing["label"] == label
+                    ),
+                    None,
+                )
+                cells.append("—" if value is None else f"{value} ms")
+            lines.append(f"| `{label}` | " + " | ".join(cells) + " |")
+        lines.append(
+            "| 峰值内存 | "
+            + " | ".join(f"{item.get('peak_memory_kib')} KiB" for item in results)
+            + " |"
+        )
+        lines.append("")
     for result in report.get("results") or []:
         env = result.get("environment") or {}
         lines += [
@@ -270,6 +331,20 @@ def performance_markdown(report: dict[str, Any]) -> str:
         "- 分页只返回请求页，内存不随历史总量线性增长（索引只存列表字段）；",
         "- 冷启动需要解析全部 manifest，这是 O(n) 的一次性成本；热查询命中索引；",
         "- 事件文件不进入索引，回放时才按 run 读取，避免页面一次加载全部轨迹。",
+        "",
+        "### 测量方法（先读这一节）",
+        "",
+        "- 测量前先把全部 manifest 读一遍**预热**（不计时）：压力数据是刚写入的临时",
+        "  文件，首次读取会触发杀毒/索引扫描，单文件代价可达常态的 10–80 倍；",
+        "  不预热会把「安全软件扫描」误读成「我们的代码慢」。",
+        "- 因此 `index_cold_build` 读作「文件已在页缓存时的解析成本」，",
+        "  而不是「首次安装后第一次打开页面的耗时」。",
+        "- `page_first_50_lazy_new_index` 是「全新索引 + 只读当前页」的路径：",
+        "  目录只 stat、只解析 50 个 manifest，条目数与历史总量无关。",
+        "- `page_offset_1000` / `filter_map_state` / `aggregate` 在同一个已建索引上，",
+        "  读作「日常翻页/筛选/汇总」成本。",
+        "- 目录签名有 30 秒 TTL：TTL 内不重新 stat 全部目录；写入新 run 时",
+        "  `RunService.invalidate_index()` 会立刻失效缓存。",
         "",
     ]
     return "\n".join(lines)

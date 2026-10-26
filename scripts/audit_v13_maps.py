@@ -24,6 +24,10 @@ from agent_arena.lab.v13.capability import (  # noqa: E402
     capability_profile,
 )
 from agent_arena.lab.v13.history import load_v12_history  # noqa: E402
+from agent_arena.lab.v13.taxonomy import (  # noqa: E402
+    taxonomy_markdown,
+    taxonomy_report,
+)
 from agent_arena.lab.v13.validity import (  # noqa: E402
     map30_ladder,
     map30_markdown,
@@ -42,6 +46,9 @@ def main() -> int:
     audit = six_map_audit(records)
     ladder = map30_ladder(records)
     profile = capability_profile(records)
+    # 历史 CSV 没有 Finding 明细，因此分层归因只按终态与终局码归类；
+    # 报告里必须声明"这是终态级归因，不是证据步级"。
+    taxonomy = taxonomy_report(records, findings=[])
     if args.write:
         args.out.mkdir(parents=True, exist_ok=True)
         (args.out / "map-validity.md").write_text(
@@ -53,6 +60,9 @@ def main() -> int:
         (args.out / "capability-profile.md").write_text(
             capability_markdown(profile), encoding="utf-8", newline="\n"
         )
+        (args.out / "diagnosis-taxonomy.md").write_text(
+            taxonomy_markdown(taxonomy), encoding="utf-8", newline="\n"
+        )
     print(
         json.dumps(
             {
@@ -63,6 +73,7 @@ def main() -> int:
                     item["dimension"]: item["evidence_level"]
                     for item in profile["dimensions"]
                 },
+                "taxonomy_primary": taxonomy["primary_counts"],
                 "written": str(args.out) if args.write else None,
             },
             ensure_ascii=False,

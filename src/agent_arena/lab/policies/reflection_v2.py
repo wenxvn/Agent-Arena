@@ -169,7 +169,7 @@ class ReflectionV2Policy:
         )
         self._reflections += 1
         self._last_reflection_step = context.decision_index
-        advice = {
+        advice: dict[str, Any] = {
             "advice": bounded_text(payload.get("advice", ""), limit=240),
             "avoid": [
                 bounded_text(item, limit=120)

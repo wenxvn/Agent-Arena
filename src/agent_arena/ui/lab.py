@@ -941,6 +941,12 @@ def _stability_view(st: Any, get_lab: Callable[[], Any]) -> None:
             f"翻转率 {report['flip_rate']} ≥ 20%：单次观测不足以下架构结论，"
             "需要 ≥3 次重复并保持同版本、同预算。"
         )
+    st.caption(
+        "说明：本页按**当前载入的记录集**计算翻转率。载入全部 V12 历史时，"
+        "MAP-22 的两次契约版本、MAP-30 的三档预算会各自形成独立分组，"
+        "所以这里的数字可能高于「只取 3 次观测同版本子集」的 25.00%；"
+        "后者见 `docs/v13/repeat_variability.md`。"
+    )
     if report["observations_per_group"] in ([], [1]):
         st.info("当前只有单次观测：稳定性**未知**，不能声称可重复。")
 

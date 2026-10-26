@@ -223,6 +223,8 @@ class RunService:
             )
             self._set_state(manifest, RunState.QUEUED)
             self._cancel[run_id] = threading.Event()
+            # V13：新 run 立刻对历史索引可见（索引有 30s 签名缓存）。
+            self.invalidate_index()
             if config.mode is RunMode.LIVE:
                 self._ledger_start(run_id, config)
             self._queue.put(run_id)
@@ -430,6 +432,8 @@ class RunService:
             )
             if manifest.get("mode") == RunMode.LIVE.value:
                 self._ledger_finish(run_id, payload, state)
+            # V13：终态变化也要让索引重新可见（cost/state 变了）。
+            self.invalidate_index()
 
     def _clear_run(self, run_id: str) -> None:
         with self._lock:
@@ -557,6 +561,13 @@ class RunService:
             index = RunIndex(self.store.base)
             self._run_index = index
         return index.aggregate(**filters)
+
+    def invalidate_index(self) -> None:
+        """写入新 run 后调用，让历史列表立刻能看到它。"""
+
+        index = getattr(self, "_run_index", None)
+        if index is not None:
+            index.invalidate()
 
     def _summary(self, manifest: dict[str, Any]) -> RunSummary:
         raw_budget = manifest.get("budget")

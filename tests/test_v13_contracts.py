@@ -119,16 +119,23 @@ def test_public_dict_is_json_round_trippable_and_reloadable() -> None:
     assert reloaded["replicates"] == 2
     assert reloaded["experiment_kind"] == "replicate"
     assert reloaded["protocol"]["protocol_id"] == "p1"
-    # 服务层读回时会丢掉派生键；这里模拟同样的清洗。
-    derived = {"seeds", "seed_source", "arms", "fingerprint", "matrix",
-               "matrix_size", "agent_versions"}
+    # 派生摘要不在 public_dict 里（保证可往返）；消费端按需计算。
+    assert "sampling_claim" not in reloaded
+    derived = {
+        "seeds",
+        "seed_source",
+        "arms",
+        "fingerprint",
+        "matrix",
+        "matrix_size",
+        "agent_versions",
+    }
     cleaned = {key: value for key, value in reloaded.items() if key not in derived}
-    cleaned["sampling"].pop("deterministic_claim", None)
-    cleaned["protocol"].pop("fingerprint", None)
     cleaned["experiment_id"] = "lab-20260101T000000Z-deadbeef"
     restored = ExperimentSpec.model_validate(cleaned)
     assert restored.replicates == 2
     assert restored.sampling.seed_requested == 3
+    assert restored.sampling.deterministic_claim == "UNKNOWN"
     assert restored.protocol is not None
     assert restored.contract_version == CONTRACT_VERSION_V13
 

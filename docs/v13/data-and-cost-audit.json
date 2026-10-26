@@ -1,0 +1,30 @@
+{
+ "child_links": 163,
+ "child_links_live": 159,
+ "child_missing_runs": [],
+ "cost_settled_cny": "5.43680012",
+ "duplicate_settlements": [],
+ "entries": 318,
+ "external_reconciliation": "NOT_RECONCILED_EXTERNAL",
+ "input_tokens": 7553387,
+ "issues": [],
+ "ledger_path": "D:\\wenxvn(2)\\Agent-Arena\\runs\\web\\_ledger\\web_ledger.jsonl",
+ "negative_usage": [],
+ "orphan_run_dirs": [],
+ "orphan_runs": [],
+ "output_tokens": 177416,
+ "parents": 22,
+ "parents_live": 20,
+ "parents_simulated": 2,
+ "read_only": true,
+ "reconciliation": {
+  "local_settled_cny": "5.43680012",
+  "note": "未提供 Provider 后台账单：本地账本只与登记的价目表对账，不代表后台金额已核对。",
+  "status": "NO_EXTERNAL_BILL_PROVIDED"
+ },
+ "requests": 5641,
+ "schema": "v13-ledger-audit-1",
+ "settled": 159,
+ "started": 159,
+ "unknown_spend_runs": []
+}

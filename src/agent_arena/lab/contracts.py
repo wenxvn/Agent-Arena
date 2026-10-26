@@ -490,6 +490,9 @@ class ExperimentSpec(BaseModel):
         )
 
     def public_dict(self) -> dict[str, Any]:
+        # 注意：这里**只**输出可被 `model_validate` 原样读回的字段。
+        # 任何派生摘要（如 deterministic_claim）都必须在消费端按需计算，
+        # 否则 `public_dict()` 不再是可往返的（V12 的 round-trip 测试会失败）。
         return {
             **self.model_dump(mode="json"),
             "seeds": list(self.resolved_seeds()),
@@ -502,8 +505,6 @@ class ExperimentSpec(BaseModel):
             "arms": [arm.as_dict() for arm in self.agent_arms],
             "fingerprint": self.fingerprint(),
             "only_conditions": list(self.only_conditions),
-            "sampling": self.sampling.as_dict(),
-            "protocol": None if self.protocol is None else self.protocol.as_dict(),
         }
 
 

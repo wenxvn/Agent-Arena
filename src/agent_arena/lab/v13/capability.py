@@ -131,18 +131,26 @@ def dimension_profile(
     if not selected:
         level = LEVEL_UNTESTED
         score = None
+        reason = "该维度适用地图在本批数据里一局都没跑过。"
     elif len(valid) < min_runs:
         level = LEVEL_THIN
         score = None
+        reason = f"可测局仅 {len(valid)}（< {min_runs}），不足以给分数。"
     elif censored and censored / max(1, len(valid)) >= 0.3:
         level = LEVEL_THIN
         score = None
+        reason = (
+            f"截尾 {censored}/{len(valid)}（≥30%）：成功率会被截尾压低，"
+            "不当作能力分数。"
+        )
     elif len(valid) >= 6:
         level = LEVEL_STRONG
         score = round(successes / len(valid), 4)
+        reason = f"可测 {len(valid)} 局，截尾比例可控。"
     else:
         level = LEVEL_WEAK
         score = round(successes / len(valid), 4)
+        reason = f"可测 {len(valid)} 局（< 6），只作描述性。"
     return {
         "dimension": dimension,
         "label": DIMENSION_LABELS[dimension],
@@ -157,6 +165,7 @@ def dimension_profile(
         "budget_censored": censored,
         "success_rate": score,
         "evidence_level": level,
+        "level_reason": reason,
         "representative_metrics": representative,
         "missing_maps": sorted(set(maps) - set(observed_maps)),
         "note": (
@@ -249,6 +258,7 @@ def capability_markdown(profile: dict[str, Any]) -> str:
             "- 未观测地图："
             + (", ".join(item["missing_maps"]) if item["missing_maps"] else "无")
         )
+        lines.append(f"- 等级理由：{item['level_reason']}")
         lines.append(f"- {item['note']}")
         lines.append("")
     lines += [

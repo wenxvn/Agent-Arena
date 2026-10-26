@@ -895,20 +895,6 @@ class ExperimentService:
             "agent_versions",
         }
         payload = {key: value for key, value in payload.items() if key not in derived}
-        # V13：`public_dict` 给 sampling/protocol 追加了派生键（deterministic_claim /
-        # fingerprint），读回时只剥掉派生键，**保留**采样登记与协议本身。
-        if isinstance(payload.get("sampling"), dict):
-            payload["sampling"] = {
-                key: value
-                for key, value in payload["sampling"].items()
-                if key != "deterministic_claim"
-            }
-        if isinstance(payload.get("protocol"), dict):
-            payload["protocol"] = {
-                key: value
-                for key, value in payload["protocol"].items()
-                if key != "fingerprint"
-            }
         payload["experiment_id"] = experiment_id
         return ExperimentSpec.model_validate(payload)
 

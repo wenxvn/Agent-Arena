@@ -44,6 +44,8 @@ jobs:
         run: uv run python scripts/verify_v11.py
       - name: V12 Lab 离线验收（契约 + 父子实验 + 预算 + 可视化 + 导出复算）
         run: uv run python scripts/verify_v12.py --report runs/v12/selfcheck.json
+      - name: V13 Lab 1.1 离线验收（重复身份 + 可比性 + 消融 + 效度 + 报告 + 账本）
+        run: uv run python scripts/verify_v13.py --report runs/v13/selfcheck.json
 
   lab-e2e:
     name: V12 Lab 浏览器端到端（无 API Key）

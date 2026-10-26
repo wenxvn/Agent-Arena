@@ -34,6 +34,7 @@
 | V8 30 图定稿与 MiMo 三重复验收 | Research Core | done（17/90） |
 | V9 30 图难度定标与失败归因 | Research Core | done（7 VALIDATED） |
 | V10 30 图核心机制重构与多 Seed 验证 | Research Core | done（30 VALIDATED） |
+| V13 Lab 1.1 深化：重复稳定性 / 可比性 / 消融 / 效度 / 归因 / 画像 / 报告 / 审计 | Release 4 / V13 | done（`LAB_1_1_ENGINEERING_READY`；LIVE `WAITING_USER_APPROVAL`） |
 
 ## Foundation
 
@@ -497,3 +498,24 @@ Spec [0018](../specs/0018-v5-six-map-measurement.md)
 - [x] 验证：1525 pytest passed、mypy 306 文件 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 15/15。
 
 边界：`LAB_1_0_READY` 指 P0+P1+P2 交付且真实矩阵已跑；**不表示任何架构更优**——同条件重复的结局翻转率为 22.2%（2 次观测 4/18）/ 25.0%（3 次观测 3/12）。未做项见 `docs/v12/gap-audit.md`；SIMULATED 成绩不代表模型能力；macOS/Ollama 未实测。详见 `docs/v12/final-report.md`、`docs/v12/mimo-results.md`、`docs/v12/ablations.md`。
+
+### 25. V13 Agent Arena Lab 1.1（可信度、可比性与工程收尾）· done（`LAB_1_1_ENGINEERING_READY`，2026-10-26）
+
+按根目录 `研究提纲/V13Agent-Arena_V13_第二阶段深化执行提纲.md` 执行 Batch 0–13。V8/V9/V10 冻结规则、账本与历史 trace 保持只读；V11 单局服务层与 V12 Lab 保留可用。**本轮没有新增真实付费请求**（0 局 / CNY 0）。
+
+- [x] Batch 0：HEAD `32e2782` 审计；`pytest` 基线 **1525 passed**；V12 的 159 局 / 5 641 请求 / ¥5.43680012 / 翻转率 22.2% / 25.0% 逐项复现一致。
+- [x] Batch 1：`v13-lab-1` 契约（只增字段）、`replicate_index`、`SamplingProvenance`、`ProtocolManifest`、14 维可比性画像、单变量检查、跨实验配对、跨版本硬拒绝。
+- [x] Batch 2：`create_replicates`（同实验 N 次独立重复）、预检重复口径、`repeat_variability.csv/json/md`、按 seed 分块、UI 翻转率警示。
+- [x] Batch 3–4：`memory.v2`（只累积被接受 move、`env_write`/`context_only`、三类瓶颈）、`planning.v2`（三模式 + TTL + 预算感知 + 逐请求成本）；v1 一字未改。
+- [x] Batch 5：7 个单因子消融模板（全部 `single_switch_ok`）、MAP-16/18/22 三份证据包、版本比较与消融显式区分、负面结果保留。
+- [x] Batch 6：`reflection.v2`（eligible/triggered/冷却/额度/误触发/恢复 + trigger-only）；SIMULATED 探针 `triggered=2`，零触发报 `NO_TREATMENT_EXPOSURE`。
+- [x] Batch 7：MAP-30 三档预算阶梯（法庭被拒 1/4/2、截尾 8/5/7）+ 五类失败分型；六图构念效度标签（08/26 `CEILING`、16/18/22 `SUITABLE`、30 `CENSORED`）。
+- [x] Batch 8：七层失败归因（接口/测量永不计入能力）+ 8 个正反例 fixture + 六维机制画像（缺失不补 0、`agent_reviewed`）。
+- [x] Batch 9：Lab 扩到 5 页（新增「稳定性与效度」「报告与审计」）；`web/index.py` 懒加载 + 增量刷新 + 服务端分页。
+- [x] Batch 10：零 LLM 模板报告（四级结论 + 逐数字锚点）、本地账本审计（159/159 配对、0 孤儿、0 重复结算）、脱敏账单对账接口。
+- [x] Batch 11：SDK 8 项接入自检 + 异常隔离 + 旧 `act()` 签名兼容 + `docs/v13/sdk-guide.md`。
+- [x] Batch 12：1 000 / 5 000 条合成历史压测（懒加载首页 18 ms / 31 ms；已建索引翻页 0.1 ms / 0.4 ms）；CI 加 `verify_v13` 步骤。
+- [x] Batch 13：`docs/v13/` 全套（audit / protocol / progress / decisions / 三份 study / core-evidence / map-validity / map30 / taxonomy / capability / live-budget-proposal / data-and-cost-audit / performance / validation / gap / final / release-checklist / demo）。
+- [x] 验证：**1638 pytest passed**、mypy 323 文件 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 15/15、`verify_v13` 18/18、`e2e_lab` 通过、`e2e_web` 通过。
+
+边界：`LAB_1_1_ENGINEERING_READY` 指 P0/P1/P2 工程交付完成；**真实模型效果仍是 `WAITING_USER_APPROVAL`**（V12 的 ¥6 已结束，余额不挪用）。CI 浏览器 E2E 仍非阻断（`NOT_VERIFIED`），Provider 后台账单对账为 `BLOCKED_EXTERNAL`。详见 `docs/v13/final-report.md` 与 `docs/v13/gap-audit.md`。
