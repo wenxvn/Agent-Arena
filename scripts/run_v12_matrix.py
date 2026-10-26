@@ -51,17 +51,39 @@ from agent_arena.web.schemas import (  # noqa: E402
 from agent_arena.web.service import RunService  # noqa: E402
 
 
+def _parse_arm_configs(items: list[str]) -> dict[str, dict[str, object]]:
+    """解析 ``--arm-config memory.v1={"route_log": true}``（可重复）。"""
+
+    overrides: dict[str, dict[str, object]] = {}
+    for item in items:
+        agent_id, _, raw = item.partition("=")
+        if not agent_id or not raw:
+            raise SystemExit(f"--arm-config 需要 agent=json 形式：{item}")
+        try:
+            payload = json.loads(raw)
+        except ValueError as exc:
+            raise SystemExit(f"--arm-config 的 JSON 无法解析：{item}") from exc
+        if not isinstance(payload, dict):
+            raise SystemExit(f"--arm-config 必须是 JSON 对象：{item}")
+        overrides[agent_id] = payload
+    return overrides
+
+
 def _spec_from_args(args: argparse.Namespace) -> ExperimentSpec:
     if args.spec:
         payload = json.loads(Path(args.spec).read_text(encoding="utf-8"))
         return ExperimentSpec.model_validate(payload)
     simulated = args.provider == SIMULATED_PROVIDER
     approved = bool(args.i_have_budget_approval)
+    overrides = _parse_arm_configs(args.arm_config or [])
     return ExperimentSpec(
         name=args.name,
         notes=args.notes,
         maps=args.maps,
-        agent_arms=[AgentArm(agent_id=agent) for agent in args.agents],
+        agent_arms=[
+            AgentArm(agent_id=agent, config=overrides.get(agent, {}))
+            for agent in args.agents
+        ],
         environment_seeds=args.seeds,
         provider_id=args.provider,
         model=SIMULATED_MODEL if simulated else args.model,
@@ -332,6 +354,13 @@ def main() -> int:
     parser.add_argument("--maps", nargs="+", default=["MAP-22", "MAP-26"])
     parser.add_argument(
         "--agents", nargs="+", default=["basic.v1", "memory.v1", "planning.v1"]
+    )
+    parser.add_argument(
+        "--arm-config",
+        action="append",
+        default=None,
+        metavar="AGENT=JSON",
+        help='为某个实验臂指定配置，例如 --arm-config memory.v1={"route_log":true}',
     )
     parser.add_argument("--seeds", nargs="+", type=int, default=[0])
     parser.add_argument("--provider", default=SIMULATED_PROVIDER)

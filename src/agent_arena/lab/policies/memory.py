@@ -65,6 +65,13 @@ class MemoryPolicy:
         self.capacity = max(1, int(self.config.get("capacity", 24)))
         self.max_chars = max(200, int(self.config.get("max_chars", 1_200)))
         self.history_window = int(self.config.get("history_window", 5))
+        #: 路线日志（DCR-V12-03）：按步把方位写进环境 agent_notes 的 path_state。
+        self.route_log = bool(self.config.get("route_log", False))
+        self.route_write_every = max(1, int(self.config.get("route_write_every", 2)))
+        self.route_write_limit = max(1, int(self.config.get("route_write_limit", 24)))
+        self._route: list[str] = []
+        self._route_writes = 0
+        self._pending_route_write = False
         self._facts: dict[str, dict[str, Any]] = {}
         self._seq = 0
         self._updates = 0
@@ -82,6 +89,9 @@ class MemoryPolicy:
         self._updates = 0
         self._evictions = 0
         self._announced = False
+        self._route = []
+        self._route_writes = 0
+        self._pending_route_write = False
         self._record("fact", "episode.map_id", context.map_id)
         self._record("fact", "episode.seed", context.environment_seed)
         self._record("fact", "episode.decision_budget", context.decision_budget)
@@ -166,6 +176,34 @@ class MemoryPolicy:
     ) -> AgentDecision:
         counts = self._observe(observation)
         self._updates += counts["added"] + counts["updated"]
+
+        # 路线日志：本次决策若只是"把刚走过的方位写进环境"，不调用模型（0 请求）。
+        if self.enabled and self.route_log and self._pending_route_write:
+            self._pending_route_write = False
+            if self._route_writes < self.route_write_limit:
+                self._route_writes += 1
+                value = ",".join(self._route)
+                return AgentDecision(
+                    action={
+                        "tool": "write_memory",
+                        "facts": [{"key": "path_state", "value": value}],
+                    },
+                    decision_reason=None,
+                    memory_event=AgentEvent(
+                        kind="memory",
+                        event="route_logged",
+                        decision_index=context.decision_index,
+                        summary=f"路线日志 #{self._route_writes}：写入 {len(self._route)} 个方位。",
+                        payload={
+                            "route_length": len(self._route),
+                            "route_writes": self._route_writes,
+                            "route_write_limit": self.route_write_limit,
+                        },
+                        requests=0,
+                    ),
+                    requests=0,
+                )
+
         block = memory_block(self._ordered(), max_chars=self.max_chars) if self.enabled else None
         response = context.gateway.ask(
             observation,
@@ -215,6 +253,21 @@ class MemoryPolicy:
         if not self.enabled:
             return
         self._observe_result(outcome)
+        # 记录被接受的 move 方位；达到写入间隔就安排一次 path_state 写入。
+        action = outcome.action
+        if (
+            self.route_log
+            and isinstance(action, dict)
+            and action.get("tool") == "move"
+            and not outcome.rejected
+            and not outcome.invalid
+        ):
+            bearing = action.get("bearing")
+            if isinstance(bearing, str):
+                self._route.append(bearing)
+                self._record("route", "route.path", ",".join(self._route))
+                if len(self._route) % self.route_write_every == 0:
+                    self._pending_route_write = True
 
     def _ordered(self) -> list[dict[str, Any]]:
         items = sorted(self._facts.values(), key=lambda item: -int(item["seq"]))
@@ -228,6 +281,9 @@ class MemoryPolicy:
             "capacity": self.capacity,
             "updates": self._updates,
             "evictions": self._evictions,
+            "route_log": self.route_log,
+            "route_length": len(self._route),
+            "route_writes": self._route_writes,
             "facts": self._ordered(),
         }
 

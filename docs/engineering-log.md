@@ -1895,29 +1895,32 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 - **重复实验** `create_replicate` + `--replicate-of`：同版本同配置再跑一次，用于测量抽样波动；版本不一致时拒绝并提示改用版本复跑。
 - **运行时版本指纹** `lab/runtime_version.py` + `ExperimentSpec.runtime_version`：参与实验身份与幂等键。此前"改完契约再复跑"会静默命中旧实验（真实缺陷，已修 + 回归测试）。
 
-真实实验（MiMo，累计 125 局 / 5 062 请求 / **¥4.92471204** / 未知消费 ¥0 / 未超 ¥6.00）：
+真实实验（MiMo，累计 **147 局 / 14 个实验 / 5 473 请求 / ¥5.34053584** / 未知消费 ¥0 / 未超 ¥6.00）：
 
 | 实验 | 局 | 成功 | 机制失败 | 截尾 | 结算 CNY |
 |---|---:|---:|---:|---:|---:|
 | pilot | 6 | 3 | 0 | 3 | 0.09949940 |
 | main-54 | 54 | 24 | 19 | 10 | 1.47181116 |
+| main-54 补充 | 1 | 1 | 0 | 0 | 0.03376040 |
 | map22-contract-1 | 9 | 4 | 5 | 0 | 0.21606796 |
 | map22-contract-2 | 9 | 0 | 9 | 0 | 0.23872508 |
+| map22-route-log | 3 | 1 | 2 | 0 | 0.14253072 |
 | map30-budget180 | 9 | 0 | 4 | 5 | 1.09918720 |
 | map30-token600k | 9 | 0 | 2 | 7 | 1.49856088 |
-| map16-seed3 (+补充) | 4 | 1 | 2 | 0 | 0.01478284 |
+| map16-seed3（+补充） | 4 | 1 | 2 | 0 | 0.01478284 |
 | map18-seed3-4 | 6 | 3 | 3 | 0 | 0.07019220 |
-| replicate-16-18 | 18 | 4 | 14 | 0 | 0.21588532 |
+| replicate-16-18（A） | 18 | 4 | 14 | 0 | 0.21588532 |
+| replicate-16-18-b（B） | 18 | 3 | 14 | 1 | 0.23927140 |
 
 关键结论：
 
 1. **DCR-V12-02 已修**：`v12-contract-2` 给出键名建议 + 研究投影后，`map22.v10.route_recall` 从 9/9 `NOT_APPLICABLE` 变为 6/9 `VALID`。
-2. **DCR-V12-03（新）**：键名修好后暴露真问题——模型只写 1–4 个方位，真实路线 22–44 步，`route_recall` 0.0–0.045。这是策略侧的跨阶段状态维护问题，不是接口问题。
+2. **DCR-V12-03（新）**：键名修好后暴露真问题——模型只写 1–4 个方位，真实路线 22–44 步，`route_recall` 0.0–0.045。这是策略侧的跨阶段状态维护问题，不是接口问题。**加 `route_log` 消融验证**（每走 2 步写累积 `path_state`，动作不调用模型）：3 局里 `route_recall` 从 0 升到 **0.4545 / 0.75 / 1.0**，seed 2 直接通关（`wasted_moves` 34 → 8）——假设成立。
 3. **DCR-V12-04（新）**：MAP-30 的"地板"是**约束阶梯**——90 请求 → 200k 输入 token → ¥0.20 单局费用。抬到 180 请求后 **4/9 局真的走到法庭并给出 `ACCUSATION_REJECTED`**（真实机制失败）。
-4. **重复实验翻转率 22.2%**（18 组中 4 组结局翻转）：同图同 seed 同架构跑两次就有 22% 概率结局不同。**这是本轮最重要的方法学结论**——1 次/条件的设计不足以给架构排名；任何"Memory 比 Basic 高 X%"在本样本量下都不成立。
+4. **重复实验翻转率 22.2%（2 次观测）/ 27.8%（3 次观测）**：18 个同条件格各跑 2–3 次，5 格结局翻转。**这是本轮最重要的方法学结论**——1 次/条件的设计不足以给架构排名；任何"Memory 比 Basic 高 X%"在本样本量下都不成立。3 次观测里唯一稳定成功的是 `planning.v1` @ MAP-16 seed 1（3/3），代价是请求数约 3 倍。
 
-事故与修复：种子扩展脚本一次提交两个实验导致 `ExperimentBusy` 且第一个子局被进程退出取消 → 改为串行提交 + 用补充实验重跑被取消的局（已产出一条成功记录）。
+事故与修复：种子扩展脚本一次提交两个实验导致 `ExperimentBusy` 且第一个子局被进程退出取消 → 改为串行提交 + 用补充实验重跑被取消的局（已产出一条成功记录）。另：主矩阵 `runtime_version` 为 `unset`，`--replicate-of` 正确拒绝，改用同版本的 replicate-A 作源。
 
-验证：1510 pytest passed、`mypy src` 306 文件 0 issues、`ruff check .` 通过、`freeze verify` 9/9 unchanged、`recompute` 1093/1093、`independent` 0 violations、`verify_v11` 7/7、`verify_v12` 15/15、`a11y` 0 critical/serious/moderate、`e2e_web` / `e2e_lab` 均通过。
+验证：**1525 pytest passed**、`mypy src` 306 文件 0 issues、`ruff check .` 通过、`freeze verify` 9/9 unchanged、`recompute` 1093/1093、`independent` 0 violations、`verify_v11` 7/7、`verify_v12` 15/15、`a11y` 0 critical/serious/moderate、`e2e_web` / `e2e_lab` 均通过。
 
-下一步：重复实验扩到 3 次/条件；MAP-22 路线日志策略；MAP-30 三档预算固定；Provider 账单对账。详见 `docs/v12/final-report.md`、`docs/v12/mimo-results.md`、`docs/v12/dcr/`。
+下一步：重复扩到 3 次/条件并固定采样；`route_log` 默认化评估；MAP-30 三档预算固定；Provider 账单对账。详见 `docs/v12/final-report.md`、`docs/v12/mimo-results.md`、`docs/v12/dcr/`。

@@ -197,14 +197,46 @@ move 数），但**键名宽容**：
 - 值里按出现顺序解析方位（支持 `->`、逗号、空格分隔，以及 `n/e/s/w` 与中文方位）；
 - 多条候选时取"匹配位数最多"的那条，避免被最后一条无关记忆压低。
 
+**与 V10 的关系**：V10 版按"最后写入的 `path_state`"取值，投影版按"匹配最多的候选"取值。
+因此**投影值 ≥ V10 值**，它是**上界**而非替代。两者并列展示，不互相覆盖；
+需要与 V10 历史值对照时一律用 `map22.v10.route_recall`。
+
+**实测差异**（`lab-20261026T015752Z-b44b0631`，`route_log=true`）：
+
+| seed | v10 | v12 投影 | 原因 |
+|---|---:|---:|---|
+| 0 | 0.4545 | 0.9565 | 模型自己后又写了一条较短的 `path_state`；V10 取最后一条，投影取最长匹配 |
+| 1 | 0.75 | 0.9565 | 同上 |
+| 2 | 1.0 | 1.0 | 没有冲突候选 |
+
+这条差异本身就是**口径证据**：同一批记忆，两种读法给出不同的数。报告因此必须写明用的是哪一个。
+
 **不做**：不读 `judge_state`、不读隐藏路线、不修改 V10 指标或账本。
 
 导出时 `metrics.csv` 用 `namespace` 列区分（`v10` / `v12.projection`），下游可以只取其一。
+
+### `memory.v1` 的 `route_log`（策略变量，DCR-V12-03）
+
+不是指标、不是环境规则，而是**策略配置**，默认关闭：
+
+| 键 | 默认 | 含义 |
+|---|---|---|
+| `route_log` | `false` | 开启后，每走 `route_write_every` 步把**累积方位序列**写成一条 `path_state` |
+| `route_write_every` | `2` | 写入间隔（步） |
+| `route_write_limit` | `24` | 单局最多写几次 |
+
+写入动作**不调用模型**（`requests=0`，`AgentDecision.requests=0`），在 trace 里是
+`agent_event=route_logged`，`payload` 带 `route_length` / `route_writes`。
+开启与关闭的 `agent_config` 不同 → `config_hash` 不同 → 与关闭态**不配对**。
+
+理由：MAP-22 的环境只保留最近 12 条 `agent_notes`，一条 `path_state` 里放整段路线
+才是可行表达；把 40 个方位写成 40 条 note 会被截断。
 
 ## 9. 可复算性
 
 - `summary.json` 的有效分母可从 `exports/runs.csv` 独立重算（`scripts/verify_v12.py` 的
   `export_recompute` 检查项即此）；
-- `metrics.csv` 行数 = 所有子局 `result.metrics` 条目总数；
+- `metrics.csv` 行数 = 所有子局 `result.metrics` 条目总数 + 所有 `result.metrics_v12` 条目总数，
+  并用 `namespace` 列区分；自检会分别核对两个命名空间的行数与 `metric_id` 前缀；
 - `paired_comparison.csv` 每行都带 `left_run_id` / `right_run_id` / `verdict` / `reasons`；
 - 报告里每个数字都能追到 `runs/web/<run_id>/result.json`。

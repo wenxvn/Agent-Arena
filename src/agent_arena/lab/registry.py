@@ -110,8 +110,21 @@ BUILTIN_AGENTS: tuple[AgentRegistration, ...] = (
             "capacity": 24,
             "history_window": 5,
             "max_chars": 1_200,
+            # 路线日志（DCR-V12-03）：按步把走过的方位写成 path_state。
+            # 这是**策略变量**，不是环境改动；关闭时与原 memory.v1 完全一致。
+            "route_log": False,
+            "route_write_every": 2,
+            "route_write_limit": 24,
         },
-        allowed_config_keys=("enabled", "capacity", "history_window", "max_chars"),
+        allowed_config_keys=(
+            "enabled",
+            "capacity",
+            "history_window",
+            "max_chars",
+            "route_log",
+            "route_write_every",
+            "route_write_limit",
+        ),
         module="agent_arena.lab.policies.memory",
         attribute="MemoryPolicy",
     ),

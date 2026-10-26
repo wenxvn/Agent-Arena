@@ -10,7 +10,7 @@
 |---|---|---|
 | `uv run ruff check .` | `All checks passed!` | 0 |
 | `uv run mypy src` | `Success: no issues found in 306 source files` | 0 |
-| `uv run pytest -q` | `1510 passed` | 0 |
+| `uv run pytest -q` | `1525 passed` | 0 |
 | `uv run uv lock --check` | `Resolved 65 packages`（无变更） | 0 |
 | `git diff --check` | 无输出 | 0 |
 | `uv run python -m agent_arena.v10.freeze verify` | **9/9 根目录 `unchanged`** | 0 |
@@ -28,21 +28,21 @@
 | V12 离线交付 | 1433 passed |
 | 可访问性 + 补充实验 | 1469 passed |
 | DCR-V12-01 契约补丁 + 版本复跑 | 1489 passed |
-| 投影指标 + 预算扩展 + 重复实验 + 运行时版本 | **1510 passed** |
+| 投影指标 + 预算扩展 + 重复实验 + 运行时版本 | **1525 passed** |
 
 ## 2.0 真实模型执行（MiMo）
 
 | 项 | 值 |
 |---|---|
 | 授权 | 用户明确指示"可以用 API" |
-| 实验数 | 12（Pilot / 主矩阵 / MAP-22 ×2 / MAP-30 ×2 / 种子覆盖 ×3 / 重复 ×1 / 探针） |
-| 局数 | **125** |
-| 请求 | 5 062 |
-| 结算 | **CNY ¥4.92471204** |
+| 实验数 | 14（Pilot / 主矩阵 + 补充 / MAP-22 ×3 / MAP-30 ×2 / 种子覆盖 ×3 / 重复 ×2 / 探针） |
+| 局数 | **147** |
+| 请求 | 5 473 |
+| 结算 | **CNY ¥5.34053584** |
 | 未知消费 | **¥0.00** |
 | 批准上限 | ¥6.00（未超） |
-| 账本一致性 | `run_started` 125 = `run_settled` 125；每局 `result.usage` 与账本一致 |
-| 同条件重复翻转率 | **22.2%**（18 组中 4 组结局翻转） |
+| 账本一致性 | `run_started` 147 = `run_settled` 147；每局 `result.usage` 与账本一致 |
+| 同条件重复翻转率 | **22.2%**（2 次观测）/ **27.8%**（3 次观测） |
 
 明细见 `mimo-results.md`；原始报告与 CSV 在 `docs/v12/real-runs/`。
 
@@ -142,7 +142,7 @@
 |---|---|---|
 | macOS 实机 | `NOT_VERIFIED` | 用户指示暂缓 |
 | Ollama 实机 | `NOT_VERIFIED` | 用户指示暂缓 |
-| 差异稳定性 | **不可判定（已量化）** | 同条件重复 4/18 翻转（22.2%）：1 次/条件不足以下架构结论 |
+| 差异稳定性 | **已量化** | 2 次观测翻转 22.2%、3 次观测 27.8%；仅 planning@MAP-16 seed 1 为 3/3 |
 | 反思独立小矩阵 | NOT_RUN | 需单独预算批准 |
 | Provider 账单对账 | 未做 | 超出 V12 范围 |
 | `<html lang>` | 框架限制 | Streamlit 前端固定 `en` |
