@@ -98,6 +98,8 @@ class RunConfig(BaseModel):
     #: 父实验与矩阵位置（V11 单局为空）。
     experiment_id: str | None = Field(default=None, max_length=80)
     matrix_index: int | None = Field(default=None, ge=0, le=10_000)
+    #: V13：第几次独立重复（0 = 原始观测）；旧 manifest 缺省按 0 读取。
+    replicate_index: int = Field(default=0, ge=0, le=10)
     policy_seed: int = Field(default=0, ge=0, le=9_999)
     max_decisions: int = Field(ge=1, le=200)
     max_requests: int = Field(ge=1, le=200)

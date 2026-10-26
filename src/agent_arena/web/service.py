@@ -508,6 +508,56 @@ class RunService:
         rows.sort(key=lambda item: item.created_at, reverse=True)
         return rows[:limit] if limit else rows
 
+    def page_runs(
+        self,
+        *,
+        offset: int = 0,
+        limit: int = 50,
+        map_id: str = "",
+        state: str = "",
+        mode: str = "",
+        provider_id: str = "",
+        model: str = "",
+        query: str = "",
+        since: str = "",
+        success: bool | None = None,
+    ) -> dict[str, Any]:
+        """服务端分页查询（V13-09-06）：不把全部历史塞进页面内存。
+
+        走 ``web.index.RunIndex``：只缓存列表需要的字段，目录变化时才重建。
+        与 ``list_runs`` 语义一致，但**不返回全部**，并额外给出 ``total``。
+        """
+
+        from agent_arena.web.index import RunIndex
+
+        index = getattr(self, "_run_index", None)
+        if index is None:
+            index = RunIndex(self.store.base)
+            self._run_index = index
+        return index.page(
+            offset=offset,
+            limit=limit,
+            map_id=map_id,
+            state=state,
+            mode=mode,
+            provider_id=provider_id,
+            model=model,
+            query=query,
+            since=since,
+            success=success,
+        )
+
+    def aggregate_runs(self, **filters: Any) -> dict[str, Any]:
+        """按地图/状态/模式聚合（只读索引，不读 replay）。"""
+
+        from agent_arena.web.index import RunIndex
+
+        index = getattr(self, "_run_index", None)
+        if index is None:
+            index = RunIndex(self.store.base)
+            self._run_index = index
+        return index.aggregate(**filters)
+
     def _summary(self, manifest: dict[str, Any]) -> RunSummary:
         raw_budget = manifest.get("budget")
         raw_hashes = manifest.get("hashes")

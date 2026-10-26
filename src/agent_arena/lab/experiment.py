@@ -92,6 +92,12 @@ class PreflightResult:
     approved: bool
     mode: str
     notes: tuple[str, ...] = ()
+    #: V13：重复次数与"每条件子局数"（3 次重采样 ≠ 3 个新环境 seed）。
+    replicates: int = 1
+    cells_per_condition: int = 1
+    conditions: int = 0
+    #: V13：不编造耗时；只声明"未登记可信耗时数据"。
+    time_estimate_available: bool = False
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -109,6 +115,10 @@ class PreflightResult:
             "approved": self.approved,
             "mode": self.mode,
             "notes": list(self.notes),
+            "replicates": self.replicates,
+            "cells_per_condition": self.cells_per_condition,
+            "conditions": self.conditions,
+            "time_estimate_available": self.time_estimate_available,
         }
 
 
@@ -170,14 +180,36 @@ def preflight(spec: ExperimentSpec) -> PreflightResult:
     runs_by_map: dict[str, int] = {}
     for cell in cells:
         runs_by_map[cell.map_id] = runs_by_map.get(cell.map_id, 0) + 1
+    conditions = len(
+        {
+            (cell.map_id, cell.environment_seed, cell.agent_id, cell.agent_config_hash)
+            for cell in cells
+        }
+    )
+    cells_per_condition = spec.replicates
     notes = [
         f"矩阵 {len(cells)} 局 = {len(spec.maps)} 图 × {len(seeds)} seed × "
-        f"{len(spec.agent_arms)} 实验臂。",
+        f"{len(spec.agent_arms)} 实验臂 × {spec.replicates} 次重复。",
         f"seed 取值 {list(seeds)}"
         f"（{'显式指定' if spec.environment_seeds else '自动取共同可用前 3 个'}）。",
         "执行方式：单 worker 串行，避免并发付费请求。",
         f"运行时版本：{current_runtime_version()}",
     ]
+    if spec.replicates > 1:
+        notes.append(
+            f"重复口径：{conditions} 个条件 × {cells_per_condition} 次**独立重采样**；"
+            "重复不是新的环境 seed，不能当作地图泛化能力的样本。"
+        )
+    if spec.mode is ExperimentMode.LIVE:
+        notes.append(
+            "耗时未登记可信数据：预检只给请求数与费用上界，不承诺墙钟时间。"
+        )
+    if spec.sampling.support != "SUPPORTED" and spec.mode is ExperimentMode.LIVE:
+        notes.append(
+            f"采样参数支持情况：{spec.sampling.support}"
+            f"（对外口径 {spec.sampling.deterministic_claim}）；"
+            "环境 seed 固定不等于模型输出可复现。"
+        )
     return PreflightResult(
         ok=not blockers,
         blockers=tuple(blockers),
@@ -193,6 +225,9 @@ def preflight(spec: ExperimentSpec) -> PreflightResult:
         approved=approved,
         mode=spec.mode.value,
         notes=tuple(notes),
+        replicates=spec.replicates,
+        cells_per_condition=cells_per_condition,
+        conditions=conditions,
     )
 
 
@@ -752,6 +787,8 @@ class ExperimentService:
             "requests": requests,
             "cost_settled_cny": cost_settled_cny,
             "cost_unknown": cost_unknown,
+            "replicate_index": cell.replicate_index,
+            "experiment_kind": cell.experiment_kind,
         }
         children = [
             item
@@ -858,6 +895,20 @@ class ExperimentService:
             "agent_versions",
         }
         payload = {key: value for key, value in payload.items() if key not in derived}
+        # V13：`public_dict` 给 sampling/protocol 追加了派生键（deterministic_claim /
+        # fingerprint），读回时只剥掉派生键，**保留**采样登记与协议本身。
+        if isinstance(payload.get("sampling"), dict):
+            payload["sampling"] = {
+                key: value
+                for key, value in payload["sampling"].items()
+                if key != "deterministic_claim"
+            }
+        if isinstance(payload.get("protocol"), dict):
+            payload["protocol"] = {
+                key: value
+                for key, value in payload["protocol"].items()
+                if key != "fingerprint"
+            }
         payload["experiment_id"] = experiment_id
         return ExperimentSpec.model_validate(payload)
 
@@ -877,6 +928,7 @@ class ExperimentService:
             agent_config=dict(cell.agent_config),
             experiment_id=experiment_id,
             matrix_index=cell.matrix_index,
+            replicate_index=cell.replicate_index,
             max_decisions=spec.budget.per_run_decision_cap
             or decision_budget(cell.map_id),
             max_requests=spec.budget.per_run_request_cap,
@@ -1235,6 +1287,7 @@ class ExperimentService:
                 "supplement_reason": note,
                 "runtime_version": current,
                 "created_at": utc_now(),
+                "experiment_kind": "replicate",
             }
         )
         result = preflight(spec)
@@ -1243,6 +1296,74 @@ class ExperimentService:
         key = (
             idempotency_key
             or f"replicate:{source_experiment_id}:{spec.fingerprint()[:12]}"
+        )
+        return self.create_experiment(spec, idempotency_key=key)
+
+    def create_replicates(
+        self,
+        source_experiment_id: str,
+        *,
+        conditions: list[str],
+        repeats: int,
+        reason: str = "",
+        name: str | None = None,
+        idempotency_key: str | None = None,
+    ) -> str:
+        """在**同一个**新实验里对指定条件做 ``repeats`` 次独立重复（P0-1）。
+
+        与 `create_replicate` 的区别：
+
+        - `create_replicate`：再跑一次 → 一个新实验（V12 语义，保留兼容）；
+        - `create_replicates`：把 N 次重复放进同一个实验矩阵，每份重复有独立的
+          `replicate_index`、独立的 `condition_key` 与幂等键，但共享同一份预算与
+          同一份冻结规格。这样重复分析不需要跨实验拼接，也不会被矩阵去重吞掉。
+
+        两次重复仍是**同一环境 seed 的独立采样**，不是新的环境 seed。
+        """
+
+        if repeats < 2:
+            raise ExperimentError("独立重复至少需要 2 次；单次请用 create_replicate。")
+        if repeats > 10:
+            raise ExperimentError("单条件重复上限为 10 次（防止意外放量）。")
+        source_spec = self._spec(source_experiment_id)
+        available = {cell.base_condition_key for cell in source_spec.matrix()}
+        wanted = list(dict.fromkeys(conditions))
+        unknown = [item for item in wanted if item not in available]
+        if unknown:
+            raise ExperimentError("这些条件不属于源实验：" + "、".join(unknown[:5]))
+        if not wanted:
+            raise ExperimentError("重复实验必须显式给出至少一个条件。")
+        current = current_runtime_version()
+        if source_spec.runtime_version and source_spec.runtime_version != current:
+            raise ExperimentError(
+                "源实验的运行时版本与当前不一致"
+                f"（{source_spec.runtime_version} vs {current}）；"
+                "请改用 --rerun-of 做版本复跑。"
+            )
+        note = reason or (
+            f"重复实验：同版本、同配置，对 {len(wanted)} 个条件各做 {repeats} 次独立重复，"
+            f"用于测量抽样波动；来源 {source_experiment_id}。"
+        )
+        spec = source_spec.model_copy(
+            update={
+                "experiment_id": "",
+                "name": name or f"{source_spec.name} · replicate×{repeats}",
+                "notes": f"{source_spec.notes}\n{note}".strip(),
+                "only_conditions": wanted,
+                "supplement_of": source_experiment_id,
+                "supplement_reason": note,
+                "runtime_version": current,
+                "replicates": repeats,
+                "experiment_kind": "replicate",
+                "created_at": utc_now(),
+            }
+        )
+        result = preflight(spec)
+        if not result.ok:
+            raise ExperimentError("重复实验预检未通过：" + "；".join(result.blockers))
+        key = (
+            idempotency_key
+            or f"replicates:{source_experiment_id}:{spec.fingerprint()[:12]}"
         )
         return self.create_experiment(spec, idempotency_key=key)
 
@@ -1315,6 +1436,7 @@ class ExperimentService:
                 "budget": budget,
                 "runtime_version": current_runtime_version(),
                 "created_at": utc_now(),
+                "experiment_kind": "budget_extension",
             }
         )
         result = preflight(spec)
@@ -1369,6 +1491,7 @@ class ExperimentService:
                 "supplement_reason": note,
                 "runtime_version": current_runtime_version(),
                 "created_at": utc_now(),
+                "experiment_kind": "version_rerun",
             }
         )
         result = preflight(spec)
@@ -1423,6 +1546,7 @@ class ExperimentService:
                 "preflight_only": source_spec.preflight_only,
                 "runtime_version": current_runtime_version(),
                 "created_at": utc_now(),
+                "experiment_kind": "supplement",
             }
         )
         # 补充实验必须重新走预检：矩阵变小但仍需预算与版本检查。

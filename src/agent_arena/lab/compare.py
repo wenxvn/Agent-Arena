@@ -113,6 +113,14 @@ def run_record(
         "agent_id": str(result.get("agent") or config.get("agent") or ""),
         "agent_version": str(result.get("agent_version") or ""),
         "agent_config_hash": str(result.get("agent_config_hash") or ""),
+        #: V13：重复编号与提示指纹（重复分析按这两项判断"是否真的同条件"）。
+        "replicate_index": int(
+            result.get("replicate_index") or config.get("replicate_index") or 0
+        ),
+        "prompt_hash": str(result.get("prompt_hash") or hashes.get("prompt_hash") or ""),
+        "base_prompt_hash": str(
+            result.get("base_prompt_hash") or hashes.get("base_prompt_hash") or ""
+        ),
         "state": state,
         "outcome": str(result.get("outcome") or ""),
         "termination": str(result.get("termination") or ""),
@@ -138,6 +146,11 @@ def run_record(
         "mode": str(result.get("mode") or manifest.get("mode") or ""),
         "provider_id": str(result.get("provider_id") or manifest.get("provider_id") or ""),
         "model": str(result.get("model") or manifest.get("model") or ""),
+        #: V13：单局预算口径（重复分析要确认"预算也没变"）。
+        "request_cap": int(config.get("max_requests") or 0),
+        "decision_cap": int(config.get("max_decisions") or 0),
+        "input_token_cap": int(config.get("max_input_tokens") or 0),
+        "cost_cap_cny": str(config.get("max_cost_cny") or ""),
         "rule_hash": result.get("rule_hash") or hashes.get("rule_hash"),
         "metric_hash": result.get("metric_hash") or hashes.get("metric_hash"),
         "metric_schema_hash": result.get("metric_schema_hash")

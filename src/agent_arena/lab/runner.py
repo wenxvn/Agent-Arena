@@ -388,6 +388,7 @@ def run_lab_episode(
     payload["base_prompt_hash"] = provenance["base_prompt_hash"]
     payload["experiment_id"] = config.experiment_id
     payload["matrix_index"] = config.matrix_index
+    payload["replicate_index"] = config.replicate_index
     payload["starting_observation"] = sanitize_payload(starting_observation.as_dict())
     payload["provenance"] = {
         "agent": {

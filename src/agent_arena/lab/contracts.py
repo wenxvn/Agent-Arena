@@ -30,6 +30,10 @@ from agent_arena.web.schemas import (
 )
 
 SCHEMA_VERSION = "v12-lab-1"
+#: V13 新增字段的契约版本。**读写兼容**：V12 文件没有这些字段时按默认值读取，
+#: V13 新写入的实验额外记录 ``contract_version``，不改变 ``schema_version``，
+#: 这样 V12 的读取器仍然能解析同一份 ``experiment.json``。
+CONTRACT_VERSION_V13 = "v13-lab-1"
 AGENT_CONTRACT_VERSION = "agent_policy_v1"
 
 #: V12 的模拟执行通道：与 V11 ``OFFLINE``（公开启发式策略）语义完全隔离。
@@ -217,6 +221,77 @@ class LiveApproval(BaseModel):
         }
 
 
+class SamplingProvenance(BaseModel):
+    """模型采样参数**登记**（V13-01-03）。
+
+    关键约定：``support`` 只表示"服务端是否确认支持"，默认 ``UNKNOWN``。
+    未确认的值绝不写成"已固定"，也绝不据此宣称输出可复现——环境 seed 固定
+    只保证环境初态一致，不保证 Provider 采样确定。
+    """
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    temperature: float | None = Field(default=None, ge=0, le=2)
+    top_p: float | None = Field(default=None, gt=0, le=1)
+    seed_requested: int | None = Field(default=None, ge=0, le=2**31 - 1)
+    support: Literal["SUPPORTED", "UNSUPPORTED", "UNKNOWN"] = "UNKNOWN"
+    note: str = Field(default="", max_length=400)
+
+    @property
+    def deterministic_claim(self) -> str:
+        """对外可用的措辞：永远不返回“deterministic”。"""
+
+        if self.support == "SUPPORTED" and self.seed_requested is not None:
+            return "SEED_ACCEPTED_BUT_OUTPUT_NOT_GUARANTEED"
+        if self.support == "UNSUPPORTED":
+            return "UNSUPPORTED"
+        return "UNKNOWN"
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            **self.model_dump(mode="json"),
+            "deterministic_claim": self.deterministic_claim,
+        }
+
+
+class ProtocolManifest(BaseModel):
+    """预注册协议（V13-01-07）：问题、指标、停止规则一次写定。
+
+    只做**只读摘要与冻结检查**；不包含任何密钥或私有真值。
+    """
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    protocol_id: str = Field(min_length=1, max_length=80)
+    version: str = "v13-protocol-1"
+    question: str = Field(min_length=1, max_length=600)
+    primary_metric: str = Field(min_length=1, max_length=120)
+    secondary_metrics: tuple[str, ...] = ()
+    stop_rules: tuple[str, ...] = ()
+    source: Literal["pre_registered", "ad_hoc"] = "pre_registered"
+    frozen_at: str = Field(default_factory=utc_now)
+
+    def fingerprint(self) -> str:
+        return config_hash(
+            {
+                "protocol_id": self.protocol_id,
+                "version": self.version,
+                "question": self.question,
+                "primary_metric": self.primary_metric,
+                "secondary_metrics": list(self.secondary_metrics),
+                "stop_rules": list(self.stop_rules),
+                "source": self.source,
+            }
+        )
+
+    def as_dict(self) -> dict[str, Any]:
+        payload = self.model_dump(mode="json")
+        payload["secondary_metrics"] = list(self.secondary_metrics)
+        payload["stop_rules"] = list(self.stop_rules)
+        payload["fingerprint"] = self.fingerprint()
+        return payload
+
+
 class ComparisonPolicy(BaseModel):
     """配对比较口径；不可比时不得生成排名。"""
 
@@ -263,6 +338,20 @@ class ExperimentSpec(BaseModel):
     #: 代码/契约版本指纹（由服务层写入当前值）；参与实验身份，避免"改完代码复跑
     #: 却命中旧实验"。
     runtime_version: str = Field(default="unset", max_length=120)
+    #: V13：契约版本（旧文件缺省按 V12 读取）。
+    contract_version: str = CONTRACT_VERSION_V13
+    #: V13：同一条件独立重复次数（每份重复是独立采样，不是新环境 seed）。
+    replicates: int = Field(default=1, ge=1, le=10)
+    #: V13：模型采样参数登记（默认全部 UNKNOWN，不伪称 deterministic）。
+    sampling: SamplingProvenance = Field(default_factory=SamplingProvenance)
+    #: V13：预注册协议摘要；为空表示未预注册（报告中标注 ad_hoc）。
+    protocol: ProtocolManifest | None = None
+    #: V13：可比较组（跨父实验配对用）。为空时由服务层按 profile 计算。
+    comparability_group: str = Field(default="", max_length=80)
+    #: V13：实验类别，用于报告与 UI 分组。
+    experiment_kind: Literal[
+        "matrix", "replicate", "ablation", "budget_extension", "version_rerun", "supplement"
+    ] = "matrix"
 
     # ---------------------------------------------------------------- validators
     @field_validator("maps")
@@ -343,19 +432,25 @@ class ExperimentSpec(BaseModel):
         wanted = set(self.only_conditions)
         for map_id in self.maps:
             for seed in seeds:
-                for arm in self.agent_arms:
-                    cell = MatrixCell(
-                        matrix_index=len(cells),
-                        map_id=map_id,
-                        environment_seed=seed,
-                        agent_id=arm.agent_id,
-                        agent_version="",
-                        agent_config=dict(arm.config),
-                        agent_config_hash=arm.config_hash,
-                    )
-                    if wanted and cell.condition_key not in wanted:
-                        continue
-                    cells.append(cell.model_copy(update={"matrix_index": len(cells)}))
+                for replicate_index in range(self.replicates):
+                    for arm in self.agent_arms:
+                        cell = MatrixCell(
+                            matrix_index=len(cells),
+                            map_id=map_id,
+                            environment_seed=seed,
+                            agent_id=arm.agent_id,
+                            agent_version="",
+                            agent_config=dict(arm.config),
+                            agent_config_hash=arm.config_hash,
+                            replicate_index=replicate_index,
+                            experiment_kind=self.experiment_kind,
+                        )
+                        if wanted and (
+                            cell.condition_key not in wanted
+                            and cell.base_condition_key not in wanted
+                        ):
+                            continue
+                        cells.append(cell.model_copy(update={"matrix_index": len(cells)}))
         return tuple(cells)
 
     def with_agent_versions(
@@ -384,6 +479,13 @@ class ExperimentSpec(BaseModel):
                 "only_conditions": sorted(self.only_conditions),
                 "supplement_of": self.supplement_of,
                 "runtime_version": self.runtime_version,
+                # V13：重复次数与采样登记也参与身份——"同配置跑 3 次"与"跑 1 次"
+                # 不是同一个实验；采样登记不同同样不可混并。
+                "replicates": self.replicates,
+                "sampling": self.sampling.as_dict(),
+                "protocol": None if self.protocol is None else self.protocol.fingerprint(),
+                "experiment_kind": self.experiment_kind,
+                "contract_version": self.contract_version,
             }
         )
 
@@ -400,11 +502,23 @@ class ExperimentSpec(BaseModel):
             "arms": [arm.as_dict() for arm in self.agent_arms],
             "fingerprint": self.fingerprint(),
             "only_conditions": list(self.only_conditions),
+            "sampling": self.sampling.as_dict(),
+            "protocol": None if self.protocol is None else self.protocol.as_dict(),
         }
 
 
 class MatrixCell(BaseModel):
-    """一个子局的冻结条件；``condition_key`` 是配对键的稳定来源。"""
+    """一个子局的冻结条件；``condition_key`` 是配对键的稳定来源。
+
+    V13 增加 ``replicate_index``：
+
+    - ``replicate_index = 0`` 时 ``condition_key`` 与 V12 **逐字一致**，
+      历史文件与历史脚本不受影响；
+    - ``replicate_index > 0`` 时追加 ``|rep=<n>``，因此同一条件的第 2/3 次
+      重复既不会被 ``matrix`` 去重，也不会命中同一幂等键；
+    - ``pairing_key`` 仍然忽略重复编号：配对与统计以 seed 为块，
+      重复是"同一块的多次观测"，不是新样本。
+    """
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -415,21 +529,41 @@ class MatrixCell(BaseModel):
     agent_version: str = ""
     agent_config: dict[str, Any] = Field(default_factory=dict)
     agent_config_hash: str
+    #: V13：第几次独立重复（0 = 原始观测）。
+    replicate_index: int = Field(default=0, ge=0, le=10)
+    #: V13：所属实验类别（报告与比较层用来区分"消融"和"版本比较"）。
+    experiment_kind: str = "matrix"
+
+    @property
+    def base_condition_key(self) -> str:
+        """V12 口径的条件键（不含重复编号）。"""
+
+        return f"{self.map_id}|seed={self.environment_seed}|{self.agent_id}"
 
     @property
     def condition_key(self) -> str:
-        return f"{self.map_id}|seed={self.environment_seed}|{self.agent_id}"
+        base = self.base_condition_key
+        if self.replicate_index:
+            return f"{base}|rep={self.replicate_index}"
+        return base
 
     @property
     def pairing_key(self) -> str:
         return f"{self.map_id}|seed={self.environment_seed}"
 
+    @property
+    def replicate_key(self) -> str:
+        """重复分析的块键：同条件同配置。"""
+
+        return f"{self.base_condition_key}|cfg={self.agent_config_hash[:12]}"
+
     @classmethod
     def from_dict(cls, payload: dict[str, Any]) -> MatrixCell:
-        """从落盘 dict 还原；忽略派生的 ``condition_key``。"""
+        """从落盘 dict 还原；忽略派生的 ``condition_key`` 等只读字段。"""
 
+        derived = {"condition_key", "pairing_key", "base_condition_key", "replicate_key"}
         return cls.model_validate(
-            {key: value for key, value in payload.items() if key != "condition_key"}
+            {key: value for key, value in payload.items() if key not in derived}
         )
 
     def as_dict(self) -> dict[str, Any]:
@@ -441,6 +575,8 @@ class MatrixCell(BaseModel):
             "agent_version": self.agent_version,
             "agent_config": dict(self.agent_config),
             "agent_config_hash": self.agent_config_hash,
+            "replicate_index": self.replicate_index,
+            "experiment_kind": self.experiment_kind,
             "condition_key": self.condition_key,
         }
 
@@ -459,6 +595,9 @@ class ChildRunLink(BaseModel):
     requests: int = 0
     cost_settled_cny: str | None = None
     cost_unknown: bool = False
+    #: V13：重复编号与所属实验类别（旧文件缺省 0 / matrix）。
+    replicate_index: int = 0
+    experiment_kind: str = "matrix"
 
     def as_dict(self) -> dict[str, Any]:
         return self.model_dump(mode="json")
@@ -654,6 +793,7 @@ class ComparisonResult(BaseModel):
 
 __all__ = [
     "AGENT_CONTRACT_VERSION",
+    "CONTRACT_VERSION_V13",
     "DEFAULT_LAB_MAPS",
     "EXPERIMENT_TERMINAL_STATES",
     "EXPERIMENT_TRANSITIONS",
@@ -681,5 +821,7 @@ __all__ = [
     "LiveApproval",
     "MatrixCell",
     "PairwiseDiff",
+    "ProtocolManifest",
+    "SamplingProvenance",
     "config_hash",
 ]
