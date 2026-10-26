@@ -17,6 +17,8 @@ uv run python scripts/demo_v13.py         # 零 API Key、零费用的完整演�
 网页入口：`uv run agent-arena web` → 侧边栏 **Lab · 实验配置 / 实验监控 /
 结果与对照 / 稳定性与效度 / 报告与审计**（五页）。
 
+![Lab 稳定性与效度](docs/v13/screenshots/01-lab-stability.png)
+
 V13 的真实增量（不是重复 V12）：
 
 - **重复身份**：同一条件可在一个实验内做 N 次独立重复（`replicate_index`），

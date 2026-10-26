@@ -199,3 +199,15 @@ uv run agent-arena web                  # 五页 Lab
 ```
 
 完整命令与文档索引见 `release-checklist.md`；逐任务状态见 `gap-audit.md`。
+
+## 截图
+
+| 文件 | 内容 |
+|---|---|
+| `docs/v13/screenshots/01-lab-stability.png` | 稳定性与效度（V12 历史：翻转率 0.375 / 排除 22 组 / 138 观测） |
+| `docs/v13/screenshots/02-lab-stability-mobile.png` | 同页 430px 窄屏 |
+| `docs/v13/screenshots/03-lab-audit.png` | 报告与审计（结论摘要直接展开） |
+| `docs/v13/screenshots/04-lab-ledger-audit.png` | 账本审计（演示目录 0 条目 + 明确提示） |
+| `docs/v13/screenshots/05-lab-sdk-selfcheck.png` | SDK 自检 8/8 通过 |
+| `docs/v13/screenshots/06-lab-audit-dark.png` | 报告与审计（深色） |
+| `docs/v13/screenshots/07-lab-results-pairs.png` | 结果页配对明细（逐对判定 + 不可比原因） |

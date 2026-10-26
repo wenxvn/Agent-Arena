@@ -170,6 +170,7 @@ UI 在数字旁明确写出"按当前载入的记录集计算"。
 | 真实模型效果（Memory/Planning/Reflection） | `WAITING_USER_APPROVAL` | 未获 V13 预算授权 | 见 `live-budget-proposal.md` |
 | 真机读屏软件 | `NOT_VERIFIED` | 无读屏环境 | 人工验证 |
 | macOS / Ollama | 按用户指示暂缓 | — | 不计 V13 缺项 |
+| P1-5 新的图形化组件 | `PARTIAL` | 本轮优先做数据正确性（分页/稳定性/效度/归因）；现有表格 + 配对明细已能回答研究问题 | 可加六图 SVG / Diff 高亮 |
 
 ## 8. 本轮发现并修复的真实缺陷（自审）
 
