@@ -24,7 +24,7 @@
 | reflection-on | `lab-20261026T040533Z-447523e3` | MAP-16 / 0,1 | `reflection.v1 {enabled: true}` |
 | reflection-off | `lab-20261026T040534Z-2dd57d9e` | MAP-16 / 0,1 | `reflection.v1 {enabled: false}` |
 
-**样本量**：每格 1 局、每个开关 2 局。已知同条件翻转率 22–28%，因此本节
+**样本量**：每格 1 局、每个开关 2 局。已知同条件翻转率 22–25%，因此本节
 **只作描述性对照**，不作显著性断言。
 
 ## 1. Memory 开启 / 关闭（MAP-18）
@@ -92,4 +92,5 @@ uv run python scripts/run_v12_ablations.py            # 预检，零请求
 uv run python scripts/run_v12_ablations.py --submit   # 12 局，约 ¥0.10
 ```
 
-原始报告与逐局 CSV 见 `docs/v12/real-runs/ablation-*.md|csv`。
+原始逐局 CSV 见 `docs/v12/real-runs/ablation-*.csv`（每个实验一份）。
+可读报告没有单独归档：`lab.export(<experiment_id>)` 能从落盘结果原样重新生成。

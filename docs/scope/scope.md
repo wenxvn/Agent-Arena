@@ -7,29 +7,33 @@
 
 ## At a glance
 
-| # | Feature | Phase | Status |
-|---|---|---|---|
-| 1 | Python 项目骨架与命令入口 | Foundation | done |
-| 2 | Spaceship Escape 环境 | Release 1 | done |
-| 3 | 环境规则测试 | Release 1 | done |
-| 4 | ReactAgent 与 Agent Loop | Release 1 | done |
-| 5 | Episode Trace 与终止控制 | Release 1 | done |
-| 6 | MemoryAgent | Release 2 | done |
-| 7 | Benchmark 与指标 | Release 2 | done |
-| 8 | Streamlit 实验界面 | Release 3 | done（V11 本地网页预览） |
-| 9 | PlanningAgent v1 | Research Core | done |
-| 10 | ReflectionAgent | Deferred | planned |
-| 11 | Planning v1 Failure Analysis & Evaluation v2 | Research Core | done |
-| 12 | 雾岛灯塔第二世界与迁移对照 | Research Core | done |
-| 13 | 飞船扩建 v3 与不限步数 | Research Core | done |
-| 14 | 三图难度对齐：灯塔 v2 与深海站 v1 | Research Core | done |
-| 15 | 三档难度：简单/中等/困难 9 图 | Research Core | done |
-| 16 | 七个新世界：十世界三十图 | Research Core | done |
-| 17 | 任务结构 pilot：分支/并行/反转 + seeded（flex 引擎） | Research Core | done |
-| 18 | 旧三世界重制图：去换皮，新 10×3 矩阵 | Research Core | done |
-| 19 | V3 主题世界：10 家族 × 3 难度 × 30 手工关卡 | Research Core | done |
-| 20 | V5 六图运行时与能力测量 | Research Core | in-progress |
-| 21 | V7 30 图分层能力指标离线层 | Research Core | done（离线层） |
+按时间顺序；正文的 `### N.` 是历史条目编号，不再与下表一一对应。
+
+| 内容 | 阶段 | 状态 |
+|---|---|---|
+| Python 项目骨架与命令入口 | Foundation | done |
+| Spaceship Escape 环境 / 规则测试 / ReactAgent 与 Agent Loop / Episode Trace 与终止控制 | Release 1 | done |
+| MemoryAgent / Benchmark 与指标 | Release 2 | done |
+| 只读 Streamlit 研究回放（研究 V1） | Release 3 | done |
+| 可操作本地网页平台 | Release 3 / V11 | done（`WEB_PREVIEW_READY`） |
+| Lab 多架构实验层 | Release 4 / V12 | done（`LAB_1_0_READY`） |
+| PlanningAgent v1 | Research Core | done（真实对照 0/5，未证明） |
+| Planning v1 Failure Analysis & Evaluation v2 | Research Core | done |
+| ReflectionAgent | Deferred → V12 | 已实现 `reflection.v1`；真实对照"触发器未激活" |
+| 雾岛灯塔第二世界与迁移对照 | Research Core | done |
+| 飞船扩建 v3 与不限步数 | Research Core | done |
+| 三图难度对齐：灯塔 v2 与深海站 v1 | Research Core | done |
+| 三档难度：简单/中等/困难 9 图 | Research Core | done |
+| 七个新世界：十世界三十图 | Research Core | done |
+| 任务结构 pilot：分支/并行/反转 + seeded（flex 引擎） | Research Core | done |
+| 旧三世界重制图：去换皮，新 10×3 矩阵 | Research Core | done |
+| V3 主题世界：10 家族 × 3 难度 × 30 手工关卡 | Research Core | done（离线） |
+| V5 六图运行时与能力测量 | Research Core | **superseded**（由 V6–V10 覆盖） |
+| V6 能力测量效度修复 | Research Core | done（`HOLD` 结论保留） |
+| V7 30 图分层能力指标离线层 | Research Core | done（离线层） |
+| V8 30 图定稿与 MiMo 三重复验收 | Research Core | done（17/90） |
+| V9 30 图难度定标与失败归因 | Research Core | done（7 VALIDATED） |
+| V10 30 图核心机制重构与多 Seed 验证 | Research Core | done（30 VALIDATED） |
 
 ## Foundation
 
@@ -402,6 +406,7 @@ V7 只读指标层已完成离线交付（6 图 44 条 + 24 图 110 条，六图
 - [x] V2 基线文档口径复核：README 与 Scope 的 45/45、46/51 尝试率、150/150 配置覆盖和 E1-ON 条件相符；Scope 明确保留火山困难均值低于中等的例外，README 未将其概括为七图全单调。README 中“预算门禁尚未实现”已依据 spec 0015 与运行登记表更正为门禁已实现、三次 pilot fail-closed、S2 Gate 未通过。未增加实验调用。
 - [~] S2 Memory v3：M1 空间边、frontier、公开事件记忆的可选 v3 实现与离线验证已完成；默认 v2 保持。新增规范化 `memory_digest`，并对落盘后重新读取的完整 10 步公开 Trace 做双次回放，digest、frontier 和因果事件顺序一致。trace statistics 经两轮容量/字段复核，已覆盖 v3 房间、初始/新增事实、失败动作、问题、揭示物品、出口、成功边、事件，以及 current-room/inventory/里程碑/question/event 更新；v2 `visited_locations` 不重复计数。此前提交 a336bd6 时，Python 3.13.3 全量 pytest 350 passed、Ruff/mypy 通过；提交 `a336bd68768f32a35e5c6a906b60045571b63669` 的 [Actions run #74](https://github.com/wenxvn/Agent-Arena/actions/runs/38379921434) 通过。该环境没有 `uv` 命令，未执行 `uv lock --check`，依赖文件未改动。fail-closed provider budget guard 与 world identity 稳定性修复已验证；三次隔离尝试均在 v2 首个 episode 中因 provider error fail closed：BUDGET-01 为 2 次（1,509 usage + 22,577 reservation = 24,086 本地记账 tokens，unknown-spend），BUDGET-02 为 10 次（15,374 usage + 25,478 reservation = 40,852 本地记账 tokens，timeout），BUDGET-03 为 7 次（10,043 usage + 25,156 reservation = 35,199 本地记账 tokens，provider_error）。合计 19/500 requests、26,926 confirmed usage + 73,211 reservation = 100,137/4,000,000 本地记账 tokens；三笔 reservation 的 provider 实际扣费未知。三份 ledger 与 partial 输出保留，当前登记矩阵不再发送 API 请求，v2 为 0/2 完成且 v3 未启动。S2 Gate 未完成，不推进 S3。详见 [V2-03](../research/v2/03-memory-v3.md)、[运行登记表](../research/v2/00-run-registry.md)、spec [0014](../specs/0014-memory-v3-spatial-event/index.md) 与 [0015](../specs/0015-v2-provider-budget-guard/index.md)。
 - [x] S2 末轮只读失败诊断：逐条核对三份 ledger 的计数、状态、错误分类与本地耗时；BUDGET-03 的 120 秒环境覆盖已通过配置前缀和 adapter 传参核实，失败事件约 10 秒且为无 HTTP status 的 `provider_error`。现有安全记录无法区分无输出响应与未分类 SDK/网关异常；BUDGET-01 约 30 秒但 schema 1 无类别，不能追溯定性。没有额外 provider 请求或 GPU 运行，不创建 BUDGET-04、不推进 S3。详见 [V2-03 末轮诊断](../research/v2/03-memory-v3.md) 与[运行登记表](../research/v2/00-run-registry.md)。
+- [x] S2.4 离线负例与公开事实更正：新增非法 provider 候选/correction request、回程导航、单向出口、重复事件摘要、同房间 Observation 更正及 room-fact 压缩保留当前描述用例；普通 facts 压缩精确断言删 8/24、留 16/24，20 条失败动作仍保留；默认 v2 provider memory-data 有 golden fixture，legacy Trace 缺少 `memory_statistics` 时仍可读取。全量 pytest 357 passed、Ruff 和 mypy 49 个源文件通过，`git diff --check` 通过。此前实现/fixture 提交的 Actions #76/#78 均通过，本轮 fixture 提交 `29d6917c8f2825b175735f92443d1692b14e843d` 的 [Actions #81](https://github.com/wenxvn/Agent-Arena/actions/runs/38383303143) 通过。S2 Gate 仍未通过，不推进 S3；无 provider 请求。
 
 ## 19. V3 主题世界设计与实现 · done（2026-10-14）
 
@@ -415,9 +420,7 @@ V3 按 [spec 0017](../specs/0017-world-redesign-v3/index.md) 推进，内容来�
 - [x] Gate 5：30/30 Oracle、六维评分、机制差异、Legacy 与 Trace 兼容、完整文档和基础质量门禁完成。详细 hash 与重播证据见 [`oracle-acceptance.md`](../world-design-v3/oracle-acceptance.md)。
 
 最终验证：全量 pytest、Ruff、mypy 和 `git diff --check` 的准确结果追加在 `docs/engineering-log.md`。项目虚拟环境 Python 3.13 可用；当前 shell 没有 `uv`，`uv lock --check` 未运行且依赖文件未改。未进行真实 Provider 请求、GPU 训练或模型行为对照；离线 Oracle 不构成模型能力证据。
-- [x] S2.4 离线负例与公开事实更正：新增非法 provider 候选/correction request、回程导航、单向出口、重复事件摘要、同房间 Observation 更正及 room-fact 压缩保留当前描述用例；普通 facts 压缩精确断言删 8/24、留 16/24，20 条失败动作仍保留；默认 v2 provider memory-data 有 golden fixture，legacy Trace 缺少 `memory_statistics` 时仍可读取。全量 pytest 357 passed、Ruff 和 mypy 49 个源文件通过，`git diff --check` 通过。此前实现/fixture 提交的 Actions #76/#78 均通过，本轮 fixture 提交 `29d6917c8f2825b175735f92443d1692b14e843d` 的 [Actions #81](https://github.com/wenxvn/Agent-Arena/actions/runs/38383303143) 通过。S2 Gate 仍未通过，不推进 S3；无 provider 请求。
-
-### 20. V5 六图运行时与能力测量 · in-progress
+### 20. V5 六图运行时与能力测量 · superseded（由 V6–V10 覆盖）
 
 先将MAP-08、16、18、22、26、30接入隔离的`scenario_v4`运行时，再根据结果说明其余24图的接入条件。
 **Done when:** 六图逐关离线验收、V3/Legacy回归和成本受限的模型试验完成；环境、模型通关与能力效度分开报告。
@@ -476,7 +479,7 @@ Spec [0018](../specs/0018-v5-six-map-measurement.md)
 
 详见 `docs/v11/final-report.md`、`docs/v11/release-checklist.md` 与 `docs/v11/safety-and-budget.md`。
 
-### 24. V12 Agent Arena Lab 1.0（多架构实验、批量对照与行为诊断）· done（离线交付，2026-10-25）
+### 24. V12 Agent Arena Lab 1.0（多架构实验、批量对照与行为诊断）· done（`LAB_1_0_READY`，2026-10-26）
 
 按根目录 `研究提纲/V12Agent-Arena_V12_第二阶段完整执行提纲.md` 执行 Batch 0–13。V8/V9/V10 冻结规则、账本与历史 trace 保持只读；V11 单局服务层与网页保留。
 
@@ -487,9 +490,10 @@ Spec [0018](../specs/0018-v5-six-map-measurement.md)
 - [x] Batch 6–8：`reflection.v1`（公开触发器 + 限额）；18 类证据级诊断 + 轨迹 Diff；六图专属 view-model + 24 图通用回退。
 - [x] Batch 9：三个 Lab 网页页面（配置/监控/结果），浏览器 E2E 走通配置→预检→离线提交→对照→导出。
 - [x] Batch 10：`lab/sdk.py` + `examples/custom_agent/` + allowlist + 只读导入。
-- [x] Batch 11：`scripts/verify_v12.py` 11/11；CI `lab-e2e`；8 张截图；三组 Demo 包；13 项稳健性测试。
+- [x] Batch 11：`scripts/verify_v12.py` 15/15；CI `lab-e2e`；8 张截图；三组 Demo 包；13 项稳健性测试。
+- [x] Batch 12：真实 MiMo —— Pilot 6 局 + 主矩阵 54 局 + 四类衍生实验（补充 / 版本复跑 / 预算扩展 / 重复）+ 路线日志消融 + 三条开关消融，共 **20 个实验 / 159 局 / 5 641 请求 / ¥5.43680012**，未知消费 ¥0，未超 ¥6.00。
 - [x] Batch 13：`docs/v12/` 完整文档、README/architecture/scope 更新。
-- [ ] Batch 12：真实付费 Pilot 与 54 局主矩阵 —— **`PENDING_APPROVAL`**，未发出任何真实请求。
-- [x] 验证：1433 pytest passed、mypy 302 文件 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 11/11。
+- [x] 测量缺陷：DCR-V12-01（`facts` 契约）、02（`route_recall` 键名口径）、03（记忆序列过短）、04（长观测图的 token 瓶颈）、05（反思触发器未激活）。
+- [x] 验证：1525 pytest passed、mypy 306 文件 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 15/15。
 
-边界：LAB_1_0_OFFLINE_READY；SIMULATED 成绩不代表模型能力；macOS/Ollama 未实测。详见 `docs/v12/final-report.md`。
+边界：`LAB_1_0_READY` 指 P0+P1+P2 交付且真实矩阵已跑；**不表示任何架构更优**——同条件重复的结局翻转率为 22.2%（2 次观测 4/18）/ 25.0%（3 次观测 3/12）。未做项见 `docs/v12/gap-audit.md`；SIMULATED 成绩不代表模型能力；macOS/Ollama 未实测。详见 `docs/v12/final-report.md`、`docs/v12/mimo-results.md`、`docs/v12/ablations.md`。

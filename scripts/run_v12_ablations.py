@@ -129,7 +129,7 @@ def main() -> int:
 
     runs = RunService(WEB_RUNS, recover=False)
     service = ExperimentService(LAB_RUNS, run_service=runs, recover=False)
-    created: list[str] = []
+    specs: list[ExperimentSpec] = []
     try:
         for item in ABLATIONS:
             spec = _spec(item)
@@ -148,13 +148,15 @@ def main() -> int:
             )
             if not result.ok:
                 return 1
-            created.append(
-                service.create_experiment(spec, idempotency_key=f"ablation:{spec.name}")
-            )
+            specs.append(spec)
         if not args.submit:
-            print("（未提交；加 --submit 才会真的调用 Provider）")
+            # 预检不落盘：dry-run 不创建实验目录，避免 runs/lab 里堆 CREATED 空壳。
+            print("（未提交；加 --submit 才会创建实验并调用 Provider）")
             return 0
-        for experiment_id in created:
+        for spec in specs:
+            experiment_id = service.create_experiment(
+                spec, idempotency_key=f"ablation:{spec.name}"
+            )
             service.submit(experiment_id, resume=True)
             manifest = service.wait(experiment_id, timeout=3_600)
             print(

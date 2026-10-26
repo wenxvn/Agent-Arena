@@ -11,7 +11,7 @@ Agent 架构的行为、成功率、成本与失败原因。
 
 ```bash
 uv run python scripts/demo_v12.py          # 零 API Key、零费用的完整演示
-uv run python scripts/verify_v12.py        # 一键离线验收（13 项）
+uv run python scripts/verify_v12.py        # 一键离线验收（15 项）
 uv run python scripts/a11y_v12.py --browser --start   # 可访问性审计（需 Playwright）
 ```
 
@@ -151,15 +151,15 @@ uv run python scripts/verify_v11.py
 uv run python scripts/verify_v12.py
 ```
 
-当前 V12 结果：**1469 pytest passed**、mypy 303 文件 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 13/13。详见 [V12 验证报告](docs/v12/validation-report.md)。
+当前 V12 结果：**1525 pytest passed**、mypy 306 文件 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 15/15。详见 [V12 验证报告](docs/v12/validation-report.md)。
 
 ## 研究背景（简版）
 
 - V10 已完成 30 张原生运行时、154+172 指标、多 seed 基线与 8 项 Gate；30/30 `VALIDATED`（“测得住”，不等于模型能通关）。
 - V10 真实 MiMo：152 局有效，成功 57/152；结算 ¥2.27994884 + 未知预留 ¥0.13312000。
 - V11 真实 MiMo 冒烟：3 局（MAP-01/19/30），58 次已记录请求，结算 ¥0.04637556，未知预留 ¥0.073728；0 成功为环境规则/预算终局，未修改规则凑成功。
-- V12 完成多架构实验层（父实验 + 子局、三种架构 + 反思、六图诊断与可视化、第三方 SDK）；真实 54 局矩阵为 `PENDING_APPROVAL`，未发出任何真实请求。
-- 完整实验历史见 [开发进度](docs/scope/scope.md)、[工程记录](docs/engineering-log.md) 与 `docs/v8`–`docs/v12`。
+- V12 完成多架构实验层（父实验 + 子局、三种架构 + 反思、六图诊断与可视化、第三方 SDK）；真实 MiMo 共 **20 个实验 / 159 局**，结算 **¥5.43680012**、未知消费 ¥0（批准 ¥6.00）。主矩阵 24/53 成功，同条件重复的结局翻转率 22.2%（2 次观测 4/18）/ 25.0%（3 次观测 3/12）——**1 次/条件不足以为架构排名**。四个测量缺陷（DCR-V12-01…04）与一个"触发器未激活"（DCR-V12-05）都已定位并记录。
+- 完整实验历史见 [开发进度](docs/scope/scope.md)、[工程记录](docs/engineering-log.md)、[V12 真实结果](docs/v12/mimo-results.md) 与 `docs/v8`–`docs/v12`。哪些提纲项没做见 [V12 差距清单](docs/v12/gap-audit.md)。
 
 ## 边界
 
@@ -174,6 +174,9 @@ uv run python scripts/verify_v12.py
 - [V12 最终报告](docs/v12/final-report.md)
 - [V12 实验协议](docs/v12/experiment-protocol.md)
 - [V12 指标与归因](docs/v12/metrics-and-attribution.md)
+- [V12 真实结果](docs/v12/mimo-results.md)
+- [V12 开关消融](docs/v12/ablations.md)
+- [V12 差距清单](docs/v12/gap-audit.md)
 - [V12 第三方接入 API](docs/v12/adapter-api.md)
 - [V12 验证报告](docs/v12/validation-report.md)
 - [V11 快速开始](docs/v11/quickstart.md)

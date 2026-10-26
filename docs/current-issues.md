@@ -1,12 +1,13 @@
 # 当前问题与历史诊断
 
-更新时间：2026-10-15（文档审核，未调用模型服务）
+更新时间：2026-10-26（仅更新入口状态；正文为历史诊断快照）
 
 ## 当前问题入口
 
-- V2 S2 matched-pilot 未通过，三份预算账本已关闭。停止边界与恢复条件以 [运行登记表](research/v2/00-run-registry.md) 和 [Memory v3 报告](research/v2/03-memory-v3.md) 为准。
+- V2 S2 matched-pilot 未通过，三份预算账本已关闭。停止边界与恢复条件以 [运行登记表](research/v2/00-run-registry.md) 和 [Memory v3 报告](research/v2/03-memory-v3.md) 为准。**不得重试已关闭账本**。
 - V3 30 关离线工程已交付，尚无真实模型行为对照，见 [验收报告](world-design-v3/oracle-acceptance.md)。
-- 完整交互实验界面和 Reflection 仍未交付，见 [Scope](scope/scope.md)。只读 UI 已实现。
+- 交互式实验界面与 Reflection 的"未交付"已不再成立：V11 交付本地网页，V12 交付 Lab 三页与 `reflection.v1`。当前未做项集中在 [V12 差距清单](v12/gap-audit.md)（macOS/Ollama 实机、Provider 后台对账、可选 LLM 解说等）。
+- V12 真实实验已执行（20 个实验 / 159 局 / ¥5.43680012，未知消费 ¥0）；测量缺陷见 [V12 DCR](v12/dcr/) 的 DCR-V12-01…05。
 - Muse 自主组合的 45/45 是配置覆盖结果，原始尝试为 46/51，不能推广为首次尝试成功率或跨模型结论。
 
 ## 历史诊断（2026-09-10，含 2026-10-10 补记）

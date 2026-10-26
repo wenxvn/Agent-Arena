@@ -1,6 +1,6 @@
 # V12 发布检查清单
 
-- **评估日期**：2026-10-25
+- **评估日期**：2026-10-26
 - **结论**：`LAB_1_0_READY`（P0 + P1 + P2 全部交付；真实模型实验 20 个、159 局、¥5.43680012）
 - **不是**：公网生产就绪（单机本地，无登录/多租户）
 
@@ -12,7 +12,7 @@
 | `basic.v1` / `memory.v1` / `planning.v1` | DONE | `lab/policies/*`、`tests/test_v12_policies.py` |
 | 实验矩阵与批量队列 | DONE | `lab/experiment.py` |
 | 可比较结果（配对 + 不可比声明） | DONE | `lab/compare.py` |
-| 预算安全（单局 + 实验级 + 未知消费） | DONE | 真实 71 局：0 未知消费、未超 ¥6 |
+| 预算安全（单局 + 实验级 + 未知消费） | DONE | 真实 159 局：0 未知消费、未超 ¥6 |
 | V11 回归保持通过 | DONE | `validation-report.md` §4 |
 
 **Gate：`LAB_CORE_READY` = 通过。**
@@ -33,7 +33,7 @@
 |---|---|---|
 | 第三方 Python Agent SDK | DONE | `lab/sdk.py`、`examples/custom_agent/` |
 | 只读导入公开轨迹 | DONE | `read_public_run_file` |
-| 一键离线验收 | DONE | `scripts/verify_v12.py`（11/11） |
+| 一键离线验收 | DONE | `scripts/verify_v12.py`（15/15） |
 | CI 浏览器 E2E | DONE | `.github/workflows/ci.yml` `lab-e2e` |
 | 截图（桌面/窄屏/深色） | DONE | `docs/v12/screenshots/`（8 张） |
 | Demo 包（三组） | DONE | `docs/v12/demo/` |
@@ -61,8 +61,8 @@
 
 - [x] MAP-22 记忆假设 —— `route_log` 把 `route_recall` 从 0 拉到 0.45–1.0（DCR-V12-03）
 - [x] MAP-30 能力 —— 抬预算后 4/9 走到法庭且 `ACCUSATION_REJECTED`（DCR-V12-04）
-- [ ] 反思独立小矩阵 —— 需单独预算批准，未混入主矩阵
-- [x] 重复次数 —— 已做 2 次重复，3 次观测翻转率 27.8%；仅 planning@MAP-16 seed 1 为 3/3
+- [x] 反思独立小矩阵 —— 已跑 12 局消融；两臂触发器均未激活（DCR-V12-05），对照无效
+- [x] 重复次数 —— 已做 2 次重复，3 次观测翻转率 25.0%（3/12）；仅 planning@MAP-16 seed 1 为 3/3
 - [ ] macOS 实机 / Ollama 实机 —— 按用户指示暂缓
 - [ ] 移动端真机
 - [ ] Provider 账单对账
@@ -70,6 +70,6 @@
 
 ## 发布动作
 
-- [ ] 提交源码/文档/脱敏演示资产（**不提交** `runs/`、`results/`、`.env`）
-- [ ] 推送后确认 CI `quality` 与 `lab-e2e` 结果
+- [x] 提交源码/文档/脱敏演示资产（**不提交** `runs/`、`results/`、`.env`）
+- [~] CI `quality` 与 `lab-e2e` 由推送自动触发；本地同套门禁全绿，CI 结果以 Actions 为准
 - [ ] 不打正式 tag / Release（需用户明确确认）

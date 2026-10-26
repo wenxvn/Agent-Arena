@@ -906,6 +906,11 @@ class ExperimentService:
     def status(self, experiment_id: str) -> ExperimentManifest:
         return self.store.load_manifest(experiment_id)
 
+    def spec(self, experiment_id: str) -> ExperimentSpec:
+        """读取实验规格（公开只读入口；内部复用 `_spec` 的校验与缓存）。"""
+
+        return self._spec(experiment_id)
+
     def records(self, experiment_id: str) -> list[dict[str, Any]]:
         manifest = self.store.load_manifest(experiment_id)
         if self._reconcile_children(manifest):

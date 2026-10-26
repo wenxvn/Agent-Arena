@@ -143,7 +143,7 @@ V12 result + provenance + agent_events（兼容 V11 manifest/events/result）
 
 **不做显著性断言**。而且有两条更硬的证据：
 
-1. **同条件重复的结局翻转率**：2 次观测 4/18（22.2%），3 次观测 5/18（27.8%）；
+1. **同条件重复的结局翻转率**：2 次观测 4/18（22.2%），3 次观测 3/12（25.0%）；另 6 组 `memory.v1` 因默认配置键变化跨版本，已按 DCR-V12-06 排除；
 2. 3 次观测里**唯一稳定成功的条件**是 `planning.v1` 在 MAP-16 seed 1 的 **3/3**
    （代价是请求数约 3 倍）；`memory.v1` 在 MAP-18 的两个 seed 是 2/3（部分稳定）；
    其余 12 个条件全为 0/3。
@@ -234,7 +234,7 @@ planning 额外 Planner 请求可见但总费用低于 memory，planning 的被�
 | 项 | 状态 | 说明 |
 |---|---|---|
 | MAP-22 记忆假设 | **机制已验证，样本不足** | `route_log` 把 `route_recall` 从 0 拉到 0.45–1.0，seed 2 通关；但只有 3 局、跨配置不配对 |
-| MAP-16 / MAP-18 | 有梯度但**翻转率 22–28%** | 3 次观测里唯一稳定信号是 planning@MAP-16 seed 1（3/3） |
+| MAP-16 / MAP-18 | 有梯度但**翻转率 22–25%** | 3 次观测里唯一稳定信号是 planning@MAP-16 seed 1（3/3） |
 | MAP-08 / MAP-26 | 天花板 | 三臂 9/9 成功，测不出架构差异 |
 | MAP-30 | 约束阶梯 | 90 请求 → 200k token → ¥0.20 费用；180 请求下 4/9 走到法庭且 `ACCUSATION_REJECTED` |
 | 反思独立小矩阵 | **DONE（触发器未激活）** | 12 局消融已跑；MAP-16 失败过快（seed 0 第 6 步 `DEADLOCK`），`reflection_triggered` 两臂均为 0 → 该对照无法回答提效（DCR-V12-05） |
@@ -261,7 +261,7 @@ planning 额外 Planner 请求可见但总费用低于 memory，planning 的被�
 
 ## NEXT（只列最优先 5 项）
 
-1. **重复扩到 3 次/条件并固定模型采样**：当前 3 次观测的翻转率 27.8%，
+1. **重复扩到 3 次/条件并固定模型采样**：当前 3 次观测的翻转率 25.0%
    且只有 `planning@MAP-16 seed 1` 是 3/3；要谈架构差异必须先把噪声压下来。
 2. **`route_log` 默认化评估**：已证明能把 `route_recall` 从 0 拉到 0.45–1.0，
    需要用配对重复确认它是否稳定，以及代价（决策预算占用）。
@@ -294,10 +294,26 @@ uv run python scripts/run_v12_matrix.py --maps MAP-22 MAP-26 \
     --experiment-requests 4860 --experiment-cost 6.0 \
     --approval-cap 6.0 --i-have-budget-approval --submit
 
-# 续跑 / 版本复跑 / 补充实验
+# 续跑 / 版本复跑 / 补充实验 / 预算扩展 / 重复
 uv run python scripts/run_v12_matrix.py --resume <experiment_id> --submit
 uv run python scripts/run_v12_matrix.py --rerun-of <experiment_id> --conditions "..." --submit
 uv run python scripts/run_v12_matrix.py --supplement-of <experiment_id> --list-candidates
+uv run python scripts/run_v12_matrix.py --budget-ext-of <experiment_id> --ext-requests 180 --ext-input-tokens 600000 --conditions "..." --submit
+uv run python scripts/run_v12_matrix.py --replicate-of <experiment_id> --conditions "..." --submit
+
+# 补登记 seed（等价于主 CLI）
+uv run python scripts/run_v12_matrix.py --maps MAP-18 --seeds 3 4 \
+    --provider openai_compatible --model mimo-v2.6-flash \
+    --decisions 90 --requests 90 --per-run-cost 0.2 \
+    --experiment-requests 540 --experiment-cost 0.8 \
+    --approval-cap 0.8 --i-have-budget-approval --submit
+
+# 三条开关消融（memory / planning / reflection on-off，12 局约 ¥0.10）
+uv run python scripts/run_v12_ablations.py            # 预检，零请求
+uv run python scripts/run_v12_ablations.py --submit
+
+# 重复实验的翻转率统计
+uv run python scripts/summarize_v12_replicates.py <exp_a> <exp_b> [...]
 ```
 
 ## 真实结果档案（可审计、已脱敏）
@@ -312,7 +328,7 @@ uv run python scripts/run_v12_matrix.py --supplement-of <experiment_id> --list-c
 | `docs/v12/real-runs/map30-token600k-report.md` / `-runs.csv` | MAP-30 token 扩展（600k） |
 | `docs/v12/real-runs/replicate-16-18-report.md` / `-runs.csv` | 重复实验 A（18 局） |
 | `docs/v12/real-runs/replicate-summary-2obs.txt` | 2 次观测的翻转率（22.2%） |
-| `docs/v12/real-runs/replicate-summary-3obs.txt` | 3 次观测的翻转率（27.8%） |
+| `docs/v12/real-runs/replicate-summary-3obs.txt` | 3 次观测的翻转率（25.0%，含跨版本排除） |
 | `docs/v12/real-runs/map18-seed3-4-report.md` / `-runs.csv` | MAP-18 新 seed 覆盖 |
 | `docs/v12/real-runs/pilot-report.md` | Pilot 6 局 |
 | `docs/v12/mimo-results.md` | 汇总、逐图结论、成本与事故记录 |
@@ -320,6 +336,11 @@ uv run python scripts/run_v12_matrix.py --supplement-of <experiment_id> --list-c
 | `docs/v12/dcr/DCR-V12-02.md` | `route_recall` 键名口径缺陷（口径） |
 | `docs/v12/dcr/DCR-V12-03.md` | 记忆序列过短（策略） |
 | `docs/v12/dcr/DCR-V12-04.md` | 长观测地图的 token 瓶颈（预算） |
+| `docs/v12/dcr/DCR-V12-05.md` | 反思触发器未激活（测量配置） |
+| `docs/v12/dcr/DCR-V12-06.md` | 新增默认配置键会改变全部历史指纹（实验身份） |
+| `docs/v12/ablations.md` | 三条开关消融的对照与结论 |
+| `docs/v12/gap-audit.md` | 提纲逐项状态（未做项与原因） |
+| `docs/v12/real-runs/ablation-*-runs.csv` | 消融逐局明细（6 份） |
 
 ## 截图
 
@@ -345,7 +366,7 @@ uv run python scripts/run_v12_matrix.py --supplement-of <experiment_id> --list-c
 | 成功率差异 | **是（描述性）** | 主矩阵 7/8/9；种子扩展后 MAP-16 planning 3/4、MAP-18 memory 2/5 |
 | 成本差异 | **是** | memory 最贵 0.0331，planning 0.0282，basic 0.0205（元/局） |
 | 失败原因 | **是** | 139 条证据级诊断，每条指向具体 `decision` 事件 |
-| 差异是否稳定 | **否（已量化）** | 同条件重复翻转 22.2%（2 次）/ 27.8%（3 次）；仅 planning@MAP-16 seed 1 是 3/3 |
+| 差异是否稳定 | **否（已量化）** | 同条件重复翻转 22.2%（2 次）/ 25.0%（3 次，12 组可比）；仅 planning@MAP-16 seed 1 是 3/3 |
 | MAP-22 记忆假设 | **是（机制验证）** | `route_log` 把 `route_recall` 从 0 拉到 0.45–1.0，seed 2 通关（DCR-V12-03） |
 | MAP-30 能力 | **是（部分）** | 抬预算后 4/9 走到法庭且 `ACCUSATION_REJECTED`；其余受 token/费用约束（DCR-V12-04） |
 | 可复现 | **是** | `experiment.json` 冻结矩阵与指纹（含 `runtime_version`）；可从 CSV 复算 |
@@ -353,4 +374,4 @@ uv run python scripts/run_v12_matrix.py --supplement-of <experiment_id> --list-c
 **结论**：这个判据在"能不能测出差异"这一层成立，在"差异是否稳定"这一层给出了
 **否定的答案** —— 这正是 V12 最诚实也最有用的结论：1 次/条件的设计不足以下架构结论。
 天花板（MAP-08/26）、接口假象（MAP-22 v1）、口径缺失（`route_recall`）都已排除，
-剩下的差异基本落在 22–28% 的翻转率之内；唯一穿透噪声的信号是 planning 在单图单 seed 的 3/3。
+剩下的差异基本落在 22–25% 的翻转率之内；唯一穿透噪声的信号是 planning 在单图单 seed 的 3/3。

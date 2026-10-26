@@ -1917,7 +1917,7 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 1. **DCR-V12-02 已修**：`v12-contract-2` 给出键名建议 + 研究投影后，`map22.v10.route_recall` 从 9/9 `NOT_APPLICABLE` 变为 6/9 `VALID`。
 2. **DCR-V12-03（新）**：键名修好后暴露真问题——模型只写 1–4 个方位，真实路线 22–44 步，`route_recall` 0.0–0.045。这是策略侧的跨阶段状态维护问题，不是接口问题。**加 `route_log` 消融验证**（每走 2 步写累积 `path_state`，动作不调用模型）：3 局里 `route_recall` 从 0 升到 **0.4545 / 0.75 / 1.0**，seed 2 直接通关（`wasted_moves` 34 → 8）——假设成立。
 3. **DCR-V12-04（新）**：MAP-30 的"地板"是**约束阶梯**——90 请求 → 200k 输入 token → ¥0.20 单局费用。抬到 180 请求后 **4/9 局真的走到法庭并给出 `ACCUSATION_REJECTED`**（真实机制失败）。
-4. **重复实验翻转率 22.2%（2 次观测）/ 27.8%（3 次观测）**：18 个同条件格各跑 2–3 次，5 格结局翻转。**这是本轮最重要的方法学结论**——1 次/条件的设计不足以给架构排名；任何"Memory 比 Basic 高 X%"在本样本量下都不成立。3 次观测里唯一稳定成功的是 `planning.v1` @ MAP-16 seed 1（3/3），代价是请求数约 3 倍。
+4. **重复实验翻转率 22.2%（2 次观测 4/18）/ 25.0%（3 次观测 3/12）**：18 个同条件格各跑 2–3 次；6 组 `memory.v1` 因新增默认配置键跨版本，按 DCR-V12-06 排除。**这是本轮最重要的方法学结论**——1 次/条件的设计不足以给架构排名；任何"Memory 比 Basic 高 X%"在本样本量下都不成立。3 次观测里唯一稳定成功的是 `planning.v1` @ MAP-16 seed 1（3/3），代价是请求数约 3 倍。
 
 事故与修复：种子扩展脚本一次提交两个实验导致 `ExperimentBusy` 且第一个子局被进程退出取消 → 改为串行提交 + 用补充实验重跑被取消的局（已产出一条成功记录）。另：主矩阵 `runtime_version` 为 `unset`，`--replicate-of` 正确拒绝，改用同版本的 replicate-A 作源。
 
@@ -1942,3 +1942,46 @@ Planning 配相同公开上下文；commit/push 本轮全部改动。
 累计：**20 个实验 / 159 局 / 5 641 请求 / ¥5.43680012 / 未知 ¥0**，剩余 ¥0.5632 主动保留未用。
 
 验证：1525 pytest passed、`mypy src` 306 文件 0 issues、`ruff check .` 通过、`verify_v12` 15/15、`verify_v11` 7/7、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations。
+
+## 2026-10-26 文档瘦身与口径复核（发现并修正一个统计错误）
+
+事件：用户要求"更新过时文件、精简各类文件、优化项目"。本轮只做文档与脚本层维护，**没有发出任何新的付费请求**。
+
+### 修正的过时事实
+
+| 文件 | 过时内容 | 现状 |
+|---|---|---|
+| `README.md` | "PENDING_APPROVAL，未发出任何真实请求"；pytest 1469 / mypy 303 / verify_v12 13/13 | 159 局 / ¥5.4368 已执行；1525 / 306 / 15/15 |
+| `研究总纲.md` | "LAB_1_0_OFFLINE_READY；真实矩阵 PENDING_APPROVAL"；"界面仍待 Release 3" | `LAB_1_0_READY` + 真实结果；界面已由 V11/V12 交付 |
+| `docs/scope/scope.md` | At a glance 缺 V6–V12 且 V5 仍 in-progress；§24 Batch 12 未勾；1433/302/11-11 | 表改为按版本列并补全；Batch 12 已勾；1525/306/15-15；顺手把错位的 S2.4 条目移回 V2 段 |
+| `docs/architecture.md` | "当前 MVP 闭环"仍写 Release 2 口径；缺 V8/V10 边界 | 改为当前闭环；补 V10 运行时与指标边界 |
+| `docs/v12/experiment-protocol.md` | 头部只写 71 局 ¥1.82；§2 标题"待批准"；§11 缺消融行 | 20 个实验 / 159 局 / ¥5.4368；已执行；补开关消融与 `condition_key` 说明 |
+| `docs/v12/risk-register.md` | R-01 "未获预算批准（已发生）" | 已关闭；新增 R-21…R-24 |
+| `docs/v12/release-checklist.md` | verify 11/11；"反思独立小矩阵未做"；发布动作全未勾 | 15/15；已做但触发器未激活；提交/推送已勾 |
+| `docs/current-issues.md` | "完整交互实验界面和 Reflection 仍未交付" | 更新入口段并注明正文为历史快照 |
+
+### 新增 DCR-V12-06：默认配置键会改变全部历史指纹
+
+复核重复实验时给 `summarize_v12_replicates.py` 补上真正的可比性校验，
+结果发现**此前 3 次观测的 27.8% 是错的**：其中 6 组是 `memory.v1`，而
+`route_log`（默认 `false`，行为不变）进入 `default_config` 后改变了
+`agent_config_hash` → `prompt_hash`，所以这 6 组跨版本、不可配对。
+
+修正后的口径：**2 次观测 4/18 = 22.2%；3 次观测 3/12 = 25.0%**（6 组跨版本排除）。
+结论方向不变（1 次/条件不足以为架构排名），但数字必须准确。所有文档已同步，
+`replicate-summary-{2,3}obs.txt` 已用新脚本重新生成。
+
+### 精简
+
+- 删除 `scripts/extend_v12_seeds.py`（与 `run_v12_matrix.py --maps --seeds` 完全重复，-140 行）；补 seed 的等价命令写进 `final-report.md` 的复现段。
+- 删除 6 份 `real-runs/ablation-*-report.md`（约 48 KB，内容与 `ablations.md` 重复），保留逐局 CSV；报告可 `lab.export` 重新生成。
+- 新增 `docs/v12/README.md` 作为 13 份文档的唯一入口（按目的选文件），避免"每次读全部"。
+- `progress.md` 末尾与 `gap-audit.md` 重复的表格压缩成 6 行指针。
+
+### 代码层
+
+- `scripts/run_v12_ablations.py`：dry-run 不再创建实验目录（此前预检会留下 6 个 CREATED 空壳）。
+- `scripts/summarize_v12_replicates.py`：真正实现 docstring 承诺的可比性校验（`prompt_hash` + 单局预算），并修掉一个把两件事塞进同一函数的 helper。
+- `ExperimentService.spec()`：新增公开只读入口，脚本不再调用私有 `_spec`。
+
+验证：1525 pytest passed、mypy 306 文件 0 issues、ruff clean、`verify_v12` 15/15、`verify_v11` 7/7、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`git diff --check` 通过。

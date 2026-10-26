@@ -1,8 +1,8 @@
 # V12 实验协议（预登记）
 
-- **状态**：矩阵与门禁已冻结；**真实执行已完成**（Pilot 6 局 + 主矩阵 54 局 + 版本复跑 9 局，结算 ¥1.82140020）
-- **schema**：`v12-lab-1`
-- **登记日期**：2026-10-25
+- **状态**：矩阵与门禁已冻结；**真实执行已完成**（20 个实验 / 159 局 / 5 641 请求，结算 ¥5.43680012，未知消费 ¥0）
+- **schema**：`v12-lab-1`（运行时版本 `v12-lab-1+agent_policy_v1+v12-contract-2`）
+- **登记日期**：2026-10-25（执行与衍生实验至 2026-10-26）
 - **对应代码**：`src/agent_arena/lab/contracts.py`（`ExperimentSpec`）、`lab/experiment.py`（`preflight`）
 
 ## 1. 研究问题
@@ -17,7 +17,7 @@
 - 不宣称"架构更好"，只报告可复核的差异与代价；
 - 3 seed 不是统计显著性检验。
 
-## 2. 主矩阵（54 局，待批准）
+## 2. 主矩阵（54 局，已执行）
 
 | 维度 | 取值 |
 |---|---|
@@ -146,11 +146,14 @@ runs/web/<run_id>/    # V11 子局结构（新增可选 provenance 字段）
 
 - [x] 用户书面批准费用上限（`LiveApproval.approved=true` + `approved_by` + `max_cost_cny=6.00`）；
 - [x] 先跑 6 局 Pilot，覆盖 Basic/Memory/Planning 与两图；
-- [x] Pilot 通过后跑 54 局主矩阵（6 图 × 3 seed × 3 架构）；
-- [x] 发现 DCR-V12-01 后，用**版本复跑**重测 MAP-22 九局（不与旧版本配对）；
-- [x] 未超预算：结算 ¥1.82140020 / 批准 ¥6.00；未知消费 ¥0。
+- [x] Pilot 通过后跑 54 局主矩阵（6 图 × 3 seed × 3 架构），有效分母 53，成功 24；
+- [x] 发现 DCR-V12-01 后用**版本复跑**重测 MAP-22 九局；DCR-V12-02 对齐口径后再复跑九局（均不与旧版本配对）；
+- [x] MAP-30 做两档**预算扩展**（180 请求 / 600k 输入 token），把"没测完"与"真失败"分开；
+- [x] 补登记 seed（MAP-16 seed 3、MAP-18 seed 3/4）并做两次**重复实验**（36 局）量化波动；
+- [x] 附加对照：`route_log` 路线日志消融（3 局）与 Memory/Planning/Reflection 三条开关消融（12 局）；
+- [x] 未超预算：结算 ¥5.43680012 / 批准 ¥6.00；未知消费 ¥0；剩余 ¥0.5632 主动保留。
 
-状态：**已完成**。明细见 `mimo-results.md` 与 `dcr/DCR-V12-01.md`、`dcr/DCR-V12-02.md`。
+状态：**已完成**。汇总见 `mimo-results.md`，消融见 `ablations.md`，缺陷见 `dcr/DCR-V12-01…06.md`，未做项见 `gap-audit.md`。
 
 ## 11. 版本与复跑口径
 
@@ -159,9 +162,15 @@ runs/web/<run_id>/    # V11 子局结构（新增可选 provenance 字段）
 | 续跑（进程中断/未执行） | `--resume <id>` | 无 | 否 | 是（同版本） |
 | 补充实验（失败/未执行/取消） | `--supplement-of <id>` | 无（只挑条件） | 否 | 是（同版本） |
 | 版本复跑（契约/提示变更后重测） | `--rerun-of <id> --conditions ...` | 运行时版本 | **是** | **否**（`prompt_hash` 已变） |
-| 预算扩展（解除截尾） | `--budget-ext-of <id> --ext-requests N` | 预算 | **是** | **否**（预算不同） |
+| 预算扩展（解除截尾） | `--budget-ext-of <id> --ext-requests N --ext-input-tokens M` | 预算 | **是** | **否**（预算不同） |
 | 重复（测量波动） | `--replicate-of <id> --conditions ...` | 什么都不改 | **是** | **否**（独立实验，同条件） |
+| 开关消融（memory/planning/reflection on-off） | `scripts/run_v12_ablations.py` | 单个 `enabled` 开关 | **是** | **否**（独立实验；按 `(map, seed)` 跨实验对齐） |
 
-五条路径都新建独立实验、都不修改源实验的 manifest/账本/run 记录。
+五条 CLI 路径都新建独立实验、都不修改源实验的 manifest/账本/run 记录。
 实验身份包含 `runtime_version`（`v12-lab-1+agent_policy_v1+v12-contract-N`），
 因此"改完代码复跑"不会静默命中旧实验。
+
+**开关消融为什么不能放进同一实验**：`condition_key` 是 `map|seed|agent`，不含
+`agent_config_hash`。"同 agent、不同 config"的两个臂会撞同一个键，被当作重复条件。
+所以每个开关各建一个实验，配对时按 `(map, seed)` 跨实验对齐；这些实验的
+`runtime_version` 完全相同，唯一差异就是被消融的开关。

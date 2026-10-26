@@ -29,13 +29,13 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 | `src/agent_arena/web/` | V11 服务层：RunService、持久化、预算、catalog、导出、自检；不依赖 Streamlit | Streamlit 渲染、地图规则 |
 | `src/agent_arena/lab/` | V12 Lab：策略契约与注册表、受控模型网关、单局 Runner、父实验与队列、配对比较、证据级诊断、六图 view-model、导出与报告、SDK | 修改 V10 规则、直接调 Provider、读写 V8/V9/V10 账本 |
 
-## 当前 MVP 闭环
+## 当前闭环
 
-1. 用公开工具手动完成十个世界的三十张难度图。
-2. 用环境规则测试固定该世界行为。
-3. 接入 ReactAgent，运行受步数限制的 Agent Loop。
-4. 保存 JSON Episode Trace。
-5. 输出基础指标；MemoryAgent 和 benchmark 对比属于 Release 2。
+1. 用公开工具手动完成十世界三十图（V10 起为 30 张原生运行时）。
+2. 用环境规则测试固定该世界行为；V10 起有 154+172 条指标与公式级复算。
+3. 接入 Agent（Legacy React/Memory/Planning，或 V12 `basic/memory/planning/reflection`），运行受预算限制的循环。
+4. 保存 JSON Episode Trace 与 `result.json`。
+5. 离线复算指标、配对对照与失败归因；V11 网页可启动/回放/导出单局，V12 Lab 可跑多架构矩阵。
 
 ## 稳定契约
 
@@ -92,7 +92,14 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 - V9 不修改 `worlds/scenario_v8/`、V4 适配层、V7 extractor 或 V8 账本；公开信息补充只存在于 `v9/prompts.py` 的 `v9_fixed` 臂，`v8_compat` 臂与 V8 prompt 逐字一致。
 - `v9/metrics.py` 按 V7 登记的 censor 规则重新投影 `decision_budget_reached`；`v9/metric_overlay.py` 新增/修正有证据的指标，旧值保留在 `runs/v9/rescore/`。
 - `v9/budget.py` 是独立 append-only 账本（¥10 硬上限、请求前预留、unknown spend 封账）；`v9/runner.py` 记录 `arm`、`prompt_hash`、`overlay_schema_hash`，与 V8 结果分开报告。
-- 30 份逐图审计在 `docs/v9/maps/`，DCR 在 `docs/v9/dcr/`；`human_approved` 只能由用户确认，执行 Agent 只标 `agent_reviewed`。
+- 30 份逐图审计在 `docs/v9/maps/`，DCR 在 `docs/v9/dcr/`；`human_approved` 只能由用户确认，执行 Agent 只标 `agent_reviewed`。V8 的 `worlds/scenario_v8/` 与 `v8/` 层同理保持只读。
+
+## V10 运行时与指标层边界
+
+- `src/agent_arena/v10/` 是 30 图原生运行时与冻结指标层：`runtime/` 保存逐图环境与类型化公开动作契约，`metrics/` 保存 154 旧 + 172 新指标，`freeze.py`/`recompute.py`/`independent_check.py` 提供冻结与两套独立复算。
+- 每张图的 `create_environment(map_id)` 是唯一入口；Agent 只能拿到公开 Observation，动作必须通过该图的 `accepts`/`step`。
+- V10 账本与冻结 manifest 是只读历史资产：新增实验只能另开目录与命名空间（V11 `runs/web/`、V12 `runs/lab/`），不得回写。
+- V12 研究投影指标放在 `lab/metrics_v12.py` 的 `v12.projection.*` 命名空间，与 `map*.v10.*` 并列导出，不覆盖、不并入 V10 均值。
 
 ## 更新规则
 
