@@ -38,6 +38,7 @@ from agent_arena.lab.gateway import (
     GatewayBudgetExceeded,
     GatewayProviderError,
 )
+from agent_arena.lab.metrics_v12 import project_metrics
 from agent_arena.lab.policies.base import call_hook, normalize_decision
 from agent_arena.lab.registry import get_agent
 from agent_arena.v10.baselines.runner import REJECT_MARKERS
@@ -181,6 +182,9 @@ def run_lab_episode(
     history: list[PublicActionResult] = []
     step_events: list[dict[str, Any]] = []
     agent_events: list[dict[str, Any]] = []
+    #: 公开的被接受 move 方位序列（用于 V12 投影指标，不含隐藏真值）。
+    public_route: list[str] = []
+    final_notes: list[dict[str, Any]] = []
     starting_observation = PublicObservation.from_environment(environment.observe())
     decisions = invalid = rejected = 0
     invalid_streak = reject_streak = 0
@@ -268,11 +272,16 @@ def run_lab_episode(
                 reject_streak += 1
             else:
                 reject_streak = 0
+                if action.tool == "move" and isinstance(action.bearing, str):
+                    public_route.append(action.bearing)
             invalid_streak = 0
             entry = action.model_dump(mode="json", exclude_none=True)
 
         decisions += 1
         observation_after = PublicObservation.from_environment(environment.observe())
+        raw_notes = observation_after.as_dict().get("agent_notes")
+        if isinstance(raw_notes, list):
+            final_notes = [dict(item) for item in raw_notes if isinstance(item, dict)]
         outcome_record = PublicActionResult(
             decision_index=decisions,
             action=entry,
@@ -410,6 +419,9 @@ def run_lab_episode(
         "contract_augmentation": provenance_block(contract_hints),
     }
     payload["agent_events"] = agent_events
+    payload["metrics_v12"] = project_metrics(
+        config.map_id, notes=final_notes, route=public_route
+    )
     payload["attribution"] = attribute_steps(
         config.map_id,
         step_events,

@@ -7,6 +7,7 @@
 - 地图：MAP-08, MAP-16, MAP-18, MAP-22, MAP-26, MAP-30
 - 环境 seed：[0, 1, 2]
 - 实验臂：basic.v1, memory.v1, planning.v1
+- 运行时版本：`unset`
 - 子局：54 / 54（未执行 0）
 
 ## 1. 问题与实验矩阵
@@ -177,6 +178,13 @@
 | planning.v1 | `map30.v10.q4_recall_accuracy` | secondary | CENSORED×3 | — | — |
 | planning.v1 | `map30.v10.unsupported_accusations` | guardrail | VALID×3 | 0.3333 | — |
 | planning.v1 | `map30.v10.window_pressure_events` | diagnostic | VALID×3 | 0 | — |
+
+
+### 指标命名空间
+
+- `v10`：V10 冻结指标，历史可比；V12 不改其公式或取值。
+- `v12.projection`：V12 研究投影（当前仅 MAP-22 `route_recall`），键名宽容、
+  用于弥补公开信息缺口；**不与 v10 混算**，也不写入任何账本。
 
 ## 6. 代表性轨迹与证据
 

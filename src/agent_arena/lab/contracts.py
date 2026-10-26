@@ -260,6 +260,9 @@ class ExperimentSpec(BaseModel):
     #: 补充实验的来源：原始 `experiment_id`；普通实验为 None。
     supplement_of: str | None = Field(default=None, max_length=80)
     supplement_reason: str = Field(default="", max_length=600)
+    #: 代码/契约版本指纹（由服务层写入当前值）；参与实验身份，避免"改完代码复跑
+    #: 却命中旧实验"。
+    runtime_version: str = Field(default="unset", max_length=120)
 
     # ---------------------------------------------------------------- validators
     @field_validator("maps")
@@ -380,6 +383,7 @@ class ExperimentSpec(BaseModel):
                 "comparison": self.comparison.as_dict(),
                 "only_conditions": sorted(self.only_conditions),
                 "supplement_of": self.supplement_of,
+                "runtime_version": self.runtime_version,
             }
         )
 

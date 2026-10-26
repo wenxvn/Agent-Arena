@@ -1,9 +1,9 @@
 # V12 最终报告：Agent Arena Lab 1.0
 
-- **结论**：`LAB_1_0_READY`（P0 + P1 + P2 全部交付，真实模型矩阵已执行）
-- **真实付费实验**：**已获用户授权并完成** —— Pilot 6 局 + 主矩阵 54 局 + 契约修复复跑 9 局，
-  合计 **CNY ¥1.82140020**，**0 未知消费**，未超 ¥6.00 批准上限
-- **执行日期**：2026-10-25
+- **结论**：`LAB_1_0_READY`（P0 + P1 + P2 全部交付；真实模型矩阵已执行）
+- **真实付费实验**：**已获用户授权并完成** —— 12 个实验、**125 局**、
+  **CNY ¥4.92471204**、**0 未知消费**、未超 ¥6.00 批准上限
+- **执行日期**：2026-10-25 / 2026-10-26
 - **起始 HEAD**：`258eadc5039309859fc0385d61650e266e6ab488`
 - **平台**：Windows 11 实测；Ubuntu 由 CI 覆盖；macOS / Ollama 按用户指示暂缓
 - **未改动**：V8/V9/V10 冻结规则、账本、历史 trace；V11 单局语义
@@ -12,6 +12,15 @@
 
 用户可以用**相同模型、相同地图、相同环境 seed、明示预算**比较不同 Agent 架构，
 并得到可追溯的失败诊断、交互可视化与可导出报告。
+
+除主流程外，还交付了四类**衍生实验**（都新建独立实验、都不动原实验）：
+
+| 类型 | 用途 | 触发条件 |
+|---|---|---|
+| 补充（supplement） | 补齐分母 | 中断 / Provider 错误 / 未知消费 / 取消 / 未执行 |
+| 版本复跑（version rerun） | 换契约/提示后重测 | 修好接口缺陷 |
+| 预算扩展（budget extension） | 解除截尾 | 请求/token/费用任一触顶 |
+| 重复（replicate） | 测量抽样波动 | 需要判断差异是否稳定 |
 
 ### 一条运行链路
 
@@ -87,16 +96,22 @@ V12 result + provenance + agent_events（兼容 V11 manifest/events/result）
 
 ## RESULT：实测结果
 
-### 真实模型（MiMo，2026-10-25）
+### 真实模型（MiMo，2026-10-25/26）
 
-| 实验 | 局数 | 状态 | 请求 | 结算 CNY | 未知消费 |
-|---|---:|---|---:|---:|---:|
-| Pilot | 6 | COMPLETED | 131 | 0.09949940 | 0 |
-| 主矩阵 v1（六图 × 3 seed × 3 架构） | 54 | COMPLETED | 1 507 | **1.47181116** | 0 |
-| MAP-22 契约修复复跑 | 9 | COMPLETED | 424 | 0.21606796 | 0 |
-| 补充（取消局） | 1 | COMPLETED | 41 | 0.03376040 | 0 |
-| 早期探针 | 1 | COMPLETED | — | 0.00026128 | 0 |
-| **合计** | **71** | — | **2 103** | **1.82140020** | **0** |
+| 实验 | 局数 | 成功 | 机制失败 | 截尾 | 取消 | 请求 | 结算 CNY |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Pilot | 6 | 3 | 0 | 3 | 0 | 131 | 0.09949940 |
+| 主矩阵 v1（六图 × 3 seed × 3 架构） | 54 | 24 | 19 | 10 | 1 | 1 507 | **1.47181116** |
+| MAP-22 契约修复（`contract-1`） | 9 | 4 | 5 | 0 | 0 | 424 | 0.21606796 |
+| MAP-22 口径对齐（`contract-2`） | 9 | 0 | 9 | 0 | 0 | 493 | 0.23872508 |
+| MAP-30 预算扩展（180 请求） | 9 | 0 | 4 | 5 | 0 | 935 | 1.09918720 |
+| MAP-30 token 扩展（600k） | 9 | 0 | 2 | 7 | 0 | 1 269 | 1.49856088 |
+| MAP-16 seed 3 | 3 | 0 | 2 | 0 | 1 | 7 | 0.00632096 |
+| MAP-16 seed 3（补充） | 1 | 1 | 0 | 0 | 0 | 15 | 0.00846188 |
+| MAP-18 seed 3、4 | 6 | 3 | 3 | 0 | 0 | 57 | 0.07019220 |
+| 重复实验（MAP-16/18 × 3 seed） | 18 | 4 | 14 | 0 | 0 | 224 | 0.21588532 |
+| 探针（不参与分析） | 1 | 0 | 0 | 1 | 0 | 1 | 0.00026128 |
+| **合计** | **125** | **39** | **58** | **26** | **2** | **5 062** | **4.92471204** |
 
 主矩阵结果（每条件 1 局，描述性）：
 
@@ -106,53 +121,64 @@ V12 result + provenance + agent_events（兼容 V11 manifest/events/result）
 | `memory.v1` | 18 | 17 | 8 | 0.471 | 27.4 | 27.4 | 0.0331 | 85 | 0 |
 | `planning.v1` | 18 | 18 | 9 | 0.500 | 24.7 | 26.1 | 0.0282 | 20 | 1 |
 
-**逐图**：
+**逐图（合并种子扩展后）**：
 
 | 地图 | basic | memory | planning | 判定 |
 |---|---|---|---|---|
 | MAP-08 | 3/3 | 3/3 | 3/3 | 天花板（测不出差异） |
-| MAP-16 | 0/3 | 0/3 | **2/3** | 有梯度，planning 请求 3 倍 |
-| MAP-18 | 0/3 | **2/3** | 0/3 | 有梯度，方向与 MAP-16 相反 |
+| MAP-16 | 0/4 | 0/4 | **3/4** | 唯一正向梯度；planning 请求约 3 倍 |
+| MAP-18 | 0/4 | **2/5** | 0/5 | 有梯度，方向与 MAP-16 相反 |
 | MAP-22 | 1/3 | 0/3 | 1/3 | **接口假象**（DCR-V12-01），作废 |
 | MAP-26 | 3/3 | 3/3 | 3/3 | 天花板 |
-| MAP-30 | 0/3 | 0/3 | 0/3 | 地板 + 8 局截尾 |
+| MAP-30 | 0/3 | 0/3 | 0/3 | 截尾；扩展后见下 |
 
-**不做显著性断言**：18 局、每条件 1 局、3 seed；成功率 7/8/9 的差异不足以支持
-"某架构更好"。可说的是**代价结构**：memory 平均最贵（记忆注入抬高输入 token 而请求数不变），
+**不做显著性断言**。而且有一条更硬的证据：**同条件重复实验的结局翻转率 22.2%**
+（18 个条件各跑两次，4 个翻转）。在这些图上，单个条件的 1 次运行不足以判断
+架构优劣。
+
+可说的是**代价结构**：memory 平均最贵（记忆注入抬高输入 token 而请求数不变），
 planning 额外 Planner 请求可见但总费用低于 memory，planning 的被拒动作最少。
 
-### 一个真实的接口缺陷（发现 → 定位 → 修复 → 复测）
+### 三个真实测量缺陷（发现 → 定位 → 修复 → 复测）
 
-主矩阵暴露出 MAP-22 的 `write_memory` **96.2% 被拒**（175/182，`INVALID_MEMORY_PAYLOAD`）。
-根因：公开契约把 `facts: list[dict]` 渲染成 `[{"<key>": <value>}]`，只说明"是字典"，
-没说明必须恰好是 `{"key": str, "value": str}`。模型写出语义正确、结构不合规的内容。
+**DCR-V12-01（接口）**：MAP-22 的 `write_memory` **96.2% 被拒**（175/182，
+`INVALID_MEMORY_PAYLOAD`）。根因：公开契约把 `facts: list[dict]` 渲染成
+`[{"<key>": <value>}]`，没说明必须恰好是 `{"key": str, "value": str}`。
+修复：`lab/contract_v12.py`（`v12-contract-1`）只对含 `facts` 的图追加精确形状说明，
+写入 provenance，改变 `prompt_hash` → 跨版本不配对；V10/V11 与环境校验不动。
+复测：拒绝率 **96.2% → 0%**。
 
-- 记为 **DCR-V12-01**（接口假象，非能力差异）；
-- 修复：`lab/contract_v12.py`（`v12-contract-1`）只对含 `facts` 的图追加精确形状说明，
-  写入 `provenance.contract_augmentation`，改变 `prompt_hash` → 跨版本不配对；
-  **V10/V11 与环境校验一律不动**；
-- 复测：拒绝率 **96.2% → 0%**，MAP-22 成功 2/9 → 4/9；
-- 残余问题：`route_recall` 仍全为 `NOT_APPLICABLE`，因为模型用的键名（`at_sign` /
-  `came_from` / `path_to_here`）不在指标口径（`bearing` / `path_state`）内 →
-  **DCR-V12-02**。结论：**MAP-22 的"记忆是否减少迷路"本轮仍不可回答**。
+**DCR-V12-02（口径）**：`route_recall` 只读 `key ∈ {bearing, path_state}`，
+公开规则没表达。修复：`v12-contract-2` 给出键名建议 + 新增
+`v12.projection.route_recall`（键名宽容的**研究投影**，独立命名空间）。
+复测：`map22.v10.route_recall` 首次变成 `VALID`（6/9）。
 
-### 一次真实事故（进程被杀）
+**DCR-V12-03（策略）**：键名修好之后暴露的真问题——模型只写 **1–4** 个方位，
+而真实路线 **22–44** 步，`route_recall` 只有 0.0–0.045。这不是接口问题，
+是"跨阶段状态维护"能力本身的表现。结论：**MAP-22 的记忆假设得到可测量的负结果**。
 
-主矩阵首跑时 CLI 默认等待 1800 秒，54 局跑不完 → 进程退出 → 执行线程被杀，
-留下 1 个孤儿 `QUEUED` 子局，而真实 run 已被收尾为 `CANCELLED`。修复：
+**DCR-V12-04（预算）**：MAP-30 的"地板"其实是**约束阶梯**——
+90 请求 → 200k 输入 token → ¥0.20 单局费用，每抬一档就换一个瓶颈。
+抬到 180 请求后 **4/9 局真的走到法庭并给出 `ACCUSATION_REJECTED`**，
+这是真实机制失败，不是"没测完"。
 
-- `_reconcile_children()` 以磁盘 run manifest 为准刷新父实验链接；
-- `--timeout` 默认 0（等到终态），新增 `--resume` / `--rerun-of`；
-- 回归测试 `test_stale_child_link_is_reconciled_from_real_run_state`；
-- 用 `--resume` 补齐剩余 19 局，最终 54/54，无重复计费。
+### 三次真实事故（均已修复并有回归测试）
+
+1. CLI 默认 1800s 超时 → 进程退出 → 执行线程被杀 → 孤儿 `QUEUED` 子局：
+   `_reconcile_children` 以磁盘 run 为准 + `--timeout 0` + `--resume`；
+2. 扩展脚本一次提交两个实验 → `ExperimentBusy` + 第一个子局被取消：
+   改为串行提交，用 `supplement` 重跑被取消的局；
+3. **改完契约后 `--rerun-of` 静默返回旧实验**（幂等键不含代码版本）：
+   `ExperimentSpec.runtime_version` 参与指纹，回归测试
+   `test_runtime_version_is_part_of_experiment_identity`。
 
 ### 质量门禁（Windows 11，全部实跑）
 
 | 命令 | 结果 |
 |---|---|
 | `uv run ruff check .` | All checks passed |
-| `uv run mypy src` | 304 文件 0 issues |
-| `uv run pytest -q` | **1487 passed** |
+| `uv run mypy src` | 306 文件 0 issues |
+| `uv run pytest -q` | **1510 passed** |
 | `uv run uv lock --check` | 无变更 |
 | `git diff --check` | 无输出 |
 | `v10.freeze verify` | **9/9 unchanged** |
@@ -162,7 +188,7 @@ planning 额外 Planner 请求可见但总费用低于 memory，planning 的被�
 | `scripts/verify_v12.py` | **15/15** |
 | `scripts/a11y_v12.py --browser --start` | 0 critical / 0 serious / 0 moderate |
 | `scripts/e2e_web.py --start` | 通过（15 步，24 751 B） |
-| `scripts/e2e_lab.py --start` | 通过（父实验 COMPLETED，报告 7 921 B） |
+| `scripts/e2e_lab.py --start` | 通过（父实验 COMPLETED，报告 8 157 B） |
 
 ### 可访问性（新增自动审计）
 
@@ -188,11 +214,12 @@ planning 额外 Planner 请求可见但总费用低于 memory，planning 的被�
 
 | 项 | 状态 | 说明 |
 |---|---|---|
-| MAP-22 记忆假设 | **不可回答** | 契约修复后拒绝率归零，但 `route_recall` 仍 N/A（DCR-V12-02）；需 V13 决策 |
+| MAP-22 记忆假设 | **可测量的负结果** | 接口与口径已修好；模型只写 1–4 个方位而路线 22–44 步，`route_recall ≈ 0`（DCR-V12-03） |
+| MAP-16 / MAP-18 | 有梯度但**翻转率 22%** | 同条件重复 4/18 翻转；单次运行不足以排架构名次 |
 | MAP-08 / MAP-26 | 天花板 | 三臂 9/9 成功，测不出架构差异 |
-| MAP-30 | 地板 + 截尾 | 0/9，8 局在 90 请求内未到法庭提交；需更高预算的独立实验 |
+| MAP-30 | 约束阶梯 | 90 请求 → 200k token → ¥0.20 费用；抬到 180 请求后 4/9 走到法庭且 `ACCUSATION_REJECTED`（真失败） |
 | 反思独立小矩阵 | NOT_RUN | 需单独预算批准；未混入主矩阵 |
-| 样本量 | 描述性 | 每条件 1 局、3 seed；不作显著性断言 |
+| 样本量 | 描述性 | 主矩阵每条件 1 局 + 重复实验 1 次；不作显著性断言 |
 | macOS 实机 | 按用户指示暂缓 | `NOT_VERIFIED` |
 | Ollama 实机 | 按用户指示暂缓 | `NOT_VERIFIED` |
 | Provider 账单对账 | 未做 | 本地按登记价目与返回 usage 计算；未与 Provider 后台对账 |
@@ -215,13 +242,14 @@ planning 额外 Planner 请求可见但总费用低于 memory，planning 的被�
 
 ## NEXT（只列最优先 5 项）
 
-1. **DCR-V12-02 决策**：MAP-22 的 `route_recall` 口径与公开信息对齐（新增版本命名空间，
-   不覆盖 V10 历史值）；对齐后重跑 MAP-22 才能回答记忆假设。
-2. **MAP-30 提高预算重测**：当前 0/9 且 8 局截尾，是"没测完"而不是"做不到"；
-   需要 ≥200 请求/局的独立实验。
-3. **增加重复次数**：对有梯度的 MAP-16 / MAP-18 各加 2–3 个 replicate，才可能谈稳定性。
-4. **macOS / Ollama 实机**：按用户指示暂缓，恢复后跑 `verify_v12.py` + 网页冒烟。
-5. **Provider 账单对账**：把本地登记价目估算与 Provider 后台账单核对一次。
+1. **重复实验扩到 3 次/条件**：当前翻转率 22.2%（18 组中 4 组翻转），
+   要把"架构差多少"变成可信结论，至少需要 3 次重复才能估计区间。
+2. **MAP-22 的路线日志策略**：`memory.v1` 增加可选的"按步追加 bearing"能力
+   （策略变量，非环境改动），再测 `route_recall` 与 `wasted_moves`。
+3. **MAP-30 三档预算固定**：≥180 请求 + ≥600k 输入 token + ≥¥0.25/局，
+   并把"约束阶梯"写进预算预检提示（预计可跑回合数）。
+4. **Provider 账单对账**：把本地估算与后台账单核对一次。
+5. **macOS / Ollama 实机**：按用户指示暂缓，恢复后跑 `verify_v12.py` + 网页冒烟。
 
 ## 复现方式
 
@@ -257,14 +285,21 @@ uv run python scripts/run_v12_matrix.py --supplement-of <experiment_id> --list-c
 
 | 文件 | 内容 |
 |---|---|
-| `docs/v12/real-runs/main-54-report.md` | 54 局主矩阵的可读报告 |
-| `docs/v12/real-runs/main-54-runs.csv` | 54 行逐局明细（含 run_id / 类别 / 费用 / hash） |
+| `docs/v12/real-runs/main-54-report.md` / `-runs.csv` | 主矩阵 54 局报告与逐局明细 |
 | `docs/v12/real-runs/main-54-paired.csv` | 配对对照（含 verdict 与不可比原因） |
-| `docs/v12/real-runs/map22-contract-fixed-report.md` | DCR-V12-01 修复后的 9 局报告 |
-| `docs/v12/real-runs/pilot-report.md` | Pilot 6 局报告 |
+| `docs/v12/real-runs/map22-contract-fixed-report.md` | DCR-V12-01 修复后（`contract-1`）9 局 |
+| `docs/v12/real-runs/map22-contract2-report.md` / `-runs.csv` | DCR-V12-02 口径对齐（`contract-2`）9 局 |
+| `docs/v12/real-runs/map30-budget180-report.md` / `-runs.csv` | MAP-30 预算扩展（180 请求） |
+| `docs/v12/real-runs/map30-token600k-report.md` / `-runs.csv` | MAP-30 token 扩展（600k） |
+| `docs/v12/real-runs/replicate-16-18-report.md` / `-runs.csv` | 重复实验 18 局 |
+| `docs/v12/real-runs/replicate-summary.txt` | 翻转率统计（22.2%） |
+| `docs/v12/real-runs/map18-seed3-4-report.md` / `-runs.csv` | MAP-18 新 seed 覆盖 |
+| `docs/v12/real-runs/pilot-report.md` | Pilot 6 局 |
 | `docs/v12/mimo-results.md` | 汇总、逐图结论、成本与事故记录 |
-| `docs/v12/dcr/DCR-V12-01.md` | `facts` 契约缺陷 |
-| `docs/v12/dcr/DCR-V12-02.md` | `route_recall` 口径缺陷 |
+| `docs/v12/dcr/DCR-V12-01.md` | `facts` 契约缺陷（接口） |
+| `docs/v12/dcr/DCR-V12-02.md` | `route_recall` 键名口径缺陷（口径） |
+| `docs/v12/dcr/DCR-V12-03.md` | 记忆序列过短（策略） |
+| `docs/v12/dcr/DCR-V12-04.md` | 长观测地图的 token 瓶颈（预算） |
 
 ## 截图
 
@@ -287,13 +322,15 @@ uv run python scripts/run_v12_matrix.py --supplement-of <experiment_id> --list-c
 | 问题 | 本轮是否回答 | 依据 |
 |---|---|---|
 | 行为差异 | **是** | `pairwise_diff` 给出首次差异步 + 锚点 + 指标增量 |
-| 成功率差异 | **是（描述性）** | 7/8/9 局，18 局样本，3 seed |
+| 成功率差异 | **是（描述性）** | 主矩阵 7/8/9；种子扩展后 MAP-16 planning 3/4、MAP-18 memory 2/5 |
 | 成本差异 | **是** | memory 最贵 0.0331，planning 0.0282，basic 0.0205（元/局） |
 | 失败原因 | **是** | 139 条证据级诊断，每条指向具体 `decision` 事件 |
-| MAP-22 记忆假设 | **否** | 契约修复后仍受 DCR-V12-02 阻塞（键名口径） |
-| MAP-30 能力 | **否** | 8/9 局截尾，属于"没测完"而非"做不到" |
-| 可复现 | **是** | `experiment.json` 冻结矩阵与指纹；`summary.json` 可从 `runs.csv` 独立复算 |
+| 差异是否稳定 | **否（已量化）** | 同条件重复 4/18 翻转（22.2%）；**单次运行不足以排名** |
+| MAP-22 记忆假设 | **是（负结果）** | 接口与口径修好后 `route_recall ≈ 0`：写入量远小于路线长度（DCR-V12-03） |
+| MAP-30 能力 | **是（部分）** | 抬预算后 4/9 走到法庭且 `ACCUSATION_REJECTED`；其余受 token/费用约束 |
+| 可复现 | **是** | `experiment.json` 冻结矩阵与指纹（含 `runtime_version`）；可从 CSV 复算 |
 
-**结论：判据在"可比较的图"上成立**（MAP-16 / MAP-18 有梯度、MAP-08 / MAP-26 天花板、
-成本结构清楚）；在 MAP-22 与 MAP-30 上不成立，但原因已被证据定位到具体的接口/预算问题，
-不是含糊的"模型不行"。这是本轮最重要的诚实结论。
+**结论**：这个判据在"能不能测出差异"这一层成立，但在"差异是否稳定"这一层给出了
+**否定的答案** —— 而这正是 V12 最诚实、也最有用的结论：当前的 1 次/条件设计
+不足以下架构结论；需要重复实验。天花板（MAP-08/26）与接口假象（MAP-22 v1）
+已经排除，剩下的差异都落在翻转率之内。

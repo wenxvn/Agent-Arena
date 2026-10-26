@@ -40,6 +40,7 @@ CATEGORY_LABELS: dict[str, str] = {
     "memory_not_used": "未使用公开记忆通道",
     "memory_payload_rejected": "记忆载荷结构不合规（接口问题）",
     "memory_key_not_in_metric": "记忆键名不在指标口径内（口径问题）",
+    "memory_sequence_short": "记忆里的路线序列过短（策略问题）",
     "blind_swap": "未诊断就换件",
     "unsupported_accusation": "证据链不完整就指控",
     "not_enough_evidence": "证据不足",
@@ -483,7 +484,12 @@ def _map22(steps: list[dict[str, Any]], run_id: str, result: dict[str, Any]) -> 
     accepted_writes = [
         step for step in writes if not _negative(str(step.get("result") or ""))
     ]
-    bearing_notes = 0
+    moves = [
+        step
+        for step in steps
+        if _tool(step) == "move" and not _negative(str(step.get("result") or ""))
+    ]
+    route_length = len(moves)
     metric_keys = 0
     rejected_payload = 0
     for step in writes:
@@ -496,8 +502,13 @@ def _map22(steps: list[dict[str, Any]], run_id: str, result: dict[str, Any]) -> 
                 continue
             key = fact.get("key")
             if key in {"bearing", "path_state"}:
-                bearing_notes += 1
                 metric_keys += 1
+                # `path_state` 一条可含多个方位（逗号分隔），按方位数计。
+                value = fact.get("value")
+                if isinstance(value, str):
+                    metric_keys += sum(
+                        1 for item in value.split(",") if item.strip()
+                    ) - 1
     if rejected_payload:
         findings.append(
             _finding(
@@ -556,6 +567,28 @@ def _map22(steps: list[dict[str, Any]], run_id: str, result: dict[str, Any]) -> 
                     "（逗号分隔的方位序列）。"
                 ),
                 confidence_scope="metric_coverage_not_behavior",
+            )
+        )
+    elif route_length and metric_keys < max(3, route_length // 2):
+        # 键名合规，但写入的方位数量远少于真实移动数 → "记了但太短"（DCR-V12-03）。
+        findings.append(
+            _finding(
+                category="memory_sequence_short",
+                severity="warning",
+                map_id="MAP-22",
+                run_id=run_id,
+                summary=(
+                    f"记忆里只有 {metric_keys} 个方位，而本局走了 {route_length} 步；"
+                    "路线日志不完整，返程无法只靠记忆复现。"
+                ),
+                steps=[int(step.get("decision_index") or 0) for step in accepted_writes[:5]],
+                detail=(
+                    "键名已在指标口径内（bearing / path_state），因此这是策略侧的"
+                    "跨阶段状态维护问题，不是接口问题（DCR-V12-03）。"
+                ),
+                suggested_check=(
+                    "对照按步追加 bearing 的记忆策略，看 route_recall 与 wasted_moves 是否改善。"
+                ),
             )
         )
     if _tool(steps[0]) == "return_to_camp" and not result.get("success"):

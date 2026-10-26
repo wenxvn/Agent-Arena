@@ -103,6 +103,100 @@ def _wait(service: ExperimentService, experiment_id: str, timeout: float) -> Any
         time.sleep(interval)
 
 
+def _replicate(args: argparse.Namespace) -> int:
+    """重复实验：同版本同配置再跑一次指定条件。"""
+
+    if not args.conditions:
+        print("--replicate-of 需要 --conditions。", file=sys.stderr)
+        return 2
+    runs = RunService(WEB_RUNS, recover=False)
+    service = ExperimentService(LAB_RUNS, run_service=runs, recover=False)
+    try:
+        experiment_id = service.create_replicate(
+            args.replicate_of,
+            conditions=list(args.conditions),
+            reason=args.notes,
+            name=args.name if args.name != "cli-matrix" else None,
+        )
+        print(json.dumps({"replicate_experiment_id": experiment_id}, ensure_ascii=False, indent=1))
+        if not args.submit:
+            print("仅创建；加 --submit 才会入队。")
+            return 0
+        service.submit(experiment_id)
+        manifest = _wait(service, experiment_id, args.timeout)
+        summary = service.summary(experiment_id)
+        print(
+            json.dumps(
+                {
+                    "replicate_experiment_id": experiment_id,
+                    "source_experiment_id": args.replicate_of,
+                    "state": manifest.state.value,
+                    "counts": manifest.counts,
+                    "budget": manifest.budget,
+                    "executed": summary["executed"],
+                    "categories": summary["categories"],
+                },
+                ensure_ascii=False,
+                indent=1,
+            )
+        )
+        return 0 if manifest.state.value in {"COMPLETED", "PARTIAL"} else 1
+    finally:
+        runs.shutdown()
+
+
+def _budget_extension(args: argparse.Namespace) -> int:
+    """预算扩展：在更高预算下重测指定条件。"""
+
+    if not args.conditions:
+        print("--budget-ext-of 需要 --conditions。", file=sys.stderr)
+        return 2
+    runs = RunService(WEB_RUNS, recover=False)
+    service = ExperimentService(LAB_RUNS, run_service=runs, recover=False)
+    try:
+        experiment_id = service.create_budget_extension(
+            args.budget_ext_of,
+            conditions=list(args.conditions),
+            per_run_request_cap=args.ext_requests,
+            per_run_decision_cap=args.ext_requests,
+            per_run_cost_cap_cny=Decimal(str(args.per_run_cost)),
+            per_run_input_token_cap=args.ext_input_tokens or None,
+            experiment_request_cap=args.ext_requests * max(1, len(args.conditions)),
+            reason=args.notes or f"预算扩展：单局请求上限 {args.ext_requests}。",
+            name=args.name if args.name != "cli-matrix" else None,
+        )
+        print(
+            json.dumps(
+                {"budget_ext_experiment_id": experiment_id}, ensure_ascii=False, indent=1
+            )
+        )
+        if not args.submit:
+            print("仅创建；加 --submit 才会入队。")
+            return 0
+        service.submit(experiment_id)
+        manifest = _wait(service, experiment_id, args.timeout)
+        summary = service.summary(experiment_id)
+        print(
+            json.dumps(
+                {
+                    "budget_ext_experiment_id": experiment_id,
+                    "source_experiment_id": args.budget_ext_of,
+                    "state": manifest.state.value,
+                    "counts": manifest.counts,
+                    "budget": manifest.budget,
+                    "executed": summary["executed"],
+                    "valid_denominator": summary["valid_denominator"],
+                    "categories": summary["categories"],
+                },
+                ensure_ascii=False,
+                indent=1,
+            )
+        )
+        return 0 if manifest.state.value in {"COMPLETED", "PARTIAL"} else 1
+    finally:
+        runs.shutdown()
+
+
 def _version_rerun(args: argparse.Namespace) -> int:
     """版本复跑：在当前代码/契约版本下重跑源实验的指定条件。"""
 
@@ -260,6 +354,28 @@ def main() -> int:
         help="版本复跑：在**当前**代码/契约版本下重跑源实验的指定条件（独立实验，不与旧版本配对）",
     )
     parser.add_argument(
+        "--budget-ext-of",
+        default=None,
+        help="预算扩展：在更高预算下重测源实验的指定条件（独立实验，不与原矩阵配对）",
+    )
+    parser.add_argument(
+        "--replicate-of",
+        default=None,
+        help="重复实验：同版本同配置再跑一次指定条件，用于测量抽样波动",
+    )
+    parser.add_argument(
+        "--ext-requests",
+        type=int,
+        default=150,
+        help="预算扩展的单局请求上限",
+    )
+    parser.add_argument(
+        "--ext-input-tokens",
+        type=int,
+        default=0,
+        help="预算扩展的单局输入 token 上限（0 = 按请求数推算）",
+    )
+    parser.add_argument(
         "--supplement-of",
         default=None,
         help="从该实验新建补充实验（只重跑中断/Provider 错误/未知消费/取消/未执行子局）",
@@ -289,6 +405,10 @@ def main() -> int:
         return _resume(args)
     if args.rerun_of:
         return _version_rerun(args)
+    if args.budget_ext_of:
+        return _budget_extension(args)
+    if args.replicate_of:
+        return _replicate(args)
     if args.supplement_of or args.list_candidates:
         if not args.supplement_of:
             parser.error("--list-candidates 需要同时给出 --supplement-of")

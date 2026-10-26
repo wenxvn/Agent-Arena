@@ -223,6 +223,52 @@ def test_map22_no_writes_at_all_is_memory_not_used() -> None:
     assert any(item.category == "memory_not_used" for item in findings)
 
 
+def test_map22_short_sequence_is_flagged_separately() -> None:
+    """键名合规但只写 1 个方位、实际走了 6 步 → memory_sequence_short。"""
+
+    steps = [
+        _step(
+            1,
+            "write_memory",
+            result="MEMORY_WRITTEN",
+            action_extra={"facts": [{"key": "path_state", "value": "north"}]},
+            observation={"moves_used": 0},
+        )
+    ]
+    steps += [
+        _step(index, "move", action_extra={"bearing": "north"}, observation={"moves_used": index})
+        for index in range(2, 8)
+    ]
+    findings = diagnose_run(map_id="MAP-22", run_id="r", steps=steps, result=_result())
+    categories = {item.category for item in findings}
+    assert "memory_sequence_short" in categories
+    assert "memory_key_not_in_metric" not in categories
+    finding = next(item for item in findings if item.category == "memory_sequence_short")
+    assert "6" in finding.summary
+    assert finding.confidence_scope == "behavior_observed_not_internal_cause"
+
+
+def test_map22_full_sequence_is_not_flagged() -> None:
+    """写满路线的局不应报"序列过短"。"""
+
+    route = ["north", "east", "south"]
+    steps = [
+        _step(
+            1,
+            "write_memory",
+            result="MEMORY_WRITTEN",
+            action_extra={"facts": [{"key": "path_state", "value": ",".join(route)}]},
+            observation={"moves_used": 0},
+        )
+    ]
+    steps += [
+        _step(index + 2, "move", action_extra={"bearing": b}, observation={"moves_used": index + 1})
+        for index, b in enumerate(route)
+    ]
+    findings = diagnose_run(map_id="MAP-22", run_id="r", steps=steps, result=_result())
+    assert not any(item.category == "memory_sequence_short" for item in findings)
+
+
 def test_map26_flags_blind_swap() -> None:
     steps = [_step(1, "replace", result="PART_INSTALLED", action_extra={"part_id": "P1"})]
     findings = diagnose_run(

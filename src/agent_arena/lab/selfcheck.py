@@ -362,8 +362,24 @@ def check_export_recompute() -> dict[str, Any]:
                     io.StringIO(Path(files["metrics.csv"]).read_text(encoding="utf-8-sig"))
                 )
             )
-            expected = sum(len(record["metrics"]) for record in lab.records(experiment_id))
-            assert len(metrics_rows) == expected, "metrics.csv 行数不一致"
+            v10_expected = sum(
+                len(record["metrics"]) for record in lab.records(experiment_id)
+            )
+            v12_expected = sum(
+                len(record.get("metrics_v12") or {})
+                for record in lab.records(experiment_id)
+            )
+            v10_rows = [row for row in metrics_rows if row["namespace"] == "v10"]
+            v12_rows = [
+                row for row in metrics_rows if row["namespace"] == "v12.projection"
+            ]
+            assert len(v10_rows) == v10_expected, "metrics.csv 的 v10 行数不一致"
+            assert len(v12_rows) == v12_expected, "metrics.csv 的 v12 投影行数不一致"
+            # V12 研究投影必须是独立命名空间，不能冒充 V10 指标。
+            assert all(
+                row["metric_id"].startswith("v12.projection.") for row in v12_rows
+            )
+            assert all(not row["metric_id"].startswith("v12.") for row in v10_rows)
             for name in ("summary.json", "comparison.json", "experiment.json", "report.md"):
                 text = Path(files[name]).read_text(encoding="utf-8").lower()
                 for key in FORBIDDEN_KEYS:

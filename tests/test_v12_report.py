@@ -114,12 +114,18 @@ def test_metrics_csv_matches_result_metrics(tmp_path: Path) -> None:
                 io.StringIO(Path(files[METRICS_CSV]).read_text(encoding="utf-8-sig"))
             )
         )
-        expected = 0
+        v10_expected = 0
+        v12_expected = 0
         for record in lab.records(experiment_id):
-            expected += len(record["metrics"])
-        assert len(rows) == expected
+            v10_expected += len(record["metrics"])
+            v12_expected += len(record.get("metrics_v12") or {})
+        v10_rows = [row for row in rows if row["namespace"] == "v10"]
+        v12_rows = [row for row in rows if row["namespace"] == "v12.projection"]
+        assert len(v10_rows) == v10_expected
+        assert len(v12_rows) == v12_expected
         for row in rows:
             assert row["metric_id"]
+            assert row["namespace"] in {"v10", "v12.projection"}
             assert row["state"] in {
                 "VALID",
                 "CENSORED",

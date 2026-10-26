@@ -23,7 +23,7 @@ from __future__ import annotations
 
 from typing import Any
 
-CONTRACT_AUGMENTATION_VERSION = "v12-contract-1"
+CONTRACT_AUGMENTATION_VERSION = "v12-contract-2"
 
 #: 字段名 → 需要补充的公开说明。只补"环境确实要求、但契约渲染无法表达"的字段。
 FIELD_HINTS: dict[str, str] = {
@@ -31,6 +31,16 @@ FIELD_HINTS: dict[str, str] = {
         'facts 的每一项必须是恰好两个字符串字段的对象：'
         '{"key": "<str>", "value": "<str>"}。'
         "使用其它字段名（例如 {\"at_sign\": \"...\"}）会被环境拒绝为 INVALID_MEMORY_PAYLOAD。"
+    ),
+}
+
+#: 地图 → 额外公开说明。只写"帮助记忆被指标/环境正确读取"的约定，
+#: 不含任何真值、最优路线或隐藏信息。
+MAP_HINTS: dict[str, tuple[str, ...]] = {
+    "MAP-22": (
+        "若要让自己写下的路线可被读取，建议用 key=bearing（单个方位，按走过顺序各写一条）"
+        "或 key=path_state（逗号分隔的方位序列，如 north,east,north）；"
+        "其它键名也会保留在 agent_notes 里，但不会被自动当作路线。",
     ),
 }
 
@@ -45,10 +55,13 @@ def _used_fields(environment: Any) -> set[str]:
 
 
 def augmentation_for(environment: Any) -> tuple[str, ...]:
-    """返回该图需要的公开契约补丁（按 ``FIELD_HINTS`` 顺序，稳定可复现）。"""
+    """返回该图需要的公开契约补丁（字段补丁 + 地图补丁，顺序稳定）。"""
 
     used = _used_fields(environment)
-    return tuple(text for field, text in FIELD_HINTS.items() if field in used)
+    map_id = str(getattr(environment, "map_id", ""))
+    hints = [text for field, text in FIELD_HINTS.items() if field in used]
+    hints.extend(MAP_HINTS.get(map_id, ()))
+    return tuple(hints)
 
 
 def augment_prompt(system: str, environment: Any) -> tuple[str, tuple[str, ...]]:
@@ -74,6 +87,7 @@ def provenance_block(hints: tuple[str, ...]) -> dict[str, Any]:
 __all__ = [
     "CONTRACT_AUGMENTATION_VERSION",
     "FIELD_HINTS",
+    "MAP_HINTS",
     "augment_prompt",
     "augmentation_for",
     "provenance_block",

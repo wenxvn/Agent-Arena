@@ -133,6 +133,8 @@ def run_record(
         "primary_state": str(result.get("primary_metric_state") or ""),
         "primary_value": result.get("primary_metric_value"),
         "metrics": dict(metrics),
+        #: V12 研究投影（当前只有 MAP-22 route_recall）；与 V10 指标分列，不混算。
+        "metrics_v12": dict(result.get("metrics_v12") or {}),
         "mode": str(result.get("mode") or manifest.get("mode") or ""),
         "provider_id": str(result.get("provider_id") or manifest.get("provider_id") or ""),
         "model": str(result.get("model") or manifest.get("model") or ""),
@@ -382,6 +384,61 @@ def _arm_ids(records: list[dict[str, Any]]) -> list[str]:
     return sorted({record["agent_id"] for record in records})
 
 
+def aggregate_projection(records: list[dict[str, Any]]) -> dict[str, Any]:
+    """聚合 V12 研究投影指标（与 V10 指标分开，不参与 V10 均值）。"""
+
+    buckets: dict[str, dict[str, Any]] = {}
+    for record in records:
+        for metric_id, payload in (record.get("metrics_v12") or {}).items():
+            if not isinstance(payload, dict):
+                continue
+            bucket = buckets.setdefault(
+                metric_id,
+                {
+                    "metric_id": metric_id,
+                    "states": {},
+                    "values": [],
+                    "numerator": 0.0,
+                    "denominator": 0.0,
+                    "rule_version": payload.get("rule_version"),
+                },
+            )
+            state = str(payload.get("state") or "MISSING")
+            bucket["states"][state] = bucket["states"].get(state, 0) + 1
+            if state == "VALID":
+                value = payload.get("value")
+                if isinstance(value, (int, float)):
+                    bucket["values"].append(float(value))
+                numerator = payload.get("numerator")
+                denominator = payload.get("denominator")
+                if isinstance(numerator, (int, float)) and isinstance(
+                    denominator, (int, float)
+                ):
+                    bucket["numerator"] += float(numerator)
+                    bucket["denominator"] += float(denominator)
+    output: dict[str, Any] = {}
+    for metric_id, bucket in sorted(buckets.items()):
+        values: list[float] = bucket["values"]
+        pooled = (
+            round(bucket["numerator"] / bucket["denominator"], 6)
+            if bucket["denominator"] > 0
+            else None
+        )
+        output[metric_id] = {
+            "metric_id": metric_id,
+            "states": dict(sorted(bucket["states"].items())),
+            "valid_count": len(values),
+            "mean": round(sum(values) / len(values), 6) if values else None,
+            "pooled_ratio": pooled,
+            "numerator": bucket["numerator"],
+            "denominator": bucket["denominator"],
+            "rule_version": bucket["rule_version"],
+            "namespace": "v12.projection",
+            "note": "V12 研究投影，不是 V10 官方指标；不参与 V10 均值。",
+        }
+    return output
+
+
 def build_comparison(
     *,
     experiment_id: str,
@@ -418,6 +475,7 @@ def build_comparison(
             ],
             "seeds": sorted({record["environment_seed"] for record in map_records}),
             "pairs": 0,
+            "projection": aggregate_projection(map_records),
         }
         for left_index, left_agent in enumerate(arms):
             for right_agent in arms[left_index + 1 :]:
@@ -514,6 +572,7 @@ __all__ = [
     "PairSlot",
     "aggregate_arm",
     "aggregate_metrics",
+    "aggregate_projection",
     "build_comparison",
     "classify_child",
     "pair_records",

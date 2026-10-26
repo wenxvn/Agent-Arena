@@ -128,3 +128,40 @@ def test_version_rerun_fingerprint_differs_from_source(tmp_path: Path) -> None:
         assert lab._spec(source_id).fingerprint() != lab._spec(rerun_id).fingerprint()
     finally:
         runs.shutdown()
+
+
+def test_runtime_version_is_part_of_experiment_identity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """改了代码/契约版本后，同一配置必须得到**新**实验而不是命中旧实验。"""
+
+    runs, lab = _services(tmp_path)
+    try:
+        source_id = lab.create_experiment(_spec())
+        conditions = [cell.condition_key for cell in lab._spec(source_id).matrix()]
+        first = lab.create_version_rerun(
+            source_id, conditions=conditions, reason="契约 v1"
+        )
+        assert lab._spec(first).runtime_version
+
+        from agent_arena.lab import experiment as experiment_module
+
+        monkeypatch.setattr(
+            experiment_module, "current_runtime_version", lambda: "v12-lab-1+test-2"
+        )
+        second = lab.create_version_rerun(
+            source_id, conditions=conditions, reason="契约 v2"
+        )
+        assert second != first
+        assert lab._spec(second).runtime_version == "v12-lab-1+test-2"
+        assert lab._spec(first).fingerprint() != lab._spec(second).fingerprint()
+    finally:
+        runs.shutdown()
+
+
+def test_preflight_reports_runtime_version() -> None:
+    from agent_arena.lab.experiment import preflight
+    from agent_arena.lab.runtime_version import current_runtime_version
+
+    result = preflight(_spec())
+    assert any(current_runtime_version() in note for note in result.notes)

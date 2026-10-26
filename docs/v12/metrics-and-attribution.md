@@ -102,6 +102,8 @@ V12 **没有**发明新指标。所有数值来自 V10 各图的 `v10_metrics()`
 | `window_violation` | MAP-18 早于公开窗口发车 | warning |
 | `memory_not_used` | MAP-22 未写方位记忆 | warning |
 | `blind_swap` | MAP-26 未测试就换件 / 换件 ≥3 次 | warning |
+| `memory_key_not_in_metric` | MAP-22 未使用指标口径内的键（bearing/path_state） | warning |
+| `memory_sequence_short` | MAP-22 写入方位数 < 真实 move 数的一半（记了但太短） | warning |
 | `NOT_ENOUGH_EVIDENCE` | 未命中任何规则 | info |
 
 **明确不做**：
@@ -172,7 +174,34 @@ V12 新增自动审计（`scripts/a11y_v12.py` + `src/agent_arena/lab/a11y.py`�
 
 报告与汇总都会显示"补充实验：来源 `<id>`"，并声明"原始实验的记录与账本未被修改"。
 
-## 8. 可复算性
+## 8. 指标命名空间
+
+V12 只**新增**命名空间，不覆盖 V10 任何指标：
+
+| 命名空间 | 内容 | 谁定义 | 是否参与 V10 均值 |
+|---|---|---|---|
+| `v10`（如 `map22.v10.route_recall`） | V10 冻结指标 | `v10/metrics/schema.py` + 各图 `METRIC_SPECS` | 是 |
+| `v12.projection`（如 `v12.projection.route_recall`） | V12 研究投影 | `lab/metrics_v12.py` | **否** |
+
+### `v12.projection.route_recall`（DCR-V12-02）
+
+**为什么需要**：V10 版只读 `key ∈ {bearing, path_state}`，而 MAP-22 的公开规则只要求
+`{key, value}` 任意键值对。真实模型因此写出 `{"key": "path_to_here", "value": "..."}`
+——语义正确、指标读不到，`route_recall` 恒为 `NOT_APPLICABLE`。
+
+**定义**：与 V10 同义（写入的方位序列与真实走过的方位序列逐位匹配比例，分母为真实
+move 数），但**键名宽容**：
+
+- 接受 `bearing` / `path_state`；
+- 也接受键名含 `bearing` / `path` / `route` / `visited` / `trail` / `路线` 等提示的条目；
+- 值里按出现顺序解析方位（支持 `->`、逗号、空格分隔，以及 `n/e/s/w` 与中文方位）；
+- 多条候选时取"匹配位数最多"的那条，避免被最后一条无关记忆压低。
+
+**不做**：不读 `judge_state`、不读隐藏路线、不修改 V10 指标或账本。
+
+导出时 `metrics.csv` 用 `namespace` 列区分（`v10` / `v12.projection`），下游可以只取其一。
+
+## 9. 可复算性
 
 - `summary.json` 的有效分母可从 `exports/runs.csv` 独立重算（`scripts/verify_v12.py` 的
   `export_recompute` 检查项即此）；

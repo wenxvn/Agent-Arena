@@ -2,7 +2,7 @@
 
 - **更新日期**：2026-10-25
 - **起点 HEAD**：`258eadc5039309859fc0385d61650e266e6ab488`
-- **总状态**：`LAB_1_0_READY`（P0 + P1 + P2 全部交付；真实模型矩阵已执行：71 局、¥1.82140020、0 未知消费）
+- **总状态**：`LAB_1_0_READY`（P0 + P1 + P2 全部交付；真实模型实验 12 个、125 局、¥4.92471204、0 未知消费）
 
 ## Batch 0（P0）仓库审计
 
@@ -175,10 +175,12 @@
 |---|---|---|
 | V12-12-01 展示规格与预算并记录批准 | DONE | `LiveApproval(approved=True, approved_by="user", max_cost_cny=6.00)`；预检零请求 |
 | V12-12-02 3–6 局 Pilot | DONE | 6 局（MAP-22/26 × 3 架构 × seed 0），131 请求，¥0.0995，0 未知消费 |
-| V12-12-03 预登记 54 局主矩阵 | DONE | 六图 × 3 seed × 3 架构 |
-| V12-12-04 Provider/环境/策略/预算失败分开编码 | DONE | 六类分母 + `Finding.confidence_scope` |
+| V12-12-03 预登记 54 局主矩阵 | DONE | 六图 × 3 seed × 3 架构，54/54，¥1.4718 |
+| V12-12-04 Provider/环境/策略/预算失败分开编码 | DONE | 六类分母 + `Finding.confidence_scope` + 约束阶梯（DCR-V12-04） |
 | V12-12-05 反思独立小矩阵 | NOT_RUN | 需单独预算批准；未混入主矩阵 |
-| V12-12-06 核对 usage 与本地费用估算 | DONE | 见 `mimo-results.md` 成本小节 |
+| V12-12-06 核对 usage 与本地费用估算 | DONE | 125 局 `run_started` = `run_settled`；结算 ¥4.9247；未知 ¥0 |
+| 衍生实验：补充 / 版本复跑 / 预算扩展 / 重复 | DONE | 4 类各 1 条真实产物；`--supplement-of` / `--rerun-of` / `--budget-ext-of` / `--replicate-of` |
+| 接口与口径缺陷（DCR-V12-01/02/03/04） | DONE | 复测：拒绝率 96.2%→0%、`route_recall` 从 N/A→VALID、约束阶梯量化 |
 
 ## Batch 13 验收与文档
 
@@ -197,18 +199,26 @@
 |---|---|---|
 | 可访问性自动审计（主题对比度 / 焦点 / DOM / 键盘） | DONE | `lab/a11y.py` + `scripts/a11y_v12.py`；25 项测试；修复 4 个真实缺陷 |
 | 补充实验流程（中断 / Provider 错误 / 未知消费 / 取消 / 未执行） | DONE | `supplement_candidates` / `create_supplement`；14 项测试 |
-| 版本复跑（新契约版本下重跑已完成条件） | DONE | `create_version_rerun`；5 项测试 |
+| 版本复跑（新契约版本下重跑已完成条件） | DONE | `create_version_rerun`；5 项测试 + 运行时版本指纹 |
+| 预算扩展（抬高请求/token/费用上限） | DONE | `create_budget_extension`；7 项测试 |
+| 重复实验（同版本同配置再跑） | DONE | `create_replicate`；5 项测试 + `summarize_v12_replicates.py` |
+| 运行时版本指纹（防"改完代码复跑命中旧实验"） | DONE | `lab/runtime_version.py`、`ExperimentSpec.runtime_version` |
+| V12 研究投影指标（`v12.projection.route_recall`） | DONE | `lab/metrics_v12.py`；导出 `namespace` 列；13 项测试 |
 | 父实验子局链接对账（真实事故回归） | DONE | `_reconcile_children`；`test_stale_child_link_is_reconciled_from_real_run_state` |
-| CLI `--resume` / `--rerun-of` / `--supplement-of` / `--timeout 0` | DONE | `scripts/run_v12_matrix.py` |
+| CLI `--resume` / `--rerun-of` / `--supplement-of` / `--budget-ext-of` / `--replicate-of` / `--timeout 0` | DONE | `scripts/run_v12_matrix.py` |
 | 真实 Pilot 6 局 | DONE | ¥0.09949940 |
 | 真实主矩阵 54 局 | DONE | ¥1.47181116 |
-| DCR-V12-01 契约补丁 + MAP-22 复跑 9 局 | DONE | 拒绝率 96.2% → 0%；¥0.21606796 |
-| DCR-V12-01 / DCR-V12-02 记录 | DONE | `docs/v12/dcr/` |
+| MAP-22 契约修复复跑 9 局 + 口径对齐复跑 9 局 | DONE | ¥0.21606796 / ¥0.23872508 |
+| MAP-30 预算扩展（180 请求）+ token 扩展（600k） | DONE | ¥1.09918720 / ¥1.49856088 |
+| MAP-16 / MAP-18 种子覆盖（seed 3 / 3,4） | DONE | ¥0.00632096 + ¥0.00846188 / ¥0.07019220 |
+| 重复实验 18 局（翻转率 22.2%） | DONE | ¥0.21588532 |
+| DCR-V12-01…04 记录 | DONE | `docs/v12/dcr/` |
 | 真实结果档案（脱敏） | DONE | `docs/v12/real-runs/` |
 
 ## 下一步入口
 
-1. DCR-V12-02 决策（`route_recall` 口径与公开信息对齐）
-2. MAP-30 提高预算重测
-3. MAP-16 / MAP-18 增加 replicate
-4. macOS / Ollama（按用户指示暂缓）
+1. 重复实验扩到 3 次/条件（当前翻转率 22.2%）
+2. MAP-22 路线日志策略（策略变量）
+3. MAP-30 三档预算固定 + 预检提示可跑回合数
+4. Provider 账单对账
+5. macOS / Ollama（按用户指示暂缓）

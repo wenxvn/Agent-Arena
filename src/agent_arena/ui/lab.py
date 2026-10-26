@@ -515,6 +515,24 @@ def _render_metrics(st: Any, comparison: dict[str, Any]) -> None:
                 st.dataframe(records)
             else:
                 st.caption("该图没有可聚合指标。")
+            projection = row.get("projection") or {}
+            if projection:
+                st.markdown("**V12 研究投影（不覆盖 V10 指标）**")
+                st.dataframe(
+                    [
+                        {
+                            "指标": metric_id,
+                            "五态": ", ".join(
+                                f"{key}×{value}"
+                                for key, value in (payload.get("states") or {}).items()
+                            ),
+                            "有效均值": payload.get("mean"),
+                            "合并比值": payload.get("pooled_ratio"),
+                            "口径版本": payload.get("rule_version"),
+                        }
+                        for metric_id, payload in sorted(projection.items())
+                    ]
+                )
 
 
 def _render_view_model(st: Any, model: dict[str, Any]) -> None:
@@ -665,6 +683,17 @@ def _result_view(st: Any, get_lab: Callable[[], Any]) -> None:
         ),
         unsafe_allow_html=True,
     )
+    if summary.get("supplement_of"):
+        st.info(
+            f"这是来源 `{summary['supplement_of']}` 的衍生实验"
+            f"（{summary.get('supplement_reason') or '原因未记录'}）。"
+            "原始实验的记录与账本未被修改；跨版本不配对。"
+        )
+    if summary.get("only_conditions"):
+        st.caption(
+            f"本实验只包含 {len(summary['only_conditions'])} 个条件"
+            "（其余条件见来源实验）。"
+        )
     theme.stat_tiles(
         st,
         [

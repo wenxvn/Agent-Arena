@@ -70,6 +70,7 @@ METRIC_FIELDS = (
     "environment_seed",
     "agent_id",
     "metric_id",
+    "namespace",
     "state",
     "value",
     "numerator",
@@ -148,6 +149,27 @@ def metrics_rows(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     "environment_seed": record.get("environment_seed"),
                     "agent_id": record.get("agent_id"),
                     "metric_id": metric_id,
+                    "namespace": "v10",
+                    "state": payload.get("state"),
+                    "value": payload.get("value"),
+                    "numerator": payload.get("numerator"),
+                    "denominator": payload.get("denominator"),
+                    "note": payload.get("note"),
+                }
+            )
+        # V12 研究投影单独成行，namespace 明确区分，便于下游只取 v10 或只取 v12。
+        for metric_id, payload in sorted((record.get("metrics_v12") or {}).items()):
+            if not isinstance(payload, dict):
+                continue
+            rows.append(
+                {
+                    "run_id": record.get("run_id"),
+                    "matrix_index": record.get("matrix_index"),
+                    "map_id": record.get("map_id"),
+                    "environment_seed": record.get("environment_seed"),
+                    "agent_id": record.get("agent_id"),
+                    "metric_id": metric_id,
+                    "namespace": "v12.projection",
                     "state": payload.get("state"),
                     "value": payload.get("value"),
                     "numerator": payload.get("numerator"),
@@ -258,6 +280,40 @@ def _metric_table(comparison: dict[str, Any], map_id: str) -> list[str]:
     return lines
 
 
+def _projection_table(comparison: dict[str, Any]) -> list[str]:
+    """V12 研究投影指标（与 V10 指标分列，明确标注不是官方值）。"""
+
+    rows: list[tuple[str, str, dict[str, Any]]] = []
+    for row in comparison.get("per_map") or []:
+        projection = row.get("projection") or {}
+        for metric_id, payload in sorted(projection.items()):
+            rows.append((str(row.get("map_id")), metric_id, payload))
+    if not rows:
+        return []
+    lines = [
+        "### V12 研究投影（不覆盖 V10 指标）",
+        "",
+        "| 地图 | 指标 | 五态分布 | 有效均值 | 合并比值 | 口径版本 |",
+        "|---|---|---|---|---|---|",
+    ]
+    for map_id, metric_id, payload in rows:
+        states = ", ".join(
+            f"{key}×{value}" for key, value in (payload.get("states") or {}).items()
+        )
+        lines.append(
+            f"| {map_id} | `{metric_id}` | {states or '—'} | "
+            f"{_fmt(payload.get('mean'))} | {_fmt(payload.get('pooled_ratio'))} | "
+            f"{payload.get('rule_version') or '—'} |"
+        )
+    lines += [
+        "",
+        "> 这些是 V12 为弥补公开信息缺口而新增的**研究投影**（键名宽容），",
+        "> 用于回答「记忆是否被用于返程」；它们不参与任何 V10 指标均值，也不写入 V10 账本。",
+        "",
+    ]
+    return lines
+
+
 def build_report(
     *,
     experiment: dict[str, Any],
@@ -286,6 +342,7 @@ def build_report(
         f"- 地图：{', '.join(summary.get('maps') or [])}",
         f"- 环境 seed：{summary.get('seeds')}",
         f"- 实验臂：{', '.join(arm.get('agent_id', '') for arm in summary.get('arms') or [])}",
+        f"- 运行时版本：`{summary.get('runtime_version') or 'unknown'}`",
         f"- 子局：{summary.get('executed')} / {summary.get('total_cells')}"
         f"（未执行 {summary.get('pending')}）",
         "",
@@ -337,6 +394,14 @@ def build_report(
     ]
     for map_id in summary.get("maps") or []:
         lines += [f"### {map_id}", "", *_metric_table(comparison, map_id), ""]
+    lines += _projection_table(comparison)
+    lines += ["", "### 指标命名空间", ""]
+    lines += [
+        "- `v10`：V10 冻结指标，历史可比；V12 不改其公式或取值。",
+        "- `v12.projection`：V12 研究投影（当前仅 MAP-22 `route_recall`），键名宽容、",
+        "  用于弥补公开信息缺口；**不与 v10 混算**，也不写入任何账本。",
+        "",
+    ]
 
     lines += ["## 6. 代表性轨迹与证据", ""]
     if findings:

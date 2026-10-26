@@ -28,6 +28,7 @@ from agent_arena.lab.compare import (
 from agent_arena.lab.contracts import (
     EXPERIMENT_TERMINAL_STATES,
     MAX_EXPERIMENT_RUNS,
+    ExperimentBudget,
     ExperimentManifest,
     ExperimentMode,
     ExperimentSpec,
@@ -36,6 +37,7 @@ from agent_arena.lab.contracts import (
 )
 from agent_arena.lab.paths import EXPERIMENT_ID_PATTERN, LAB_RUNS
 from agent_arena.lab.registry import all_agents, get_agent
+from agent_arena.lab.runtime_version import current_runtime_version
 from agent_arena.web.budget import price_for_model
 from agent_arena.web.safety import sanitize_text
 from agent_arena.web.schemas import (
@@ -174,6 +176,7 @@ def preflight(spec: ExperimentSpec) -> PreflightResult:
         f"seed 取值 {list(seeds)}"
         f"（{'显式指定' if spec.environment_seeds else '自动取共同可用前 3 个'}）。",
         "执行方式：单 worker 串行，避免并发付费请求。",
+        f"运行时版本：{current_runtime_version()}",
     ]
     return PreflightResult(
         ok=not blockers,
@@ -398,6 +401,11 @@ class ExperimentService:
         idempotency_key: str | None = None,
     ) -> str:
         with self._lock:
+            # 把当前代码/契约版本写进实验身份：同一配置在不同版本下必须是不同实验，
+            # 否则"改完代码复跑"会静默命中旧实验。
+            spec = spec.model_copy(
+                update={"runtime_version": current_runtime_version()}
+            )
             if idempotency_key:
                 existing = self._find_by_idempotency(idempotency_key)
                 if existing:
@@ -967,6 +975,7 @@ class ExperimentService:
             "only_conditions": list(spec.only_conditions),
             "supplement_of": spec.supplement_of,
             "supplement_reason": spec.supplement_reason,
+            "runtime_version": spec.runtime_version,
         }
 
     def comparison(self, experiment_id: str) -> dict[str, Any]:
@@ -1170,6 +1179,148 @@ class ExperimentService:
             ),
         }
 
+    def create_replicate(
+        self,
+        source_experiment_id: str,
+        *,
+        conditions: list[str],
+        reason: str = "",
+        name: str | None = None,
+        idempotency_key: str | None = None,
+    ) -> str:
+        """在同一版本、同一配置下**重复**指定条件，用于测量稳定性。
+
+        与其它三种衍生实验的区别：
+
+        - 补充：只补失败/未执行（目的：分母完整）；
+        - 版本复跑：换版本（目的：接口/契约修复后重测）；
+        - 预算扩展：换预算（目的：解除截尾）；
+        - **重复**：什么都不换（目的：同一条件下的波动有多大）。
+
+        重复必须独立成实验，因为 `matrix` 按 `condition_key` 去重，同一实验内无法
+        放两个相同条件。原实验一律不动；报告会标注来源与"重复"性质。
+        """
+
+        source_spec = self._spec(source_experiment_id)
+        available = {cell.condition_key for cell in source_spec.matrix()}
+        wanted = list(dict.fromkeys(conditions))
+        unknown = [item for item in wanted if item not in available]
+        if unknown:
+            raise ExperimentError("这些条件不属于源实验：" + "、".join(unknown[:5]))
+        if not wanted:
+            raise ExperimentError("重复实验必须显式给出至少一个条件。")
+        current = current_runtime_version()
+        if source_spec.runtime_version and source_spec.runtime_version != current:
+            raise ExperimentError(
+                "源实验的运行时版本与当前不一致"
+                f"（{source_spec.runtime_version} vs {current}）；"
+                "请改用 --rerun-of 做版本复跑。"
+            )
+        note = reason or (
+            "重复实验：同版本、同配置、同条件再跑一次，用于测量抽样波动；"
+            f"来源 {source_experiment_id}。"
+        )
+        spec = source_spec.model_copy(
+            update={
+                "experiment_id": "",
+                "name": name or f"{source_spec.name} · replicate",
+                "notes": f"{source_spec.notes}\n{note}".strip(),
+                "only_conditions": wanted,
+                "supplement_of": source_experiment_id,
+                "supplement_reason": note,
+                "runtime_version": current,
+                "created_at": utc_now(),
+            }
+        )
+        result = preflight(spec)
+        if not result.ok:
+            raise ExperimentError("重复实验预检未通过：" + "；".join(result.blockers))
+        key = (
+            idempotency_key
+            or f"replicate:{source_experiment_id}:{spec.fingerprint()[:12]}"
+        )
+        return self.create_experiment(spec, idempotency_key=key)
+
+    def create_budget_extension(
+        self,
+        source_experiment_id: str,
+        *,
+        conditions: list[str],
+        per_run_request_cap: int,
+        per_run_decision_cap: int | None = None,
+        per_run_cost_cap_cny: Decimal | None = None,
+        per_run_input_token_cap: int | None = None,
+        per_run_output_token_cap: int | None = None,
+        experiment_request_cap: int | None = None,
+        experiment_cost_cap_cny: Decimal | None = None,
+        reason: str,
+        name: str | None = None,
+        idempotency_key: str | None = None,
+    ) -> str:
+        """在**更高预算**下重测指定条件（独立实验，不与原矩阵配对）。
+
+        与 `create_supplement` / `create_version_rerun` 的区别：
+
+        - 补充实验：补齐分母（失败/未执行）；
+        - 版本复跑：换版本重测（契约/提示变了）；
+        - **预算扩展**：被测变量是预算。截尾局（`BUDGET_REACHED`）在更高预算下
+          可能产生完全不同的终态，因此必须另立实验并单独报告。
+
+        原始实验一律不动。
+        """
+
+        source_spec = self._spec(source_experiment_id)
+        available = {cell.condition_key for cell in source_spec.matrix()}
+        wanted = list(dict.fromkeys(conditions))
+        unknown = [item for item in wanted if item not in available]
+        if unknown:
+            raise ExperimentError("这些条件不属于源实验：" + "、".join(unknown[:5]))
+        if not wanted:
+            raise ExperimentError("预算扩展必须显式给出至少一个条件。")
+        cells = max(1, len(wanted))
+        budget = ExperimentBudget(
+            per_run_request_cap=per_run_request_cap,
+            per_run_decision_cap=per_run_decision_cap
+            or max(per_run_request_cap, source_spec.budget.per_run_decision_cap or 0),
+            # 观测很长的图（如 MAP-30 的案卷）会先撞输入 token 上限，而不是请求数上限。
+            # 因此预算扩展必须能同时抬高 token 上限，否则"加预算"是假动作。
+            per_run_input_token_cap=per_run_input_token_cap
+            or max(
+                source_spec.budget.per_run_input_token_cap,
+                per_run_request_cap * 2_500,
+            ),
+            per_run_output_token_cap=per_run_output_token_cap
+            or source_spec.budget.per_run_output_token_cap,
+            per_run_cost_cap_cny=per_run_cost_cap_cny
+            or source_spec.budget.per_run_cost_cap_cny,
+            experiment_request_cap=experiment_request_cap or per_run_request_cap * cells,
+            experiment_cost_cap_cny=experiment_cost_cap_cny
+            or source_spec.budget.experiment_cost_cap_cny,
+            wall_clock_cap_seconds=source_spec.budget.wall_clock_cap_seconds,
+        )
+        new_name = name or f"{source_spec.name} · budget-ext"
+        spec = source_spec.model_copy(
+            update={
+                "experiment_id": "",
+                "name": new_name,
+                "notes": f"{source_spec.notes}\n{reason}".strip(),
+                "only_conditions": wanted,
+                "supplement_of": source_experiment_id,
+                "supplement_reason": reason,
+                "budget": budget,
+                "runtime_version": current_runtime_version(),
+                "created_at": utc_now(),
+            }
+        )
+        result = preflight(spec)
+        if not result.ok:
+            raise ExperimentError("预算扩展预检未通过：" + "；".join(result.blockers))
+        key = (
+            idempotency_key
+            or f"budget-ext:{source_experiment_id}:{spec.fingerprint()[:12]}"
+        )
+        return self.create_experiment(spec, idempotency_key=key)
+
     def create_version_rerun(
         self,
         source_experiment_id: str,
@@ -1211,6 +1362,7 @@ class ExperimentService:
                 "only_conditions": wanted,
                 "supplement_of": source_experiment_id,
                 "supplement_reason": note,
+                "runtime_version": current_runtime_version(),
                 "created_at": utc_now(),
             }
         )
@@ -1264,6 +1416,7 @@ class ExperimentService:
                 "supplement_of": source_experiment_id,
                 "supplement_reason": note,
                 "preflight_only": source_spec.preflight_only,
+                "runtime_version": current_runtime_version(),
                 "created_at": utc_now(),
             }
         )
