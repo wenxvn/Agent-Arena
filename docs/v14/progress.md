@@ -231,3 +231,24 @@
 
 切换为阻断门禁后连续成功 4 次：`40482235016` / `40482773825` / `40486150217` / `40487657690`；
 其中 `40487657690` 的 `V14 Lab 1.2 离线验收` 步骤也通过。此前 `40477841302` 的失败记录保留。
+
+## Batch 13 · LIVE 执行（用户授权 MiMo，方案 A 子集）
+
+- 授权：用户"按照提纲执行，你可以自行调用 mimo" → 按 `live-plan.md` 方案 A 执行（上限 ¥5.00）。
+- 新增：`scripts/run_v14_live.py`（钉住配置的 6 个父实验；`--pilot` / `--groups` / `--submit`；
+  独立账本 `runs/v14/live/`）、`scripts/summarize_v14_live.py`（只读聚合）。
+- 执行：`mimo-v2.6-flash`，Pilot 6 局 + 主矩阵 33 局 = **39 局 / 1 313 请求 / ¥0.72437412**；
+  1 局 `unknown_spend`（预留，未计入结算）；0 重复、0 孤儿；未超 ¥5.00（用量 14.5%）。
+- 结果：
+  - **E1-a**（MAP-22 `route_log` on/off，20 局）：`route_recall` 0.045 → **0.557**（4 局满分），
+    成功率 **0/10 vs 0/10**，平均费用 ¥0.0242 → ¥0.0302（+25%），1 局截尾；
+  - **E2-a**（MAP-16 `planning` on/off，17 局）：off **0/10**、on **3/7**（3.43 次计划/局），
+    但 `PROVIDER_ERROR` + `unknown_spend` 触发停批 → 臂只有 7/9，描述性；
+  - **E3**（MAP-22 `reflection`，2 局）：`triggered = 0` → **`NO_TREATMENT_EXPOSURE`**，停止扩展。
+- 修掉一个真实缺陷：V14 `condition_comparison` 把 effective `prompt_hash` 当硬不匹配，
+  导致 on/off 臂全部判 `INCOMPARABLE`；改为比较 `base_prompt_hash`，把配置/effective prompt
+  标为 `INTERVENTION`（新增 2 条测试，24 项全过）。
+- 新 DCR：`DCR-V14-04`（reflection 零暴露）、`DCR-V14-05`（Provider 错误 → 停批封账、不重试）。
+- 文档：`docs/v14/live-report.md`、`live-results.md/.json`；`final-report.md` / `release-checklist.md` /
+  `README.md` / `gap-audit.md` 同步为 `LIVE_PARTIAL`。
+- commit：`feat(v14): run plan A live subset with MiMo and report partial evidence`

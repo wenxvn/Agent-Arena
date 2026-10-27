@@ -1,9 +1,9 @@
 # V14 · Agent Arena Lab 1.2 / Stage II Final Evidence & Delivery
 
-> **当前状态：`ENGINEERING_VERIFIED` / `LIVE_PENDING`。**
-> 真实模型效果：`LIVE_PENDING`（未获用户对模型 / 矩阵 / 总费用上限的明确批准，
-> V14 新增外部付费请求 **0**）。
-> 因此 **不是** `STAGE_II_FINAL_READY`——核心 LIVE 证据缺失，不得宣称收官。
+> **当前状态：`ENGINEERING_VERIFIED` / `LIVE_PARTIAL`。**
+> 真实 MiMo 已执行 **39 局 / ¥0.72437412**（用户授权，方案 A 子集）：
+> E1-a 机制成立但成功率无差异、E2-a 臂被 Provider 错误截断、E3 零暴露。
+> 因此 **不是** `STAGE_II_FINAL_READY`——效果证据仍不足，不得宣称收官。
 >
 > 验收：`uv run python scripts/verify_v14.py` → **14/14 通过**；
 > 全量 `uv run pytest -q` → **1790 passed**。
@@ -26,7 +26,9 @@ CI 与产品交付验收。不新增世界、不改冻结规则、不做公网�
 | 文件 | 内容 |
 |---|---|
 | `baseline-audit.md` | 最新 HEAD、门禁复跑、V13→V14 真实增量、19 项起点 |
-| `live-plan.md` | LIVE 方案 A 预注册（54 局 / ¥2.11 预估 / ¥5.00 上限，`PLANNED_ONLY`） |
+| `live-plan.md` | LIVE 方案 A 预注册（54 局 / ¥2.11 预估 / ¥5.00 上限） |
+| `live-report.md` | **真实 MiMo 执行报告**（39 局、账本、三组结果、停批事件） |
+| `live-results.md` / `.json` | 逐组数据明细（只读聚合生成） |
 | `engineering-boundaries.md` | 冷启动、异常负载、长历史导出、SDK 加固、账本复算 |
 | `pairing-audit.md` | V12 三组消融按 8 元组条件身份重新配对 |
 | `budget-audit.md` | V13 预算申请算术复核（221 局 / ¥10.97） |

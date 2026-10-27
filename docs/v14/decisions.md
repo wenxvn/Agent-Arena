@@ -81,3 +81,47 @@
   判定；`memory.v2` 源码**未修改**（改它会牵动 `agent_config_hash` 之外的诊断输出与
   V13 报告，风险大于收益）。报告同时给出 `bottleneck_v13` 与投影值。
 - **可回滚**：是（纯分析层）。
+
+## DCR-V14-04 · LIVE Pilot 中 `reflection.v2` 零暴露
+
+- **发现**（2026-10-27，真实 MiMo `mimo-v2.6-flash`，MAP-22 seed 0）：
+  - `E3-control`（`reflection.v2`, `enabled=False`）：54 决策、61 请求、`MOVE_BUDGET_EXHAUSTED`，
+    有 1 条 `reflection_disabled` 消融事件；
+  - `E3-treatment`（`reflection.v2`, `enabled=True`, `trigger_only=False`）：54 决策、54 请求、
+    `MOVE_BUDGET_EXHAUSTED`，**`agent_events` 为 0 条** —— 即 `eligible = triggered = 0`。
+- **含义**：这一次运行里从未发生"反思干预"。按 V14 的暴露门禁，这是
+  **`NO_TREATMENT_EXPOSURE`**，不能写成"反思无效"，也不能把两臂成功率差当作效果。
+- **与 V13 的关系**：DCR-V12-05 记录过 `reflection.v1` 在 MAP-16 上零触发的同类问题；
+  V13 用 SIMULATED 证明了 `reflection.v2` **可以**触发（冷却/额度/误触发都实测过），
+  但真实 MiMo 在 MAP-22 上的行为仍然没有命中触发器。
+- **触发器为什么不成立（公开可观察）**：本局的终止码是 `MOVE_BUDGET_EXHAUSTED`，
+  说明 Agent 持续在移动；`repeated_rejection` 需要连续 2 次被拒、`repeated_action`
+  需要连续 3 次同一动作、`no_progress` 需要公开进度连续 3 步不变。
+  这次运行没有满足其中任何一条 —— 属于**触发器与真实行为不匹配**，不是"反思没用"。
+- **处理**：
+  1. 立即停止 E3 臂的扩展（不再消耗 16 局预算），Pilot 的 2 局保留；
+  2. 不作任何"反思有效性"结论；
+  3. 若要继续：**必须另立版本**（例如把触发器改成"预算消耗率"或"路径重复率"），
+     或在有更长失败前缀的地图（MAP-19/20/29，需先做公开诊断）上重跑；
+     不得在原实验上改阈值后继续（会污染对照）。
+- **可回滚**：不适用（只是停止扩展，不删除任何数据）。
+
+## DCR-V14-05 · E2-a 处理臂出现 Provider 错误（`unknown_spend`）→ 按规则停批
+
+- **发现**（2026-10-27，真实 MiMo）：`web-20261027T121544Z-c91eeed2`（MAP-16, seed 1, rep 2,
+  `planning.v2 enabled=True`）返回 **`PROVIDER_ERROR`**，消息 "Provider 内部错误，本次结果未确认"，
+  `usage.cost_unknown = true`（13 请求 / 15 130 输入 token，费用按预留计入）。
+- **触发的规则**：预注册停止条件第 1 条 "任一局 `unknown_spend` → 立即停止整个批次并封账"。
+  脚本在完成 4 个父实验后停止，**没有重试该局**，也没有把它的费用当 0。
+- **影响**：
+  - `E2-a/on` 只执行了 6/9 局（另有 Pilot 的 1 局），缺 seed 1 rep2、seed 2 全部；
+  - 该臂的 3 次成功全部来自 seed 0（rep1、rep2）与 seed 1（rep0）；
+  - 停止时 `E3` 已按 DCR-V14-04 排除，未消耗额外预算。
+- **账本口径**：该局 `cost_unknown=true`，按"未知消费保留预留"处理；**不**计入结算额，
+  也不当作 0。
+- **处理**：
+  1. 批次封账，不重试；`E2-a` 的结论只能是"描述性 + 臂不完整"；
+  2. 若要补足，需**另开实验**（新的 `experiment_id`/幂等键），并在文档里标为
+     "补充实验"，不得与本次合并成 9/9；
+  3. Provider 侧原因未查（无 Provider 控制台访问权限）→ 标 `BLOCKED_EXTERNAL`。
+- **可回滚**：不适用（只是停止，不删除数据）。

@@ -241,3 +241,15 @@ SDK：8 项 V13 + 3 项 V14 全部通过
 | `uv run pytest -q` | **1790 passed** |
 
 CI 变更：`quality` job 新增 `V14 Lab 1.2 离线验收` 步骤（`scripts/verify_v14.py`）。
+
+## 13. Batch 13（LIVE 执行，2026-10-27）
+
+| 命令 | 结果 |
+|---|---|
+| `bash scripts/verify_model.sh` | 模型 `mimo-v2.6-flash` 验证成功（1 次极小请求） |
+| `uv run python scripts/run_v14_live.py --pilot ... --submit` | 6 局完成，¥0.1441，0 unknown |
+| `uv run python scripts/run_v14_live.py --groups E1-a E2-a ... --submit` | 33 局后因 `unknown_spend` 停批 |
+| `uv run python scripts/summarize_v14_live.py --write` | `live-results.md/.json` |
+| 账本 | 39/39 started=settled、1 313 请求、¥0.72437412、0 重复、0 孤儿 |
+| `uv run pytest -q tests/test_v14_conditions.py` | **24 passed**（含 2 条新增干预口径测试） |
+| `uv run python scripts/verify_v14.py` | 14/14 |

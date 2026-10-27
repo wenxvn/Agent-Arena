@@ -3,7 +3,7 @@
 - 版本：Agent Arena Lab 1.2 / Stage II Final Evidence & Delivery
 - 日期：2026-10-27
 - 基线 HEAD：`60c9ba2b64a3bd8d5cd549a7b76d0f3eb3ad092a`（V14 起点）
-- 真实付费请求：**0**（未获新批准，`LIVE_PENDING`）
+- 真实付费执行：**39 局 / 1 313 请求 / CNY 0.72437412**（用户授权 MiMo；1 局 unknown_spend 预留）
 
 > 判定分成三层，**不允许混写**：
 > `ENGINEERING_VERIFIED` / `LIVE_EVIDENCE_VERIFIED` / `STAGE_II_FINAL_READY`。
@@ -59,7 +59,9 @@
 
 | 项 | 状态 | 原因 |
 |---|---|---|
-| 真实模型对 `memory.v2` / `planning.v2` / `reflection.v2` 的效果 | `LIVE_PENDING` | 未获用户对模型/矩阵/总额的批准 |
+| `memory.v2` 真实效果 | 已测（20 局）| `route_recall` 0.045→0.557，成功率 0/10 vs 0/10 → **无差异** |
+| `planning.v2` 真实效果 | **部分**（17 局）| off 0/10 vs on 3/7；臂被 Provider 错误截断，描述性 |
+| `reflection.v2` 真实效果 | **零暴露** | `triggered = 0` → `NO_TREATMENT_EXPOSURE` |
 | 外部账单对账 | `BLOCKED_EXTERNAL` | 用户未提供脱敏账单 CSV |
 | 本机 Playwright 自带 chromium 复现 | `NOT_VERIFIED` | CDN 下载受限；CI 侧已真实验证 |
 | 真机读屏软件 | `NOT_VERIFIED` | 无读屏环境（自动化 a11y 已 0 严重问题） |
@@ -69,8 +71,8 @@
 ## 5. 最终状态
 
 - `ENGINEERING_VERIFIED`：**满足**。
-- `LIVE_EVIDENCE_VERIFIED`：**不满足**（零 LIVE 请求）。
-- `STAGE_II_FINAL_READY`：**不满足**，因为核心 LIVE 证据缺失；
+- `LIVE_EVIDENCE_VERIFIED`：**不满足（部分达成）**——有 39 局真实样本，但三个机制都没有可用的效果证据。
+- `STAGE_II_FINAL_READY`：**不满足**；
   按提纲要求，此时不得宣称"第二阶段最终实证完成"。
 
 可复现入口：

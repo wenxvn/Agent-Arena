@@ -5,15 +5,17 @@
 
 - 生成：2026-10-27
 - 基线 HEAD：`60c9ba2b64a3bd8d5cd549a7b76d0f3eb3ad092a`
-- 真实付费请求：**0**（未获批）
+- 真实付费请求：**39 局 / ¥0.72437412**（用户授权 MiMo，方案 A 子集，已停批封账）
 
 ## 0. 一句话结论
 
-**15 项 `DONE`；3 项"工程完成 / 真实收益 `LIVE_PENDING`"（P0-4、P0-5、P0-6）；
-1 项本地 `DONE` + 外部 `BLOCKED_EXTERNAL`（P2-6）。**
+**15 项 `DONE`；P0-4/P0-5 已拿到部分 LIVE 证据（机制成立、效果未定）；P0-6 为 `NO_TREATMENT_EXPOSURE`（零干预）；1 项本地 `DONE` + 外部 `BLOCKED_EXTERNAL`（P2-6）。**
+
+- LIVE 执行：真实 MiMo，**39 局 / 1 313 请求 / ¥0.72437412**（1 局 unknown_spend 预留，0 重复 0 孤儿）；
+- 停批原因：`unknown_spend`（DCR-V14-05）；reflection 零暴露（DCR-V14-04）。
 
 - 没有任何一项被静默跳过：未完成的都写明了原因与需要谁授权。
-- 真实付费请求 **0**；`LIVE_EVIDENCE_VERIFIED` 与 `STAGE_II_FINAL_READY` 都**不满足**。
+- LIVE 证据从"零"变为"部分"：E1-a 零差异、E2-a 臂不完整、E3 零暴露 → `LIVE_EVIDENCE_VERIFIED` 与 `STAGE_II_FINAL_READY` 仍**不满足**。
 - 验收：`scripts/verify_v14.py` **14/14**；全量 pytest **1790 passed**。
 
 ## 1. P0（6 项）
@@ -23,9 +25,9 @@
 | P0-1 | HEAD/CI 证据基线审计 | `PARTIAL` | `DONE` | `baseline-audit.md`（10 项门禁复跑）、`ci-evidence.md`（10 次 run + 7 次连续 `lab-e2e` success） |
 | P0-2 | 历史数据/构念效度口径修正 | `DEFECT` | `DONE` | `lab/v13/validity.py` 三档计数；`lab/v14/data_audit.py`；`docs/v14/data-validity.md`；`budget-audit.md`；14 + 114 测试 |
 | P0-3 | 重复实验与单因子公平性强化 | `PARTIAL` | `DONE` | `lab/v14/conditions.py`（8 元组身份/seed 白名单/三档判定/配对字段）；`docs/v14/pairing-audit.md`、`experiment-protocol.md`、`live-plan.md`；33 测试 |
-| P0-4 | Memory v2 有效性方案与消融 | `PARTIAL` | `DONE（离线）/ LIVE_PENDING` | `lab/v14/agent_studies.py`（3 fixture + 单因子臂 + 36 局预检）；`docs/v14/agent-studies.md` 第 1 节；17 测试；DCR-V14-03；真实收益未测 |
-| P0-5 | Planning v2 收益–成本验证 | `PARTIAL` | `DONE（离线）/ LIVE_PENDING` | `lab/v14/planning_study.py`（触发链 + 成本归因 + 3 组单因子 + 72 局预检）；`agent-studies.md` 第 2 节；14 测试 |
-| P0-6 | Reflection v2 激活与效果验证 | `PARTIAL` | `DONE（离线）/ LIVE_PENDING` | `lab/v14/reflection_study.py`（六态 + 三臂 + 暴露门禁 + 选择偏倚防护 + 27 局预检）；`agent-studies.md` 第 3 节；15 测试 |
+| P0-4 | Memory v2 有效性方案与消融 | `PARTIAL` | `DONE（机制）/ LIVE 部分` | `lab/v14/agent_studies.py`；**LIVE E1-a 20 局**：`route_recall` 0.045→0.557（机制成立），成功率 0/10 vs 0/10（无差异），费用 +25%；`docs/v14/live-report.md` 第 2 节 |
+| P0-5 | Planning v2 收益–成本验证 | `PARTIAL` | `DONE（机制）/ LIVE 部分（臂不完整）` | `lab/v14/planning_study.py`；**LIVE E2-a 17 局**：off 0/10、on 3/7（3.43 次计划/局）；因 `unknown_spend` 停批（DCR-V14-05）；`live-report.md` 第 3 节 |
+| P0-6 | Reflection v2 激活与效果验证 | `PARTIAL` | `DONE（离线）/ LIVE 零暴露` | `lab/v14/reflection_study.py`；**LIVE E3 2 局 `triggered=0`** → `NO_TREATMENT_EXPOSURE`（DCR-V14-04），已停止扩展；`live-report.md` 第 4 节 |
 
 ## 2. P1（6 项）
 
@@ -50,14 +52,18 @@
 | P2-6 | 本地账本/外部账单核对 | `DONE`/`BLOCKED_EXTERNAL` | `DONE（本地）/ BLOCKED_EXTERNAL（外部）` | `ledger_recompute` 复算 159/159、5641 请求、¥5.43680012、0 重复 0 孤儿；外部账单 `NO_EXTERNAL_BILL_PROVIDED` |
 | P2-7 | V14 最终交付封装 | `PARTIAL` | `DONE` | `docs/v14/` 16 份文档 + 7 张截图 + `scripts/verify_v14.py`（14 项）+ CI 步骤 |
 
-## 4. 为什么 P0-4/5/6 不能标 `DONE`
+## 4. 为什么 P0-4/5/6 仍不能标 `DONE`
 
-这三项的**工程部分**（机制验证、单因子臂、预检登记、成本归因、暴露门禁）全部完成，
-但它们的验收标准包含"真实模型下的收益/暴露"。V14 未获批准，因此：
+这三项现在的状态分三层：
 
-- 机制层：`SUPPORTED`（可复算的确定性证据）；
-- 真实收益：`LIVE_PENDING`（0 局、¥0）；
-- 状态因此写作 `DONE（离线）/ LIVE_PENDING`，不写 `DONE`。
+| 层 | 状态 | 证据 |
+|---|---|---|
+| 工程/机制（离线） | `DONE` | 确定性 probe、单因子臂、成本归因、暴露门禁、选择偏倚防护 |
+| 真实运行是否存在 | `DONE` | 39 局真实 MiMo，账本自洽（0 重复/0 孤儿） |
+| 真实**效果**证据 | **不足** | E1-a 零差异；E2-a 臂被 Provider 错误截断（7/9）；E3 零暴露 |
+
+因此写作 `DONE（机制）/ LIVE 部分` 与 `DONE（离线）/ LIVE 零暴露`，
+不写 `DONE`——否则等于把"没测出效果"说成"已验证"。
 
 ## 5. 复算入口
 

@@ -35,6 +35,7 @@ def _record(**overrides):
         "agent_config_hash": "cfg-aaa",
         "agent_contract_version": "v12-contract-2",
         "prompt_hash": "prompt-1",
+        "base_prompt_hash": "base-1",
         "mode": "SIMULATED",
         "provider_id": "simulated_scripted",
         "model": "simulated-agent-policy",
@@ -186,9 +187,22 @@ def test_contract_mismatch_is_hard_rejected() -> None:
         item["code"] == MISMATCH_CONTRACT for item in comparison["hard_mismatches"]
     )
 
-def test_prompt_mismatch_is_hard_rejected() -> None:
-    comparison = condition_comparison(_record(prompt_hash="p1"), _record(prompt_hash="p2"))
+def test_base_prompt_mismatch_is_hard_rejected() -> None:
+    """共享提示主体不同 = 真正的契约/口径差异（硬不匹配）。"""
+
+    comparison = condition_comparison(
+        _record(base_prompt_hash="base-1"), _record(base_prompt_hash="base-2")
+    )
     assert comparison["verdict"] == VERDICT_INCOMPARABLE
+
+def test_effective_prompt_and_config_are_the_intervention() -> None:
+    """V14-02：带记忆/计划块的 effective prompt 与配置是干预，不是不可比。"""
+
+    comparison = condition_comparison(_record(prompt_hash="p1"), _record(prompt_hash="p2"))
+    assert comparison["verdict"] == VERDICT_DESCRIPTIVE
+    assert not comparison["hard_mismatches"]
+    codes = {item["code"] for item in comparison["soft_mismatches"]}
+    assert "INTERVENTION" in codes
 
 def test_unrecorded_versions_degrade_to_descriptive_not_incomparable() -> None:
     left = _record(agent_contract_version=None, prompt_hash=None, sampling=None)

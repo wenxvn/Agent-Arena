@@ -287,6 +287,11 @@ def condition_comparison(
     hard: list[dict[str, str]] = []
     soft: list[dict[str, str]] = []
 
+    # 被测干预（允许不同，不得判为不可比）：
+    #   - `agent_config_hash`：on/off 两臂的配置**本来**就不一样；
+    #   - `prompt_hash`（effective）：记忆块/计划块会改变最终提示；
+    #   - `base_prompt_hash` 才是"共享提示主体"，必须一致。
+    # 这是 V14-02 的口径，与 V13 `comparability.MUST_MATCH_FIELDS` 一致。
     checks = (
         ("map_id", MISMATCH_MAP),
         ("environment_seed", MISMATCH_SEED),
@@ -297,7 +302,7 @@ def condition_comparison(
         ("metric_hash", MISMATCH_METRIC),
         ("metric_schema_hash", MISMATCH_METRIC),
         ("agent_contract_version", MISMATCH_CONTRACT),
-        ("prompt_hash", MISMATCH_PROMPT),
+        ("base_prompt_hash", MISMATCH_PROMPT),
         ("request_cap", MISMATCH_BUDGET),
         ("input_token_cap", MISMATCH_BUDGET),
     )
@@ -369,11 +374,40 @@ def condition_comparison(
             }
         )
 
-    if left_cond["fields"]["agent_id"] != right_cond["fields"]["agent_id"]:
+    same_agent = left_cond["fields"]["agent_id"] == right_cond["fields"]["agent_id"]
+    if not same_agent:
         soft.append(
             {
                 "code": SOFT_AGENT,
                 "detail": "策略不同：这是架构/版本比较，不是单开关消融。",
+            }
+        )
+    elif (
+        left.get("prompt_hash") != right.get("prompt_hash")
+        and left.get("base_prompt_hash") == right.get("base_prompt_hash")
+    ):
+        # 共享提示主体相同、只有 effective prompt 不同：记忆/计划块带来的差异，
+        # 属于被测干预的一部分，不是不可比。
+        soft.append(
+            {
+                "code": "INTERVENTION",
+                "detail": (
+                    "effective prompt 不同但共享提示主体相同："
+                    "这是被测机制（记忆/计划/反思文本）造成的差异。"
+                ),
+            }
+        )
+    elif left_cond["fields"]["config_hash"] != right_cond["fields"]["config_hash"]:
+        # 同一策略、不同配置 = 被测干预（on/off 消融），不是不可比。
+        soft.append(
+            {
+                "code": "INTERVENTION",
+                "detail": (
+                    "同一策略的实验臂配置不同（被操纵变量）："
+                    f"{left_cond['fields']['config_hash'][:8]} vs "
+                    f"{right_cond['fields']['config_hash'][:8]}；"
+                    "效果可比较，但只能归因到该开关。"
+                ),
             }
         )
 
