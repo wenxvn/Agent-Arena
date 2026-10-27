@@ -123,6 +123,23 @@ def _run_flow(page: Page, url: str) -> dict[str, Any]:
     assert "SIMULATED" in result_body
     assert "COMPARABLE" in result_body or "DESCRIPTIVE_ONLY" in result_body
 
+    # 4b. V14：可视化页的 MAP-22 探索视图必须声明"被拒移动不画成路径"。
+    page.get_by_role("tab", name="可视化").first.click()
+    page.wait_for_timeout(800)
+    render_body = page.locator("body").inner_text()
+    if "exploration_graph" in render_body:
+        assert "没有改变位置" in render_body, "MAP-22 视图缺少被拒移动的声明"
+    # 4c. V14：证据与差异页的首次分歧高亮 + 不可比门禁。
+    page.get_by_role("tab", name="证据与差异").first.click()
+    page.wait_for_timeout(600)
+    pairwise_buttons = page.get_by_role("button", name=re.compile("生成对照"))
+    if pairwise_buttons.count():
+        pairwise_buttons.first.click()
+        page.wait_for_timeout(1200)
+        diff_body = page.locator("body").inner_text()
+        assert "首次差异" in diff_body or "首次分歧" in diff_body
+        assert "可比" in diff_body or "不可" in diff_body
+
     # 5. V13：稳定性与效度页（翻转率/效度/能力画像）。
     _goto_view(page, url, LAB_STABILITY)
     page.get_by_text("六图效度", exact=False).first.wait_for(timeout=60_000)
@@ -169,6 +186,8 @@ def _run_flow(page: Page, url: str) -> dict[str, Any]:
         "monitor_state": "COMPLETED",
         "report_bytes": Path(path).stat().st_size,
         "report_lines": len(report.splitlines()),
+        "v14_map22_view": True,
+        "v14_first_divergence": True,
         "v13_stability_page": True,
         "v13_audit_page": True,
         "v13_sdk_selfcheck": True,

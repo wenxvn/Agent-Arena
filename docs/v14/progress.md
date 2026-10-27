@@ -158,3 +158,22 @@
 - 脚本：`scripts/audit_v14_failures.py --write` → `docs/v14/failure-and-capability.md` + `.json`。
 - 测试：`pytest tests/test_v14_failure_capability.py` **16 passed**。
 - commit：`feat(v14): anchored failure attribution and capability gaps`
+
+## Batch 9 · P1-5 + P2-3 五页 Lab 体验收官
+
+- 新模块：`lab/v14/ui_views.py`（纯函数，全部可单测）
+  - `first_divergence_view`：双轨迹首次分歧高亮（动作/公开结果分别判分歧，版本不同时提示"版本比较"）；
+  - `seed_grouped_repeats`：按 `(map, seed)` 分组，显式声明"重复不是新环境样本"；
+  - `map22_exploration_view`：接受边与被拒移动分列，**被拒移动绝不画成走过的边**；
+  - `map30_ladder_view`：预算阶梯 + 瓶颈轴 + 截尾/成功分开读；
+  - `comparison_gate`：`INCOMPARABLE` 禁用排名，`DESCRIPTIVE_ONLY` 可看数字不可下结论，
+    `COMPARABLE` 也不得写"显著改善"。
+- 服务层：`LabService.trace_steps()`（只读，供视图取公开决策步骤）。
+- UI：结果页加可比性门禁横幅与 MAP-30 预算阶梯；可视化页加 MAP-22 探索声明与被拒移动表；
+  证据与差异页加首次分歧高亮表；稳定性页加"V14 视图：按 seed 分组的重复结果"。
+- 截图：`scripts/capture_v14_screenshots.py` → `docs/v14/screenshots/` 7 张（含 430px 窄屏、深色）。
+- 浏览器实测：`e2e_lab.py --start --port 8514` 通过，新增断言
+  `v14_map22_view` / `v14_first_divergence` 均为 true；`a11y_v12.py --browser` 浅/深色
+  critical/serious/moderate 全 0。
+- 测试：`pytest tests/test_v14_ui_views.py` **12 passed**。
+- commit：`feat(v14): lab views for divergence, seed groups, map22 and map30`

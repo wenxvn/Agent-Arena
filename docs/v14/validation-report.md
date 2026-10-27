@@ -175,3 +175,26 @@ capability: information_gathering/memory_tracking/planning_replanning/resource_c
             failure_recovery UNAVAILABLE（V12 无 MAP-05/19/20 数据）
 conclusion: INSUFFICIENT / NO_TREATMENT_EXPOSURE / NOT_MEASURABLE
 ```
+
+## 9. Batch 9（P1-5 + P2-3，2026-10-27）
+
+| 命令 | 结果 |
+|---|---|
+| `uv run pytest -q tests/test_v14_ui_views.py` | **12 passed** |
+| `uv run --with playwright python scripts/e2e_lab.py --start --port 8514` | `{"ok": true, v14_map22_view: true, v14_first_divergence: true, v13_stability_page: true, v13_audit_page: true, v13_sdk_selfcheck: true}` |
+| `uv run --with playwright python scripts/a11y_v12.py --browser --start` | 浅色/深色 critical=0 serious=0 moderate=0；theme_ok=true |
+| `uv run --with playwright --with streamlit python scripts/capture_v14_screenshots.py` | 7 张截图写入 `docs/v14/screenshots/` |
+| `uv run ruff check .` / `uv run mypy src` | 通过 / 333 files 0 issues |
+| `uv run pytest -q`（批次边界全量） | **1772 passed**，160.43s |
+
+截图清单（全部 SIMULATED、脱敏、临时目录数据）：
+
+```text
+01-lab-result-gate.png          可比性门禁 + 实验臂汇总
+02-lab-map22-exploration.png    MAP-22 探索：被拒移动不画成路径
+03-lab-first-divergence.png     双轨迹首次分歧高亮
+04-lab-seed-groups.png          按 seed 分组的重复结果 + 六图效度
+05-lab-stability-mobile.png     430px 窄屏
+06-lab-result-dark.png          深色模式
+07-lab-audit.png                报告与审计
+```

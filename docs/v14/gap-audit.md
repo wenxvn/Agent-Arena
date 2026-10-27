@@ -30,7 +30,7 @@
 | P1-2 | 关键/候选地图效度再核验 | `PARTIAL` | `DONE` | `six_map_recheck` + `candidate_map_audit`（MAP-19/20/29 只读）；`map-audit.md` 第 1/3 节；12 测试 |
 | P1-3 | 七层失败归因审计 | `PARTIAL` | `DONE` | `lab/v14/failure_capability.py`（锚点三态 + 3 fixture + 层级可进性矩阵）；`failure-and-capability.md` 第 1 节 |
 | P1-4 | 六维能力画像稳健化 | `PARTIAL` | `DONE` | `capability_with_gaps`（UNAVAILABLE/seed/重复/缺口并列）；`failure-and-capability.md` 第 2 节 |
-| P1-5 | 轨迹 Diff 与六图可视化增强 | `PARTIAL` | `TODO` | — |
+| P1-5 | 轨迹 Diff 与六图可视化增强 | `PARTIAL` | `DONE` | `lab/v14/ui_views.py`（首次分歧/MAP-22/MAP-30/seed 分组）+ UI 集成 + 7 张截图；`docs/v14/screenshots/` |
 | P1-6 | 报告可复现与结论强度修正 | `PARTIAL` | `DONE` | `conclusion_strength`（三字段 + forbidden_claims）；`failure-and-capability.md` 第 3 节；16 测试 |
 
 ## 3. P2（7 项）
@@ -39,7 +39,7 @@
 |---|---|---|---|---|
 | P2-1 | CI 浏览器 E2E 正式门禁 | `PARTIAL` | `TODO` | — |
 | P2-2 | 大历史/冷启动/异常负载 | `PARTIAL` | `TODO` | — |
-| P2-3 | Lab Web 用户体验 | `PARTIAL` | `TODO` | — |
+| P2-3 | Lab Web 用户体验 | `PARTIAL` | `DONE` | 可比性门禁横幅、MAP-30 阶梯、窄屏/深色截图；`e2e_lab.py` 通过 + a11y 0 critical/serious/moderate |
 | P2-4 | 自动报告/导出一致性 | `PARTIAL` | `TODO` | — |
 | P2-5 | 第三方 Agent SDK 加固 | `PARTIAL` | `TODO` | — |
 | P2-6 | 本地账本/外部账单核对 | `DONE`/`BLOCKED_EXTERNAL` | `TODO` | — |

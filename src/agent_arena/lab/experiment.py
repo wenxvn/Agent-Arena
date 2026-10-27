@@ -1086,6 +1086,12 @@ class ExperimentService:
             )
         return output
 
+    def trace_steps(self, run_id: str) -> list[dict[str, Any]]:
+        """公开决策步骤（只读；供 V14 视图做逐轨迹对照）。"""
+
+        steps, _ = self._steps(run_id)
+        return steps
+
     def view_model(self, run_id: str) -> dict[str, Any]:
         """地图专属可视化 view-model（只读公开 trace）。"""
 

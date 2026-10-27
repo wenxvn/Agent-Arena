@@ -32,6 +32,14 @@ from agent_arena.lab.experiment import (
     preflight,
 )
 from agent_arena.lab.registry import agent_catalog
+from agent_arena.lab.v14.map_audit import map30_three_axis
+from agent_arena.lab.v14.ui_views import (
+    comparison_gate,
+    first_divergence_view,
+    map22_exploration_view,
+    map30_ladder_view,
+    seed_grouped_repeats,
+)
 from agent_arena.lab.visualization import FOCUS_MAPS
 from agent_arena.ui import theme
 from agent_arena.v10.runtime.catalog import seed_space
@@ -613,6 +621,11 @@ def _render_view_model(st: Any, model: dict[str, Any]) -> None:
                     for item in model["rejected_moves"][:5]
                 )
             )
+        exploration = map22_exploration_view(model)
+        st.info(exploration.get("statement") or exploration.get("reason") or "")
+        if exploration.get("rejected_rows"):
+            st.caption("被拒移动（**不画成路径**，只作为行为证据）：")
+            st.dataframe(exploration["rejected_rows"])
     elif kind == "maintenance_chain":
         st.dataframe(model.get("chain") or [])
     elif kind == "evidence_chain":
@@ -653,6 +666,32 @@ def _render_findings(st: Any, findings: list[Any]) -> None:
         ]
     )
 
+
+def _first_divergence(
+    service: Any, left_run_id: str, right_run_id: str, verdict: str
+) -> dict[str, Any]:
+    """构建首次分歧视图；任一轨迹缺失时返回可解释空态。"""
+
+    try:
+        left_steps = service.trace_steps(left_run_id)
+        right_steps = service.trace_steps(right_run_id)
+    except Exception as exc:  # noqa: BLE001 - 缺 trace 不应让页面崩
+        return {"available": False, "reason": f"读取轨迹失败：{exc}"}
+    if not left_steps or not right_steps:
+        return {"available": False, "reason": "至少一条轨迹没有公开决策步骤。"}
+    view = first_divergence_view(
+        left_steps, right_steps, left_label="A", right_label="B"
+    )
+    if view["first_divergence"] is None:
+        return {
+            "available": False,
+            "reason": (
+                "两条轨迹在公开动作与公开结果上完全一致（没有可高亮的分歧）。"
+                if verdict
+                else "没有可比较的步骤。"
+            ),
+        }
+    return {"available": True, "view": view}
 
 def _result_view(st: Any, get_lab: Callable[[], Any]) -> None:
     theme.page_head(
@@ -730,6 +769,18 @@ def _result_view(st: Any, get_lab: Callable[[], Any]) -> None:
         st.caption(note)
     for reason in comparison.get("reasons") or []:
         st.warning(reason)
+    gate = comparison_gate(
+        str(comparison.get("verdict") or ""), list(comparison.get("reasons") or [])
+    )
+    st.markdown(
+        theme.banner(
+            gate["headline"],
+            detail=f"{gate['reason']} — {gate['note']}",
+            tone_name="warning" if not gate["show_ranking"] else "info",
+            code=gate["verdict"],
+        ),
+        unsafe_allow_html=True,
+    )
 
     tabs = st.tabs(["概览", "逐局明细", "可视化", "证据与差异", "导出"])
     with tabs[0]:
@@ -743,6 +794,13 @@ def _result_view(st: Any, get_lab: Callable[[], Any]) -> None:
             ]
             or [{"类别": "尚未执行", "局数": 0}]
         )
+        if any(str(record.get("map_id")) == "MAP-30" for record in records):
+            st.header("MAP-30 预算阶梯")
+            axis = map30_three_axis(records)
+            ladder = map30_ladder_view(axis["tiers"])
+            st.dataframe(ladder["rows"])
+            st.caption(ladder["reading"])
+            st.caption(ladder["note"])
         st.header("配对明细（可比性逐对可见）")
         pairs = comparison.get("pairs") or []
         if pairs:
@@ -830,9 +888,14 @@ def _result_view(st: Any, get_lab: Callable[[], Any]) -> None:
         pair = st.session_state.get("lab_pair")
         if isinstance(pair, dict):
             diff = pair.get("diff") or {}
+            step_label = diff.get("first_divergence_step")
             st.markdown(
                 theme.banner(
-                    f"首次差异：第 {diff.get('first_divergence_step')} 步",
+                    (
+                        f"首次差异：第 {step_label} 步"
+                        if step_label is not None
+                        else "两条轨迹在公开动作序列上没有差异"
+                    ),
                     detail=str(diff.get("first_divergence_summary") or ""),
                     tone_name="accent",
                     code=str(pair.get("verdict")),
@@ -840,6 +903,46 @@ def _result_view(st: Any, get_lab: Callable[[], Any]) -> None:
                 unsafe_allow_html=True,
             )
             st.dataframe(diff.get("stage_deltas") or [])
+            divergence = _first_divergence(
+                service, str(left), str(right), str(pair.get("verdict") or "")
+            )
+            if divergence.get("available"):
+                view = divergence["view"]
+                st.markdown(
+                    theme.banner(
+                        f"首次分歧：第 {view['first_divergence']['step']} 步"
+                        f"（{view['first_divergence']['kind']}）",
+                        detail=(
+                            f"A {view['first_divergence']['left_action']} → "
+                            f"{view['first_divergence']['left_result']}；B "
+                            f"{view['first_divergence']['right_action']} → "
+                            f"{view['first_divergence']['right_result']}"
+                        ),
+                        tone_name="accent",
+                        code=view["first_divergence"]["anchor"],
+                    ),
+                    unsafe_allow_html=True,
+                )
+                if view.get("version_note"):
+                    st.warning(view["version_note"])
+                st.dataframe(
+                    [
+                        {
+                            "步": row["step"],
+                            "A 动作": row["left_action"],
+                            "A 结果": row["left_result"],
+                            "A 被拒": row["left_rejected"],
+                            "B 动作": row["right_action"],
+                            "B 结果": row["right_result"],
+                            "B 被拒": row["right_rejected"],
+                            "首次分歧": row["first_divergence"],
+                        }
+                        for row in view["rows"]
+                    ]
+                )
+                st.caption(view["note"])
+            elif divergence.get("reason"):
+                st.info(divergence["reason"])
             st.dataframe(pair.get("hypotheses") or [])
         else:
             st.caption("选择两个不同架构的局，生成事件序列对照与可验证假设。")
@@ -1026,6 +1129,27 @@ def _stability_view(st: Any, get_lab: Callable[[], Any]) -> None:
                 for arm in block["arms"]
             ]
         )
+    with st.expander("V14 视图：按 seed 分组的重复结果", expanded=False):
+        grouped = seed_grouped_repeats(
+            [
+                {
+                    "map_id": block["map_id"],
+                    "environment_seed": block["environment_seed"],
+                    "n": sum(arm["observations"] for arm in block["arms"]),
+                    "categories": sorted(
+                        {
+                            str(item)
+                            for arm in block["arms"]
+                            for item in (arm.get("categories") or [])
+                        }
+                    ),
+                    "evidence_label": "SEED_BLOCK",
+                }
+                for block in seed_blocks(analysis_records)
+            ]
+        )
+        st.dataframe(grouped["rows"])
+        st.caption(grouped["note"])
 
     st.divider()
     st.header("六图效度（构念层）")
