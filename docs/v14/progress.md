@@ -123,3 +123,19 @@
 - 测试：`pytest tests/test_v14_live_plan.py` **10 passed**。
 - 真实付费请求：**0**；状态 `PLANNED_ONLY` / `LIVE_PENDING`。
 - commit：`feat(v14): register plan A preflight with pinned single-factor arms`
+
+## Batch 7 · P1-1 + P1-2 MAP-30 与地图适用范围
+
+- 新模块：`lab/v14/map_audit.py`
+  - `map30_three_axis`：三档预算 × 请求/token/金额三维，逐档给出**瓶颈轴**与证据
+    （`REQUESTS` / `INPUT_TOKENS` / `COST_CNY` / `UNSPECIFIED`）；
+  - `map30_conservative_interval`：按已观测分布给可达决策区间（113–155 / 111–155 / 334–460），
+    明确"不是承诺"；候选档需批准；
+  - `six_map_recheck`：标签复算 + 独立 seed + 证据版本 + `DESCRIPTIVE_ONLY` 状态；
+  - `candidate_map_audit`：MAP-19/20/29 只读审计（seed 空间、公开字段、动作、规则条数、
+    指标、V10 登记、历史终态），结论上限 `NEEDS_MORE_EVIDENCE`。
+- 脚本：`scripts/audit_v14_maps.py --write` → `docs/v14/map-audit.md` + `.json`。
+- 关键发现：MAP-30 只有 90 请求档能明确归因为"撞满请求"（8/8）；180 请求与 600k token
+  两档的 5 局/7 局截尾**公开终态码没有暴露撞哪一维**，因此标 `UNSPECIFIED`，不强行归因。
+- 测试：`pytest tests/test_v14_map_audit.py` **12 passed**。
+- commit：`feat(v14): map applicability audit with MAP-30 three-axis ladder`

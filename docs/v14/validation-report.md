@@ -42,7 +42,7 @@ declared_total_runs: 229 -> 221（修正后一致）
 plans: A 54 / B 186 / C 221
 ```
 
-## 7. Batch 7–12
+## 8. Batch 8–12
 
 > 后续批次在此追加。
 
@@ -142,4 +142,20 @@ plan: 27 局（两臂子集 18）/ PLANNED_ONLY
 groups: E1-a(MAP-22, route_log) / E2-a(MAP-16, enabled) / E3(MAP-22, 组合对照)
 runs: 54  estimate: 2.11  upper: 27.00  recommended_cap: 5.00
 all_single_factor: true   all_seeds_valid: true   external_requests: 0
+```
+
+## 7. Batch 7（P1-1 + P1-2，2026-10-27）
+
+| 命令 | 结果 |
+|---|---|
+| `uv run python scripts/audit_v14_maps.py --write` | 生成 `map-audit.md` / `.json` |
+| `uv run pytest -q tests/test_v14_map_audit.py` | **12 passed** |
+| `uv run ruff check .` / `uv run mypy src` | 通过 / 331 files 0 issues |
+| `uv run pytest -q`（批次边界全量） | **1744 passed**，226.10s |
+
+```text
+six_map_labels: 08 CEILING / 16,18,22 SUITABLE / 26 CEILING / 30 CENSORED（全部 DESCRIPTIVE_ONLY）
+map30_axes: req=90 REQUESTS(8/8) / req=180 UNSPECIFIED / req=180+600k UNSPECIFIED
+map30_intervals: [113,155] / [111,155] / [334,460]
+candidates: MAP-19/20/29 → NEEDS_MORE_EVIDENCE（V12 无该三图数据）
 ```

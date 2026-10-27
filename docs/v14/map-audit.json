@@ -1,0 +1,566 @@
+{
+ "candidates": [
+  {
+   "actions": [
+    "adjust_loads",
+    "forecast_next",
+    "read_temperature",
+    "set_cooling",
+    "wait"
+   ],
+   "available": true,
+   "censored_runs": 0,
+   "historical_categories": {},
+   "historical_runs": 0,
+   "level": "简单",
+   "long_failure_prefix_runs": 0,
+   "map_id": "MAP-19",
+   "max_decisions": 0,
+   "max_requests": 0,
+   "metric_spec_count": 5,
+   "note": "本审计只读公开规则与历史终态；**不修改地图规则、不新增 seed、不声称这些图一定更适合反思**。",
+   "primary_metric": "map19.v10.production_credit",
+   "public_field_count": 16,
+   "public_fields": [
+    "accepted_ticks",
+    "active_cooling",
+    "cooling_budget",
+    "current_load_levels",
+    "current_temperatures",
+    "forecast_tolerance",
+    "goal",
+    "last_forecast_error",
+    "last_temperature_reading",
+    "pending_cooling_commands",
+    "production_points",
+    "production_target",
+    "rejected_ticks",
+    "temperature_bands",
+    "tick",
+    "ticks_remaining"
+   ],
+   "public_rules_count": 6,
+   "reflection_candidate": "NEEDS_MORE_EVIDENCE",
+   "rule_hash": "57b2e25d838fadb4473aab6571d5accfe674b57368e1a5a1884ff5c436390e83",
+   "rule_version": "v10.map19.1",
+   "seed_space": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "title": "温度临界点",
+   "v10_status": {
+    "construct_status": "FORCED",
+    "dcr_id": "DCR-V10-10",
+    "decision": "Batch 4：预测成为产能的必要条件；精确温度与误差反馈公开；no_forecast 0/4、fixed_vector_no_lag 0/4、naive_forecast 1/4（容差 2 对照实例）",
+    "environment_seeds": "4（0,1,2,3）",
+    "mimo": "V10 0/3（seed 0,1,2；CNY 0.15646452；含未知消费；另有 7 局重跑/中断保留）",
+    "oracle": "4/4（机制触发 4/4）",
+    "source": "docs/v10/map-status-matrix.csv（只读）",
+    "validity_status": "VALIDATED"
+   },
+   "world": "volcano"
+  },
+  {
+   "actions": [
+    "adjust_loads",
+    "open_bypass",
+    "read_temperature",
+    "set_flow",
+    "wait"
+   ],
+   "available": true,
+   "censored_runs": 0,
+   "historical_categories": {},
+   "historical_runs": 0,
+   "level": "中等",
+   "long_failure_prefix_runs": 0,
+   "map_id": "MAP-20",
+   "max_decisions": 0,
+   "max_requests": 0,
+   "metric_spec_count": 5,
+   "note": "本审计只读公开规则与历史终态；**不修改地图规则、不新增 seed、不声称这些图一定更适合反思**。",
+   "primary_metric": "map20.v10.production_credit",
+   "public_field_count": 16,
+   "public_fields": [
+    "bypass_settings",
+    "current_load_modes",
+    "current_temperatures_tenths",
+    "direct_flow_tenths",
+    "flow_rules",
+    "goal",
+    "heat_schedule",
+    "last_temperature_reading",
+    "previous_tick_flow_ledger",
+    "production_base",
+    "production_points",
+    "production_target",
+    "source_water_remaining_this_tick",
+    "temperature_bands",
+    "tick",
+    "ticks_remaining"
+   ],
+   "public_rules_count": 10,
+   "reflection_candidate": "NEEDS_MORE_EVIDENCE",
+   "rule_hash": "9640623b4f0c66eb5f1eb12ab1c6ba3e97194206fc2adba37eaf469f902db15f",
+   "rule_version": "v10.map20.2",
+   "seed_space": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "title": "冷却网络",
+   "v10_status": {
+    "construct_status": "FORCED",
+    "dcr_id": "DCR-V10-11",
+    "decision": "Batch 4：产能与热量解耦、动态热点公开；区阀 C 30→35；static_allocation 0/4、no_bypass 0/4、bypass_overuse 0/4；Oracle bypass_used 10/10 tick",
+    "environment_seeds": "4（0,1,2,3）",
+    "mimo": "V10 0/3（seed 0,1,2；CNY 0.24980340；另有 6 局重跑/中断保留）",
+    "oracle": "4/4（机制触发 4/4）",
+    "source": "docs/v10/map-status-matrix.csv（只读）",
+    "validity_status": "VALIDATED"
+   },
+   "world": "volcano"
+  },
+  {
+   "actions": [
+    "ask",
+    "compare_testimony",
+    "investigate",
+    "move",
+    "submit"
+   ],
+   "available": true,
+   "censored_runs": 0,
+   "historical_categories": {},
+   "historical_runs": 0,
+   "level": "中等",
+   "long_failure_prefix_runs": 0,
+   "map_id": "MAP-29",
+   "max_decisions": 0,
+   "max_requests": 0,
+   "metric_spec_count": 6,
+   "note": "本审计只读公开规则与历史终态；**不修改地图规则、不新增 seed、不声称这些图一定更适合反思**。",
+   "primary_metric": "map29.v10.contradiction_detection_rate",
+   "public_field_count": 13,
+   "public_fields": [
+    "comparison_results",
+    "goal",
+    "heard_answers",
+    "local_neighbors",
+    "location",
+    "npc_labels",
+    "npc_locations",
+    "physical_evidence",
+    "questions_remaining",
+    "questions_used",
+    "scenario_label",
+    "tick",
+    "visible_edges"
+   ],
+   "public_rules_count": 6,
+   "reflection_candidate": "NEEDS_MORE_EVIDENCE",
+   "rule_hash": "90fd7560d39362ae27543af35098335844220c3de085826f533e013b931f5b7b",
+   "rule_version": "v10.map29.1",
+   "seed_space": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "title": "不可靠的证人",
+   "v10_status": {
+    "construct_status": "FORCED",
+    "dcr_id": "DCR-V10-06",
+    "decision": "Batch 3：公开 compare 语义；角色分配随 seed 轮换且不公开；部分真实证人；四消融 0/4，启发式 8–9 问 4/4",
+    "environment_seeds": "4（0,1,2,3）",
+    "mimo": "V10 0/3（seed 0,1,2；CNY 0.10676056）",
+    "oracle": "4/4（机制触发 4/4）",
+    "source": "docs/v10/map-status-matrix.csv（只读）",
+    "validity_status": "VALIDATED"
+   },
+   "world": "castle"
+  }
+ ],
+ "focus_maps": [
+  "MAP-08",
+  "MAP-16",
+  "MAP-18",
+  "MAP-22",
+  "MAP-26",
+  "MAP-30"
+ ],
+ "map30": {
+  "candidate_tiers": [
+   {
+    "cost_cap_cny": 0.2,
+    "input_token_cap": 200000,
+    "request_cap": 90
+   },
+   {
+    "cost_cap_cny": 0.5,
+    "input_token_cap": 200000,
+    "request_cap": 180
+   },
+   {
+    "cost_cap_cny": 0.2,
+    "input_token_cap": 600000,
+    "request_cap": 180
+   }
+  ],
+  "caution": "候选档**需批准**，不得自动启用；新 MAP-30 高成本 LIVE 不默认纳入方案 A。",
+  "map_id": "MAP-30",
+  "reading": "预算阶梯的瓶颈轴必须分开看：请求先撞说明「步数不够」，token 先撞说明「上下文太长」，金额先撞说明「单价太高」。三者不能合并成一句「能力不足」。",
+  "runs": 27,
+  "schema": "v14-map30-three-axis-1",
+  "tiers": [
+   {
+    "accusation_rejected": 1,
+    "bottleneck_axis": "REQUESTS",
+    "bottleneck_evidence": "8/8 局撞满请求上限。",
+    "capacity": {
+     "available": true,
+     "decisions_per_request": 0.9944,
+     "estimated_supported_decisions": [
+      113,
+      155
+     ],
+     "input_token_cap": 200000,
+     "note": "区间来自已观测的 token/决策分布；下限按最贵观测、上限按最便宜观测。这不是对真实模型的承诺，也不含墙钟耗时。",
+     "observations": 9,
+     "request_cap": 90,
+     "tokens_per_decision": {
+      "p10": 1286.78,
+      "p50": 1700.35,
+      "p90": 1760.37
+     }
+    },
+    "censored": 8,
+    "censored_ratio": 0.8889,
+    "cost_cny": 0.887105,
+    "hit_cost": 0,
+    "hit_requests": 8,
+    "hit_tokens": 0,
+    "input_token_cap": 200000,
+    "max_decisions": 90,
+    "max_input_tokens": 166960,
+    "mechanism_failures": 1,
+    "request_cap": 90,
+    "runs": 9,
+    "successes": 0,
+    "tier": "req=90|tok=200000"
+   },
+   {
+    "accusation_rejected": 4,
+    "bottleneck_axis": "UNSPECIFIED",
+    "bottleneck_evidence": "5 局截尾，但公开终态码没有暴露具体撞到哪一维（请求/token/费用），不能强行归因。",
+    "capacity": {
+     "available": true,
+     "decisions_per_request": 0.997,
+     "estimated_supported_decisions": [
+      111,
+      155
+     ],
+     "input_token_cap": 200000,
+     "note": "区间来自已观测的 token/决策分布；下限按最贵观测、上限按最便宜观测。这不是对真实模型的承诺，也不含墙钟耗时。",
+     "observations": 9,
+     "request_cap": 180,
+     "tokens_per_decision": {
+      "p10": 1288.24,
+      "p50": 1717.07,
+      "p90": 1786.57
+     }
+    },
+    "censored": 5,
+    "censored_ratio": 0.5556,
+    "cost_cny": 1.0991872,
+    "hit_cost": 0,
+    "hit_requests": 0,
+    "hit_tokens": 0,
+    "input_token_cap": 200000,
+    "max_decisions": 147,
+    "max_input_tokens": 191524,
+    "mechanism_failures": 4,
+    "request_cap": 180,
+    "runs": 9,
+    "successes": 0,
+    "tier": "req=180|tok=200000"
+   },
+   {
+    "accusation_rejected": 2,
+    "bottleneck_axis": "UNSPECIFIED",
+    "bottleneck_evidence": "7 局截尾，但公开终态码没有暴露具体撞到哪一维（请求/token/费用），不能强行归因。",
+    "capacity": {
+     "available": true,
+     "decisions_per_request": 0.9976,
+     "estimated_supported_decisions": [
+      334,
+      460
+     ],
+     "input_token_cap": 600000,
+     "note": "区间来自已观测的 token/决策分布；下限按最贵观测、上限按最便宜观测。这不是对真实模型的承诺，也不含墙钟耗时。",
+     "observations": 9,
+     "request_cap": 180,
+     "tokens_per_decision": {
+      "p10": 1302.46,
+      "p50": 1739.22,
+      "p90": 1794.41
+     }
+    },
+    "censored": 7,
+    "censored_ratio": 0.7778,
+    "cost_cny": 1.49856088,
+    "hit_cost": 0,
+    "hit_requests": 0,
+    "hit_tokens": 0,
+    "input_token_cap": 600000,
+    "max_decisions": 168,
+    "max_input_tokens": 252683,
+    "mechanism_failures": 2,
+    "request_cap": 180,
+    "runs": 9,
+    "successes": 0,
+    "tier": "req=180|tok=600000"
+   }
+  ]
+ },
+ "map30_interval": {
+  "intervals": [
+   {
+    "available": true,
+    "bottleneck_axis": "REQUESTS",
+    "observed_max_decisions": 90,
+    "supported_decisions": [
+     113,
+     155
+    ],
+    "tier": "req=90|tok=200000",
+    "tokens_per_decision": {
+     "p10": 1286.78,
+     "p50": 1700.35,
+     "p90": 1760.37
+    }
+   },
+   {
+    "available": true,
+    "bottleneck_axis": "UNSPECIFIED",
+    "observed_max_decisions": 147,
+    "supported_decisions": [
+     111,
+     155
+    ],
+    "tier": "req=180|tok=200000",
+    "tokens_per_decision": {
+     "p10": 1288.24,
+     "p50": 1717.07,
+     "p90": 1786.57
+    }
+   },
+   {
+    "available": true,
+    "bottleneck_axis": "UNSPECIFIED",
+    "observed_max_decisions": 168,
+    "supported_decisions": [
+     334,
+     460
+    ],
+    "tier": "req=180|tok=600000",
+    "tokens_per_decision": {
+     "p10": 1302.46,
+     "p50": 1739.22,
+     "p90": 1794.41
+    }
+   }
+  ],
+  "note": "区间来自**已观测** token/决策分布：下限按最贵观测、上限按最便宜观测。它不是对真实模型的承诺，也不含墙钟时间；预检页只能显示「估计范围」。",
+  "schema": "v14-map30-interval-1"
+ },
+ "schema": "v14-map-audit-1",
+ "six_map": {
+  "ceiling_maps": [
+   "MAP-08",
+   "MAP-26"
+  ],
+  "floor_or_censored_maps": [
+   "MAP-30"
+  ],
+  "maps": [
+   {
+    "censored": 0,
+    "composite": "CEILING",
+    "evidence_version": "V12 real-runs（只读）",
+    "independent_seeds": [
+     0,
+     1,
+     2
+    ],
+    "labels": [
+     "CEILING"
+    ],
+    "map_id": "MAP-08",
+    "runs": 9,
+    "sample_note": "9 有效局 / 3 个独立 seed / 1 个实验文件",
+    "source_files": [
+     "main-54-runs.csv"
+    ],
+    "status": "DESCRIPTIVE_ONLY",
+    "success_rate": 1.0,
+    "successes": 9,
+    "trigger_display": "UNKNOWN (0 observed / 9 runs)",
+    "trigger_status": "UNKNOWN",
+    "valid_denominator": 9
+   },
+   {
+    "censored": 1,
+    "composite": "SUITABLE",
+    "evidence_version": "V12 real-runs（只读）",
+    "independent_seeds": [
+     0,
+     1,
+     2
+    ],
+    "labels": [
+     "SUITABLE"
+    ],
+    "map_id": "MAP-16",
+    "runs": 35,
+    "sample_note": "35 有效局 / 3 个独立 seed / 7 个实验文件",
+    "source_files": [
+     "ablation-planning-off-runs.csv",
+     "ablation-planning-on-runs.csv",
+     "ablation-reflection-off-runs.csv",
+     "ablation-reflection-on-runs.csv",
+     "main-54-runs.csv",
+     "replicate-16-18-b-runs.csv",
+     "replicate-16-18-runs.csv"
+    ],
+    "status": "DESCRIPTIVE_ONLY",
+    "success_rate": 0.2571,
+    "successes": 9,
+    "trigger_display": "UNKNOWN (0 observed / 35 runs)",
+    "trigger_status": "UNKNOWN",
+    "valid_denominator": 35
+   },
+   {
+    "censored": 0,
+    "composite": "SUITABLE",
+    "evidence_version": "V12 real-runs（只读）",
+    "independent_seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "labels": [
+     "SUITABLE"
+    ],
+    "map_id": "MAP-18",
+    "runs": 37,
+    "sample_note": "37 有效局 / 5 个独立 seed / 6 个实验文件",
+    "source_files": [
+     "ablation-memory-off-runs.csv",
+     "ablation-memory-on-runs.csv",
+     "main-54-runs.csv",
+     "map18-seed3-4-runs.csv",
+     "replicate-16-18-b-runs.csv",
+     "replicate-16-18-runs.csv"
+    ],
+    "status": "DESCRIPTIVE_ONLY",
+    "success_rate": 0.2162,
+    "successes": 8,
+    "trigger_display": "UNKNOWN (0 observed / 37 runs)",
+    "trigger_status": "UNKNOWN",
+    "valid_denominator": 37
+   },
+   {
+    "censored": 2,
+    "composite": "SUITABLE",
+    "evidence_version": "V12 real-runs（只读）",
+    "independent_seeds": [
+     0,
+     1,
+     2
+    ],
+    "labels": [
+     "SUITABLE"
+    ],
+    "map_id": "MAP-22",
+    "runs": 21,
+    "sample_note": "20 有效局 / 3 个独立 seed / 3 个实验文件",
+    "source_files": [
+     "main-54-runs.csv",
+     "map22-contract2-runs.csv",
+     "map22-route-log-runs.csv"
+    ],
+    "status": "DESCRIPTIVE_ONLY",
+    "success_rate": 0.15,
+    "successes": 3,
+    "trigger_display": "UNKNOWN (0 observed / 21 runs)",
+    "trigger_status": "UNKNOWN",
+    "valid_denominator": 20
+   },
+   {
+    "censored": 0,
+    "composite": "CEILING",
+    "evidence_version": "V12 real-runs（只读）",
+    "independent_seeds": [
+     0,
+     1,
+     2
+    ],
+    "labels": [
+     "CEILING"
+    ],
+    "map_id": "MAP-26",
+    "runs": 9,
+    "sample_note": "9 有效局 / 3 个独立 seed / 1 个实验文件",
+    "source_files": [
+     "main-54-runs.csv"
+    ],
+    "status": "DESCRIPTIVE_ONLY",
+    "success_rate": 1.0,
+    "successes": 9,
+    "trigger_display": "UNKNOWN (0 observed / 9 runs)",
+    "trigger_status": "UNKNOWN",
+    "valid_denominator": 9
+   },
+   {
+    "censored": 20,
+    "composite": "CENSORED",
+    "evidence_version": "V12 real-runs（只读）",
+    "independent_seeds": [
+     0,
+     1,
+     2
+    ],
+    "labels": [
+     "CENSORED"
+    ],
+    "map_id": "MAP-30",
+    "runs": 27,
+    "sample_note": "27 有效局 / 3 个独立 seed / 3 个实验文件",
+    "source_files": [
+     "main-54-runs.csv",
+     "map30-budget180-runs.csv",
+     "map30-token600k-runs.csv"
+    ],
+    "status": "DESCRIPTIVE_ONLY",
+    "success_rate": 0.0,
+    "successes": 0,
+    "trigger_display": "UNKNOWN (0 observed / 27 runs)",
+    "trigger_status": "UNKNOWN",
+    "valid_denominator": 27
+   }
+  ],
+  "note": "`SUITABLE` 只表示现有样本里出现成功率梯度；`CEILING`/`CENSORED` 只描述样本形态；机制触发全未知的图不能写 0/N。",
+  "schema": "v14-six-map-recheck-1",
+  "suitable_maps": [
+   "MAP-16",
+   "MAP-18",
+   "MAP-22"
+  ]
+ }
+}
