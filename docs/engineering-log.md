@@ -2056,3 +2056,60 @@ freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_
 - 真实模型效果 `WAITING_USER_APPROVAL`（方案 A/B/C 见 `docs/v13/live-budget-proposal.md`）。
 
 详见 `docs/v13/final-report.md`、`docs/v13/gap-audit.md`、`docs/v13/validation-report.md`。
+
+## 2026-10-27 · V14 Lab 1.2（Stage II Final Evidence & Delivery，离线/工程部分）
+
+### 起点与范围
+
+- 起点 HEAD `60c9ba2`（与提纲建议一致）；本轮 **0 局真实付费请求**，全部在离线/临时目录完成。
+- 不改冻结世界、不改 `v10/runtime`、不改 V8/V9/V10 账本与历史 trace；新增只读分析层 `lab/v14/`。
+
+### 修掉的测量缺陷（本轮的真实增量）
+
+1. `v13/validity.py` 的 `validity_markdown()` 把缺失的 `mechanism_triggered` 渲染成 `0/N`——
+   六图的"机制从未触发"是伪造的否定证据。改为 `observed_true / observed_false / unknown`
+   三档计数，全未知输出 `UNKNOWN (0 observed)`；`docs/v13/map-validity.md` 已加注修正。
+2. `docs/v13/live-budget-proposal.md` 算术错误：逐行 **221** 写成 229；方案 B 写 150 局（实为 186）；
+   方案 A 写 ¥1.68（实为 ¥2.11）；E2-d/E4/E5 预估未统一用 1.5 倍余量。已由脚本复算并修正。
+3. **DCR-V14-01**：历史 CSV 缺 `contract_version` / `prompt_hash`，MAP-22 的 contract-1/2
+   在数据层无法区分 → 新增 `protocol_group()`，多协议图标 `POOLED_ACROSS_PROTOCOLS` 禁止合并。
+4. **DCR-V14-03**：`memory.v2.bottleneck()` 在 `env_write` 下用"写入次数"比"路线长度"，
+   完整写入被判成 `RECORDED_TOO_SHORT` → 分析层新增 `memory_bottleneck_v14()`（源码未改）。
+5. 配对只用 `(map, seed, agent)` → 新增 8 元组条件身份 + seed 白名单 + 三档判定（P0-3）。
+
+### 新增模块（`src/agent_arena/lab/v14/`）
+
+- `data_audit.py`：未知/零分离、协议隔离、六图差异表、预算表算术复核；
+- `conditions.py`：8 元组条件身份、`budget_profile`/`sampling_profile`、配对统计、`DESCRIPTIVE_ONLY` 前提；
+- `agent_studies.py` / `planning_study.py` / `reflection_study.py`：三个 v2 策略的机制 probe、
+  单因子臂、成本归因、暴露门禁与选择偏倚防护；
+- `map_audit.py`：MAP-30 三维阶梯与保守区间、六图复算、MAP-19/20/29 只读候选审计；
+- `failure_capability.py`：锚点三态、正反 fixture、六维画像缺口、结论强度三字段；
+- `ui_views.py`：首次分歧高亮、seed 分组、MAP-22 探索（被拒移动不画成路径）、MAP-30 阶梯、可比性门禁；
+- `engineering.py`：冷启动/异常负载/TTL/长历史导出/导出一致性/SDK 加固/账本复算；
+- `live_plan.py`：LIVE 方案 A 预注册（54 局 / ¥2.11 预估 / ¥5.00 上限，`PLANNED_ONLY`）。
+
+### CI 与交付
+
+- `34a83fe` 移除 `lab-e2e` 的 `continue-on-error`（此前连续 7 次远端成功）。
+- 切换后第一次 **真实红灯** `40477841302`：本轮新增的 E2E 断言用固定 sleep 判断渲染时序。
+  修复（`babe194`）：改显式 `wait_for` + `--report` 工件 + `if: failure()` 上传。
+  **没有** skip/xfail/降级断言/恢复 `continue-on-error`。
+- 之后连续成功 **5 次**：`40482235016` / `40482773825` / `40486150217` / `40487657690` / `40488122409`；
+  其中后两次的 `V14 Lab 1.2 离线验收` 步骤也通过。
+
+### 验证
+
+`1790 pytest passed`、mypy 334 文件 0 issues、ruff clean、lock 通过、freeze 9/9 unchanged、
+recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 15/15、
+`verify_v13` 18/18、**`verify_v14` 14/14**、`e2e_lab`（含 V14 新断言）通过、
+`a11y_v12 --browser` 浅/深色 0 critical/serious/moderate、账本复算 159/159 + 5641 请求 + ¥5.43680012 + 0 重复 0 孤儿。
+
+### 未完成（如实记录）
+
+- 三个 v2 策略的真实收益 `LIVE_PENDING`（未获用户对模型/矩阵/总额批准，本轮 0 请求）；
+- 外部账单 `BLOCKED_EXTERNAL`（`NO_EXTERNAL_BILL_PROVIDED`）；
+- 本机 Playwright 自带 chromium 未装成（CDN 受限）→ `AGENT_ARENA_E2E_BROWSER=chromium` 标 `NOT_VERIFIED`；
+- 真机读屏 `NOT_VERIFIED`；macOS / Ollama 按用户指示暂缓。
+
+详见 `docs/v14/final-report.md`、`docs/v14/gap-audit.md`、`docs/v14/release-checklist.md`。
