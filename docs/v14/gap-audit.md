@@ -17,7 +17,7 @@
 |---|---|---|---|---|
 | P0-1 | HEAD/CI 证据基线审计 | `PARTIAL` | `DONE` | `baseline-audit.md`（10 项门禁复跑）、`ci-evidence.md`（10 次 run + 7 次连续 `lab-e2e` success） |
 | P0-2 | 历史数据/构念效度口径修正 | `DEFECT` | `DONE` | `lab/v13/validity.py` 三档计数；`lab/v14/data_audit.py`；`docs/v14/data-validity.md`；`budget-audit.md`；14 + 114 测试 |
-| P0-3 | 重复实验与单因子公平性强化 | `PARTIAL` | `DONE` | `lab/v14/conditions.py`（8 元组身份/seed 白名单/三档判定/配对字段）；`docs/v14/pairing-audit.md`、`experiment-protocol.md`；23 测试 |
+| P0-3 | 重复实验与单因子公平性强化 | `PARTIAL` | `DONE` | `lab/v14/conditions.py`（8 元组身份/seed 白名单/三档判定/配对字段）；`docs/v14/pairing-audit.md`、`experiment-protocol.md`、`live-plan.md`；33 测试 |
 | P0-4 | Memory v2 有效性方案与消融 | `PARTIAL` | `DONE（离线）/ LIVE_PENDING` | `lab/v14/agent_studies.py`（3 fixture + 单因子臂 + 36 局预检）；`docs/v14/agent-studies.md` 第 1 节；17 测试；DCR-V14-03 |
 | P0-5 | Planning v2 收益–成本验证 | `PARTIAL` | `DONE（离线）/ LIVE_PENDING` | `lab/v14/planning_study.py`（触发链 + 成本归因 + 3 组单因子 + 72 局预检）；`agent-studies.md` 第 2 节；14 测试 |
 | P0-6 | Reflection v2 激活与效果验证 | `PARTIAL` | `DONE（离线）/ LIVE_PENDING` | `lab/v14/reflection_study.py`（六态 + 三臂 + 暴露门禁 + 选择偏倚防护 + 27 局预检）；`agent-studies.md` 第 3 节；15 测试 |

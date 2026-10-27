@@ -1,0 +1,184 @@
+{
+ "checks": [
+  {
+   "agent_id": "memory.v2",
+   "changed_keys": [
+    "route_log"
+   ],
+   "control": "E1-a-control",
+   "group": "E1-a",
+   "manipulated_variable": "route_log",
+   "ok": true,
+   "reasons": [],
+   "treatment": "E1-a-treatment"
+  },
+  {
+   "agent_id": "planning.v2",
+   "changed_keys": [
+    "enabled"
+   ],
+   "control": "E2-a-control",
+   "group": "E2-a",
+   "manipulated_variable": "enabled",
+   "ok": true,
+   "reasons": [],
+   "treatment": "E2-a-treatment"
+  },
+  {
+   "agent_id": "reflection.v2",
+   "changed_keys": [
+    "enabled"
+   ],
+   "control": "E3-control",
+   "group": "E3",
+   "manipulated_variable": "enabled",
+   "ok": true,
+   "reasons": [],
+   "treatment": "E3-treatment"
+  }
+ ],
+ "plan": {
+  "all_seeds_valid": true,
+  "all_single_factor": true,
+  "approval_required": "需用户明确批准：模型名、实验矩阵、总费用上限、每局请求/token/费用阈值、未知 usage 处理与停止条件。未获批不得提交任何 LIVE 请求。",
+  "arms": {
+   "E1-a": [
+    "E1-a-control",
+    "E1-a-treatment"
+   ],
+   "E2-a": [
+    "E2-a-control",
+    "E2-a-treatment"
+   ],
+   "E3": [
+    "E3-control",
+    "E3-treatment"
+   ]
+  },
+  "combination_contrasts": [
+   {
+    "group": "E3",
+    "kind": "COMBINATION_CONTRAST",
+    "note": "E3 的 disabled→reflection_on 同时改「触发判定 + 是否请求 + 是否注入」，只能作为机制级组合对照；单因子结论需另跑 E3-trigger-only → E3-treatment（同样 18 局）。"
+   }
+  ],
+  "cost": {
+   "estimate_cny": 2.11,
+   "groups": [
+    {
+     "estimate_cny": 0.9,
+     "group": "E1-a",
+     "map_id": "MAP-22",
+     "runs": 18,
+     "unit_cost_cny": 0.03344638,
+     "upper_cny": 9.0
+    },
+    {
+     "estimate_cny": 0.31,
+     "group": "E2-a",
+     "map_id": "MAP-16",
+     "runs": 18,
+     "unit_cost_cny": 0.01153262,
+     "upper_cny": 9.0
+    },
+    {
+     "estimate_cny": 0.9,
+     "group": "E3",
+     "map_id": "MAP-22",
+     "runs": 18,
+     "unit_cost_cny": 0.03344638,
+     "upper_cny": 9.0
+    }
+   ],
+   "margin": 1.5,
+   "note": "预估 = 子局数 × V12 实测均价 × 1.5；上界 = 子局数 × 单局硬上限。上界远高于预估是 fail-closed 护栏，不是期望花费。",
+   "recommended_cap_cny": 5.0,
+   "runs": 54,
+   "upper_cny": 27.0
+  },
+  "groups": [
+   "E1-a",
+   "E2-a",
+   "E3"
+  ],
+  "limits": {
+   "per_run_cost_cap_cny": "0.50",
+   "per_run_decision_cap": "90",
+   "per_run_input_token_cap": "200000",
+   "per_run_request_cap": "90"
+  },
+  "live_status": "LIVE_PENDING",
+  "no_go_note": "V12 的 ¥6 历史授权已结束，剩余额度不延续；V14 不沿用旧 LiveApproval。",
+  "schema": "v14-live-plan-a-1",
+  "status": "PLANNED_ONLY",
+  "stop_rules": [
+   "任一局 unknown_spend → 立即停止整个批次并封账，不自动重试",
+   "累计结算达批准上限的 90% → 停止未开始的子局",
+   "Provider 连续 3 次错误 → 停止",
+   "发现契约/接口缺陷 → 停止，先写 DCR，修复后用新版本实验，不污染原计划",
+   "实际平均单局费用超过预估 2 倍 → 停止并重新申请",
+   "reflection_on 臂全部 0 触发 → 停止并记 NO_TREATMENT_EXPOSURE（改阈值须另立版本）"
+  ],
+  "sub_plans": {
+   "memory": {
+    "live_status": "LIVE_PENDING",
+    "runs": 36,
+    "status": "PLANNED_ONLY"
+   },
+   "planning": {
+    "live_status": "LIVE_PENDING",
+    "runs": 72,
+    "status": "PLANNED_ONLY"
+   },
+   "reflection": {
+    "live_status": "LIVE_PENDING",
+    "runs": 27,
+    "status": "PLANNED_ONLY"
+   }
+  }
+ },
+ "specs": [
+  {
+   "agent_id": "memory.v2",
+   "arm_id": "E1-a-control",
+   "config_hash": "9edbd2ea4414c3e0c2fb6de407064b491df99d72aac0a3a85d731b96a32a626f",
+   "group": "E1-a",
+   "runs": 9
+  },
+  {
+   "agent_id": "memory.v2",
+   "arm_id": "E1-a-treatment",
+   "config_hash": "8c59d3ffe95af5e96af3447c716ea5d2ae50001fe38bb80bf575c216992b7765",
+   "group": "E1-a",
+   "runs": 9
+  },
+  {
+   "agent_id": "planning.v2",
+   "arm_id": "E2-a-control",
+   "config_hash": "3a1b88d4acb801622afaa520d959ed4d76d0e0311c97377742dad8b0cdf796b1",
+   "group": "E2-a",
+   "runs": 9
+  },
+  {
+   "agent_id": "planning.v2",
+   "arm_id": "E2-a-treatment",
+   "config_hash": "8d1159bb9018467fc002d8ff600b2e63551f64c37846f0d4a2926999f1f0cc5a",
+   "group": "E2-a",
+   "runs": 9
+  },
+  {
+   "agent_id": "reflection.v2",
+   "arm_id": "E3-control",
+   "config_hash": "dd911955da9c651eb89457494ee2de7294b34f6aa2342b2073b24a4be50c1ca2",
+   "group": "E3",
+   "runs": 9
+  },
+  {
+   "agent_id": "reflection.v2",
+   "arm_id": "E3-treatment",
+   "config_hash": "9ee27d385bdf79b20028fef090030746c3eb80b4f80840fabfda8541666738a6",
+   "group": "E3",
+   "runs": 9
+  }
+ ]
+}

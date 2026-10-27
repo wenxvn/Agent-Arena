@@ -42,7 +42,7 @@ declared_total_runs: 229 -> 221（修正后一致）
 plans: A 54 / B 186 / C 221
 ```
 
-## 6. Batch 6–12
+## 7. Batch 7–12
 
 > 后续批次在此追加。
 
@@ -126,4 +126,20 @@ reflection_on   requests=15 triggered=3 cooldown_blocked=6 recoveries=2
 long_failure_on requests=15 triggered=3 quota_blocked=1 recoveries=3
 no_trigger_on   triggered=0 exposure=NO_TREATMENT_EXPOSURE
 plan: 27 局（两臂子集 18）/ PLANNED_ONLY
+```
+
+## 6. Batch 6（LIVE 方案 A 预注册，2026-10-27）
+
+| 命令 | 结果 |
+|---|---|
+| `uv run python scripts/plan_v14_live.py --check` | `PLANNED_ONLY`，54 局，¥2.11，上界 ¥27.00，6 规格 |
+| `uv run python scripts/plan_v14_live.py --write` | 生成 `live-plan.md` / `.json` |
+| `uv run pytest -q tests/test_v14_live_plan.py` | **10 passed** |
+| `uv run ruff check .` / `uv run mypy src` | 通过 / 330 files 0 issues |
+| `uv run pytest -q`（批次边界全量） | **1732 passed**，139.72s |
+
+```text
+groups: E1-a(MAP-22, route_log) / E2-a(MAP-16, enabled) / E3(MAP-22, 组合对照)
+runs: 54  estimate: 2.11  upper: 27.00  recommended_cap: 5.00
+all_single_factor: true   all_seeds_valid: true   external_requests: 0
 ```

@@ -107,3 +107,19 @@
 - 测试：`pytest tests/test_v14_reflection_study.py` **15 passed**；V14 累计 46 项。
 - 真实收益：`LIVE_PENDING`（零请求）。
 - commit：`feat(v14): reflection.v2 exposure gate and selection-bias guard`
+
+## Batch 6 · LIVE 方案 A 预注册（零请求）
+
+- 新模块：`lab/v14/live_plan.py`
+  - `plan_a_arms` / `plan_a_single_factor_checks`：E1-a（`route_log`，钉 `context_only`）、
+    E2-a（`enabled`）、E3（`disabled→reflection_on`，标为**机制级组合对照**）；
+  - `plan_a_specs`：6 个父实验规格，默认 `SIMULATED`（误跑也不产生真实请求）；
+  - `plan_a_cost_estimate`：按 V12 实测单价 × 1.5 余量 → **54 局 / ¥2.11 / 上界 ¥27.00**，
+    建议批准上限 **¥5.00**；单价缺失时 `estimate=None` 而不是 0；
+  - `plan_a_seed_audit`：seed 0/1/2 全部在白名单内；
+  - 停止条件 6 条（含 `unknown_spend`、90% 上限、连续 3 次 Provider 错误、
+    契约缺陷先写 DCR、费用超预估 2 倍、反思零触发按 `NO_TREATMENT_EXPOSURE`）。
+- 脚本：`scripts/plan_v14_live.py --check|--write` → `docs/v14/live-plan.md` + `.json`。
+- 测试：`pytest tests/test_v14_live_plan.py` **10 passed**。
+- 真实付费请求：**0**；状态 `PLANNED_ONLY` / `LIVE_PENDING`。
+- commit：`feat(v14): register plan A preflight with pinned single-factor arms`
