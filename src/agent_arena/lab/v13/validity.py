@@ -56,6 +56,65 @@ LONG_HORIZON_MAPS: tuple[str, ...] = ("MAP-30", "MAP-19", "MAP-20", "MAP-14")
 
 VALID_CATEGORIES = {"completed_success", "mechanism_failure", "budget_censored"}
 
+#: 机制触发字段的三种可观察状态（V14 P0-2：`UNKNOWN` 不得输出成 `0`）。
+TRIGGER_OBSERVED_TRUE = "OBSERVED_TRUE"
+TRIGGER_OBSERVED_FALSE = "OBSERVED_FALSE"
+TRIGGER_MIXED = "MIXED"
+TRIGGER_UNKNOWN = "UNKNOWN"
+
+def mechanism_triggered_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
+    """把 ``mechanism_triggered`` 拆成"观测到真 / 观测到假 / 未知"三档。
+
+    为什么必须拆：V12 的逐局 CSV **没有** ``mechanism_triggered`` 列，
+    ``record.get("mechanism_triggered")`` 返回 ``None``。旧实现用
+    ``sum(1 for item in selected if item.get("mechanism_triggered"))`` 直接算分子，
+    分母却用全部历史局，于是"字段不存在"被渲染成"0/N 从未触发"——这是
+    把缺失数据当成否定证据（V13 的 ``docs/v13/map-validity.md`` 已受影响）。
+
+    只有 ``is not None`` 的观测才进入分母；全未知时状态为 ``UNKNOWN``，
+    调用方必须显示 ``UNKNOWN (0 observed)`` 而不是 ``0/n``。
+    """
+
+    observed_true = 0
+    observed_false = 0
+    unknown = 0
+    for record in records:
+        value = record.get("mechanism_triggered")
+        if value is None:
+            unknown += 1
+        elif value:
+            observed_true += 1
+        else:
+            observed_false += 1
+    observed = observed_true + observed_false
+    if observed == 0:
+        status = TRIGGER_UNKNOWN
+    elif observed_false == 0:
+        status = TRIGGER_OBSERVED_TRUE
+    elif observed_true == 0:
+        status = TRIGGER_OBSERVED_FALSE
+    else:
+        status = TRIGGER_MIXED
+    return {
+        "observed_true": observed_true,
+        "observed_false": observed_false,
+        "unknown": unknown,
+        "observed": observed,
+        "total": len(records),
+        "status": status,
+        "available": observed > 0,
+    }
+
+def format_trigger_ratio(summary: dict[str, Any]) -> str:
+    """统一的展示口径（Markdown / UI / CSV 共用）。"""
+
+    if not summary.get("available"):
+        return f"UNKNOWN (0 observed / {summary.get('total', 0)} runs)"
+    text = f"{summary['observed_true']}/{summary['observed']}"
+    if summary.get("unknown"):
+        text += f" ({summary['unknown']} unknown)"
+    return text
+
 
 def _ratio(numerator: int, denominator: int) -> float | None:
     return round(numerator / denominator, 4) if denominator else None
@@ -226,7 +285,7 @@ def map_validity(
     invalid_actions = sum(int(item.get("invalid_actions") or 0) for item in selected)
     decisions = sum(int(item.get("decisions") or 0) for item in selected)
     arms = sorted({str(item.get("agent_id")) for item in selected})
-    triggered = sum(1 for item in selected if item.get("mechanism_triggered"))
+    trigger = mechanism_triggered_summary(selected)
 
     if len(selected) < min_runs:
         labels.append(LABEL_NEEDS_EVIDENCE)
@@ -252,17 +311,27 @@ def map_validity(
             )
     if valid and 0 < successes < len(valid):
         labels.append(LABEL_SUITABLE)
-        reasons.append(f"{successes}/{len(valid)} 有梯度：可区分不同实验臂。")
-    if not triggered and len(selected) >= min_runs and LABEL_SUITABLE in labels:
-        # 只有"字段存在且确实为 0"才算机制未触发；历史 CSV 没有该列时不能据此下结论。
-        present = any(item.get("mechanism_triggered") is not None for item in selected)
-        if present:
+        reasons.append(
+            f"{successes}/{len(valid)} 有成功率差异：**只说明现有样本里出现了梯度**，"
+            "不证明构念效度充分，也不证明该梯度由策略引起。"
+        )
+    if trigger["observed_true"] == 0 and len(selected) >= min_runs and LABEL_SUITABLE in labels:
+        # 只有"字段存在且确实观测到假"才算机制未触发；历史 CSV 没有该列时不能据此下结论。
+        if trigger["status"] == TRIGGER_OBSERVED_FALSE:
             labels.append(LABEL_NEEDS_EVIDENCE)
-            reasons.append("核心机制从未被触发（mechanism_triggered 全为 0）。")
+            reasons.append(
+                f"核心机制在 {trigger['observed']} 局可观察观测中从未被触发"
+                "（mechanism_triggered 全为 false）。"
+            )
+        elif trigger["status"] == TRIGGER_UNKNOWN:
+            reasons.append(
+                "历史记录没有 mechanism_triggered 字段：机制触发情况 UNKNOWN，"
+                "需在运行时重新采集，不能用 0 冒充。"
+            )
         else:
             reasons.append(
-                "历史记录没有 mechanism_triggered 字段：机制触发情况未知，"
-                "需在 V13 运行时重新采集，不能用 0 冒充。"
+                f"机制触发只覆盖 {trigger['observed']}/{trigger['total']} 局"
+                f"（{trigger['unknown']} 局未知），样本不足以断言未触发。"
             )
     if not labels:
         labels.append(LABEL_NEEDS_EVIDENCE)
@@ -281,10 +350,16 @@ def map_validity(
         "success_rate": _ratio(successes, len(valid)),
         "arms": arms,
         "mechanism_tools": list(MECHANISM_TOOLS.get(map_id, ())),
-        "mechanism_triggered_runs": triggered,
-        "mechanism_triggered_available": any(
-            item.get("mechanism_triggered") is not None for item in selected
-        ),
+        # 兼容 V13 调用方：``mechanism_triggered_runs`` 现在只表示"观测到真"的局数，
+        # 分母必须看 ``mechanism_triggered_observed``，不能再用 ``runs``。
+        "mechanism_triggered_runs": trigger["observed_true"],
+        "mechanism_triggered_available": trigger["available"],
+        "mechanism_triggered_observed": trigger["observed"],
+        "mechanism_triggered_observed_true": trigger["observed_true"],
+        "mechanism_triggered_observed_false": trigger["observed_false"],
+        "mechanism_triggered_unknown": trigger["unknown"],
+        "mechanism_triggered_status": trigger["status"],
+        "mechanism_triggered_display": format_trigger_ratio(trigger),
         "invalid_actions": invalid_actions,
         "decisions": decisions,
         "reasons": reasons,
@@ -374,7 +449,7 @@ def validity_markdown(audit: dict[str, Any]) -> str:
             f"| {row['map_id']} | `{row['composite']}` | {row['valid_denominator']} | "
             f"{row['successes']} | {row['mechanism_failures']} | {row['budget_censored']} | "
             f"{row['success_rate'] if row['success_rate'] is not None else '—'} | "
-            f"{row['mechanism_triggered_runs']}/{row['runs']} |"
+            f"{row.get('mechanism_triggered_display') or 'UNKNOWN'} |"
         )
     lines += ["", "## 逐图理由", ""]
     for row in audit.get("maps") or []:
@@ -442,12 +517,18 @@ __all__ = [
     "LABEL_NEEDS_EVIDENCE",
     "LABEL_SUITABLE",
     "LONG_HORIZON_MAPS",
+    "TRIGGER_MIXED",
+    "TRIGGER_OBSERVED_FALSE",
+    "TRIGGER_OBSERVED_TRUE",
+    "TRIGGER_UNKNOWN",
     "VALIDITY_LABELS",
     "budget_capacity",
+    "format_trigger_ratio",
     "map30_failure_class",
     "map30_ladder",
     "map30_markdown",
     "map_validity",
+    "mechanism_triggered_summary",
     "six_map_audit",
     "validity_markdown",
 ]

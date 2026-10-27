@@ -22,3 +22,7 @@ logs/
 .DS_Store
 .idea/
 .vscode/
+
+# Pi/Ralph local loop state
+.ralph/
+.v14tmp/

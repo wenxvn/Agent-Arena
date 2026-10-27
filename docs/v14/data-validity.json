@@ -1,0 +1,812 @@
+{
+ "budget": {
+  "declared_total_matches": true,
+  "declared_total_runs": 221,
+  "margin": 1.5,
+  "note": "``recomputed_estimate_cny`` 按文档自己声明的 1.5 倍余量公式（子局数 × V12 实测均价 × 余量）重算；与 ``estimate_cny`` 不一致的行说明原表未统一使用该公式。",
+  "plans": {
+   "A": {
+    "estimate_cny": 2.11,
+    "groups": [
+     "E1-a",
+     "E2-a",
+     "E3-a"
+    ],
+    "recomputed_estimate_cny": 2.11,
+    "runs": 54,
+    "upper_cny": 27.0
+   },
+   "B": {
+    "estimate_cny": 5.6,
+    "groups": [
+     "E0-a",
+     "E0-b",
+     "E1-a",
+     "E1-b",
+     "E2-a",
+     "E2-b",
+     "E2-c",
+     "E2-d",
+     "E3-a",
+     "E3-b"
+    ],
+    "recomputed_estimate_cny": 5.6,
+    "runs": 186,
+    "upper_cny": 93.0
+   },
+   "C": {
+    "estimate_cny": 10.97,
+    "groups": [
+     "E0-a",
+     "E0-b",
+     "E1-a",
+     "E1-b",
+     "E2-a",
+     "E2-b",
+     "E2-c",
+     "E2-d",
+     "E3-a",
+     "E3-b",
+     "E4",
+     "E5"
+    ],
+    "recomputed_estimate_cny": 10.97,
+    "runs": 221,
+    "upper_cny": 103.75
+   }
+  },
+  "row_count": 12,
+  "rows": [
+   {
+    "content": "采样复现（三臂）",
+    "design": "3 臂 × 3",
+    "estimate_cny": 0.47,
+    "estimate_matches_formula": true,
+    "group": "E0-a",
+    "maps": "MAP-16 / 0,1,2",
+    "per_run_cap": "90 请求 / 200k tok / ¥0.50",
+    "recomputed_estimate": 0.47,
+    "runs": 27,
+    "unit_cost_cny": 0.01153262,
+    "upper_cny": 13.5
+   },
+   {
+    "content": "采样复现（三臂）",
+    "design": "3 臂 × 3",
+    "estimate_cny": 0.48,
+    "estimate_matches_formula": true,
+    "group": "E0-b",
+    "maps": "MAP-18 / 0,1,2",
+    "per_run_cap": "同上",
+    "recomputed_estimate": 0.48,
+    "runs": 27,
+    "unit_cost_cny": 0.01176558,
+    "upper_cny": 13.5
+   },
+   {
+    "content": "`route_log` off vs on（context_only）",
+    "design": "2 臂 × 3",
+    "estimate_cny": 0.9,
+    "estimate_matches_formula": true,
+    "group": "E1-a",
+    "maps": "MAP-22 / 0,1,2",
+    "per_run_cap": "90 / 200k / ¥0.50",
+    "recomputed_estimate": 0.9,
+    "runs": 18,
+    "unit_cost_cny": 0.03344638,
+    "upper_cny": 9.0
+   },
+   {
+    "content": "`env_write` vs `context_only`",
+    "design": "2 臂 × 3",
+    "estimate_cny": 0.9,
+    "estimate_matches_formula": true,
+    "group": "E1-b",
+    "maps": "MAP-22 / 0,1,2",
+    "per_run_cap": "90 / 200k / ¥0.50",
+    "recomputed_estimate": 0.9,
+    "runs": 18,
+    "unit_cost_cny": 0.03344638,
+    "upper_cny": 9.0
+   },
+   {
+    "content": "planning on/off",
+    "design": "2 臂 × 3",
+    "estimate_cny": 0.31,
+    "estimate_matches_formula": true,
+    "group": "E2-a",
+    "maps": "MAP-16 / 0,1,2",
+    "per_run_cap": "90 / 200k / ¥0.50",
+    "recomputed_estimate": 0.31,
+    "runs": 18,
+    "unit_cost_cny": 0.01153262,
+    "upper_cny": 9.0
+   },
+   {
+    "content": "重规划 off",
+    "design": "2 臂 × 3",
+    "estimate_cny": 0.21,
+    "estimate_matches_formula": true,
+    "group": "E2-b",
+    "maps": "MAP-16 / 1,2",
+    "per_run_cap": "90 / 200k / ¥0.50",
+    "recomputed_estimate": 0.21,
+    "runs": 12,
+    "unit_cost_cny": 0.01153262,
+    "upper_cny": 6.0
+   },
+   {
+    "content": "低频 Planner",
+    "design": "2 臂 × 3",
+    "estimate_cny": 0.21,
+    "estimate_matches_formula": true,
+    "group": "E2-c",
+    "maps": "MAP-16 / 1,2",
+    "per_run_cap": "90 / 200k / ¥0.50",
+    "recomputed_estimate": 0.21,
+    "runs": 12,
+    "unit_cost_cny": 0.01153262,
+    "upper_cny": 6.0
+   },
+   {
+    "content": "planning on/off",
+    "design": "2 臂 × 3",
+    "estimate_cny": 0.32,
+    "estimate_matches_formula": true,
+    "group": "E2-d",
+    "maps": "MAP-18 / 0,1,2",
+    "per_run_cap": "90 / 200k / ¥0.50",
+    "recomputed_estimate": 0.32,
+    "runs": 18,
+    "unit_cost_cny": 0.01176558,
+    "upper_cny": 9.0
+   },
+   {
+    "content": "reflection off vs on",
+    "design": "2 臂 × 3",
+    "estimate_cny": 0.9,
+    "estimate_matches_formula": true,
+    "group": "E3-a",
+    "maps": "MAP-22 / 0,1,2",
+    "per_run_cap": "90 / 200k / ¥0.50",
+    "recomputed_estimate": 0.9,
+    "runs": 18,
+    "unit_cost_cny": 0.03344638,
+    "upper_cny": 9.0
+   },
+   {
+    "content": "on vs trigger-only",
+    "design": "2 臂 × 3",
+    "estimate_cny": 0.9,
+    "estimate_matches_formula": true,
+    "group": "E3-b",
+    "maps": "MAP-22 / 0,1,2",
+    "per_run_cap": "90 / 200k / ¥0.50",
+    "recomputed_estimate": 0.9,
+    "runs": 18,
+    "unit_cost_cny": 0.03344638,
+    "upper_cny": 9.0
+   },
+   {
+    "content": "MAP-30 三档预算",
+    "design": "1 臂 × 3 档 × 3",
+    "estimate_cny": 5.23,
+    "estimate_matches_formula": true,
+    "group": "E4",
+    "maps": "MAP-30 / 0,1,2",
+    "per_run_cap": "180 请求 / 600k tok / ¥0.25",
+    "recomputed_estimate": 5.23,
+    "runs": 27,
+    "unit_cost_cny": 0.12906863,
+    "upper_cny": 6.75
+   },
+   {
+    "content": "独立验证（holdout seed）",
+    "design": "2 臂 × 2",
+    "estimate_cny": 0.14,
+    "estimate_matches_formula": true,
+    "group": "E5",
+    "maps": "MAP-16/18 / 3,4",
+    "per_run_cap": "90 / 200k / ¥0.50",
+    "recomputed_estimate": 0.14,
+    "runs": 8,
+    "unit_cost_cny": 0.01153262,
+    "upper_cny": 4.0
+   }
+  ],
+  "schema": "v14-budget-audit-1",
+  "totals": {
+   "estimate_cny": 10.97,
+   "recomputed_estimate_cny": 10.97,
+   "runs": 221,
+   "upper_cny": 103.75
+  },
+  "unit_costs": {
+   "MAP-08": {
+    "cost_cny": 0.00302989,
+    "input_tokens": 3039.22,
+    "requests": 3.8889,
+    "runs": 9
+   },
+   "MAP-16": {
+    "cost_cny": 0.01153262,
+    "input_tokens": 18411.23,
+    "requests": 15.4857,
+    "runs": 35
+   },
+   "MAP-18": {
+    "cost_cny": 0.01176558,
+    "input_tokens": 17320.97,
+    "requests": 9.7297,
+    "runs": 37
+   },
+   "MAP-22": {
+    "cost_cny": 0.03344638,
+    "input_tokens": 47121.38,
+    "requests": 52.0476,
+    "runs": 21
+   },
+   "MAP-26": {
+    "cost_cny": 0.00210714,
+    "input_tokens": 2634.67,
+    "requests": 3.3333,
+    "runs": 9
+   },
+   "MAP-30": {
+    "cost_cny": 0.12906863,
+    "input_tokens": 174530.04,
+    "requests": 109.6296,
+    "runs": 27
+   }
+  }
+ },
+ "protocol": {
+  "maps": [
+   {
+    "groups": [
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.027269,
+      "file": "main-54-runs.csv",
+      "fingerprint": "b4db25437572",
+      "invalid": 0,
+      "kind": "matrix",
+      "mechanism_failures": 0,
+      "prompt_hash_recorded": false,
+      "runs": 9,
+      "success_rate": 1.0,
+      "successes": 9,
+      "valid": 9
+     }
+    ],
+    "map_id": "MAP-08",
+    "note": "只有一个协议分组，可在组内聚合。",
+    "pooling_allowed": true,
+    "protocol_groups": 1,
+    "runs": 9,
+    "status": "SINGLE_PROTOCOL",
+    "trigger": {
+     "available": false,
+     "observed": 0,
+     "observed_false": 0,
+     "observed_true": 0,
+     "status": "UNKNOWN",
+     "total": 9,
+     "unknown": 9
+    }
+   },
+   {
+    "groups": [
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.00788636,
+      "file": "ablation-planning-off-runs.csv",
+      "fingerprint": "a7fce40e8aaf",
+      "invalid": 0,
+      "kind": "ablation",
+      "mechanism_failures": 2,
+      "prompt_hash_recorded": false,
+      "runs": 2,
+      "success_rate": 0.0,
+      "successes": 0,
+      "valid": 2
+     },
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.03018364,
+      "file": "ablation-planning-on-runs.csv",
+      "fingerprint": "a7fce40e8aaf",
+      "invalid": 0,
+      "kind": "ablation",
+      "mechanism_failures": 1,
+      "prompt_hash_recorded": false,
+      "runs": 2,
+      "success_rate": 0.5,
+      "successes": 1,
+      "valid": 2
+     },
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.00156984,
+      "file": "ablation-reflection-off-runs.csv",
+      "fingerprint": "a7fce40e8aaf",
+      "invalid": 0,
+      "kind": "ablation",
+      "mechanism_failures": 1,
+      "prompt_hash_recorded": false,
+      "runs": 2,
+      "success_rate": 0.5,
+      "successes": 1,
+      "valid": 2
+     },
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.00476456,
+      "file": "ablation-reflection-on-runs.csv",
+      "fingerprint": "a7fce40e8aaf",
+      "invalid": 0,
+      "kind": "ablation",
+      "mechanism_failures": 1,
+      "prompt_hash_recorded": false,
+      "runs": 2,
+      "success_rate": 0.5,
+      "successes": 1,
+      "valid": 2
+     },
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.09320176,
+      "file": "main-54-runs.csv",
+      "fingerprint": "a7fce40e8aaf",
+      "invalid": 0,
+      "kind": "matrix",
+      "mechanism_failures": 7,
+      "prompt_hash_recorded": false,
+      "runs": 9,
+      "success_rate": 0.2222,
+      "successes": 2,
+      "valid": 9
+     },
+     {
+      "censored": 1,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.14845292,
+      "file": "replicate-16-18-b-runs.csv",
+      "fingerprint": "a7fce40e8aaf",
+      "invalid": 0,
+      "kind": "replicate",
+      "mechanism_failures": 7,
+      "prompt_hash_recorded": false,
+      "runs": 9,
+      "success_rate": 0.1111,
+      "successes": 1,
+      "valid": 9
+     },
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.11758264,
+      "file": "replicate-16-18-runs.csv",
+      "fingerprint": "a7fce40e8aaf",
+      "invalid": 0,
+      "kind": "replicate",
+      "mechanism_failures": 6,
+      "prompt_hash_recorded": false,
+      "runs": 9,
+      "success_rate": 0.3333,
+      "successes": 3,
+      "valid": 9
+     }
+    ],
+    "map_id": "MAP-16",
+    "note": "存在多个协议分组：任何成功率/均值都不得跨组合并；只能逐组报告或按组排除（P0-2 / P0-3）。",
+    "pooling_allowed": false,
+    "protocol_groups": 7,
+    "runs": 35,
+    "status": "POOLED_ACROSS_PROTOCOLS",
+    "trigger": {
+     "available": false,
+     "observed": 0,
+     "observed_false": 0,
+     "observed_true": 0,
+     "status": "UNKNOWN",
+     "total": 35,
+     "unknown": 35
+    }
+   },
+   {
+    "groups": [
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.0215134,
+      "file": "ablation-memory-off-runs.csv",
+      "fingerprint": "c2de68672e8d",
+      "invalid": 0,
+      "kind": "ablation",
+      "mechanism_failures": 2,
+      "prompt_hash_recorded": false,
+      "runs": 2,
+      "success_rate": 0.0,
+      "successes": 0,
+      "valid": 2
+     },
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.03034648,
+      "file": "ablation-memory-on-runs.csv",
+      "fingerprint": "c2de68672e8d",
+      "invalid": 0,
+      "kind": "ablation",
+      "mechanism_failures": 2,
+      "prompt_hash_recorded": false,
+      "runs": 2,
+      "success_rate": 0.0,
+      "successes": 0,
+      "valid": 2
+     },
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.12415308,
+      "file": "main-54-runs.csv",
+      "fingerprint": "c2de68672e8d",
+      "invalid": 0,
+      "kind": "matrix",
+      "mechanism_failures": 7,
+      "prompt_hash_recorded": false,
+      "runs": 9,
+      "success_rate": 0.2222,
+      "successes": 2,
+      "valid": 9
+     },
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.0701922,
+      "file": "map18-seed3-4-runs.csv",
+      "fingerprint": "c2de68672e8d",
+      "invalid": 0,
+      "kind": "matrix",
+      "mechanism_failures": 3,
+      "prompt_hash_recorded": false,
+      "runs": 6,
+      "success_rate": 0.5,
+      "successes": 3,
+      "valid": 6
+     },
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.09081848,
+      "file": "replicate-16-18-b-runs.csv",
+      "fingerprint": "c2de68672e8d",
+      "invalid": 0,
+      "kind": "replicate",
+      "mechanism_failures": 7,
+      "prompt_hash_recorded": false,
+      "runs": 9,
+      "success_rate": 0.2222,
+      "successes": 2,
+      "valid": 9
+     },
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.09830268,
+      "file": "replicate-16-18-runs.csv",
+      "fingerprint": "c2de68672e8d",
+      "invalid": 0,
+      "kind": "replicate",
+      "mechanism_failures": 8,
+      "prompt_hash_recorded": false,
+      "runs": 9,
+      "success_rate": 0.1111,
+      "successes": 1,
+      "valid": 9
+     }
+    ],
+    "map_id": "MAP-18",
+    "note": "存在多个协议分组：任何成功率/均值都不得跨组合并；只能逐组报告或按组排除（P0-2 / P0-3）。",
+    "pooling_allowed": false,
+    "protocol_groups": 6,
+    "runs": 37,
+    "status": "POOLED_ACROSS_PROTOCOLS",
+    "trigger": {
+     "available": false,
+     "observed": 0,
+     "observed_false": 0,
+     "observed_true": 0,
+     "status": "UNKNOWN",
+     "total": 37,
+     "unknown": 37
+    }
+   },
+   {
+    "groups": [
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.14253072,
+      "file": "map22-route-log-runs.csv",
+      "fingerprint": "d11f8428e4f9",
+      "invalid": 0,
+      "kind": "ablation",
+      "mechanism_failures": 2,
+      "prompt_hash_recorded": false,
+      "runs": 3,
+      "success_rate": 0.3333,
+      "successes": 1,
+      "valid": 3
+     },
+     {
+      "censored": 2,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.32111808,
+      "file": "main-54-runs.csv",
+      "fingerprint": "d11f8428e4f9",
+      "invalid": 1,
+      "kind": "matrix",
+      "mechanism_failures": 4,
+      "prompt_hash_recorded": false,
+      "runs": 9,
+      "success_rate": 0.25,
+      "successes": 2,
+      "valid": 8
+     },
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.23872508,
+      "file": "map22-contract2-runs.csv",
+      "fingerprint": "d11f8428e4f9",
+      "invalid": 0,
+      "kind": "version_rerun",
+      "mechanism_failures": 9,
+      "prompt_hash_recorded": false,
+      "runs": 9,
+      "success_rate": 0.0,
+      "successes": 0,
+      "valid": 9
+     }
+    ],
+    "map_id": "MAP-22",
+    "note": "存在多个协议分组：任何成功率/均值都不得跨组合并；只能逐组报告或按组排除（P0-2 / P0-3）。",
+    "pooling_allowed": false,
+    "protocol_groups": 3,
+    "runs": 21,
+    "status": "POOLED_ACROSS_PROTOCOLS",
+    "trigger": {
+     "available": false,
+     "observed": 0,
+     "observed_false": 0,
+     "observed_true": 0,
+     "status": "UNKNOWN",
+     "total": 21,
+     "unknown": 21
+    }
+   },
+   {
+    "groups": [
+     {
+      "censored": 0,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.01896424,
+      "file": "main-54-runs.csv",
+      "fingerprint": "5c11fc0ae4b4",
+      "invalid": 0,
+      "kind": "matrix",
+      "mechanism_failures": 0,
+      "prompt_hash_recorded": false,
+      "runs": 9,
+      "success_rate": 1.0,
+      "successes": 9,
+      "valid": 9
+     }
+    ],
+    "map_id": "MAP-26",
+    "note": "只有一个协议分组，可在组内聚合。",
+    "pooling_allowed": true,
+    "protocol_groups": 1,
+    "runs": 9,
+    "status": "SINGLE_PROTOCOL",
+    "trigger": {
+     "available": false,
+     "observed": 0,
+     "observed_false": 0,
+     "observed_true": 0,
+     "status": "UNKNOWN",
+     "total": 9,
+     "unknown": 9
+    }
+   },
+   {
+    "groups": [
+     {
+      "censored": 5,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 1.0991872,
+      "file": "map30-budget180-runs.csv",
+      "fingerprint": "32ef45109ac5",
+      "invalid": 0,
+      "kind": "budget_extension",
+      "mechanism_failures": 4,
+      "prompt_hash_recorded": false,
+      "runs": 9,
+      "success_rate": 0.0,
+      "successes": 0,
+      "valid": 9
+     },
+     {
+      "censored": 7,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 1.49856088,
+      "file": "map30-token600k-runs.csv",
+      "fingerprint": "32ef45109ac5",
+      "invalid": 0,
+      "kind": "budget_extension",
+      "mechanism_failures": 2,
+      "prompt_hash_recorded": false,
+      "runs": 9,
+      "success_rate": 0.0,
+      "successes": 0,
+      "valid": 9
+     },
+     {
+      "censored": 8,
+      "contract_version": "UNKNOWN",
+      "cost_cny": 0.887105,
+      "file": "main-54-runs.csv",
+      "fingerprint": "32ef45109ac5",
+      "invalid": 0,
+      "kind": "matrix",
+      "mechanism_failures": 1,
+      "prompt_hash_recorded": false,
+      "runs": 9,
+      "success_rate": 0.0,
+      "successes": 0,
+      "valid": 9
+     }
+    ],
+    "map_id": "MAP-30",
+    "note": "存在多个协议分组：任何成功率/均值都不得跨组合并；只能逐组报告或按组排除（P0-2 / P0-3）。",
+    "pooling_allowed": false,
+    "protocol_groups": 3,
+    "runs": 27,
+    "status": "POOLED_ACROSS_PROTOCOLS",
+    "trigger": {
+     "available": false,
+     "observed": 0,
+     "observed_false": 0,
+     "observed_true": 0,
+     "status": "UNKNOWN",
+     "total": 27,
+     "unknown": 27
+    }
+   }
+  ],
+  "note": "``POOLED_ACROSS_PROTOCOLS`` 的图不允许给出单一成功率；机制触发全未知的图必须显示 UNKNOWN，不能显示 0/n。",
+  "pooled_maps": [
+   "MAP-16",
+   "MAP-18",
+   "MAP-22",
+   "MAP-30"
+  ],
+  "schema": "v14-data-validity-1",
+  "trigger_unknown_maps": [
+   "MAP-08",
+   "MAP-16",
+   "MAP-18",
+   "MAP-22",
+   "MAP-26",
+   "MAP-30"
+  ]
+ },
+ "records": 138,
+ "schema": "v14-data-validity-1",
+ "validity_diff": {
+  "changed_maps": [
+   "MAP-08",
+   "MAP-16",
+   "MAP-18",
+   "MAP-22",
+   "MAP-26",
+   "MAP-30"
+  ],
+  "note": "差异只来自**展示口径**修正（未知不再算 0）与有效分母重算；原始历史数据未被修改。",
+  "rows": [
+   {
+    "changed": true,
+    "changes": [
+     "机制触发 0/9 → UNKNOWN (0 observed / 9 runs)"
+    ],
+    "map_id": "MAP-08",
+    "v13_label": "CEILING",
+    "v13_trigger": "0/9",
+    "v13_valid_denominator": 9,
+    "v14_label": "CEILING",
+    "v14_trigger": "UNKNOWN (0 observed / 9 runs)",
+    "v14_trigger_status": "UNKNOWN",
+    "v14_valid_denominator": 9
+   },
+   {
+    "changed": true,
+    "changes": [
+     "机制触发 0/35 → UNKNOWN (0 observed / 35 runs)"
+    ],
+    "map_id": "MAP-16",
+    "v13_label": "SUITABLE",
+    "v13_trigger": "0/35",
+    "v13_valid_denominator": 35,
+    "v14_label": "SUITABLE",
+    "v14_trigger": "UNKNOWN (0 observed / 35 runs)",
+    "v14_trigger_status": "UNKNOWN",
+    "v14_valid_denominator": 35
+   },
+   {
+    "changed": true,
+    "changes": [
+     "机制触发 0/37 → UNKNOWN (0 observed / 37 runs)"
+    ],
+    "map_id": "MAP-18",
+    "v13_label": "SUITABLE",
+    "v13_trigger": "0/37",
+    "v13_valid_denominator": 37,
+    "v14_label": "SUITABLE",
+    "v14_trigger": "UNKNOWN (0 observed / 37 runs)",
+    "v14_trigger_status": "UNKNOWN",
+    "v14_valid_denominator": 37
+   },
+   {
+    "changed": true,
+    "changes": [
+     "机制触发 0/21 → UNKNOWN (0 observed / 21 runs)"
+    ],
+    "map_id": "MAP-22",
+    "v13_label": "SUITABLE",
+    "v13_trigger": "0/21",
+    "v13_valid_denominator": 20,
+    "v14_label": "SUITABLE",
+    "v14_trigger": "UNKNOWN (0 observed / 21 runs)",
+    "v14_trigger_status": "UNKNOWN",
+    "v14_valid_denominator": 20
+   },
+   {
+    "changed": true,
+    "changes": [
+     "机制触发 0/9 → UNKNOWN (0 observed / 9 runs)"
+    ],
+    "map_id": "MAP-26",
+    "v13_label": "CEILING",
+    "v13_trigger": "0/9",
+    "v13_valid_denominator": 9,
+    "v14_label": "CEILING",
+    "v14_trigger": "UNKNOWN (0 observed / 9 runs)",
+    "v14_trigger_status": "UNKNOWN",
+    "v14_valid_denominator": 9
+   },
+   {
+    "changed": true,
+    "changes": [
+     "机制触发 0/27 → UNKNOWN (0 observed / 27 runs)"
+    ],
+    "map_id": "MAP-30",
+    "v13_label": "CENSORED",
+    "v13_trigger": "0/27",
+    "v13_valid_denominator": 27,
+    "v14_label": "CENSORED",
+    "v14_trigger": "UNKNOWN (0 observed / 27 runs)",
+    "v14_trigger_status": "UNKNOWN",
+    "v14_valid_denominator": 27
+   }
+  ],
+  "schema": "v14-validity-diff-1"
+ }
+}

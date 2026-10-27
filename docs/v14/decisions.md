@@ -44,3 +44,28 @@
 
 - 决定：V14 全部 LIVE 相关代码路径默认 `PLANNED_ONLY`，`--submit` 需要显式 `LiveApproval`；
   文档中所有真实模型效果一律写 `LIVE_PENDING`。本轮新增外部付费请求 **0**。
+
+## DCR-V14-01 · 历史 CSV 无法在数据层区分契约版本
+
+- **发现**：`docs/v12/real-runs/*.csv` 的列里没有 `prompt_hash`、`contract_version`、
+  `agent_config`。MAP-22 的 contract-1 与 contract-2（DCR-V12-01/02 的修复前后）
+  在 `rule_hash` / `metric_hash` / `agent_version` 上**完全相同**，只有来源文件不同。
+- **影响**：任何“跨契约版本合并”或“按契约版本排除”的分析，都无法仅凭 CSV 证明；
+  V13 的 21 局 MAP-22 分母里混了 contract-1、contract-2 与 route_log 消融三类。
+- **处理**：V14 的 `protocol_group()` 用 `(experiment_kind, source_file, 指纹)` 分组，
+  多组并存时标 `POOLED_ACROSS_PROTOCOLS` 并禁止合并求均值；不删数据、不改历史。
+- **后续要求**：V14 之后的新 trace 必须落 `prompt_hash` 与 `contract_version`，
+  否则同类问题会重现。
+- **可回滚**：不适用（只读分析层）。
+
+## DCR-V14-02 · 预算申请文档的算术错误
+
+- **发现**：`docs/v13/live-budget-proposal.md`（2026-10-26）逐行子局合计 221，正文写 229；
+  方案 B 写“150 局 / ¥4.19”（实为 186 局）；方案 A 写“¥1.68”（实为 ¥2.11）；
+  E2-d/E4/E5 的“预估”未统一使用文档自己声明的 1.5 倍余量公式。
+- **处理**：`lab/v14/data_audit.budget_proposal_check()` 从 Markdown 解析逐行数字并用
+  真实 V12 单价重算；修正后的文档与 `docs/v14/budget-audit.md` 一致。
+- **影响**：修正后逐行预估 ¥10.97（原 ¥9.08），方案 B ¥5.60（原 ¥4.19）；
+  建议批准上限不变（A ¥5.00 / B ¥8.00 / C ¥15.00）。
+- **后续要求**：任何 LIVE 申请前必须先跑 `scripts/audit_v14_data.py` 并确认
+  `declared_total_matches = true`。

@@ -15,8 +15,8 @@
 
 | ID | 任务 | 起点 | 当前 | 证据 |
 |---|---|---|---|---|
-| P0-1 | HEAD/CI 证据基线审计 | `PARTIAL` | `IN_PROGRESS` | `baseline-audit.md`、`ci-evidence.md` |
-| P0-2 | 历史数据/构念效度口径修正 | `DEFECT` | `TODO` | — |
+| P0-1 | HEAD/CI 证据基线审计 | `PARTIAL` | `DONE` | `baseline-audit.md`（10 项门禁复跑）、`ci-evidence.md`（10 次 run + 7 次连续 `lab-e2e` success） |
+| P0-2 | 历史数据/构念效度口径修正 | `DEFECT` | `DONE` | `lab/v13/validity.py` 三档计数；`lab/v14/data_audit.py`；`docs/v14/data-validity.md`；`budget-audit.md`；14 + 114 测试 |
 | P0-3 | 重复实验与单因子公平性强化 | `PARTIAL` | `TODO` | — |
 | P0-4 | Memory v2 有效性方案与消融 | `PARTIAL` | `TODO` | — |
 | P0-5 | Planning v2 收益–成本验证 | `PARTIAL` | `TODO` | — |
