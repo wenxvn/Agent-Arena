@@ -30,3 +30,26 @@
 - 关键数字：逐行子局 **221**（原写 229）、方案 A **54 局 / ¥2.11**、B **186 局 / ¥5.60**、C **221 局 / ¥10.97**。
 - 新 DCR：`DCR-V14-01`（历史 CSV 缺 `contract_version`/`prompt_hash`，跨契约只能按登记文件隔离）。
 - commit：`fix(v14): separate UNKNOWN from zero and recheck V13 arithmetic`
+
+## Batch 2 · P0-3 重复样本、可比性与统计协议
+
+- 新模块：`lab/v14/conditions.py`
+  - 8 元组观测条件身份（`observation_condition` / `observation_condition_id`），
+    `replicate_index` 不入身份；`budget_profile` / `sampling_profile` 派生画像，
+    未登记一律 `UNKNOWN` 且 `recorded=False`；
+  - `validate_seed` / `seed_coverage`：seed 只能来自 `seed_space(map_id)`，
+    `independent_seed_count` 与 `max_replicates` 分开统计；
+  - `condition_comparison`：硬拒绝（地图/seed/模式/模型/Provider/规则/指标/契约/提示/预算/采样已登记且不同）
+    vs 软降级（未登记、策略不同）；`UNKNOWN ≠ 不一致`；
+  - `build_pairs` / `summarize_pairing`：完成/有效/成功/失败/截尾/可比对/方向/请求-token-费用差值，
+    方向只取 `COMPARABLE`，缺失不补零；
+  - `descriptive_only_preconditions`：可比对 < 3、存在描述性/不可比对、独立 seed < 3 → 强制描述性；
+  - `ablation_pairing_report` / `ablation_pairing_markdown`：V12 三组 on/off 消融重新配对。
+- 脚本：`scripts/audit_v14_data.py` 增加配对与 seed 覆盖输出，新增 `docs/v14/pairing-audit.md`。
+- 文档：新增 `docs/v14/experiment-protocol.md`（身份/白名单/三档判定/报告字段/区间门槛/批准边界）。
+- 实测：`pytest tests/test_v14_conditions.py` **23 passed**；全量 **1676 passed**（134.89s）；
+  `ruff check .` 通过；`mypy src` 326 文件 0 issues。
+- 实测结论（真实历史）：三组 V12 消融 **单开关成立（config hash 各侧唯一且不同）**，
+  但 6 对全部为 `DESCRIPTIVE_ONLY`（缺 `contract_version` / `prompt_hash`），
+  可比对 0，独立 seed 各 2 个 → 不能据此宣称效果；资源差值仍可逐对报告。
+- commit：`feat(v14): observation condition identity and pairing fairness`

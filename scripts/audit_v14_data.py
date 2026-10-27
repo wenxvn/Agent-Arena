@@ -27,6 +27,11 @@ from agent_arena.lab.v13.validity import (  # noqa: E402
     six_map_audit,
     validity_markdown,
 )
+from agent_arena.lab.v14.conditions import (  # noqa: E402
+    ablation_pairing_markdown,
+    ablation_pairing_report,
+    seed_coverage,
+)
 from agent_arena.lab.v14.data_audit import (  # noqa: E402
     budget_proposal_markdown,
     data_validity_markdown,
@@ -52,6 +57,8 @@ def main() -> int:
 
     records = load_v12_history()
     report = data_validity_report(records)
+    pairing = ablation_pairing_report(records)
+    coverage = seed_coverage(records)
     audit = six_map_audit(records)
     ladder = map30_ladder(records)
 
@@ -69,6 +76,9 @@ def main() -> int:
             validity_diff_markdown(report["validity_diff"]),
             encoding="utf-8",
             newline="\n",
+        )
+        (args.out / "pairing-audit.md").write_text(
+            ablation_pairing_markdown(pairing), encoding="utf-8", newline="\n"
         )
         budget = report.get("budget")
         if budget:
@@ -94,6 +104,18 @@ def main() -> int:
         "validity_changed_maps": report["validity_diff"]["changed_maps"],
         "budget_totals": (report.get("budget") or {}).get("totals"),
         "declared_total_runs": (report.get("budget") or {}).get("declared_total_runs"),
+        "pairing": [
+            {
+                "label": item["label"],
+                "pairs": item.get("pairs"),
+                "comparable": item.get("comparable_pairs"),
+                "descriptive": item.get("descriptive_pairs"),
+                "incomparable": item.get("incomparable_pairs"),
+                "single_switch_by_config": item.get("single_switch_by_config"),
+            }
+            for item in pairing["reports"]
+        ],
+        "illegal_seeds": coverage["illegal_seeds"],
         "plans": {
             name: {"runs": plan["runs"], "estimate": plan["estimate_cny"]}
             for name, plan in ((report.get("budget") or {}).get("plans") or {}).items()

@@ -42,6 +42,24 @@ declared_total_runs: 229 -> 221（修正后一致）
 plans: A 54 / B 186 / C 221
 ```
 
-## 2. Batch 2–12
+## 3. Batch 3–12
 
 > 后续批次在此追加。
+
+## 2. Batch 2（P0-3，2026-10-27）
+
+| 命令 | 结果 |
+|---|---|
+| `uv run pytest -q tests/test_v14_conditions.py` | **23 passed** |
+| `uv run pytest -q`（批次边界全量） | **1676 passed**，134.89s |
+| `uv run ruff check .` | 通过 |
+| `uv run mypy src` | 326 files，0 issues |
+| `uv run python scripts/audit_v14_data.py --write` | 生成 `pairing-audit.md`，illegal_seeds = [] |
+
+配对复核实测（只读历史）：
+
+```text
+memory.v1 消融      pairs=2 comparable=0 descriptive=2 incomparable=0 single_switch=true
+planning.v1 消融    pairs=2 comparable=0 descriptive=2 incomparable=0 single_switch=true
+reflection.v1 消融  pairs=2 comparable=0 descriptive=2 incomparable=0 single_switch=true
+```
