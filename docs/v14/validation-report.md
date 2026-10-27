@@ -230,3 +230,14 @@ SDK：8 项 V13 + 3 项 V14 全部通过
 账本：159/159、5641 请求、¥5.43680012、0 重复、0 孤儿（与 V13 记录一致）
 外部账单：NO_EXTERNAL_BILL_PROVIDED
 ```
+
+## 12. Batch 12（P2-7，2026-10-27）
+
+| 命令 | 结果 |
+|---|---|
+| `uv run python scripts/verify_v14.py --report runs/v14/selfcheck.json` | **14/14 通过**（`ok: true`，`failed: []`） |
+| `uv run ruff check .` | 通过 |
+| `uv run mypy src` | 334 files，0 issues |
+| `uv run pytest -q` | **1790 passed** |
+
+CI 变更：`quality` job 新增 `V14 Lab 1.2 离线验收` 步骤（`scripts/verify_v14.py`）。

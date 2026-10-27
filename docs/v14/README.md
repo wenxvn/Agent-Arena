@@ -1,7 +1,12 @@
 # V14 · Agent Arena Lab 1.2 / Stage II Final Evidence & Delivery
 
-> **当前状态：`IN_PROGRESS`（Batch 0 完成）。** 真实模型效果：`LIVE_PENDING`
-> （未获用户对模型 / 矩阵 / 总费用上限的明确批准，V14 新增外部付费请求 **0**）。
+> **当前状态：`ENGINEERING_VERIFIED` / `LIVE_PENDING`。**
+> 真实模型效果：`LIVE_PENDING`（未获用户对模型 / 矩阵 / 总费用上限的明确批准，
+> V14 新增外部付费请求 **0**）。
+> 因此 **不是** `STAGE_II_FINAL_READY`——核心 LIVE 证据缺失，不得宣称收官。
+>
+> 验收：`uv run python scripts/verify_v14.py` → **14/14 通过**；
+> 全量 `uv run pytest -q` → **1790 passed**。
 
 ## 这是什么
 
@@ -21,6 +26,11 @@ CI 与产品交付验收。不新增世界、不改冻结规则、不做公网�
 | 文件 | 内容 |
 |---|---|
 | `baseline-audit.md` | 最新 HEAD、门禁复跑、V13→V14 真实增量、19 项起点 |
+| `live-plan.md` | LIVE 方案 A 预注册（54 局 / ¥2.11 预估 / ¥5.00 上限，`PLANNED_ONLY`） |
+| `engineering-boundaries.md` | 冷启动、异常负载、长历史导出、SDK 加固、账本复算 |
+| `pairing-audit.md` | V12 三组消融按 8 元组条件身份重新配对 |
+| `budget-audit.md` | V13 预算申请算术复核（221 局 / ¥10.97） |
+| `validity-diff.md` | V13→V14 六图口径差异表 |
 | `ci-evidence.md` | 远端 Actions run/job 逐条证据 |
 | `data-validity.md` | `UNKNOWN` vs `0`、版本隔离、构念效度口径修正 |
 | `experiment-protocol.md` | 可比性、重复、门禁、批准边界 |
@@ -40,7 +50,13 @@ CI 与产品交付验收。不新增世界、不改冻结规则、不做公网�
 ```bash
 uv sync --extra web
 uv run agent-arena web          # 单机 Lab（无 Key 可跑 SIMULATED 全流程）
-uv run python scripts/verify_v14.py
+uv run python scripts/verify_v14.py                 # 14 项 V14 事实边界
+uv run python scripts/audit_v14_data.py --write
+uv run python scripts/audit_v14_agents.py --write
+uv run python scripts/audit_v14_maps.py --write
+uv run python scripts/audit_v14_failures.py --write
+uv run python scripts/audit_v14_engineering.py --write
+uv run python scripts/plan_v14_live.py --check
 ```
 
 ## 边界

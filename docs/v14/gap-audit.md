@@ -9,7 +9,12 @@
 
 ## 0. 一句话结论
 
-> 本节在 Batch 12 最终填写。当前处于 Batch 0 完成状态。
+**15 项 `DONE`；3 项"工程完成 / 真实收益 `LIVE_PENDING`"（P0-4、P0-5、P0-6）；
+1 项本地 `DONE` + 外部 `BLOCKED_EXTERNAL`（P2-6）。**
+
+- 没有任何一项被静默跳过：未完成的都写明了原因与需要谁授权。
+- 真实付费请求 **0**；`LIVE_EVIDENCE_VERIFIED` 与 `STAGE_II_FINAL_READY` 都**不满足**。
+- 验收：`scripts/verify_v14.py` **14/14**；全量 pytest **1790 passed**。
 
 ## 1. P0（6 项）
 
@@ -18,7 +23,7 @@
 | P0-1 | HEAD/CI 证据基线审计 | `PARTIAL` | `DONE` | `baseline-audit.md`（10 项门禁复跑）、`ci-evidence.md`（10 次 run + 7 次连续 `lab-e2e` success） |
 | P0-2 | 历史数据/构念效度口径修正 | `DEFECT` | `DONE` | `lab/v13/validity.py` 三档计数；`lab/v14/data_audit.py`；`docs/v14/data-validity.md`；`budget-audit.md`；14 + 114 测试 |
 | P0-3 | 重复实验与单因子公平性强化 | `PARTIAL` | `DONE` | `lab/v14/conditions.py`（8 元组身份/seed 白名单/三档判定/配对字段）；`docs/v14/pairing-audit.md`、`experiment-protocol.md`、`live-plan.md`；33 测试 |
-| P0-4 | Memory v2 有效性方案与消融 | `PARTIAL` | `DONE（离线）/ LIVE_PENDING` | `lab/v14/agent_studies.py`（3 fixture + 单因子臂 + 36 局预检）；`docs/v14/agent-studies.md` 第 1 节；17 测试；DCR-V14-03 |
+| P0-4 | Memory v2 有效性方案与消融 | `PARTIAL` | `DONE（离线）/ LIVE_PENDING` | `lab/v14/agent_studies.py`（3 fixture + 单因子臂 + 36 局预检）；`docs/v14/agent-studies.md` 第 1 节；17 测试；DCR-V14-03；真实收益未测 |
 | P0-5 | Planning v2 收益–成本验证 | `PARTIAL` | `DONE（离线）/ LIVE_PENDING` | `lab/v14/planning_study.py`（触发链 + 成本归因 + 3 组单因子 + 72 局预检）；`agent-studies.md` 第 2 节；14 测试 |
 | P0-6 | Reflection v2 激活与效果验证 | `PARTIAL` | `DONE（离线）/ LIVE_PENDING` | `lab/v14/reflection_study.py`（六态 + 三臂 + 暴露门禁 + 选择偏倚防护 + 27 局预检）；`agent-studies.md` 第 3 节；15 测试 |
 
@@ -43,4 +48,19 @@
 | P2-4 | 自动报告/导出一致性 | `PARTIAL` | `DONE` | `export_consistency`（行数/分母/模式/空值）+ 真实导出样本；`engineering-boundaries.md` 第 6 节 |
 | P2-5 | 第三方 Agent SDK 加固 | `PARTIAL` | `DONE` | `sdk_hardening`（8 项 + 旧签名/异常隔离/预算网关 3 项）；`engineering-boundaries.md` 第 4 节 |
 | P2-6 | 本地账本/外部账单核对 | `DONE`/`BLOCKED_EXTERNAL` | `DONE（本地）/ BLOCKED_EXTERNAL（外部）` | `ledger_recompute` 复算 159/159、5641 请求、¥5.43680012、0 重复 0 孤儿；外部账单 `NO_EXTERNAL_BILL_PROVIDED` |
-| P2-7 | V14 最终交付封装 | `PARTIAL` | `TODO` | — |
+| P2-7 | V14 最终交付封装 | `PARTIAL` | `DONE` | `docs/v14/` 16 份文档 + 7 张截图 + `scripts/verify_v14.py`（14 项）+ CI 步骤 |
+
+## 4. 为什么 P0-4/5/6 不能标 `DONE`
+
+这三项的**工程部分**（机制验证、单因子臂、预检登记、成本归因、暴露门禁）全部完成，
+但它们的验收标准包含"真实模型下的收益/暴露"。V14 未获批准，因此：
+
+- 机制层：`SUPPORTED`（可复算的确定性证据）；
+- 真实收益：`LIVE_PENDING`（0 局、¥0）；
+- 状态因此写作 `DONE（离线）/ LIVE_PENDING`，不写 `DONE`。
+
+## 5. 复算入口
+
+```bash
+uv run python scripts/verify_v14.py
+```

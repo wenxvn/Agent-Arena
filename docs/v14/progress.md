@@ -211,3 +211,18 @@
 - 外部账单：`NO_EXTERNAL_BILL_PROVIDED`（`BLOCKED_EXTERNAL`，未虚构）。
 - 测试：`pytest tests/test_v14_engineering.py` **18 passed**。
 - commit：`feat(v14): engineering boundaries with perf, export and ledger evidence`
+
+## Batch 12 · P2-7 第二阶段最终交付封装
+
+- 新增 `scripts/verify_v14.py`（**14 项** V14 事实边界，不是"重跑 V13"）：
+  `unknown_semantics` / `protocol_isolation` / `seed_and_replicates` / `approval_blocked` /
+  `ci_evidence` / `export_consistency` / `diagnostics_anchor` / `agent_mechanisms` /
+  `map30_ladder` / `capability_gaps` / `conclusion_strength` / `sdk_and_ledger` /
+  `docs_present` / `frozen_assets`。
+- CI：`quality` job 增加 `V14 Lab 1.2 离线验收` 步骤。
+- 文档定稿：`final-report.md`、`release-checklist.md`、`gap-audit.md`（19 项终态）、
+  `README.md`（状态改为 `ENGINEERING_VERIFIED` / `LIVE_PENDING`）。
+- 实测：`verify_v14.py` **14/14 通过**；全量 pytest **1790 passed**；ruff/mypy 通过。
+- 最终状态：`ENGINEERING_VERIFIED` 满足；`LIVE_EVIDENCE_VERIFIED` 与
+  `STAGE_II_FINAL_READY` **不满足**（零 LIVE 请求）。
+- commit：`feat(v14): final delivery package with verify_v14 gate`
