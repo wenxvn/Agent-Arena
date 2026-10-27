@@ -132,6 +132,64 @@
 - 负向对照：MAP-18 在 V12/V13 从未显示 planning 正梯度，保留为负向对照；若该图也出现「规划更好」，先怀疑测量与噪声，不当作收益证据。
 - V14 未获用户对模型/矩阵/总额的批准，本计划不得执行；``scripts/run_v12_matrix.py --ablation`` 只允许默认预检模式。
 
+## 3. Reflection（P0-6）
+
+### 3.1 六态计数（SIMULATED，零模型请求）
+
+| 臂 | 决策 | 总请求 | 反思请求 | eligible | triggered | 冷却挡 | 额度挡 | 误触发 | 恢复 | 暴露 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| `disabled` | 12 | 12 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | `DISABLED` |
+| `trigger_only` | 12 | 12 | 0 | 9 | 9 | 0 | 0 | 0 | 0 | `TREATMENT_TRIGGERED` |
+| `reflection_on` | 12 | 15 | 3 | 3 | 3 | 6 | 0 | 0 | 2 | `TREATMENT_TRIGGERED` |
+| `long_failure_on` | 12 | 15 | 3 | 3 | 3 | 6 | 1 | 0 | 3 | `TREATMENT_TRIGGERED` |
+| `no_trigger_on` | 6 | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | `NO_TREATMENT_EXPOSURE` |
+
+> `eligible` 只是候选；`triggered` 才是真的发生了干预。`trigger_only` 臂计入暴露但 `requests` 不增加。
+
+### 3.2 暴露门禁
+
+| 臂 | 状态 | 允许的结论 |
+|---|---|---|
+| `disabled` | `DISABLED_ARM` | 该臂不构成干预对照，只能作为无反思基线。 |
+| `trigger_only` | `TREATMENT_TRIGGERED` | 干预确实发生；效果只能在「全部已分配局」与「触发子集」两组同时报告。 |
+| `reflection_on` | `TREATMENT_TRIGGERED` | 干预确实发生；效果只能在「全部已分配局」与「触发子集」两组同时报告。 |
+| `long_failure_on` | `TREATMENT_TRIGGERED` | 干预确实发生；效果只能在「全部已分配局」与「触发子集」两组同时报告。 |
+| `no_trigger_on` | `NO_TREATMENT_EXPOSURE` | NO_TREATMENT_EXPOSURE：干预从未发生，不得报告「反思无效」；先改选有更长失败前缀的地图（改阈值必须另立版本）。 |
+
+### 3.3 三臂单因子
+
+| 比较 | 唯一变化键 | 单开关 | 预期 | 说明 |
+|---|---|---|---|---|
+| `E3-control` → `E3-treatment` | `enabled` | 是 | 单因子 | enabled（无反思 → 完整反思） |
+| `E3-trigger-only` → `E3-treatment` | `trigger_only` | 是 | 单因子 | trigger_only（只判定 → 真请求） |
+| `E3-control` → `E3-trigger-only` | `enabled、trigger_only` | **否** | 组合 | enabled + trigger_only |
+
+- ``disabled→reflection_on`` 是组合对照（含触发判定 + 请求 + 注入），只能作为机制比较；单因子结论必须用 ``trigger_only→reflection_on``。
+
+### 3.4 选择偏倚防护
+
+效果评估必须同时给出两组口径（`evaluate_without_selection_bias`）：
+
+| 口径 | 局数 | 有效 | 成功 | 成功率 |
+|---|---:|---:|---:|---:|
+| 全部已分配局 | 全部分母 | 同左 | 含未触发局 | 真实可用 |
+| 触发子集 | 仅触发的局 | 更小 | 偏高 | **只作机制证据** |
+
+> 只报触发子集等于把「没触发就失败」的局从分母删掉，会系统性高估效果。
+
+### 3.5 预检登记（`PLANNED_ONLY`，零请求）
+
+| 项 | 值 |
+|---|---|
+| 地图 | MAP-22 |
+| 臂 | E3-control, E3-trigger-only, E3-treatment |
+| 子局 | 27（两臂子集 18） |
+| 状态 | `PLANNED_ONLY` / `LIVE_PENDING` |
+| 激活门禁 | ``reflection_on`` 臂必须至少出现一次真实反思请求（``triggered > 0``）；否则记录 NO_TREATMENT_EXPOSURE 并改选地图，不得按「反思无效」报告。 |
+
+- 候选地图（需先做离线公开诊断）：MAP-22（PRIMARY）；MAP-19（CANDIDATE）；MAP-20（CANDIDATE）；MAP-29（CANDIDATE）
+- V14 未获用户对模型/矩阵/总额的批准，本计划不得执行；所有真实效果保持 LIVE_PENDING。
+
 
 ## 4. 汇总状态
 
@@ -139,6 +197,7 @@
 |---|---|---|---|---|
 | Memory（`memory.v2`） | `SUPPORTED` | E1-a / E1-b | `PLANNED_ONLY` | `LIVE_PENDING` |
 | Planning（`planning.v2`） | `SUPPORTED` | E2-a / E2-b / E2-c | `PLANNED_ONLY` | `LIVE_PENDING` |
+| Reflection（`reflection.v2`） | `SUPPORTED` | E3 三臂 | `PLANNED_ONLY` | `LIVE_PENDING` |
 
 ## 5. 不支持的主张
 

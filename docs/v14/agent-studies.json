@@ -1,469 +1,3145 @@
 {
- "arms": {
-  "all_single_factor": true,
-  "arms": [
-   {
-    "agent_id": "memory.v2",
-    "arm_id": "E1-a-control",
+ "memory": {
+  "arms": {
+   "all_single_factor": true,
+   "arms": [
+    {
+     "agent_id": "memory.v2",
+     "arm_id": "E1-a-control",
+     "config": {
+      "capacity": 32,
+      "compress": true,
+      "dedupe": true,
+      "enabled": true,
+      "history_window": 5,
+      "max_chars": 1600,
+      "relevance": true,
+      "route_log": false,
+      "route_mode": "context_only",
+      "route_write_every": 2,
+      "route_write_limit": 24
+     },
+     "group": "E1-a",
+     "label": "route_log off（route_mode=context_only）"
+    },
+    {
+     "agent_id": "memory.v2",
+     "arm_id": "E1-a-treatment",
+     "config": {
+      "capacity": 32,
+      "compress": true,
+      "dedupe": true,
+      "enabled": true,
+      "history_window": 5,
+      "max_chars": 1600,
+      "relevance": true,
+      "route_log": true,
+      "route_mode": "context_only",
+      "route_write_every": 2,
+      "route_write_limit": 24
+     },
+     "group": "E1-a",
+     "label": "route_log on（route_mode=context_only）"
+    },
+    {
+     "agent_id": "memory.v2",
+     "arm_id": "E1-b-control",
+     "config": {
+      "capacity": 32,
+      "compress": true,
+      "dedupe": true,
+      "enabled": true,
+      "history_window": 5,
+      "max_chars": 1600,
+      "relevance": true,
+      "route_log": true,
+      "route_mode": "context_only",
+      "route_write_every": 2,
+      "route_write_limit": 24
+     },
+     "group": "E1-b",
+     "label": "context_only（route_log on）"
+    },
+    {
+     "agent_id": "memory.v2",
+     "arm_id": "E1-b-treatment",
+     "config": {
+      "capacity": 32,
+      "compress": true,
+      "dedupe": true,
+      "enabled": true,
+      "history_window": 5,
+      "max_chars": 1600,
+      "relevance": true,
+      "route_log": true,
+      "route_mode": "env_write",
+      "route_write_every": 2,
+      "route_write_limit": 24
+     },
+     "group": "E1-b",
+     "label": "env_write（route_log on）"
+    }
+   ],
+   "checks": [
+    {
+     "changed_keys": [
+      "route_log"
+     ],
+     "control": "E1-a-control",
+     "group": "E1-a",
+     "manipulated_variable": "route_log",
+     "ok": true,
+     "pinned_keys": [
+      "capacity",
+      "compress",
+      "dedupe",
+      "enabled",
+      "history_window",
+      "max_chars",
+      "relevance",
+      "route_mode",
+      "route_write_every",
+      "route_write_limit"
+     ],
+     "reasons": [],
+     "treatment": "E1-a-treatment"
+    },
+    {
+     "changed_keys": [
+      "route_mode"
+     ],
+     "control": "E1-b-control",
+     "group": "E1-b",
+     "manipulated_variable": "route_mode",
+     "ok": true,
+     "pinned_keys": [
+      "capacity",
+      "compress",
+      "dedupe",
+      "enabled",
+      "history_window",
+      "max_chars",
+      "relevance",
+      "route_log",
+      "route_write_every",
+      "route_write_limit"
+     ],
+     "reasons": [],
+     "treatment": "E1-b-treatment"
+    }
+   ],
+   "note": "每组只改一个配置键；``route_mode`` 在 E1-a 两组里被钉成 context_only，因此 E1-a 测的是 route_log 本身，不会混入写入机制的差异。",
+   "schema": "v14-memory-arms-1"
+  },
+  "note": "以上全部为 SIMULATED 机制证据，零模型请求；真实模型收益一律 LIVE_PENDING。",
+  "plan": {
+   "arms": [
+    "E1-a-control",
+    "E1-a-treatment",
+    "E1-b-control",
+    "E1-b-treatment"
+   ],
+   "budget": {
+    "experiment_cost_cap_cny": 5.0,
+    "per_run_cost_cap_cny": 0.5,
+    "per_run_input_token_cap": 200000,
+    "per_run_request_cap": 90
+   },
+   "comparison_rule": "同一总预算、同一 memory.v2 版本、同一 prompt 主体、同一 seed；只允许被测开关不同（E1-a 改 route_log，E1-b 改 route_mode）。",
+   "cost_metrics": [
+    "requests",
+    "input_tokens",
+    "decisions",
+    "cost_cny"
+   ],
+   "groups": [
+    "E1-a",
+    "E1-b"
+   ],
+   "live_status": "LIVE_PENDING",
+   "maps": [
+    "MAP-22"
+   ],
+   "no_go_note": "V14 未获用户对模型/矩阵/总额的批准，因此本计划不得执行；``scripts/run_v12_matrix.py --ablation`` 只允许在默认预检模式下运行。",
+   "primary_metrics": [
+    "completed_success",
+    "v14.projection.route_recall",
+    "map22.v10.route_recall",
+    "wasted_moves",
+    "route_length",
+    "backtracks"
+   ],
+   "replicates": 3,
+   "runs": 36,
+   "schema": "v14-memory-plan-1",
+   "seeds": [
+    0,
+    1,
+    2
+   ],
+   "status": "PLANNED_ONLY",
+   "stop_rules": [
+    "任一局 unknown_spend → 立即停止并封账",
+    "累计结算达批准上限 90% → 停止未开始子局",
+    "Provider 连续 3 次错误 → 停止",
+    "发现契约/接口缺陷 → 停止并写 DCR",
+    "平均单局费用超过预估 2 倍 → 停止并重新申请"
+   ]
+  },
+  "probes": {
+   "context_only_off": {
+    "accepted_route": [
+     "north",
+     "east",
+     "south",
+     "west"
+    ],
+    "backtracks": 0,
+    "block_chars": 333,
+    "bottleneck": {
+     "label": "NO_RECORD",
+     "reason": "没有路线，也没有写入尝试。"
+    },
+    "bottleneck_v13": "NO_RECORD",
     "config": {
-     "capacity": 32,
-     "compress": true,
-     "dedupe": true,
      "enabled": true,
-     "history_window": 5,
-     "max_chars": 1600,
-     "relevance": true,
      "route_log": false,
      "route_mode": "context_only",
-     "route_write_every": 2,
-     "route_write_limit": 24
+     "route_write_every": 2
     },
-    "group": "E1-a",
-    "label": "route_log off（route_mode=context_only）"
+    "decisions": 7,
+    "expected_route": [
+     "north",
+     "east",
+     "south",
+     "west"
+    ],
+    "final_action": {
+     "tool": "wait"
+    },
+    "final_block_has_all_bearings": false,
+    "final_write_route": "",
+    "invalid_moves": 0,
+    "last_memory_block": "公开记忆（本局内，来自公开观察与动作结果；按最近使用排序）：\n- [state] state.step = 6\n- [result] result.last = move: MOVED\n- [result] result.move.ok = 4\n- [result] result.move.invalid = 1\n- [result] result.move.rejected = 1\n- [fact] episode.route_mode = context_only\n- [fact] episode.decision_budget = 24\n- [fact] episode.seed = 0\n- [fact] episode.map_id = MAP-22",
+    "loops": 0,
+    "memory_block_leaks": [],
+    "notes_written": 0,
+    "rejected_moves": 0,
+    "render_count": 7,
+    "requests": 7,
+    "route_after_steps": [
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "route_length": 0,
+    "route_matches_expected": false,
+    "route_preview": "",
+    "route_recall_v10_note": "V10 官方 route_recall 直接读环境 agent_notes；context_only 不写环境，因此该口径在本臂为 NOT_APPLICABLE，必须与 V14 投影分列。",
+    "route_recall_v14": {
+     "denominator": 4,
+     "metric_id": "v12.projection.route_recall",
+     "note": "公开记忆里没有可解析的方位序列（与 V10 口径一致：未记录 → N/A）。",
+     "numerator": null,
+     "rule_version": "v12-projection-1",
+     "source_keys": [],
+     "state": "NOT_APPLICABLE",
+     "value": null
+    },
+    "write_accepted": 0,
+    "write_actions": 0,
+    "write_attempts": 0,
+    "write_rejected": 0
    },
-   {
-    "agent_id": "memory.v2",
-    "arm_id": "E1-a-treatment",
+   "context_only_on": {
+    "accepted_route": [
+     "north",
+     "east",
+     "south",
+     "west"
+    ],
+    "backtracks": 0,
+    "block_chars": 476,
+    "bottleneck": {
+     "label": "RECORDED_AND_RENDERED",
+     "reason": "记录且渲染。"
+    },
+    "bottleneck_v13": "RECORDED_AND_RENDERED",
     "config": {
-     "capacity": 32,
-     "compress": true,
-     "dedupe": true,
      "enabled": true,
-     "history_window": 5,
-     "max_chars": 1600,
-     "relevance": true,
      "route_log": true,
      "route_mode": "context_only",
-     "route_write_every": 2,
-     "route_write_limit": 24
+     "route_write_every": 2
     },
-    "group": "E1-a",
-    "label": "route_log on（route_mode=context_only）"
-   },
-   {
-    "agent_id": "memory.v2",
-    "arm_id": "E1-b-control",
-    "config": {
-     "capacity": 32,
-     "compress": true,
-     "dedupe": true,
-     "enabled": true,
-     "history_window": 5,
-     "max_chars": 1600,
-     "relevance": true,
-     "route_log": true,
-     "route_mode": "context_only",
-     "route_write_every": 2,
-     "route_write_limit": 24
+    "decisions": 7,
+    "expected_route": [
+     "north",
+     "east",
+     "south",
+     "west"
+    ],
+    "final_action": {
+     "tool": "wait"
     },
-    "group": "E1-b",
-    "label": "context_only（route_log on）"
+    "final_block_has_all_bearings": true,
+    "final_write_route": "",
+    "invalid_moves": 1,
+    "last_memory_block": "公开记忆（本局内，来自公开观察与动作结果；按最近使用排序）：\n- [route] route.stats = {'accepted': 4, 'rejected': 1, 'invalid': 1, 'loops': 0, 'backtracks': 0}\n- [route] route.path = north,east,south,west\n- [state] state.step = 6\n- [result] result.last = move: MOVED\n- [result] result.move.ok = 4\n- [result] result.move.invalid = 1\n- [result] result.move.rejected = 1\n- [fact] episode.route_mode = context_only\n- [fact] episode.decision_budget = 24\n- [fact] episode.seed = 0\n- [fact] episode.map_id = MAP-22",
+    "loops": 0,
+    "memory_block_leaks": [],
+    "notes_written": 0,
+    "rejected_moves": 1,
+    "render_count": 7,
+    "requests": 7,
+    "route_after_steps": [
+     "north",
+     "north",
+     "north,east",
+     "north,east",
+     "north,east,south",
+     "north,east,south,west"
+    ],
+    "route_length": 4,
+    "route_matches_expected": true,
+    "route_preview": "north,east,south,west",
+    "route_recall_v10_note": "V10 官方 route_recall 直接读环境 agent_notes；context_only 不写环境，因此该口径在本臂为 NOT_APPLICABLE，必须与 V14 投影分列。",
+    "route_recall_v14": {
+     "denominator": 4,
+     "metric_id": "v12.projection.route_recall",
+     "note": "公开记忆里没有可解析的方位序列（与 V10 口径一致：未记录 → N/A）。",
+     "numerator": null,
+     "rule_version": "v12-projection-1",
+     "source_keys": [],
+     "state": "NOT_APPLICABLE",
+     "value": null
+    },
+    "write_accepted": 0,
+    "write_actions": 0,
+    "write_attempts": 0,
+    "write_rejected": 0
    },
-   {
-    "agent_id": "memory.v2",
-    "arm_id": "E1-b-treatment",
+   "disabled": {
+    "accepted_route": [
+     "north",
+     "east",
+     "south",
+     "west"
+    ],
+    "backtracks": 0,
+    "block_chars": 0,
+    "bottleneck": {
+     "label": "DISABLED",
+     "reason": "记忆关闭（消融臂）。"
+    },
+    "bottleneck_v13": "DISABLED",
     "config": {
-     "capacity": 32,
-     "compress": true,
-     "dedupe": true,
-     "enabled": true,
-     "history_window": 5,
-     "max_chars": 1600,
-     "relevance": true,
+     "enabled": false,
      "route_log": true,
      "route_mode": "env_write",
-     "route_write_every": 2,
-     "route_write_limit": 24
+     "route_write_every": 2
     },
-    "group": "E1-b",
-    "label": "env_write（route_log on）"
+    "decisions": 7,
+    "expected_route": [
+     "north",
+     "east",
+     "south",
+     "west"
+    ],
+    "final_action": {
+     "tool": "wait"
+    },
+    "final_block_has_all_bearings": false,
+    "final_write_route": "",
+    "invalid_moves": 0,
+    "last_memory_block": null,
+    "loops": 0,
+    "memory_block_leaks": [],
+    "notes_written": 0,
+    "rejected_moves": 0,
+    "render_count": 0,
+    "requests": 7,
+    "route_after_steps": [
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    "route_length": 0,
+    "route_matches_expected": false,
+    "route_preview": "",
+    "route_recall_v10_note": "V10 官方 route_recall 直接读环境 agent_notes；context_only 不写环境，因此该口径在本臂为 NOT_APPLICABLE，必须与 V14 投影分列。",
+    "route_recall_v14": {
+     "denominator": 4,
+     "metric_id": "v12.projection.route_recall",
+     "note": "公开记忆里没有可解析的方位序列（与 V10 口径一致：未记录 → N/A）。",
+     "numerator": null,
+     "rule_version": "v12-projection-1",
+     "source_keys": [],
+     "state": "NOT_APPLICABLE",
+     "value": null
+    },
+    "write_accepted": 0,
+    "write_actions": 0,
+    "write_attempts": 0,
+    "write_rejected": 0
+   },
+   "env_write_on": {
+    "accepted_route": [
+     "north",
+     "east",
+     "south",
+     "west"
+    ],
+    "backtracks": 0,
+    "block_chars": 506,
+    "bottleneck": {
+     "label": "RECORDED_AND_RENDERED",
+     "reason": "记录且渲染。"
+    },
+    "bottleneck_v13": "RECORDED_TOO_SHORT",
+    "config": {
+     "enabled": true,
+     "route_log": true,
+     "route_mode": "env_write",
+     "route_write_every": 2
+    },
+    "decisions": 8,
+    "expected_route": [
+     "north",
+     "east",
+     "south",
+     "west"
+    ],
+    "final_action": {
+     "facts": [
+      {
+       "key": "path_state",
+       "value": "north,east,south,west"
+      }
+     ],
+     "tool": "write_memory"
+    },
+    "final_block_has_all_bearings": true,
+    "final_write_route": "north,east,south,west",
+    "invalid_moves": 1,
+    "last_memory_block": "公开记忆（本局内，来自公开观察与动作结果；按最近使用排序）：\n- [route] route.stats = {'accepted': 3, 'rejected': 1, 'invalid': 1, 'loops': 0, 'backtracks': 0}\n- [route] route.path = north,east,south\n- [state] state.step = 6\n- [result] result.last = move: MOVED\n- [result] result.move.ok = 3\n- [result] result.move.invalid = 1\n- [result] result.write_memory.ok = 1\n- [result] result.move.rejected = 1\n- [fact] episode.route_mode = env_write\n- [fact] episode.decision_budget = 24\n- [fact] episode.seed = 0\n- [fact] episode.map_id = MAP-22",
+    "loops": 0,
+    "memory_block_leaks": [],
+    "notes_written": 2,
+    "rejected_moves": 1,
+    "render_count": 6,
+    "requests": 6,
+    "route_after_steps": [
+     "north",
+     "north",
+     "north,east",
+     "north,east",
+     "north,east,south",
+     "north,east,south,west"
+    ],
+    "route_length": 4,
+    "route_matches_expected": true,
+    "route_preview": "north,east,south,west",
+    "route_recall_v10_note": "V10 官方 route_recall 直接读环境 agent_notes；context_only 不写环境，因此该口径在本臂为 NOT_APPLICABLE，必须与 V14 投影分列。",
+    "route_recall_v14": {
+     "denominator": 4,
+     "matched_key": "path_state",
+     "metric_id": "v12.projection.route_recall",
+     "note": "V12 研究投影：键名宽容（不限于 bearing/path_state），分母为真实 move 数；不是 V10 官方值。",
+     "numerator": 4,
+     "rule_version": "v12-projection-1",
+     "source_keys": [
+      "path_state"
+     ],
+     "state": "VALID",
+     "value": 1.0,
+     "written_length": 4
+    },
+    "write_accepted": 2,
+    "write_actions": 2,
+    "write_attempts": 2,
+    "write_rejected": 0
    }
-  ],
-  "checks": [
-   {
-    "changed_keys": [
-     "route_log"
-    ],
-    "control": "E1-a-control",
-    "group": "E1-a",
-    "manipulated_variable": "route_log",
-    "ok": true,
-    "pinned_keys": [
-     "capacity",
-     "compress",
-     "dedupe",
-     "enabled",
-     "history_window",
-     "max_chars",
-     "relevance",
-     "route_mode",
-     "route_write_every",
-     "route_write_limit"
-    ],
-    "reasons": [],
-    "treatment": "E1-a-treatment"
-   },
-   {
-    "changed_keys": [
-     "route_mode"
-    ],
-    "control": "E1-b-control",
-    "group": "E1-b",
-    "manipulated_variable": "route_mode",
-    "ok": true,
-    "pinned_keys": [
-     "capacity",
-     "compress",
-     "dedupe",
-     "enabled",
-     "history_window",
-     "max_chars",
-     "relevance",
-     "route_log",
-     "route_write_every",
-     "route_write_limit"
-    ],
-    "reasons": [],
-    "treatment": "E1-b-treatment"
-   }
-  ],
-  "note": "每组只改一个配置键；``route_mode`` 在 E1-a 两组里被钉成 context_only，因此 E1-a 测的是 route_log 本身，不会混入写入机制的差异。",
-  "schema": "v14-memory-arms-1"
+  },
+  "schema": "v14-memory-study-1"
  },
- "note": "以上全部为 SIMULATED 机制证据，零模型请求；真实模型收益一律 LIVE_PENDING。",
- "plan": {
-  "arms": [
-   "E1-a-control",
-   "E1-a-treatment",
-   "E1-b-control",
-   "E1-b-treatment"
-  ],
-  "budget": {
-   "experiment_cost_cap_cny": 5.0,
-   "per_run_cost_cap_cny": 0.5,
-   "per_run_input_token_cap": 200000,
-   "per_run_request_cap": 90
+ "planning": {
+  "arms": {
+   "all_single_factor": true,
+   "arms": [
+    {
+     "agent_id": "planning.v2",
+     "arm_id": "E2-a-control",
+     "config": {
+      "budget_aware": true,
+      "enabled": false,
+      "history_window": 5,
+      "max_plans": 6,
+      "min_steps_between_plans": 4,
+      "planner_mode": "adaptive",
+      "reject_threshold": 2,
+      "stall_threshold": 4
+     },
+     "group": "E2-a",
+     "label": "规划关（enabled=False）"
+    },
+    {
+     "agent_id": "planning.v2",
+     "arm_id": "E2-a-treatment",
+     "config": {
+      "budget_aware": true,
+      "enabled": true,
+      "history_window": 5,
+      "max_plans": 6,
+      "min_steps_between_plans": 4,
+      "planner_mode": "adaptive",
+      "reject_threshold": 2,
+      "stall_threshold": 4
+     },
+     "group": "E2-a",
+     "label": "规划开（adaptive）"
+    },
+    {
+     "agent_id": "planning.v2",
+     "arm_id": "E2-b-control",
+     "config": {
+      "budget_aware": true,
+      "enabled": true,
+      "history_window": 5,
+      "max_plans": 6,
+      "min_steps_between_plans": 4,
+      "planner_mode": "adaptive",
+      "reject_threshold": 2,
+      "stall_threshold": 4
+     },
+     "group": "E2-b",
+     "label": "重规划开（adaptive）"
+    },
+    {
+     "agent_id": "planning.v2",
+     "arm_id": "E2-b-treatment",
+     "config": {
+      "budget_aware": true,
+      "enabled": true,
+      "history_window": 5,
+      "max_plans": 6,
+      "min_steps_between_plans": 4,
+      "planner_mode": "initial_only",
+      "reject_threshold": 2,
+      "stall_threshold": 4
+     },
+     "group": "E2-b",
+     "label": "重规划关（initial_only）"
+    },
+    {
+     "agent_id": "planning.v2",
+     "arm_id": "E2-c-control",
+     "config": {
+      "budget_aware": true,
+      "enabled": true,
+      "history_window": 5,
+      "max_plans": 6,
+      "min_steps_between_plans": 4,
+      "planner_mode": "periodic",
+      "reject_threshold": 2,
+      "stall_threshold": 4
+     },
+     "group": "E2-c",
+     "label": "Planner 高频（每 4 步）"
+    },
+    {
+     "agent_id": "planning.v2",
+     "arm_id": "E2-c-treatment",
+     "config": {
+      "budget_aware": true,
+      "enabled": true,
+      "history_window": 5,
+      "max_plans": 6,
+      "min_steps_between_plans": 12,
+      "planner_mode": "periodic",
+      "reject_threshold": 2,
+      "stall_threshold": 4
+     },
+     "group": "E2-c",
+     "label": "Planner 低频（每 12 步）"
+    }
+   ],
+   "checks": [
+    {
+     "changed_keys": [
+      "enabled"
+     ],
+     "control": "E2-a-control",
+     "group": "E2-a",
+     "manipulated_variable": "enabled",
+     "ok": true,
+     "reasons": [],
+     "treatment": "E2-a-treatment"
+    },
+    {
+     "changed_keys": [
+      "planner_mode"
+     ],
+     "control": "E2-b-control",
+     "group": "E2-b",
+     "manipulated_variable": "planner_mode",
+     "ok": true,
+     "reasons": [],
+     "treatment": "E2-b-treatment"
+    },
+    {
+     "changed_keys": [
+      "min_steps_between_plans"
+     ],
+     "control": "E2-c-control",
+     "group": "E2-c",
+     "manipulated_variable": "min_steps_between_plans",
+     "ok": true,
+     "reasons": [],
+     "treatment": "E2-c-treatment"
+    }
+   ],
+   "note": "E2-a 改 ``enabled``；E2-b 改 ``planner_mode``（adaptive→initial_only）；E2-c 改 ``min_steps_between_plans``（4→12，两臂都钉 ``periodic``）。三组互不混用；MAP-18 只作负向对照。",
+   "schema": "v14-planning-arms-1"
   },
-  "comparison_rule": "同一总预算、同一 memory.v2 版本、同一 prompt 主体、同一 seed；只允许被测开关不同（E1-a 改 route_log，E1-b 改 route_mode）。",
-  "cost_metrics": [
-   "requests",
-   "input_tokens",
-   "decisions",
-   "cost_cny"
-  ],
-  "groups": [
-   "E1-a",
-   "E1-b"
-  ],
-  "live_status": "LIVE_PENDING",
-  "maps": [
-   "MAP-22"
-  ],
-  "no_go_note": "V14 未获用户对模型/矩阵/总额的批准，因此本计划不得执行；``scripts/run_v12_matrix.py --ablation`` 只允许在默认预检模式下运行。",
-  "primary_metrics": [
-   "completed_success",
-   "v14.projection.route_recall",
-   "map22.v10.route_recall",
-   "wasted_moves",
-   "route_length",
-   "backtracks"
-  ],
-  "replicates": 3,
-  "runs": 36,
-  "schema": "v14-memory-plan-1",
-  "seeds": [
-   0,
-   1,
-   2
-  ],
-  "status": "PLANNED_ONLY",
-  "stop_rules": [
-   "任一局 unknown_spend → 立即停止并封账",
-   "累计结算达批准上限 90% → 停止未开始子局",
-   "Provider 连续 3 次错误 → 停止",
-   "发现契约/接口缺陷 → 停止并写 DCR",
-   "平均单局费用超过预估 2 倍 → 停止并重新申请"
-  ]
- },
- "probes": {
-  "context_only_off": {
-   "accepted_route": [
-    "north",
-    "east",
-    "south",
-    "west"
+  "note": "全部为 SIMULATED 机制证据，零模型请求；真实收益 LIVE_PENDING。",
+  "plan": {
+   "budget": {
+    "experiment_cost_cap_cny": 5.0,
+    "per_run_cost_cap_cny": 0.5,
+    "per_run_input_token_cap": 200000,
+    "per_run_request_cap": 90
+   },
+   "comparison_rule": "同一**总预算**下比较：Planner 请求不免费，必须计入同一 requests/token/费用上限；若节流省钱但成功率下降，如实保留，不为追涨点放松预算。",
+   "cost_metrics": [
+    "requests",
+    "input_tokens",
+    "output_tokens",
+    "decisions",
+    "cost_cny",
+    "cost_per_success_cny"
    ],
-   "backtracks": 0,
-   "block_chars": 333,
-   "bottleneck": {
-    "label": "NO_RECORD",
-    "reason": "没有路线，也没有写入尝试。"
-   },
-   "bottleneck_v13": "NO_RECORD",
-   "config": {
-    "enabled": true,
-    "route_log": false,
-    "route_mode": "context_only",
-    "route_write_every": 2
-   },
-   "decisions": 7,
-   "expected_route": [
-    "north",
-    "east",
-    "south",
-    "west"
+   "live_status": "LIVE_PENDING",
+   "main_map": "MAP-16",
+   "main_runs": 54,
+   "negative_control_map": "MAP-18",
+   "negative_control_note": "MAP-18 在 V12/V13 从未显示 planning 正梯度，保留为负向对照；若该图也出现「规划更好」，先怀疑测量与噪声，不当作收益证据。",
+   "negative_control_runs": 18,
+   "no_go_note": "V14 未获用户对模型/矩阵/总额的批准，本计划不得执行；``scripts/run_v12_matrix.py --ablation`` 只允许默认预检模式。",
+   "primary_metrics": [
+    "completed_success",
+    "plan_count",
+    "planner_requests",
+    "planner_tokens_in",
+    "skipped_ttl",
+    "skipped_budget"
    ],
-   "final_action": {
-    "tool": "wait"
-   },
-   "final_block_has_all_bearings": false,
-   "final_write_route": "",
-   "invalid_moves": 0,
-   "last_memory_block": "公开记忆（本局内，来自公开观察与动作结果；按最近使用排序）：\n- [state] state.step = 6\n- [result] result.last = move: MOVED\n- [result] result.move.ok = 4\n- [result] result.move.invalid = 1\n- [result] result.move.rejected = 1\n- [fact] episode.route_mode = context_only\n- [fact] episode.decision_budget = 24\n- [fact] episode.seed = 0\n- [fact] episode.map_id = MAP-22",
-   "loops": 0,
-   "memory_block_leaks": [],
-   "notes_written": 0,
-   "rejected_moves": 0,
-   "render_count": 7,
-   "requests": 7,
-   "route_after_steps": [
-    "",
-    "",
-    "",
-    "",
-    "",
-    ""
+   "replicates": 3,
+   "runs": 72,
+   "schema": "v14-planning-plan-1",
+   "seeds": [
+    0,
+    1,
+    2
    ],
-   "route_length": 0,
-   "route_matches_expected": false,
-   "route_preview": "",
-   "route_recall_v10_note": "V10 官方 route_recall 直接读环境 agent_notes；context_only 不写环境，因此该口径在本臂为 NOT_APPLICABLE，必须与 V14 投影分列。",
-   "route_recall_v14": {
-    "denominator": 4,
-    "metric_id": "v12.projection.route_recall",
-    "note": "公开记忆里没有可解析的方位序列（与 V10 口径一致：未记录 → N/A）。",
-    "numerator": null,
-    "rule_version": "v12-projection-1",
-    "source_keys": [],
-    "state": "NOT_APPLICABLE",
-    "value": null
-   },
-   "write_accepted": 0,
-   "write_actions": 0,
-   "write_attempts": 0,
-   "write_rejected": 0
+   "status": "PLANNED_ONLY",
+   "stop_rules": [
+    "任一局 unknown_spend → 立即停止并封账",
+    "累计结算达批准上限 90% → 停止未开始子局",
+    "Provider 连续 3 次错误 → 停止",
+    "发现契约/接口缺陷 → 停止并写 DCR",
+    "平均单局费用超过预估 2 倍 → 停止并重新申请"
+   ]
   },
-  "context_only_on": {
-   "accepted_route": [
-    "north",
-    "east",
-    "south",
-    "west"
-   ],
-   "backtracks": 0,
-   "block_chars": 476,
-   "bottleneck": {
-    "label": "RECORDED_AND_RENDERED",
-    "reason": "记录且渲染。"
-   },
-   "bottleneck_v13": "RECORDED_AND_RENDERED",
-   "config": {
-    "enabled": true,
-    "route_log": true,
-    "route_mode": "context_only",
-    "route_write_every": 2
-   },
-   "decisions": 7,
-   "expected_route": [
-    "north",
-    "east",
-    "south",
-    "west"
-   ],
-   "final_action": {
-    "tool": "wait"
-   },
-   "final_block_has_all_bearings": true,
-   "final_write_route": "",
-   "invalid_moves": 1,
-   "last_memory_block": "公开记忆（本局内，来自公开观察与动作结果；按最近使用排序）：\n- [route] route.stats = {'accepted': 4, 'rejected': 1, 'invalid': 1, 'loops': 0, 'backtracks': 0}\n- [route] route.path = north,east,south,west\n- [state] state.step = 6\n- [result] result.last = move: MOVED\n- [result] result.move.ok = 4\n- [result] result.move.invalid = 1\n- [result] result.move.rejected = 1\n- [fact] episode.route_mode = context_only\n- [fact] episode.decision_budget = 24\n- [fact] episode.seed = 0\n- [fact] episode.map_id = MAP-22",
-   "loops": 0,
-   "memory_block_leaks": [],
-   "notes_written": 0,
-   "rejected_moves": 1,
-   "render_count": 7,
-   "requests": 7,
-   "route_after_steps": [
-    "north",
-    "north",
-    "north,east",
-    "north,east",
-    "north,east,south",
-    "north,east,south,west"
-   ],
-   "route_length": 4,
-   "route_matches_expected": true,
-   "route_preview": "north,east,south,west",
-   "route_recall_v10_note": "V10 官方 route_recall 直接读环境 agent_notes；context_only 不写环境，因此该口径在本臂为 NOT_APPLICABLE，必须与 V14 投影分列。",
-   "route_recall_v14": {
-    "denominator": 4,
-    "metric_id": "v12.projection.route_recall",
-    "note": "公开记忆里没有可解析的方位序列（与 V10 口径一致：未记录 → N/A）。",
-    "numerator": null,
-    "rule_version": "v12-projection-1",
-    "source_keys": [],
-    "state": "NOT_APPLICABLE",
-    "value": null
-   },
-   "write_accepted": 0,
-   "write_actions": 0,
-   "write_attempts": 0,
-   "write_rejected": 0
-  },
-  "disabled": {
-   "accepted_route": [
-    "north",
-    "east",
-    "south",
-    "west"
-   ],
-   "backtracks": 0,
-   "block_chars": 0,
-   "bottleneck": {
-    "label": "DISABLED",
-    "reason": "记忆关闭（消融臂）。"
-   },
-   "bottleneck_v13": "DISABLED",
-   "config": {
-    "enabled": false,
-    "route_log": true,
-    "route_mode": "env_write",
-    "route_write_every": 2
-   },
-   "decisions": 7,
-   "expected_route": [
-    "north",
-    "east",
-    "south",
-    "west"
-   ],
-   "final_action": {
-    "tool": "wait"
-   },
-   "final_block_has_all_bearings": false,
-   "final_write_route": "",
-   "invalid_moves": 0,
-   "last_memory_block": null,
-   "loops": 0,
-   "memory_block_leaks": [],
-   "notes_written": 0,
-   "rejected_moves": 0,
-   "render_count": 0,
-   "requests": 7,
-   "route_after_steps": [
-    "",
-    "",
-    "",
-    "",
-    "",
-    ""
-   ],
-   "route_length": 0,
-   "route_matches_expected": false,
-   "route_preview": "",
-   "route_recall_v10_note": "V10 官方 route_recall 直接读环境 agent_notes；context_only 不写环境，因此该口径在本臂为 NOT_APPLICABLE，必须与 V14 投影分列。",
-   "route_recall_v14": {
-    "denominator": 4,
-    "metric_id": "v12.projection.route_recall",
-    "note": "公开记忆里没有可解析的方位序列（与 V10 口径一致：未记录 → N/A）。",
-    "numerator": null,
-    "rule_version": "v12-projection-1",
-    "source_keys": [],
-    "state": "NOT_APPLICABLE",
-    "value": null
-   },
-   "write_accepted": 0,
-   "write_actions": 0,
-   "write_attempts": 0,
-   "write_rejected": 0
-  },
-  "env_write_on": {
-   "accepted_route": [
-    "north",
-    "east",
-    "south",
-    "west"
-   ],
-   "backtracks": 0,
-   "block_chars": 506,
-   "bottleneck": {
-    "label": "RECORDED_AND_RENDERED",
-    "reason": "记录且渲染。"
-   },
-   "bottleneck_v13": "RECORDED_TOO_SHORT",
-   "config": {
-    "enabled": true,
-    "route_log": true,
-    "route_mode": "env_write",
-    "route_write_every": 2
-   },
-   "decisions": 8,
-   "expected_route": [
-    "north",
-    "east",
-    "south",
-    "west"
-   ],
-   "final_action": {
-    "facts": [
+  "probes": {
+   "adaptive": {
+    "action_requests": 12,
+    "chain": [
      {
-      "key": "path_state",
-      "value": "north,east,south,west"
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 0,
+      "event": "plan_created",
+      "plan_count": 1,
+      "planner_request": 1,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 2,
+      "subgoal": "子目标 #1：沿公开线索推进",
+      "subgoal_changed": true,
+      "trigger": "initial"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 1,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "rejected": true,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 2,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "rejected": true,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "ttl",
+      "decision_index": 3,
+      "event": "planner_deferred_ttl",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": "repeated_rejection"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 4,
+      "event": "plan_replanned",
+      "plan_count": 2,
+      "planner_request": 1,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 2,
+      "subgoal": "子目标 #2：沿公开线索推进",
+      "subgoal_changed": true,
+      "trigger": "no_progress"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 5,
+      "event": "",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 6,
+      "event": "",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 7,
+      "event": "",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 8,
+      "event": "plan_replanned",
+      "plan_count": 3,
+      "planner_request": 1,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 2,
+      "subgoal": "子目标 #3：沿公开线索推进",
+      "subgoal_changed": true,
+      "trigger": "public_progress"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 9,
+      "event": "",
+      "plan_count": 3,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 10,
+      "event": "",
+      "plan_count": 3,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 11,
+      "event": "",
+      "plan_count": 3,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
      }
     ],
-    "tool": "write_memory"
+    "config": {
+     "budget_aware": true,
+     "enabled": true,
+     "max_plans": 6,
+     "min_steps_between_plans": 4,
+     "planner_mode": "adaptive"
+    },
+    "decisions": 12,
+    "note": "Planner 请求与动作请求同属一次决策的 ``requests``；成本按 requests + input/output token 分别记账，Planner 不免单。",
+    "plan_count": 3,
+    "planner_request_share": 0.2,
+    "planner_requests": 3,
+    "planner_tokens_in": 360,
+    "planner_tokens_out": 90,
+    "skipped_budget": 0,
+    "skipped_ttl": 1,
+    "total_requests": 15,
+    "triggers": [
+     "initial",
+     "no_progress",
+     "public_progress"
+    ]
    },
-   "final_block_has_all_bearings": true,
-   "final_write_route": "north,east,south,west",
-   "invalid_moves": 1,
-   "last_memory_block": "公开记忆（本局内，来自公开观察与动作结果；按最近使用排序）：\n- [route] route.stats = {'accepted': 3, 'rejected': 1, 'invalid': 1, 'loops': 0, 'backtracks': 0}\n- [route] route.path = north,east,south\n- [state] state.step = 6\n- [result] result.last = move: MOVED\n- [result] result.move.ok = 3\n- [result] result.move.invalid = 1\n- [result] result.write_memory.ok = 1\n- [result] result.move.rejected = 1\n- [fact] episode.route_mode = env_write\n- [fact] episode.decision_budget = 24\n- [fact] episode.seed = 0\n- [fact] episode.map_id = MAP-22",
-   "loops": 0,
-   "memory_block_leaks": [],
-   "notes_written": 2,
-   "rejected_moves": 1,
-   "render_count": 6,
-   "requests": 6,
-   "route_after_steps": [
-    "north",
-    "north",
-    "north,east",
-    "north,east",
-    "north,east,south",
-    "north,east,south,west"
-   ],
-   "route_length": 4,
-   "route_matches_expected": true,
-   "route_preview": "north,east,south,west",
-   "route_recall_v10_note": "V10 官方 route_recall 直接读环境 agent_notes；context_only 不写环境，因此该口径在本臂为 NOT_APPLICABLE，必须与 V14 投影分列。",
-   "route_recall_v14": {
-    "denominator": 4,
-    "matched_key": "path_state",
-    "metric_id": "v12.projection.route_recall",
-    "note": "V12 研究投影：键名宽容（不限于 bearing/path_state），分母为真实 move 数；不是 V10 官方值。",
-    "numerator": 4,
-    "rule_version": "v12-projection-1",
-    "source_keys": [
-     "path_state"
+   "budget_guard": {
+    "action_requests": 12,
+    "chain": [
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 0,
+      "event": "plan_created",
+      "plan_count": 1,
+      "planner_request": 1,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 2,
+      "subgoal": "子目标 #1：沿公开线索推进",
+      "subgoal_changed": true,
+      "trigger": "initial"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 1,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "ttl",
+      "decision_index": 2,
+      "event": "planner_deferred_ttl",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": "no_progress"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "ttl",
+      "decision_index": 3,
+      "event": "planner_deferred_ttl",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": "no_progress"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 4,
+      "event": "plan_replanned",
+      "plan_count": 2,
+      "planner_request": 1,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 2,
+      "subgoal": "子目标 #2：沿公开线索推进",
+      "subgoal_changed": true,
+      "trigger": "no_progress"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 5,
+      "event": "",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "ttl",
+      "decision_index": 6,
+      "event": "planner_deferred_ttl",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": "no_progress"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "ttl",
+      "decision_index": 7,
+      "event": "planner_deferred_ttl",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": "no_progress"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 8,
+      "event": "plan_replanned",
+      "plan_count": 3,
+      "planner_request": 1,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 2,
+      "subgoal": "子目标 #3：沿公开线索推进",
+      "subgoal_changed": true,
+      "trigger": "no_progress"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 9,
+      "event": "",
+      "plan_count": 3,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "budget",
+      "decision_index": 10,
+      "event": "planner_skipped_budget",
+      "plan_count": 3,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": "no_progress"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "budget",
+      "decision_index": 11,
+      "event": "planner_skipped_budget",
+      "plan_count": 3,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": "no_progress"
+     }
     ],
-    "state": "VALID",
-    "value": 1.0,
-    "written_length": 4
+    "config": {
+     "budget_aware": true,
+     "enabled": true,
+     "max_plans": 6,
+     "min_steps_between_plans": 4,
+     "planner_mode": "adaptive"
+    },
+    "decisions": 12,
+    "note": "Planner 请求与动作请求同属一次决策的 ``requests``；成本按 requests + input/output token 分别记账，Planner 不免单。",
+    "plan_count": 3,
+    "planner_request_share": 0.2,
+    "planner_requests": 3,
+    "planner_tokens_in": 360,
+    "planner_tokens_out": 90,
+    "skipped_budget": 2,
+    "skipped_ttl": 4,
+    "total_requests": 15,
+    "triggers": [
+     "initial",
+     "no_progress",
+     "no_progress"
+    ]
    },
-   "write_accepted": 2,
-   "write_actions": 2,
-   "write_attempts": 2,
-   "write_rejected": 0
-  }
+   "disabled": {
+    "action_requests": 12,
+    "chain": [
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 0,
+      "event": "planning_disabled",
+      "plan_count": 0,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 1,
+      "event": "",
+      "plan_count": 0,
+      "planner_request": 0,
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "rejected": true,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 2,
+      "event": "",
+      "plan_count": 0,
+      "planner_request": 0,
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "rejected": true,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 3,
+      "event": "",
+      "plan_count": 0,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 4,
+      "event": "",
+      "plan_count": 0,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 5,
+      "event": "",
+      "plan_count": 0,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 6,
+      "event": "",
+      "plan_count": 0,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 7,
+      "event": "",
+      "plan_count": 0,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 8,
+      "event": "",
+      "plan_count": 0,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 9,
+      "event": "",
+      "plan_count": 0,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 10,
+      "event": "",
+      "plan_count": 0,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 11,
+      "event": "",
+      "plan_count": 0,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     }
+    ],
+    "config": {
+     "budget_aware": true,
+     "enabled": false,
+     "max_plans": 6,
+     "min_steps_between_plans": 4,
+     "planner_mode": "adaptive"
+    },
+    "decisions": 12,
+    "note": "Planner 请求与动作请求同属一次决策的 ``requests``；成本按 requests + input/output token 分别记账，Planner 不免单。",
+    "plan_count": 0,
+    "planner_request_share": 0.0,
+    "planner_requests": 0,
+    "planner_tokens_in": 0,
+    "planner_tokens_out": 0,
+    "skipped_budget": 0,
+    "skipped_ttl": 0,
+    "total_requests": 12,
+    "triggers": []
+   },
+   "initial_only": {
+    "action_requests": 12,
+    "chain": [
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 0,
+      "event": "plan_created",
+      "plan_count": 1,
+      "planner_request": 1,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 2,
+      "subgoal": "子目标 #1：沿公开线索推进",
+      "subgoal_changed": true,
+      "trigger": "initial"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 1,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "rejected": true,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 2,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "rejected": true,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 3,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 4,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 5,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 6,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 7,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 8,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 9,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 10,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 11,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     }
+    ],
+    "config": {
+     "budget_aware": true,
+     "enabled": true,
+     "max_plans": 6,
+     "min_steps_between_plans": 4,
+     "planner_mode": "initial_only"
+    },
+    "decisions": 12,
+    "note": "Planner 请求与动作请求同属一次决策的 ``requests``；成本按 requests + input/output token 分别记账，Planner 不免单。",
+    "plan_count": 1,
+    "planner_request_share": 0.0769,
+    "planner_requests": 1,
+    "planner_tokens_in": 120,
+    "planner_tokens_out": 30,
+    "skipped_budget": 0,
+    "skipped_ttl": 0,
+    "total_requests": 13,
+    "triggers": [
+     "initial"
+    ]
+   },
+   "max_plans": {
+    "action_requests": 12,
+    "chain": [
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 0,
+      "event": "plan_created",
+      "plan_count": 1,
+      "planner_request": 1,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 2,
+      "subgoal": "子目标 #1：沿公开线索推进",
+      "subgoal_changed": true,
+      "trigger": "initial"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 1,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "ttl",
+      "decision_index": 2,
+      "event": "planner_deferred_ttl",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": "no_progress"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "ttl",
+      "decision_index": 3,
+      "event": "planner_deferred_ttl",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": "no_progress"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 4,
+      "event": "plan_replanned",
+      "plan_count": 2,
+      "planner_request": 1,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 2,
+      "subgoal": "子目标 #2：沿公开线索推进",
+      "subgoal_changed": true,
+      "trigger": "no_progress"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 5,
+      "event": "",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "max_plans",
+      "decision_index": 6,
+      "event": "plan_budget_exhausted",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 7,
+      "event": "",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 8,
+      "event": "",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 9,
+      "event": "",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 10,
+      "event": "",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 11,
+      "event": "",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     }
+    ],
+    "config": {
+     "budget_aware": true,
+     "enabled": true,
+     "max_plans": 2,
+     "min_steps_between_plans": 4,
+     "planner_mode": "adaptive"
+    },
+    "decisions": 12,
+    "note": "Planner 请求与动作请求同属一次决策的 ``requests``；成本按 requests + input/output token 分别记账，Planner 不免单。",
+    "plan_count": 2,
+    "planner_request_share": 0.1429,
+    "planner_requests": 2,
+    "planner_tokens_in": 240,
+    "planner_tokens_out": 60,
+    "skipped_budget": 0,
+    "skipped_ttl": 2,
+    "total_requests": 14,
+    "triggers": [
+     "initial",
+     "no_progress"
+    ]
+   },
+   "periodic_12": {
+    "action_requests": 12,
+    "chain": [
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 0,
+      "event": "plan_created",
+      "plan_count": 1,
+      "planner_request": 1,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 2,
+      "subgoal": "子目标 #1：沿公开线索推进",
+      "subgoal_changed": true,
+      "trigger": "initial"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 1,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "rejected": true,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 2,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "rejected": true,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 3,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 4,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 5,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 6,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 7,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 8,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 9,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 10,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 11,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     }
+    ],
+    "config": {
+     "budget_aware": true,
+     "enabled": true,
+     "max_plans": 6,
+     "min_steps_between_plans": 12,
+     "planner_mode": "periodic"
+    },
+    "decisions": 12,
+    "note": "Planner 请求与动作请求同属一次决策的 ``requests``；成本按 requests + input/output token 分别记账，Planner 不免单。",
+    "plan_count": 1,
+    "planner_request_share": 0.0769,
+    "planner_requests": 1,
+    "planner_tokens_in": 120,
+    "planner_tokens_out": 30,
+    "skipped_budget": 0,
+    "skipped_ttl": 0,
+    "total_requests": 13,
+    "triggers": [
+     "initial"
+    ]
+   },
+   "periodic_4": {
+    "action_requests": 12,
+    "chain": [
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 0,
+      "event": "plan_created",
+      "plan_count": 1,
+      "planner_request": 1,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 2,
+      "subgoal": "子目标 #1：沿公开线索推进",
+      "subgoal_changed": true,
+      "trigger": "initial"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 1,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "rejected": true,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 2,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "rejected": true,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 3,
+      "event": "",
+      "plan_count": 1,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 4,
+      "event": "plan_replanned",
+      "plan_count": 2,
+      "planner_request": 1,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 2,
+      "subgoal": "子目标 #2：沿公开线索推进",
+      "subgoal_changed": true,
+      "trigger": "periodic"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 5,
+      "event": "",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 6,
+      "event": "",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 7,
+      "event": "",
+      "plan_count": 2,
+      "planner_request": 0,
+      "public_result": "NO_EFFECT",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 8,
+      "event": "plan_replanned",
+      "plan_count": 3,
+      "planner_request": 1,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 2,
+      "subgoal": "子目标 #3：沿公开线索推进",
+      "subgoal_changed": true,
+      "trigger": "periodic"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 9,
+      "event": "",
+      "plan_count": 3,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 10,
+      "event": "",
+      "plan_count": 3,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "blocked_by": "",
+      "decision_index": 11,
+      "event": "",
+      "plan_count": 3,
+      "planner_request": 0,
+      "public_result": "MOVED",
+      "rejected": false,
+      "requests": 1,
+      "subgoal": null,
+      "subgoal_changed": false,
+      "trigger": ""
+     }
+    ],
+    "config": {
+     "budget_aware": true,
+     "enabled": true,
+     "max_plans": 6,
+     "min_steps_between_plans": 4,
+     "planner_mode": "periodic"
+    },
+    "decisions": 12,
+    "note": "Planner 请求与动作请求同属一次决策的 ``requests``；成本按 requests + input/output token 分别记账，Planner 不免单。",
+    "plan_count": 3,
+    "planner_request_share": 0.2,
+    "planner_requests": 3,
+    "planner_tokens_in": 360,
+    "planner_tokens_out": 90,
+    "skipped_budget": 0,
+    "skipped_ttl": 0,
+    "total_requests": 15,
+    "triggers": [
+     "initial",
+     "periodic",
+     "periodic"
+    ]
+   }
+  },
+  "schema": "v14-planning-study-1"
  },
- "schema": "v14-memory-study-1"
+ "reflection": {
+  "arms": {
+   "all_single_factor": true,
+   "arms": [
+    {
+     "agent_id": "reflection.v2",
+     "arm_id": "E3-control",
+     "config": {
+      "cooldown_steps": 4,
+      "enabled": false,
+      "history_window": 5,
+      "max_reflections": 3,
+      "recovery_window": 3,
+      "reject_threshold": 2,
+      "stall_threshold": 3,
+      "trigger_only": false
+     },
+     "group": "E3",
+     "label": "disabled（完全不反思）"
+    },
+    {
+     "agent_id": "reflection.v2",
+     "arm_id": "E3-trigger-only",
+     "config": {
+      "cooldown_steps": 4,
+      "enabled": true,
+      "history_window": 5,
+      "max_reflections": 3,
+      "recovery_window": 3,
+      "reject_threshold": 2,
+      "stall_threshold": 3,
+      "trigger_only": true
+     },
+     "group": "E3",
+     "label": "trigger_only（只判定触发，不请求模型）"
+    },
+    {
+     "agent_id": "reflection.v2",
+     "arm_id": "E3-treatment",
+     "config": {
+      "cooldown_steps": 4,
+      "enabled": true,
+      "history_window": 5,
+      "max_reflections": 3,
+      "recovery_window": 3,
+      "reject_threshold": 2,
+      "stall_threshold": 3,
+      "trigger_only": false
+     },
+     "group": "E3",
+     "label": "reflection_on（真发请求并注入建议）"
+    }
+   ],
+   "checks": [
+    {
+     "changed_keys": [
+      "enabled"
+     ],
+     "expected_single_factor": true,
+     "kind": "single_switch",
+     "label": "enabled（无反思 → 完整反思）",
+     "left": "E3-control",
+     "manipulated_variable": "enabled",
+     "ok": true,
+     "reasons": [],
+     "right": "E3-treatment"
+    },
+    {
+     "changed_keys": [
+      "trigger_only"
+     ],
+     "expected_single_factor": true,
+     "kind": "single_switch",
+     "label": "trigger_only（只判定 → 真请求）",
+     "left": "E3-trigger-only",
+     "manipulated_variable": "trigger_only",
+     "ok": true,
+     "reasons": [],
+     "right": "E3-treatment"
+    },
+    {
+     "changed_keys": [
+      "enabled",
+      "trigger_only"
+     ],
+     "expected_single_factor": false,
+     "kind": "multi_switch",
+     "label": "enabled + trigger_only",
+     "left": "E3-control",
+     "manipulated_variable": "",
+     "ok": false,
+     "reasons": [
+      "同时改了 enabled、trigger_only 多个开关；这不能归因到单个机制，只能作为「组合方案」描述。"
+     ],
+     "right": "E3-trigger-only"
+    }
+   ],
+   "combination_pairs": [
+    "enabled + trigger_only"
+   ],
+   "note": "``disabled→reflection_on`` 是组合对照（含触发判定 + 请求 + 注入），只能作为机制比较；单因子结论必须用 ``trigger_only→reflection_on``。",
+   "schema": "v14-reflection-arms-1",
+   "single_factor_pairs": [
+    "enabled（无反思 → 完整反思）",
+    "trigger_only（只判定 → 真请求）"
+   ]
+  },
+  "gates": {
+   "disabled": {
+    "allowed_conclusion": "该臂不构成干预对照，只能作为无反思基线。",
+    "status": "DISABLED_ARM",
+    "triggered": 0
+   },
+   "long_failure_on": {
+    "allowed_conclusion": "干预确实发生；效果只能在「全部已分配局」与「触发子集」两组同时报告。",
+    "status": "TREATMENT_TRIGGERED",
+    "triggered": 3
+   },
+   "no_trigger_on": {
+    "allowed_conclusion": "NO_TREATMENT_EXPOSURE：干预从未发生，不得报告「反思无效」；先改选有更长失败前缀的地图（改阈值必须另立版本）。",
+    "status": "NO_TREATMENT_EXPOSURE",
+    "triggered": 0
+   },
+   "reflection_on": {
+    "allowed_conclusion": "干预确实发生；效果只能在「全部已分配局」与「触发子集」两组同时报告。",
+    "status": "TREATMENT_TRIGGERED",
+    "triggered": 3
+   },
+   "trigger_only": {
+    "allowed_conclusion": "干预确实发生；效果只能在「全部已分配局」与「触发子集」两组同时报告。",
+    "status": "TREATMENT_TRIGGERED",
+    "triggered": 9
+   }
+  },
+  "note": "全部为 SIMULATED 机制证据，零模型请求；真实收益 LIVE_PENDING。",
+  "plan": {
+   "activation_gate": "``reflection_on`` 臂必须至少出现一次真实反思请求（``triggered > 0``）；否则记录 NO_TREATMENT_EXPOSURE 并改选地图，不得按「反思无效」报告。",
+   "arms": [
+    "E3-control",
+    "E3-trigger-only",
+    "E3-treatment"
+   ],
+   "budget": {
+    "experiment_cost_cap_cny": 5.0,
+    "per_run_cost_cap_cny": 0.5,
+    "per_run_input_token_cap": 200000,
+    "per_run_request_cap": 90
+   },
+   "candidate_maps": [
+    {
+     "map_id": "MAP-22",
+     "status": "PRIMARY",
+     "why": "V12 已知有较长失败前缀"
+    },
+    {
+     "map_id": "MAP-19",
+     "status": "CANDIDATE",
+     "why": "需先做公开动作/触发器离线诊断"
+    },
+    {
+     "map_id": "MAP-20",
+     "status": "CANDIDATE",
+     "why": "同上"
+    },
+    {
+     "map_id": "MAP-29",
+     "status": "CANDIDATE",
+     "why": "同上"
+    }
+   ],
+   "cost_metrics": [
+    "requests",
+    "input_tokens",
+    "output_tokens",
+    "cost_cny"
+   ],
+   "live_status": "LIVE_PENDING",
+   "maps": [
+    "MAP-22"
+   ],
+   "no_go_note": "V14 未获用户对模型/矩阵/总额的批准，本计划不得执行；所有真实效果保持 LIVE_PENDING。",
+   "primary_metrics": [
+    "completed_success",
+    "eligible",
+    "triggered",
+    "blocked_cooldown",
+    "blocked_quota",
+    "false_triggers",
+    "recoveries"
+   ],
+   "replicates": 3,
+   "runs": 27,
+   "schema": "v14-reflection-plan-1",
+   "seeds": [
+    0,
+    1,
+    2
+   ],
+   "status": "PLANNED_ONLY",
+   "stop_rules": [
+    "任一局 unknown_spend → 立即停止并封账",
+    "累计结算达批准上限 90% → 停止未开始子局",
+    "Provider 连续 3 次错误 → 停止",
+    "发现契约/接口缺陷 → 停止并写 DCR",
+    "``reflection_on`` 臂全部 0 触发 → 停止并按 NO_TREATMENT_EXPOSURE 处理"
+   ],
+   "two_arm_subset_runs": 18
+  },
+  "probes": {
+   "disabled": {
+    "activation_rate": null,
+    "advice_injected_steps": 0,
+    "blocked_cooldown": 0,
+    "blocked_quota": 0,
+    "chain": [
+     {
+      "decision_index": 0,
+      "event": "reflection_disabled",
+      "public_result": "MOVED",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 1,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 2,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 3,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 4,
+      "event": "",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 5,
+      "event": "",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 6,
+      "event": "",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 7,
+      "event": "",
+      "public_result": "MOVED",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 8,
+      "event": "",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 9,
+      "event": "",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 10,
+      "event": "",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 11,
+      "event": "",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     }
+    ],
+    "config": {
+     "cooldown_steps": 4,
+     "enabled": false,
+     "max_reflections": 3,
+     "reject_threshold": 2,
+     "stall_threshold": 3,
+     "trigger_only": false
+    },
+    "decisions": 12,
+    "eligible": 0,
+    "exposure": "DISABLED",
+    "false_triggers": 0,
+    "note": "``eligible`` 只是候选；只有 ``triggered`` 才算真的发生了干预。``trigger_only`` 臂的 ``triggered`` 计入暴露，但 ``requests`` 不增加。",
+    "recoveries": 0,
+    "recovery_rate": null,
+    "reflection_requests": 0,
+    "reflection_tokens_in": 0,
+    "reflection_tokens_out": 0,
+    "total_requests": 12,
+    "triggered": 0,
+    "triggers": []
+   },
+   "long_failure_on": {
+    "activation_rate": 1.0,
+    "advice_injected_steps": 10,
+    "blocked_cooldown": 6,
+    "blocked_quota": 1,
+    "chain": [
+     {
+      "decision_index": 0,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 1,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 2,
+      "event": "reflection_triggered",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 1,
+      "rejected": true,
+      "requests": 2,
+      "trigger": "repeated_rejection"
+     },
+     {
+      "decision_index": 3,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 4,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 5,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 6,
+      "event": "reflection_triggered",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 1,
+      "rejected": true,
+      "requests": 2,
+      "trigger": "repeated_rejection"
+     },
+     {
+      "decision_index": 7,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 8,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 9,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 10,
+      "event": "reflection_triggered",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 1,
+      "rejected": true,
+      "requests": 2,
+      "trigger": "repeated_rejection"
+     },
+     {
+      "decision_index": 11,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     }
+    ],
+    "config": {
+     "cooldown_steps": 4,
+     "enabled": true,
+     "max_reflections": 3,
+     "reject_threshold": 2,
+     "stall_threshold": 3,
+     "trigger_only": false
+    },
+    "decisions": 12,
+    "eligible": 3,
+    "exposure": "TREATMENT_TRIGGERED",
+    "false_triggers": 0,
+    "note": "``eligible`` 只是候选；只有 ``triggered`` 才算真的发生了干预。``trigger_only`` 臂的 ``triggered`` 计入暴露，但 ``requests`` 不增加。",
+    "recoveries": 3,
+    "recovery_rate": 1.0,
+    "reflection_requests": 3,
+    "reflection_tokens_in": 360,
+    "reflection_tokens_out": 90,
+    "total_requests": 15,
+    "triggered": 3,
+    "triggers": [
+     "repeated_rejection",
+     "repeated_rejection",
+     "repeated_rejection",
+     "repeated_rejection",
+     "repeated_rejection",
+     "repeated_rejection",
+     "repeated_rejection",
+     "repeated_rejection",
+     "repeated_rejection",
+     "repeated_rejection"
+    ]
+   },
+   "no_trigger_on": {
+    "activation_rate": null,
+    "advice_injected_steps": 0,
+    "blocked_cooldown": 0,
+    "blocked_quota": 0,
+    "chain": [
+     {
+      "decision_index": 0,
+      "event": "",
+      "public_result": "MOVED",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 1,
+      "event": "",
+      "public_result": "MOVED",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 2,
+      "event": "",
+      "public_result": "MOVED",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 3,
+      "event": "",
+      "public_result": "MOVED",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 4,
+      "event": "",
+      "public_result": "MOVED",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 5,
+      "event": "",
+      "public_result": "MOVED",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     }
+    ],
+    "config": {
+     "cooldown_steps": 4,
+     "enabled": true,
+     "max_reflections": 3,
+     "reject_threshold": 2,
+     "stall_threshold": 3,
+     "trigger_only": false
+    },
+    "decisions": 6,
+    "eligible": 0,
+    "exposure": "NO_TREATMENT_EXPOSURE",
+    "false_triggers": 0,
+    "note": "``eligible`` 只是候选；只有 ``triggered`` 才算真的发生了干预。``trigger_only`` 臂的 ``triggered`` 计入暴露，但 ``requests`` 不增加。",
+    "recoveries": 0,
+    "recovery_rate": null,
+    "reflection_requests": 0,
+    "reflection_tokens_in": 0,
+    "reflection_tokens_out": 0,
+    "total_requests": 6,
+    "triggered": 0,
+    "triggers": []
+   },
+   "reflection_on": {
+    "activation_rate": 1.0,
+    "advice_injected_steps": 9,
+    "blocked_cooldown": 6,
+    "blocked_quota": 0,
+    "chain": [
+     {
+      "decision_index": 0,
+      "event": "",
+      "public_result": "MOVED",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 1,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 2,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 3,
+      "event": "reflection_triggered",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 1,
+      "rejected": true,
+      "requests": 2,
+      "trigger": "repeated_rejection"
+     },
+     {
+      "decision_index": 4,
+      "event": "",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 5,
+      "event": "",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 6,
+      "event": "",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 7,
+      "event": "reflection_triggered",
+      "public_result": "MOVED",
+      "reflection_request": 1,
+      "rejected": false,
+      "requests": 2,
+      "trigger": "repeated_action"
+     },
+     {
+      "decision_index": 8,
+      "event": "",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 9,
+      "event": "",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 10,
+      "event": "",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 11,
+      "event": "reflection_triggered",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 1,
+      "rejected": false,
+      "requests": 2,
+      "trigger": "repeated_action"
+     }
+    ],
+    "config": {
+     "cooldown_steps": 4,
+     "enabled": true,
+     "max_reflections": 3,
+     "reject_threshold": 2,
+     "stall_threshold": 3,
+     "trigger_only": false
+    },
+    "decisions": 12,
+    "eligible": 3,
+    "exposure": "TREATMENT_TRIGGERED",
+    "false_triggers": 0,
+    "note": "``eligible`` 只是候选；只有 ``triggered`` 才算真的发生了干预。``trigger_only`` 臂的 ``triggered`` 计入暴露，但 ``requests`` 不增加。",
+    "recoveries": 2,
+    "recovery_rate": 0.6667,
+    "reflection_requests": 3,
+    "reflection_tokens_in": 360,
+    "reflection_tokens_out": 90,
+    "total_requests": 15,
+    "triggered": 3,
+    "triggers": [
+     "repeated_rejection",
+     "repeated_rejection",
+     "repeated_action",
+     "repeated_action",
+     "repeated_action",
+     "repeated_action",
+     "repeated_action",
+     "repeated_action",
+     "repeated_action"
+    ]
+   },
+   "trigger_only": {
+    "activation_rate": 1.0,
+    "advice_injected_steps": 0,
+    "blocked_cooldown": 0,
+    "blocked_quota": 0,
+    "chain": [
+     {
+      "decision_index": 0,
+      "event": "",
+      "public_result": "MOVED",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 1,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 2,
+      "event": "",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": ""
+     },
+     {
+      "decision_index": 3,
+      "event": "reflection_trigger_only",
+      "public_result": "BEARING_NOT_AVAILABLE",
+      "reflection_request": 0,
+      "rejected": true,
+      "requests": 1,
+      "trigger": "repeated_rejection"
+     },
+     {
+      "decision_index": 4,
+      "event": "reflection_trigger_only",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": "repeated_rejection"
+     },
+     {
+      "decision_index": 5,
+      "event": "reflection_trigger_only",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": "repeated_action"
+     },
+     {
+      "decision_index": 6,
+      "event": "reflection_trigger_only",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": "repeated_action"
+     },
+     {
+      "decision_index": 7,
+      "event": "reflection_trigger_only",
+      "public_result": "MOVED",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": "repeated_action"
+     },
+     {
+      "decision_index": 8,
+      "event": "reflection_trigger_only",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": "repeated_action"
+     },
+     {
+      "decision_index": 9,
+      "event": "reflection_trigger_only",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": "repeated_action"
+     },
+     {
+      "decision_index": 10,
+      "event": "reflection_trigger_only",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": "repeated_action"
+     },
+     {
+      "decision_index": 11,
+      "event": "reflection_trigger_only",
+      "public_result": "NO_EFFECT",
+      "reflection_request": 0,
+      "rejected": false,
+      "requests": 1,
+      "trigger": "repeated_action"
+     }
+    ],
+    "config": {
+     "cooldown_steps": 4,
+     "enabled": true,
+     "max_reflections": 3,
+     "reject_threshold": 2,
+     "stall_threshold": 3,
+     "trigger_only": true
+    },
+    "decisions": 12,
+    "eligible": 9,
+    "exposure": "TREATMENT_TRIGGERED",
+    "false_triggers": 0,
+    "note": "``eligible`` 只是候选；只有 ``triggered`` 才算真的发生了干预。``trigger_only`` 臂的 ``triggered`` 计入暴露，但 ``requests`` 不增加。",
+    "recoveries": 0,
+    "recovery_rate": 0.0,
+    "reflection_requests": 0,
+    "reflection_tokens_in": 0,
+    "reflection_tokens_out": 0,
+    "total_requests": 12,
+    "triggered": 9,
+    "triggers": [
+     "repeated_rejection",
+     "repeated_rejection",
+     "repeated_action",
+     "repeated_action",
+     "repeated_action",
+     "repeated_action",
+     "repeated_action",
+     "repeated_action",
+     "repeated_action"
+    ]
+   }
+  },
+  "schema": "v14-reflection-study-1"
+ }
 }

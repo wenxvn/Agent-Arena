@@ -70,6 +70,10 @@ class _ScriptedGateway:
             "known_constraints": ["只能使用公开动作"],
             "relevant_resources": [],
             "unresolved_questions": [],
+            # reflection.v2 的输出契约（同一个 ask_json 出口）
+            "advice": f"建议 #{self.planner_calls}：先用公开信息确认方位再移动",
+            "avoid": ["重复同一个被拒方位"],
+            "next_focus": "确认剩余方位与预算",
         }
         response = GatewayResponse(
             candidate=payload,

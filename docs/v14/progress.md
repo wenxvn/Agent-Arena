@@ -88,3 +88,22 @@
 - 测试：`pytest tests/test_v14_planning_study.py` **14 passed**；累计 V14 测试 31 项通过。
 - 真实收益：`LIVE_PENDING`（零请求）。
 - commit：`feat(v14): planning.v2 trigger chain and cost attribution`
+
+## Batch 5 · P0-6 Reflection v2 暴露率与真实收益
+
+- 新模块：`lab/v14/reflection_study.py`
+  - `reflection_offline_probe`：六态计数（`eligible` / `triggered` / `blocked_cooldown` /
+    `blocked_quota` / `false_triggers` / `recoveries`）+ 逐决策链 + 建议注入计数；
+  - 三臂：`disabled` / `trigger_only` / `reflection_on`，两组单因子
+    （`enabled`、`trigger_only`）与一组显式组合对照；
+  - `exposure_gate`：`triggered == 0` → `NO_TREATMENT_EXPOSURE`，禁止报"反思无效"；
+  - `evaluate_without_selection_bias`：全分配 vs 触发子集并列，标 `selection_bias`；
+  - `reflection_ablation_plan`：MAP-22 三臂 × 3 seed × 3 重复 = **27 局**（两臂子集 18），`PLANNED_ONLY`。
+- 实测（SIMULATED，12 决策）：
+  - `reflection_on`：eligible 3 / triggered 3 / 冷却挡 6 / 反思请求 3（总请求 15）/ 恢复 2；
+  - `trigger_only`：triggered 9 但反思请求 0（暴露成立、无额外请求）；
+  - `long_failure_on`：触发 3（额度封顶）+ 额度挡 1 + 恢复 3；
+  - `no_trigger_on`（全程有进度）→ `NO_TREATMENT_EXPOSURE`，复现 DCR-V12-05 情形。
+- 测试：`pytest tests/test_v14_reflection_study.py` **15 passed**；V14 累计 46 项。
+- 真实收益：`LIVE_PENDING`（零请求）。
+- commit：`feat(v14): reflection.v2 exposure gate and selection-bias guard`

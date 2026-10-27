@@ -42,7 +42,7 @@ declared_total_runs: 229 -> 221（修正后一致）
 plans: A 54 / B 186 / C 221
 ```
 
-## 5. Batch 5–12
+## 6. Batch 6–12
 
 > 后续批次在此追加。
 
@@ -106,4 +106,24 @@ disabled     requests=12 planner=0
 budget_guard ttl_skip=4 budget_skip=2 planner=3
 max_plans    plans=2（封顶）
 plan: 72 局（MAP-16 主测 54 + MAP-18 对照 18）/ PLANNED_ONLY
+```
+
+## 5. Batch 5（P0-6，2026-10-27）
+
+| 命令 | 结果 |
+|---|---|
+| `uv run pytest -q tests/test_v14_reflection_study.py` | **15 passed** |
+| `uv run ruff check .` | 通过 |
+| `uv run mypy src` | 329 files，0 issues |
+| `uv run pytest -q`（批次边界全量） | **1722 passed**，189.79s |
+
+SIMULATED 六态（12 决策，零请求）：
+
+```text
+disabled        requests=12 triggered=0 exposure=DISABLED
+trigger_only    requests=12 triggered=9 reflection_requests=0 exposure=TREATMENT_TRIGGERED
+reflection_on   requests=15 triggered=3 cooldown_blocked=6 recoveries=2
+long_failure_on requests=15 triggered=3 quota_blocked=1 recoveries=3
+no_trigger_on   triggered=0 exposure=NO_TREATMENT_EXPOSURE
+plan: 27 局（两臂子集 18）/ PLANNED_ONLY
 ```

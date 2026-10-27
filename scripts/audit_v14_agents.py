@@ -30,6 +30,10 @@ from agent_arena.lab.v14.planning_study import (  # noqa: E402
     planning_markdown,
     planning_study_report,
 )
+from agent_arena.lab.v14.reflection_study import (  # noqa: E402
+    reflection_markdown,
+    reflection_study_report,
+)
 
 HEADER = """# V14 Agent 机制与 LIVE 状态
 
@@ -49,6 +53,7 @@ FOOTER = """
 |---|---|---|---|---|
 | Memory（`memory.v2`） | `SUPPORTED` | E1-a / E1-b | `PLANNED_ONLY` | `LIVE_PENDING` |
 | Planning（`planning.v2`） | `SUPPORTED` | E2-a / E2-b / E2-c | `PLANNED_ONLY` | `LIVE_PENDING` |
+| Reflection（`reflection.v2`） | `SUPPORTED` | E3 三臂 | `PLANNED_ONLY` | `LIVE_PENDING` |
 
 ## 5. 不支持的主张
 
@@ -68,8 +73,15 @@ def main() -> int:
 
     memory = memory_study_report()
     planning = planning_study_report()
+    reflection = reflection_study_report()
     document = "\n".join(
-        [HEADER, memory_markdown(memory), planning_markdown(planning), FOOTER]
+        [
+            HEADER,
+            memory_markdown(memory),
+            planning_markdown(planning),
+            reflection_markdown(reflection),
+            FOOTER,
+        ]
     )
 
     if args.write:
@@ -78,7 +90,13 @@ def main() -> int:
             document, encoding="utf-8", newline="\n"
         )
         (args.out / "agent-studies.json").write_text(
-            json.dumps(memory, ensure_ascii=False, indent=1, sort_keys=True) + "\n",
+            json.dumps(
+                {"memory": memory, "planning": planning, "reflection": reflection},
+                ensure_ascii=False,
+                indent=1,
+                sort_keys=True,
+            )
+            + "\n",
             encoding="utf-8",
             newline="\n",
         )
@@ -113,6 +131,23 @@ def main() -> int:
             for name, probe in planning["probes"].items()
         },
         "planning_all_single_factor": planning["arms"]["all_single_factor"],
+        "reflection": {
+            name: {
+                "triggered": probe["triggered"],
+                "eligible": probe["eligible"],
+                "reflection_requests": probe["reflection_requests"],
+                "blocked_cooldown": probe["blocked_cooldown"],
+                "blocked_quota": probe["blocked_quota"],
+                "false_triggers": probe["false_triggers"],
+                "recoveries": probe["recoveries"],
+                "exposure": probe["exposure"],
+            }
+            for name, probe in reflection["probes"].items()
+        },
+        "reflection_gates": {
+            name: gate["status"] for name, gate in reflection["gates"].items()
+        },
+        "reflection_plan_runs": reflection["plan"]["runs"],
         "planning_plan_runs": planning["plan"]["runs"],
         "written": str(args.out) if args.write else None,
     }
