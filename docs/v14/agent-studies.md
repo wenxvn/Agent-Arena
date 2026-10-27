@@ -66,16 +66,85 @@
 - 比较口径：同一总预算、同一 memory.v2 版本、同一 prompt 主体、同一 seed；只允许被测开关不同（E1-a 改 route_log，E1-b 改 route_mode）。
 - V14 未获用户对模型/矩阵/总额的批准，因此本计划不得执行；``scripts/run_v12_matrix.py --ablation`` 只允许在默认预检模式下运行。
 
+## 2. Planning（P0-5）
+
+### 2.1 离线触发链（SIMULATED，零模型请求）
+
+脚本：1 步有进度 → 2 次被拒 → 5 步无进度 → 4 步恢复；共 12 次决策。
+
+| 臂 | 决策 | 总请求 | Planner 请求 | Planner token(in) | 计划数 | TTL 跳过 | 预算跳过 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `adaptive` | 12 | 15 | 3 | 360 | 3 | 1 | 0 |
+| `initial_only` | 12 | 13 | 1 | 120 | 1 | 0 | 0 |
+| `periodic_4` | 12 | 15 | 3 | 360 | 3 | 0 | 0 |
+| `periodic_12` | 12 | 13 | 1 | 120 | 1 | 0 | 0 |
+| `disabled` | 12 | 12 | 0 | 0 | 0 | 0 | 0 |
+| `budget_guard` | 12 | 15 | 3 | 360 | 3 | 4 | 2 |
+| `max_plans` | 12 | 14 | 2 | 240 | 2 | 2 | 0 |
+
+逐决策链（`adaptive`）：
+
+| 步 | 触发 | 事件 | 被挡 | Planner 请求 | 子目标 | 公开结果 | 请求 |
+|---:|---|---|---|---:|---|---|---:|
+| 0 | `initial` | `plan_created` | `—` | 1 | 子目标 #1：沿公开线索推进 | `MOVED` | 2 |
+| 1 | `—` | `—` | `—` | 0 | — | `BEARING_NOT_AVAILABLE` | 1 |
+| 2 | `—` | `—` | `—` | 0 | — | `BEARING_NOT_AVAILABLE` | 1 |
+| 3 | `repeated_rejection` | `planner_deferred_ttl` | `ttl` | 0 | — | `NO_EFFECT` | 1 |
+| 4 | `no_progress` | `plan_replanned` | `—` | 1 | 子目标 #2：沿公开线索推进 | `NO_EFFECT` | 2 |
+| 5 | `—` | `—` | `—` | 0 | — | `NO_EFFECT` | 1 |
+| 6 | `—` | `—` | `—` | 0 | — | `NO_EFFECT` | 1 |
+| 7 | `—` | `—` | `—` | 0 | — | `NO_EFFECT` | 1 |
+| 8 | `public_progress` | `plan_replanned` | `—` | 1 | 子目标 #3：沿公开线索推进 | `MOVED` | 2 |
+| 9 | `—` | `—` | `—` | 0 | — | `MOVED` | 1 |
+| 10 | `—` | `—` | `—` | 0 | — | `MOVED` | 1 |
+| 11 | `—` | `—` | `—` | 0 | — | `MOVED` | 1 |
+
+> Planner 请求与动作请求同属一次决策的 ``requests``；成本按 requests + input/output token 分别记账，Planner 不免单。
+
+被挡下的两条路径（`stall_threshold=2` + 12 步无进度）：
+
+| 臂 | 决策数 | 计划数 | TTL 跳过 | 预算跳过 | Planner 请求 | 总请求 |
+|---|---:|---:|---:|---:|---:|---:|
+| `budget_guard` | 12 | 3 | 4 | 2 | 3 | 15 |
+| `max_plans` | 12 | 2 | 2 | 0 | 2 | 14 |
+
+### 2.2 三组独立单因子
+
+| 组 | 对照 | 处理 | 唯一变化键 | 单开关 |
+|---|---|---|---|---|
+| E2-a | `E2-a-control` | `E2-a-treatment` | `enabled` | 是 |
+| E2-b | `E2-b-control` | `E2-b-treatment` | `planner_mode` | 是 |
+| E2-c | `E2-c-control` | `E2-c-treatment` | `min_steps_between_plans` | 是 |
+
+- 全部单因子：是
+- E2-a 改 ``enabled``；E2-b 改 ``planner_mode``（adaptive→initial_only）；E2-c 改 ``min_steps_between_plans``（4→12，两臂都钉 ``periodic``）。三组互不混用；MAP-18 只作负向对照。
+
+### 2.3 预检登记（`PLANNED_ONLY`，零请求）
+
+| 项 | 值 |
+|---|---|
+| 主测地图 | MAP-16 |
+| 负向对照 | MAP-18 |
+| 子局 | 72（主测 54 + 对照 18） |
+| 状态 | `PLANNED_ONLY` / `LIVE_PENDING` |
+
+- 比较口径：同一**总预算**下比较：Planner 请求不免费，必须计入同一 requests/token/费用上限；若节流省钱但成功率下降，如实保留，不为追涨点放松预算。
+- 负向对照：MAP-18 在 V12/V13 从未显示 planning 正梯度，保留为负向对照；若该图也出现「规划更好」，先怀疑测量与噪声，不当作收益证据。
+- V14 未获用户对模型/矩阵/总额的批准，本计划不得执行；``scripts/run_v12_matrix.py --ablation`` 只允许默认预检模式。
+
 
 ## 4. 汇总状态
 
 | 机制 | 离线机制证据 | 单因子臂 | 预检登记 | 真实收益 |
 |---|---|---|---|---|
-| Memory（`memory.v2`） | `SUPPORTED`（确定性 probe） | E1-a `route_log` / E1-b `route_mode` | `PLANNED_ONLY` | `LIVE_PENDING` |
+| Memory（`memory.v2`） | `SUPPORTED` | E1-a / E1-b | `PLANNED_ONLY` | `LIVE_PENDING` |
+| Planning（`planning.v2`） | `SUPPORTED` | E2-a / E2-b / E2-c | `PLANNED_ONLY` | `LIVE_PENDING` |
 
 ## 5. 不支持的主张
 
 - ❌ "Memory 提高成功率 X%"：离线 probe 不含模型，不能给出成功率；
 - ❌ "route_log 一定更好"：机制成立 ≠ 收益成立，需要真实配对实验；
 - ❌ "`env_write` 比 `context_only` 好"：前者多吃决策预算，长局可能因此截尾；
-- ❌ "V10 `route_recall` 为 0 说明没记忆"：`context_only` 不写环境，该口径本就 `NOT_APPLICABLE`。
+- ❌ "V10 `route_recall` 为 0 说明没记忆"：`context_only` 不写环境，该口径本就 `NOT_APPLICABLE`；
+- ❌ "Planner 请求不计成本"：Planner 与动作请求同属 `requests`，token 单独累加；
+- ❌ "低频 Planner 一定更好"：省请求是事实，成功率代价必须同时报告。

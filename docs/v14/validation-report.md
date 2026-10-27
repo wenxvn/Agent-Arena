@@ -42,7 +42,7 @@ declared_total_runs: 229 -> 221（修正后一致）
 plans: A 54 / B 186 / C 221
 ```
 
-## 4. Batch 4–12
+## 5. Batch 5–12
 
 > 后续批次在此追加。
 
@@ -83,4 +83,27 @@ disabled          decisions=7 requests=7 render=0 bottleneck=DISABLED
 memory_block_leaks = []（全部臂）
 all_single_factor = true
 plan: 36 局 / PLANNED_ONLY / 实验费用上限 ¥5.00
+```
+
+## 4. Batch 4（P0-5，2026-10-27）
+
+| 命令 | 结果 |
+|---|---|
+| `uv run pytest -q tests/test_v14_planning_study.py` | **14 passed** |
+| `uv run python scripts/audit_v14_agents.py --write` | 生成 Planning 段 |
+| `uv run ruff check .` | 通过 |
+| `uv run mypy src` | 328 files，0 issues |
+| `uv run pytest -q`（批次边界全量） | **1707 passed**，178.23s |
+
+SIMULATED 触发链（12 决策脚本，零请求）：
+
+```text
+adaptive     requests=15 planner=3 plans=3 ttl_skip=1 triggers=[initial, no_progress, public_progress]
+initial_only requests=13 planner=1 plans=1
+periodic_4   requests=15 planner=3
+periodic_12  requests=13 planner=1
+disabled     requests=12 planner=0
+budget_guard ttl_skip=4 budget_skip=2 planner=3
+max_plans    plans=2（封顶）
+plan: 72 局（MAP-16 主测 54 + MAP-18 对照 18）/ PLANNED_ONLY
 ```

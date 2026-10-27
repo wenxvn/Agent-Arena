@@ -26,6 +26,10 @@ from agent_arena.lab.v14.agent_studies import (  # noqa: E402
     memory_markdown,
     memory_study_report,
 )
+from agent_arena.lab.v14.planning_study import (  # noqa: E402
+    planning_markdown,
+    planning_study_report,
+)
 
 HEADER = """# V14 Agent 机制与 LIVE 状态
 
@@ -43,14 +47,17 @@ FOOTER = """
 
 | 机制 | 离线机制证据 | 单因子臂 | 预检登记 | 真实收益 |
 |---|---|---|---|---|
-| Memory（`memory.v2`） | `SUPPORTED`（确定性 probe） | E1-a `route_log` / E1-b `route_mode` | `PLANNED_ONLY` | `LIVE_PENDING` |
+| Memory（`memory.v2`） | `SUPPORTED` | E1-a / E1-b | `PLANNED_ONLY` | `LIVE_PENDING` |
+| Planning（`planning.v2`） | `SUPPORTED` | E2-a / E2-b / E2-c | `PLANNED_ONLY` | `LIVE_PENDING` |
 
 ## 5. 不支持的主张
 
 - ❌ "Memory 提高成功率 X%"：离线 probe 不含模型，不能给出成功率；
 - ❌ "route_log 一定更好"：机制成立 ≠ 收益成立，需要真实配对实验；
 - ❌ "`env_write` 比 `context_only` 好"：前者多吃决策预算，长局可能因此截尾；
-- ❌ "V10 `route_recall` 为 0 说明没记忆"：`context_only` 不写环境，该口径本就 `NOT_APPLICABLE`。
+- ❌ "V10 `route_recall` 为 0 说明没记忆"：`context_only` 不写环境，该口径本就 `NOT_APPLICABLE`；
+- ❌ "Planner 请求不计成本"：Planner 与动作请求同属 `requests`，token 单独累加；
+- ❌ "低频 Planner 一定更好"：省请求是事实，成功率代价必须同时报告。
 """
 
 def main() -> int:
@@ -60,7 +67,10 @@ def main() -> int:
     args = parser.parse_args()
 
     memory = memory_study_report()
-    document = "\n".join([HEADER, memory_markdown(memory), FOOTER])
+    planning = planning_study_report()
+    document = "\n".join(
+        [HEADER, memory_markdown(memory), planning_markdown(planning), FOOTER]
+    )
 
     if args.write:
         args.out.mkdir(parents=True, exist_ok=True)
@@ -91,6 +101,19 @@ def main() -> int:
         "all_single_factor": memory["arms"]["all_single_factor"],
         "plan_runs": memory["plan"]["runs"],
         "plan_status": memory["plan"]["status"],
+        "planning": {
+            name: {
+                "planner_requests": probe["planner_requests"],
+                "total_requests": probe["total_requests"],
+                "plan_count": probe["plan_count"],
+                "skipped_ttl": probe["skipped_ttl"],
+                "skipped_budget": probe["skipped_budget"],
+                "triggers": probe["triggers"],
+            }
+            for name, probe in planning["probes"].items()
+        },
+        "planning_all_single_factor": planning["arms"]["all_single_factor"],
+        "planning_plan_runs": planning["plan"]["runs"],
         "written": str(args.out) if args.write else None,
     }
     print(json.dumps(summary, ensure_ascii=False, indent=1))

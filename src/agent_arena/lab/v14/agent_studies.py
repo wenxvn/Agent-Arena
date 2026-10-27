@@ -43,6 +43,7 @@ class _ScriptedGateway:
     def __init__(self, candidate: dict[str, Any] | None = None) -> None:
         self.current: dict[str, Any] = dict(candidate or {"tool": "wait"})
         self.calls: list[dict[str, Any]] = []
+        self.planner_calls = 0
 
     def ask(self, observation: PublicObservation, **kwargs: Any) -> GatewayResponse:
         index = len(self.calls)
@@ -60,13 +61,22 @@ class _ScriptedGateway:
         self, observation: PublicObservation, **kwargs: Any
     ) -> tuple[dict[str, Any], GatewayResponse]:
         self.calls.append({"observation": observation, **kwargs})
-        payload = {"current_subgoal": "沿已知方位回到起点"}
+        index = len(self.calls) - 1
+        self.planner_calls += 1
+        payload = {
+            "decision_reason": "公开观察里出现了新的可行动线索",
+            "current_subgoal": f"子目标 #{self.planner_calls}：沿公开线索推进",
+            "success_criteria": ["完成公开终局条件"],
+            "known_constraints": ["只能使用公开动作"],
+            "relevant_resources": [],
+            "unresolved_questions": [],
+        }
         response = GatewayResponse(
             candidate=payload,
             input_tokens=120,
             output_tokens=30,
             latency_ms=2,
-            request_index=len(self.calls),
+            request_index=index,
         )
         return payload, response
 

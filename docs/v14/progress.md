@@ -71,3 +71,20 @@
 - 测试：`pytest tests/test_v14_agent_studies.py` **17 passed**。
 - 真实收益：`LIVE_PENDING`（零请求）。
 - commit：`feat(v14): memory.v2 mechanism probes and single-factor arms`
+
+## Batch 4 · P0-5 Planning v2 机制与收益–成本
+
+- 新模块：`lab/v14/planning_study.py`
+  - `planning_offline_probe`：逐决策触发链（触发 → 是否被 TTL/预算/上限挡下 → 是否真发请求
+    → 子目标是否变化 → 动作 → 公开结果），Planner 请求与动作请求同记 `requests`；
+  - `PLANNING_ARMS`：E2-a `enabled`、E2-b `planner_mode`（adaptive→initial_only）、
+    E2-c `min_steps_between_plans`（4→12，两臂都钉 `periodic`），三组各自单开关；
+  - `planning_ablation_plan`：MAP-16 主测 54 局 + MAP-18 负向对照 18 局 = **72 局**，`PLANNED_ONLY`。
+- 实测（SIMULATED，12 决策脚本）：
+  - `adaptive` 15 请求 / 3 次 Planner / 1 次 TTL 延迟；触发序列 `initial → no_progress → public_progress`；
+  - `initial_only` 13 请求 / 1 次 Planner；`periodic_4` 15 请求 / `periodic_12` 13 请求；
+  - `disabled` 12 请求 / 0 次 Planner；
+  - 预算守卫臂 `skipped_budget=2`、`max_plans` 臂计划数封顶 2。
+- 测试：`pytest tests/test_v14_planning_study.py` **14 passed**；累计 V14 测试 31 项通过。
+- 真实收益：`LIVE_PENDING`（零请求）。
+- commit：`feat(v14): planning.v2 trigger chain and cost attribution`
