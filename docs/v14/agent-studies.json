@@ -1,0 +1,469 @@
+{
+ "arms": {
+  "all_single_factor": true,
+  "arms": [
+   {
+    "agent_id": "memory.v2",
+    "arm_id": "E1-a-control",
+    "config": {
+     "capacity": 32,
+     "compress": true,
+     "dedupe": true,
+     "enabled": true,
+     "history_window": 5,
+     "max_chars": 1600,
+     "relevance": true,
+     "route_log": false,
+     "route_mode": "context_only",
+     "route_write_every": 2,
+     "route_write_limit": 24
+    },
+    "group": "E1-a",
+    "label": "route_log off（route_mode=context_only）"
+   },
+   {
+    "agent_id": "memory.v2",
+    "arm_id": "E1-a-treatment",
+    "config": {
+     "capacity": 32,
+     "compress": true,
+     "dedupe": true,
+     "enabled": true,
+     "history_window": 5,
+     "max_chars": 1600,
+     "relevance": true,
+     "route_log": true,
+     "route_mode": "context_only",
+     "route_write_every": 2,
+     "route_write_limit": 24
+    },
+    "group": "E1-a",
+    "label": "route_log on（route_mode=context_only）"
+   },
+   {
+    "agent_id": "memory.v2",
+    "arm_id": "E1-b-control",
+    "config": {
+     "capacity": 32,
+     "compress": true,
+     "dedupe": true,
+     "enabled": true,
+     "history_window": 5,
+     "max_chars": 1600,
+     "relevance": true,
+     "route_log": true,
+     "route_mode": "context_only",
+     "route_write_every": 2,
+     "route_write_limit": 24
+    },
+    "group": "E1-b",
+    "label": "context_only（route_log on）"
+   },
+   {
+    "agent_id": "memory.v2",
+    "arm_id": "E1-b-treatment",
+    "config": {
+     "capacity": 32,
+     "compress": true,
+     "dedupe": true,
+     "enabled": true,
+     "history_window": 5,
+     "max_chars": 1600,
+     "relevance": true,
+     "route_log": true,
+     "route_mode": "env_write",
+     "route_write_every": 2,
+     "route_write_limit": 24
+    },
+    "group": "E1-b",
+    "label": "env_write（route_log on）"
+   }
+  ],
+  "checks": [
+   {
+    "changed_keys": [
+     "route_log"
+    ],
+    "control": "E1-a-control",
+    "group": "E1-a",
+    "manipulated_variable": "route_log",
+    "ok": true,
+    "pinned_keys": [
+     "capacity",
+     "compress",
+     "dedupe",
+     "enabled",
+     "history_window",
+     "max_chars",
+     "relevance",
+     "route_mode",
+     "route_write_every",
+     "route_write_limit"
+    ],
+    "reasons": [],
+    "treatment": "E1-a-treatment"
+   },
+   {
+    "changed_keys": [
+     "route_mode"
+    ],
+    "control": "E1-b-control",
+    "group": "E1-b",
+    "manipulated_variable": "route_mode",
+    "ok": true,
+    "pinned_keys": [
+     "capacity",
+     "compress",
+     "dedupe",
+     "enabled",
+     "history_window",
+     "max_chars",
+     "relevance",
+     "route_log",
+     "route_write_every",
+     "route_write_limit"
+    ],
+    "reasons": [],
+    "treatment": "E1-b-treatment"
+   }
+  ],
+  "note": "每组只改一个配置键；``route_mode`` 在 E1-a 两组里被钉成 context_only，因此 E1-a 测的是 route_log 本身，不会混入写入机制的差异。",
+  "schema": "v14-memory-arms-1"
+ },
+ "note": "以上全部为 SIMULATED 机制证据，零模型请求；真实模型收益一律 LIVE_PENDING。",
+ "plan": {
+  "arms": [
+   "E1-a-control",
+   "E1-a-treatment",
+   "E1-b-control",
+   "E1-b-treatment"
+  ],
+  "budget": {
+   "experiment_cost_cap_cny": 5.0,
+   "per_run_cost_cap_cny": 0.5,
+   "per_run_input_token_cap": 200000,
+   "per_run_request_cap": 90
+  },
+  "comparison_rule": "同一总预算、同一 memory.v2 版本、同一 prompt 主体、同一 seed；只允许被测开关不同（E1-a 改 route_log，E1-b 改 route_mode）。",
+  "cost_metrics": [
+   "requests",
+   "input_tokens",
+   "decisions",
+   "cost_cny"
+  ],
+  "groups": [
+   "E1-a",
+   "E1-b"
+  ],
+  "live_status": "LIVE_PENDING",
+  "maps": [
+   "MAP-22"
+  ],
+  "no_go_note": "V14 未获用户对模型/矩阵/总额的批准，因此本计划不得执行；``scripts/run_v12_matrix.py --ablation`` 只允许在默认预检模式下运行。",
+  "primary_metrics": [
+   "completed_success",
+   "v14.projection.route_recall",
+   "map22.v10.route_recall",
+   "wasted_moves",
+   "route_length",
+   "backtracks"
+  ],
+  "replicates": 3,
+  "runs": 36,
+  "schema": "v14-memory-plan-1",
+  "seeds": [
+   0,
+   1,
+   2
+  ],
+  "status": "PLANNED_ONLY",
+  "stop_rules": [
+   "任一局 unknown_spend → 立即停止并封账",
+   "累计结算达批准上限 90% → 停止未开始子局",
+   "Provider 连续 3 次错误 → 停止",
+   "发现契约/接口缺陷 → 停止并写 DCR",
+   "平均单局费用超过预估 2 倍 → 停止并重新申请"
+  ]
+ },
+ "probes": {
+  "context_only_off": {
+   "accepted_route": [
+    "north",
+    "east",
+    "south",
+    "west"
+   ],
+   "backtracks": 0,
+   "block_chars": 333,
+   "bottleneck": {
+    "label": "NO_RECORD",
+    "reason": "没有路线，也没有写入尝试。"
+   },
+   "bottleneck_v13": "NO_RECORD",
+   "config": {
+    "enabled": true,
+    "route_log": false,
+    "route_mode": "context_only",
+    "route_write_every": 2
+   },
+   "decisions": 7,
+   "expected_route": [
+    "north",
+    "east",
+    "south",
+    "west"
+   ],
+   "final_action": {
+    "tool": "wait"
+   },
+   "final_block_has_all_bearings": false,
+   "final_write_route": "",
+   "invalid_moves": 0,
+   "last_memory_block": "公开记忆（本局内，来自公开观察与动作结果；按最近使用排序）：\n- [state] state.step = 6\n- [result] result.last = move: MOVED\n- [result] result.move.ok = 4\n- [result] result.move.invalid = 1\n- [result] result.move.rejected = 1\n- [fact] episode.route_mode = context_only\n- [fact] episode.decision_budget = 24\n- [fact] episode.seed = 0\n- [fact] episode.map_id = MAP-22",
+   "loops": 0,
+   "memory_block_leaks": [],
+   "notes_written": 0,
+   "rejected_moves": 0,
+   "render_count": 7,
+   "requests": 7,
+   "route_after_steps": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "route_length": 0,
+   "route_matches_expected": false,
+   "route_preview": "",
+   "route_recall_v10_note": "V10 官方 route_recall 直接读环境 agent_notes；context_only 不写环境，因此该口径在本臂为 NOT_APPLICABLE，必须与 V14 投影分列。",
+   "route_recall_v14": {
+    "denominator": 4,
+    "metric_id": "v12.projection.route_recall",
+    "note": "公开记忆里没有可解析的方位序列（与 V10 口径一致：未记录 → N/A）。",
+    "numerator": null,
+    "rule_version": "v12-projection-1",
+    "source_keys": [],
+    "state": "NOT_APPLICABLE",
+    "value": null
+   },
+   "write_accepted": 0,
+   "write_actions": 0,
+   "write_attempts": 0,
+   "write_rejected": 0
+  },
+  "context_only_on": {
+   "accepted_route": [
+    "north",
+    "east",
+    "south",
+    "west"
+   ],
+   "backtracks": 0,
+   "block_chars": 476,
+   "bottleneck": {
+    "label": "RECORDED_AND_RENDERED",
+    "reason": "记录且渲染。"
+   },
+   "bottleneck_v13": "RECORDED_AND_RENDERED",
+   "config": {
+    "enabled": true,
+    "route_log": true,
+    "route_mode": "context_only",
+    "route_write_every": 2
+   },
+   "decisions": 7,
+   "expected_route": [
+    "north",
+    "east",
+    "south",
+    "west"
+   ],
+   "final_action": {
+    "tool": "wait"
+   },
+   "final_block_has_all_bearings": true,
+   "final_write_route": "",
+   "invalid_moves": 1,
+   "last_memory_block": "公开记忆（本局内，来自公开观察与动作结果；按最近使用排序）：\n- [route] route.stats = {'accepted': 4, 'rejected': 1, 'invalid': 1, 'loops': 0, 'backtracks': 0}\n- [route] route.path = north,east,south,west\n- [state] state.step = 6\n- [result] result.last = move: MOVED\n- [result] result.move.ok = 4\n- [result] result.move.invalid = 1\n- [result] result.move.rejected = 1\n- [fact] episode.route_mode = context_only\n- [fact] episode.decision_budget = 24\n- [fact] episode.seed = 0\n- [fact] episode.map_id = MAP-22",
+   "loops": 0,
+   "memory_block_leaks": [],
+   "notes_written": 0,
+   "rejected_moves": 1,
+   "render_count": 7,
+   "requests": 7,
+   "route_after_steps": [
+    "north",
+    "north",
+    "north,east",
+    "north,east",
+    "north,east,south",
+    "north,east,south,west"
+   ],
+   "route_length": 4,
+   "route_matches_expected": true,
+   "route_preview": "north,east,south,west",
+   "route_recall_v10_note": "V10 官方 route_recall 直接读环境 agent_notes；context_only 不写环境，因此该口径在本臂为 NOT_APPLICABLE，必须与 V14 投影分列。",
+   "route_recall_v14": {
+    "denominator": 4,
+    "metric_id": "v12.projection.route_recall",
+    "note": "公开记忆里没有可解析的方位序列（与 V10 口径一致：未记录 → N/A）。",
+    "numerator": null,
+    "rule_version": "v12-projection-1",
+    "source_keys": [],
+    "state": "NOT_APPLICABLE",
+    "value": null
+   },
+   "write_accepted": 0,
+   "write_actions": 0,
+   "write_attempts": 0,
+   "write_rejected": 0
+  },
+  "disabled": {
+   "accepted_route": [
+    "north",
+    "east",
+    "south",
+    "west"
+   ],
+   "backtracks": 0,
+   "block_chars": 0,
+   "bottleneck": {
+    "label": "DISABLED",
+    "reason": "记忆关闭（消融臂）。"
+   },
+   "bottleneck_v13": "DISABLED",
+   "config": {
+    "enabled": false,
+    "route_log": true,
+    "route_mode": "env_write",
+    "route_write_every": 2
+   },
+   "decisions": 7,
+   "expected_route": [
+    "north",
+    "east",
+    "south",
+    "west"
+   ],
+   "final_action": {
+    "tool": "wait"
+   },
+   "final_block_has_all_bearings": false,
+   "final_write_route": "",
+   "invalid_moves": 0,
+   "last_memory_block": null,
+   "loops": 0,
+   "memory_block_leaks": [],
+   "notes_written": 0,
+   "rejected_moves": 0,
+   "render_count": 0,
+   "requests": 7,
+   "route_after_steps": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "route_length": 0,
+   "route_matches_expected": false,
+   "route_preview": "",
+   "route_recall_v10_note": "V10 官方 route_recall 直接读环境 agent_notes；context_only 不写环境，因此该口径在本臂为 NOT_APPLICABLE，必须与 V14 投影分列。",
+   "route_recall_v14": {
+    "denominator": 4,
+    "metric_id": "v12.projection.route_recall",
+    "note": "公开记忆里没有可解析的方位序列（与 V10 口径一致：未记录 → N/A）。",
+    "numerator": null,
+    "rule_version": "v12-projection-1",
+    "source_keys": [],
+    "state": "NOT_APPLICABLE",
+    "value": null
+   },
+   "write_accepted": 0,
+   "write_actions": 0,
+   "write_attempts": 0,
+   "write_rejected": 0
+  },
+  "env_write_on": {
+   "accepted_route": [
+    "north",
+    "east",
+    "south",
+    "west"
+   ],
+   "backtracks": 0,
+   "block_chars": 506,
+   "bottleneck": {
+    "label": "RECORDED_AND_RENDERED",
+    "reason": "记录且渲染。"
+   },
+   "bottleneck_v13": "RECORDED_TOO_SHORT",
+   "config": {
+    "enabled": true,
+    "route_log": true,
+    "route_mode": "env_write",
+    "route_write_every": 2
+   },
+   "decisions": 8,
+   "expected_route": [
+    "north",
+    "east",
+    "south",
+    "west"
+   ],
+   "final_action": {
+    "facts": [
+     {
+      "key": "path_state",
+      "value": "north,east,south,west"
+     }
+    ],
+    "tool": "write_memory"
+   },
+   "final_block_has_all_bearings": true,
+   "final_write_route": "north,east,south,west",
+   "invalid_moves": 1,
+   "last_memory_block": "公开记忆（本局内，来自公开观察与动作结果；按最近使用排序）：\n- [route] route.stats = {'accepted': 3, 'rejected': 1, 'invalid': 1, 'loops': 0, 'backtracks': 0}\n- [route] route.path = north,east,south\n- [state] state.step = 6\n- [result] result.last = move: MOVED\n- [result] result.move.ok = 3\n- [result] result.move.invalid = 1\n- [result] result.write_memory.ok = 1\n- [result] result.move.rejected = 1\n- [fact] episode.route_mode = env_write\n- [fact] episode.decision_budget = 24\n- [fact] episode.seed = 0\n- [fact] episode.map_id = MAP-22",
+   "loops": 0,
+   "memory_block_leaks": [],
+   "notes_written": 2,
+   "rejected_moves": 1,
+   "render_count": 6,
+   "requests": 6,
+   "route_after_steps": [
+    "north",
+    "north",
+    "north,east",
+    "north,east",
+    "north,east,south",
+    "north,east,south,west"
+   ],
+   "route_length": 4,
+   "route_matches_expected": true,
+   "route_preview": "north,east,south,west",
+   "route_recall_v10_note": "V10 官方 route_recall 直接读环境 agent_notes；context_only 不写环境，因此该口径在本臂为 NOT_APPLICABLE，必须与 V14 投影分列。",
+   "route_recall_v14": {
+    "denominator": 4,
+    "matched_key": "path_state",
+    "metric_id": "v12.projection.route_recall",
+    "note": "V12 研究投影：键名宽容（不限于 bearing/path_state），分母为真实 move 数；不是 V10 官方值。",
+    "numerator": 4,
+    "rule_version": "v12-projection-1",
+    "source_keys": [
+     "path_state"
+    ],
+    "state": "VALID",
+    "value": 1.0,
+    "written_length": 4
+   },
+   "write_accepted": 2,
+   "write_actions": 2,
+   "write_attempts": 2,
+   "write_rejected": 0
+  }
+ },
+ "schema": "v14-memory-study-1"
+}

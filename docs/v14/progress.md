@@ -53,3 +53,21 @@
   但 6 对全部为 `DESCRIPTIVE_ONLY`（缺 `contract_version` / `prompt_hash`），
   可比对 0，独立 seed 各 2 个 → 不能据此宣称效果；资源差值仍可逐对报告。
 - commit：`feat(v14): observation condition identity and pairing fairness`
+
+## Batch 3 · P0-4 Memory v2 机制验证与预检
+
+- 新模块：`lab/v14/agent_studies.py`
+  - `memory_offline_probe`：确定性脚本驱动 `memory.v2`（接受/被拒/非法/绕圈回起点），
+    统计决策、请求、路线、被拒、非法、写入尝试/接受、渲染、瓶颈、`route_recall`；
+  - 三条 fixture：被拒/非法移动不进路线、回到起点可引用完整方位、记忆块无隐藏真值；
+  - `memory_bottleneck_v14`：修 `env_write` 下的分母口径（DCR-V14-03）；
+  - `MEMORY_ARMS` / `memory_arm_configs` / `memory_single_factor_audit`：
+    E1-a 只改 `route_log`（钉 `route_mode=context_only`）、E1-b 只改 `route_mode`（钉 `route_log=True`）；
+  - `memory_ablation_plan`：MAP-22 × seed 0/1/2 × 3 重复 × 2 组 = **36 局**，`PLANNED_ONLY`。
+- 脚本：`scripts/audit_v14_agents.py --write` → `docs/v14/agent-studies.md` + `.json`。
+- 实测（SIMULATED）：`context_only` 路线 `north,east,south,west`、决策 7/请求 7；
+  `env_write` 决策 8/请求 6（每次写入占 1 决策、0 请求）、写入载荷完整、`route_recall=1.0`；
+  `route_log=False` 路线为空（`NO_RECORD`）；记忆块零泄漏。
+- 测试：`pytest tests/test_v14_agent_studies.py` **17 passed**。
+- 真实收益：`LIVE_PENDING`（零请求）。
+- commit：`feat(v14): memory.v2 mechanism probes and single-factor arms`

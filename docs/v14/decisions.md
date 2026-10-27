@@ -69,3 +69,15 @@
   建议批准上限不变（A ¥5.00 / B ¥8.00 / C ¥15.00）。
 - **后续要求**：任何 LIVE 申请前必须先跑 `scripts/audit_v14_data.py` 并确认
   `declared_total_matches = true`。
+
+## DCR-V14-03 · `memory.v2.bottleneck()` 在 `env_write` 下用错分母
+
+- **发现**：`memory.v2.bottleneck()` 在 `env_write` 模式把 `write_accepted`（写入**次数**）
+  与 `route_length`（方位**个数**）比较。一次写入可以包含整段路线，于是"每次写入都完整"
+  的臂会被判成 `RECORDED_TOO_SHORT`（离线 probe 实测：`write_accepted=2`、路线 4 步）。
+- **影响**：V13 的 `memory-study.md` 里"记录过短"这一诊断标签在 `env_write` 臂上可能误报，
+  会让人误以为策略记录不足，实际是分母口径错误。
+- **处理**：V14 在分析层新增 `memory_bottleneck_v14()`，`env_write` 按"已写入方位数"
+  判定；`memory.v2` 源码**未修改**（改它会牵动 `agent_config_hash` 之外的诊断输出与
+  V13 报告，风险大于收益）。报告同时给出 `bottleneck_v13` 与投影值。
+- **可回滚**：是（纯分析层）。
