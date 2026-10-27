@@ -209,3 +209,24 @@ conclusion: INSUFFICIENT / NO_TREATMENT_EXPOSURE / NOT_MEASURABLE
 | 本地 `e2e_lab.py --start --port 8516 --report runs/v14/e2e-report.json` | `{"ok": true, ...}` |
 | 本地 `a11y_v12.py --browser --start` | critical/serious/moderate 全 0 |
 | 本地 chromium 复现（`AGENT_ARENA_E2E_BROWSER=chromium`） | `NOT_VERIFIED`（CDN 下载受限） |
+
+## 11. Batch 11（P2-2 / P2-4 / P2-5 / P2-6，2026-10-27）
+
+| 命令 | 结果 |
+|---|---|
+| `uv run python scripts/audit_v14_engineering.py --write` | 生成 `engineering-boundaries.md` / `.json` |
+| `uv run pytest -q tests/test_v14_engineering.py` | **18 passed** |
+| `uv run ruff check .` / `uv run mypy src` | 通过 / 334 files 0 issues |
+| `uv run pytest -q`（批次边界全量） | **1790 passed**，207.14s |
+
+```text
+cold_first_open 277.19 ms / warm_page_first_50 0.03 ms / warm_index_rebuild 40.91 ms
+损坏 manifest：通过（索引 5 局，坏 manifest 不入统计）
+并发读写：40 轮 0 异常
+TTL：3 → 4 → 4
+长历史导出：1000/1000 行
+导出一致性：runs 4 / metrics 22 / paired 2 / findings 15，问题 0
+SDK：8 项 V13 + 3 项 V14 全部通过
+账本：159/159、5641 请求、¥5.43680012、0 重复、0 孤儿（与 V13 记录一致）
+外部账单：NO_EXTERNAL_BILL_PROVIDED
+```

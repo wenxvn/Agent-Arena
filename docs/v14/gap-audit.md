@@ -38,9 +38,9 @@
 | ID | 任务 | 起点 | 当前 | 证据 |
 |---|---|---|---|---|
 | P2-1 | CI 浏览器 E2E 正式门禁 | `PARTIAL` | `DONE` | `ci.yml` 移除 `continue-on-error`（`34a83fe`）；切换后一次红灯保留在 `40477841302`，修复见 `babe194`，`40482235016` 双 job success |
-| P2-2 | 大历史/冷启动/异常负载 | `PARTIAL` | `TODO` | — |
+| P2-2 | 大历史/冷启动/异常负载 | `PARTIAL` | `DONE` | `lab/v14/engineering.py`（冷启动/损坏 manifest/并发写/TTL/1000 局导出）；`engineering-boundaries.md` 第 1–3 节 |
 | P2-3 | Lab Web 用户体验 | `PARTIAL` | `DONE` | 可比性门禁横幅、MAP-30 阶梯、窄屏/深色截图；`e2e_lab.py` 通过 + a11y 0 critical/serious/moderate |
-| P2-4 | 自动报告/导出一致性 | `PARTIAL` | `TODO` | — |
-| P2-5 | 第三方 Agent SDK 加固 | `PARTIAL` | `TODO` | — |
-| P2-6 | 本地账本/外部账单核对 | `DONE`/`BLOCKED_EXTERNAL` | `TODO` | — |
+| P2-4 | 自动报告/导出一致性 | `PARTIAL` | `DONE` | `export_consistency`（行数/分母/模式/空值）+ 真实导出样本；`engineering-boundaries.md` 第 6 节 |
+| P2-5 | 第三方 Agent SDK 加固 | `PARTIAL` | `DONE` | `sdk_hardening`（8 项 + 旧签名/异常隔离/预算网关 3 项）；`engineering-boundaries.md` 第 4 节 |
+| P2-6 | 本地账本/外部账单核对 | `DONE`/`BLOCKED_EXTERNAL` | `DONE（本地）/ BLOCKED_EXTERNAL（外部）` | `ledger_recompute` 复算 159/159、5641 请求、¥5.43680012、0 重复 0 孤儿；外部账单 `NO_EXTERNAL_BILL_PROVIDED` |
 | P2-7 | V14 最终交付封装 | `PARTIAL` | `TODO` | — |

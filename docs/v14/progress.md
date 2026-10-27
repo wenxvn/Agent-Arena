@@ -192,3 +192,22 @@
 - 仍未验证：本机 Playwright 自带 chromium 因 CDN 受限未安装，`AGENT_ARENA_E2E_BROWSER=chromium`
   的本地复现路径记为 `NOT_VERIFIED`。
 - commit：`34a83fe`、`babe194`
+
+## Batch 11 · P2-2 + P2-4 + P2-5 + P2-6 工程边界
+
+- 新模块：`lab/v14/engineering.py`
+  - `cold_start_measurement`：**未预热**冷启动与预热后解析分开报告；
+  - `corrupted_manifest_handling`：坏 manifest 被跳过、不混入统计；
+  - `concurrent_read_during_write`：写线程 + 读线程 40 轮，0 异常；
+  - `ttl_refresh`：TTL 到期与 `invalidate()` 都能看到新 run；
+  - `long_history_export`：1000 局全量导出行数与字节；
+  - `export_consistency`：行数/分母/模式/空值四类一致性（非可空列空值、`VALID` 指标空值都判失败）；
+  - `sdk_hardening`：8 项 V13 自检 + 3 项 V14 补充（旧签名、异常隔离、预算网关不可绕）；
+  - `ledger_recompute`：优先读本机只读账本（**159/159、5641 请求、¥5.43680012、0 重复 0 孤儿**，
+    与 V13 记录一致）；账本缺失时报 `LEDGER_NOT_PRESENT_LOCALLY`，绝不用 CSV 的 138 局冒充全账本。
+- 脚本：`scripts/audit_v14_engineering.py --write` → `docs/v14/engineering-boundaries.md` + `.json`。
+- 实测（本机，临时目录）：冷启动 277ms / 预热首页 0.03ms / 预热重建 41ms；
+  并发读写 0 异常；TTL 3→4；导出 1000 行；导出一致性 4 文件全通过。
+- 外部账单：`NO_EXTERNAL_BILL_PROVIDED`（`BLOCKED_EXTERNAL`，未虚构）。
+- 测试：`pytest tests/test_v14_engineering.py` **18 passed**。
+- commit：`feat(v14): engineering boundaries with perf, export and ledger evidence`

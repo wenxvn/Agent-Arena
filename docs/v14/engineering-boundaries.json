@@ -1,0 +1,205 @@
+{
+ "cold_start": {
+  "measurements": [
+   {
+    "detail": "全新进程/全新索引，未做任何预热（含文件系统首次读取）",
+    "label": "cold_first_open",
+    "milliseconds": 951.41,
+    "ok": true
+   },
+   {
+    "detail": "已预热：索引已构建，读读页缓存",
+    "label": "warm_page_first_50",
+    "milliseconds": 0.06,
+    "ok": true
+   },
+   {
+    "detail": "已预热后的全量索引重建（只 stat + 解析 manifest）",
+    "label": "warm_index_rebuild",
+    "milliseconds": 211.17,
+    "ok": true
+   }
+  ],
+  "note": "``cold_first_open`` 是**未预热**的首次打开；``warm_*`` 是预热后的解析成本。两者不可互相替代，也不代表 CI 或用户机器的性能。",
+  "runs": 200,
+  "schema": "v14-cold-start-1"
+ },
+ "concurrent": {
+  "elapsed_ms": 263.05,
+  "error_count": 0,
+  "final_indexed_runs": 60,
+  "max_page_entries": 10,
+  "min_page_entries": 10,
+  "note": "并发读写在单用户本地场景下不应抛异常；半写入的 run 在下一次刷新前可能不被索引，但绝不能返回半条记录。",
+  "ok": true,
+  "read_errors": [],
+  "rounds": 40,
+  "schema": "v14-concurrent-1"
+ },
+ "corrupted_manifest": {
+  "bad_run_indexed": false,
+  "broken_manifests": 1,
+  "crashed": false,
+  "elapsed_ms": 0.03,
+  "good_runs": 5,
+  "indexed_runs": 5,
+  "no_private_fields": true,
+  "note": "损坏的 manifest 被跳过而不是让整页崩；也不会以空记录混进统计。",
+  "page_entries": 5,
+  "schema": "v14-corrupted-manifest-1"
+ },
+ "export_consistency": {
+  "empty_cells": [],
+  "files": {
+   "findings.csv": 15,
+   "metrics.csv": 22,
+   "paired_comparison.csv": 2,
+   "runs.csv": 4
+  },
+  "files_present": [
+   "comparison.json",
+   "experiment.json",
+   "findings.csv",
+   "metrics.csv",
+   "paired_comparison.csv",
+   "report.md",
+   "runs.csv",
+   "summary.json"
+  ],
+  "modes": [
+   "simulated"
+  ],
+  "note": "导出口径必须一致：行数、分母、模式、空值处理，任一不一致即失败。",
+  "ok": true,
+  "problems": [],
+  "runs_rows": 4,
+  "schema": "v14-export-consistency-1",
+  "silent_zero_metrics": [],
+  "valid_denominator_computed": 4
+ },
+ "ledger": {
+  "csv_subset": {
+   "cost_unknown_runs": 0,
+   "covers_full_ledger": false,
+   "duplicates": 0,
+   "requests": 5020,
+   "runs": 138,
+   "settled_cost_cny": "5.07242824",
+   "source": "docs/v12/real-runs/*.csv（只读）"
+  },
+  "expected": {
+   "duplicate_settlements": 0,
+   "orphans": 0,
+   "requests": 5641,
+   "runs": 159,
+   "settled_cost_cny": "5.43680012"
+  },
+  "external_bill": {
+   "note": "用户未提供脱敏后台账单 CSV；外部对账保持 `BLOCKED_EXTERNAL`，不能假装已经对上外部账。",
+   "status": "NO_EXTERNAL_BILL_PROVIDED"
+  },
+  "ledger_path": "D:\\wenxvn(2)\\Agent-Arena\\runs\\web\\_ledger\\web_ledger.jsonl",
+  "matches_v13_record": true,
+  "note": "只读复算：不写账本、不重算费用、不重试任何局。`csv_subset` 只覆盖 138 局，不能代替全账本口径。",
+  "open_ledger": {
+   "cost_unknown_runs": 0,
+   "duplicates": 0,
+   "entries": 318,
+   "orphans": 0,
+   "requests": 5641,
+   "settled": 159,
+   "settled_cost_cny": "5.43680012",
+   "source": "runs/web/_ledger/web_ledger.jsonl（本机只读）",
+   "started": 159,
+   "unsettled_started": 0
+  },
+  "schema": "v14-ledger-recompute-1",
+  "status": "RECOMPUTED"
+ },
+ "long_export": {
+  "export_ms": 9.84,
+  "first_row_bytes": 571,
+  "index_bytes_estimate": 320000,
+  "note": "导出只读 manifest 索引；不加载 events.jsonl，因此行数不受事件长度影响。",
+  "ok": true,
+  "rows_exported": 1000,
+  "runs": 1000,
+  "schema": "v14-long-export-1"
+ },
+ "note": "全部在本机临时目录实测（合成数据 `STRESS_DATA`）；耗时只作本机参考，不设跨机器阈值。",
+ "schema": "v14-engineering-1",
+ "sdk": {
+  "base_checks": [
+   {
+    "detail": "agent_contract_version=agent_policy_v1（旧插件无需改动）",
+    "name": "contract_version",
+    "ok": true
+   },
+   {
+    "detail": "插件可见字段 12 个；隐藏键 无",
+    "name": "public_observation_only",
+    "ok": true
+   },
+   {
+    "detail": "缺失钩子：无",
+    "name": "lifecycle_hooks",
+    "ok": true
+   },
+   {
+    "detail": "agent_version=0.2.0",
+    "name": "version_identity",
+    "ok": true
+   },
+   {
+    "detail": "state=BUDGET_REACHED, invalid_actions=6",
+    "name": "invalid_action_isolated",
+    "ok": true
+   },
+   {
+    "detail": "cost=0, requests=0",
+    "name": "budget_and_simulated",
+    "ok": true
+   },
+   {
+    "detail": "state=FAILED, outcome=policy_error, leaked=False",
+    "name": "exception_isolated",
+    "ok": true
+   },
+   {
+    "detail": "act(observation, history) 旧签名仍被适配",
+    "name": "legacy_act_signature",
+    "ok": true
+   }
+  ],
+  "base_ok": true,
+  "extra_checks": [
+   {
+    "detail": "agent_contract_version=agent_policy_v1",
+    "name": "legacy_signature_compatible",
+    "ok": true
+   },
+   {
+    "detail": "非法动作/异常被计为局级失败，而不是让服务崩溃",
+    "name": "policy_exception_isolated",
+    "ok": true
+   },
+   {
+    "detail": "插件只看到公开观察；费用只由 gateway 结算",
+    "name": "budget_gateway_not_bypassable",
+    "ok": true
+   }
+  ],
+  "note": "只验证本机可信插件；不声称可以安全运行任意第三方代码。",
+  "ok": true,
+  "schema": "v14-sdk-hardening-1"
+ },
+ "ttl_refresh": {
+  "after_invalidate": 4,
+  "after_ttl_expiry": 4,
+  "before": 3,
+  "note": "TTL 只影响\"多久重新扫一次目录\"；写入方应调用 ``invalidate()`` 让下一次查询立刻刷新。",
+  "ok": true,
+  "schema": "v14-ttl-refresh-1",
+  "ttl_seconds": 30.0
+ }
+}
