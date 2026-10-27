@@ -42,7 +42,7 @@ declared_total_runs: 229 -> 221（修正后一致）
 plans: A 54 / B 186 / C 221
 ```
 
-## 3. Batch 3–12
+## 4. Batch 4–12
 
 > 后续批次在此追加。
 
@@ -62,4 +62,25 @@ plans: A 54 / B 186 / C 221
 memory.v1 消融      pairs=2 comparable=0 descriptive=2 incomparable=0 single_switch=true
 planning.v1 消融    pairs=2 comparable=0 descriptive=2 incomparable=0 single_switch=true
 reflection.v1 消融  pairs=2 comparable=0 descriptive=2 incomparable=0 single_switch=true
+```
+
+## 3. Batch 3（P0-4，2026-10-27）
+
+| 命令 | 结果 |
+|---|---|
+| `uv run pytest -q tests/test_v14_agent_studies.py` | **17 passed** |
+| `uv run python scripts/audit_v14_agents.py --write` | 生成 `agent-studies.md` / `.json` |
+| `uv run ruff check src/agent_arena/lab/v14/` | 通过 |
+| `uv run mypy src/agent_arena/lab/v14/` | 0 issues |
+
+SIMULATED 机制结果（零请求）：
+
+```text
+context_only_on   decisions=7 requests=7 route=north,east,south,west rejected=1 invalid=1 render=7
+context_only_off  decisions=7 requests=7 route=(empty)  bottleneck=NO_RECORD
+env_write_on      decisions=8 requests=6 route=north,east,south,west write_accepted=2 route_recall=1.0
+disabled          decisions=7 requests=7 render=0 bottleneck=DISABLED
+memory_block_leaks = []（全部臂）
+all_single_factor = true
+plan: 36 局 / PLANNED_ONLY / 实验费用上限 ¥5.00
 ```
