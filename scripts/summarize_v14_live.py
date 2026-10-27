@@ -77,6 +77,7 @@ def _experiments() -> list[dict[str, Any]]:
                 "maps": spec.get("maps"),
                 "seeds": spec.get("environment_seeds"),
                 "replicates": spec.get("replicates"),
+                "experiment_kind": spec.get("experiment_kind"),
                 "children": children,
             }
         )
@@ -113,6 +114,7 @@ def _record(child: dict[str, Any], experiment: dict[str, Any]) -> dict[str, Any]
         "run_id": run_id,
         "group": group,
         "arm": arm,
+        "experiment_kind": experiment.get("experiment_kind"),
         "agent_id": experiment["agent_id"],
         "config": experiment["config"],
         "map_id": result.get("map_id"),
@@ -268,14 +270,47 @@ def collect() -> dict[str, Any]:
                 records.append(record)
     groups: dict[str, list[dict[str, Any]]] = {}
     for record in records:
-        groups.setdefault(record["group"], []).append(record)
+        key = f"{record['group']}|req={record['request_cap']}"
+        groups.setdefault(key, []).append(record)
     report = {
         "schema": "v14-live-results-1",
         "ledger": _ledger(),
         "experiments": len(experiments),
         "records": len(records),
         "groups": {},
+        "by_kind": {},
     }
+    kinds: dict[str, list[dict[str, Any]]] = {}
+    for record in records:
+        kinds.setdefault(f"{record['group']}|{record.get('experiment_kind')}", []).append(
+            record
+        )
+    for key, items in sorted(kinds.items()):
+        arms: dict[str, list[dict[str, Any]]] = {}
+        for item in items:
+            arms.setdefault(item["arm"], []).append(item)
+        report["by_kind"][key] = {
+            name: _arm_summary(rows) for name, rows in sorted(arms.items())
+        }
+    pooled: dict[str, list[dict[str, Any]]] = {}
+    for record in records:
+        pooled.setdefault(
+            f"{record['group']}|req={record['request_cap']}", []
+        ).append(record)
+    report["by_seed"] = {}
+    for key, items in sorted(pooled.items()):
+        table: dict[str, dict[str, dict[str, int]]] = {}
+        for item in items:
+            arm = table.setdefault(item["arm"], {})
+            bucket = arm.setdefault(
+                str(item["environment_seed"]), {"runs": 0, "successes": 0, "censored": 0}
+            )
+            bucket["runs"] += 1
+            if item["success"]:
+                bucket["successes"] += 1
+            if item["category"] == "budget_censored":
+                bucket["censored"] += 1
+        report["by_seed"][key] = table
     for group, items in sorted(groups.items()):
         arms: dict[str, list[dict[str, Any]]] = {}
         for item in items:

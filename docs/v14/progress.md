@@ -252,3 +252,21 @@
 - 文档：`docs/v14/live-report.md`、`live-results.md/.json`；`final-report.md` / `release-checklist.md` /
   `README.md` / `gap-audit.md` 同步为 `LIVE_PARTIAL`。
 - commit：`feat(v14): run plan A live subset with MiMo and report partial evidence`
+
+
+## Batch 14 · LIVE 补充实验（三轮，按推荐执行）
+
+- 用户："选择你更推荐的就行，钱不是问题" → 我选择消除三个"让结论不可解释"的混淆：
+  1. **补足 planning 臂**（E2-a 同预算、每 seed 5 次重复）；
+  2. **预算扩展**（E1-a 150 请求，测"0/10 是不是预算造成的"）；
+  3. **reflection 换图重测**（先离线诊断 MAP-19/20/29 触发能力，再上 MAP-19）。
+- 新增：`scripts/run_v14_supplement.sh` / `run_v14_supplement2.sh`、执行器支持
+  `--phase/--kind/--request-cap/--decision-cap/--token-cap/--per-run-cost/--map-override`。
+- 结果（122 局累计，¥2.06710508）：
+  - **E2-a**：off **0/25**、on **14/15 有效局**（7 截尾）→ 强描述性收益，每成功局 ¥0.0498；
+  - **E1-a**：90 请求 0/10 vs 0/10；150 请求 **seed 2 2/9 → 8/8**、seed 0/1 两臂全败
+    → 效果是"实例 × 预算"条件性的（DCR-V14-06/07）；
+  - **E3**：MAP-22 零暴露 → MAP-19 **on 3/9 局真触发**（暴露达成），但两臂 0/9（地板）→ 效果不可测。
+- 事件：2 次 `unknown_spend` 各自停批（DCR-V14-05），未重试；累计 0 重复 0 孤儿。
+- 文档：`live-report.md` 重写；`gap-audit.md` / `final-report.md` / `release-checklist.md` / `README.md` 同步。
+- commit：`feat(v14): supplement live runs for planning, memory budget and reflection exposure`

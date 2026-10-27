@@ -103,14 +103,24 @@ def plan_a_single_factor_checks() -> list[dict[str, Any]]:
         )
     return checks
 
-def _budget(runs: int) -> ExperimentBudget:
+def _budget(
+    runs: int,
+    *,
+    limits: dict[str, Any] | None = None,
+    experiment_cost_cap_cny: Decimal = RECOMMENDED_CAP_CNY,
+) -> ExperimentBudget:
+    """单局预算与实验上限；``limits`` 用于"预算扩展"类补充实验（须显式传入）。"""
+
+    active = dict(PER_RUN_LIMITS)
+    if limits:
+        active.update(limits)
     return ExperimentBudget(
-        per_run_request_cap=PER_RUN_LIMITS["per_run_request_cap"],
-        per_run_decision_cap=PER_RUN_LIMITS["per_run_decision_cap"],
-        per_run_input_token_cap=PER_RUN_LIMITS["per_run_input_token_cap"],
-        per_run_cost_cap_cny=PER_RUN_LIMITS["per_run_cost_cap_cny"],
-        experiment_request_cap=PER_RUN_LIMITS["per_run_request_cap"] * runs,
-        experiment_cost_cap_cny=RECOMMENDED_CAP_CNY,
+        per_run_request_cap=active["per_run_request_cap"],
+        per_run_decision_cap=active["per_run_decision_cap"],
+        per_run_input_token_cap=active["per_run_input_token_cap"],
+        per_run_cost_cap_cny=active["per_run_cost_cap_cny"],
+        experiment_request_cap=active["per_run_request_cap"] * runs,
+        experiment_cost_cap_cny=experiment_cost_cap_cny,
     )
 
 def plan_a_specs(
@@ -121,6 +131,10 @@ def plan_a_specs(
     mode: ExperimentMode = ExperimentMode.SIMULATED,
     provider_id: str = SIMULATED_PROVIDER,
     model: str = SIMULATED_MODEL,
+    limits: dict[str, Any] | None = None,
+    experiment_cost_cap_cny: Decimal = RECOMMENDED_CAP_CNY,
+    experiment_kind: str = "ablation",
+    name_prefix: str = "v14",
 ) -> list[dict[str, Any]]:
     """构造方案 A 的 6 个父实验规格（**只构造，不执行**）。
 
@@ -134,7 +148,7 @@ def plan_a_specs(
         runs = len(arms) * len(map_by_group[group]) * len(seed_list) * replicates
         for arm in arms:
             spec = ExperimentSpec(
-                name=f"v14-{group} · {arm['arm_id']}",
+                name=f"{name_prefix}-{group} · {arm['arm_id']}",
                 notes=(
                     f"V14 方案 A 预注册（{STATUS_PLANNED}）。"
                     f"组 {group}，臂 {arm['arm_id']}，被操纵变量见组定义；"
@@ -152,10 +166,14 @@ def plan_a_specs(
                 provider_id=provider_id,
                 model=model,
                 mode=mode,
-                budget=_budget(runs),
+                budget=_budget(
+                    runs,
+                    limits=limits,
+                    experiment_cost_cap_cny=experiment_cost_cap_cny,
+                ),
                 comparison=ComparisonPolicy(min_paired_samples=replicates),
                 replicates=replicates,
-                experiment_kind="ablation",
+                experiment_kind=experiment_kind,  # type: ignore[arg-type]
             )
             specs.append(
                 {

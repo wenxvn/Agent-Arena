@@ -59,6 +59,20 @@ LIVE_DIR = ROOT / "runs" / "v14" / "live"
 DEFAULT_MODEL = "mimo-v2.6-flash"
 DEFAULT_PROVIDER = "openai_compatible"
 
+def _limits(args: argparse.Namespace) -> dict[str, Any]:
+    """单局预算覆盖（空字典 = 用默认 90 请求 / 200k token / ¥0.50）。"""
+
+    limits: dict[str, Any] = {}
+    if args.request_cap:
+        limits["per_run_request_cap"] = int(args.request_cap)
+    if args.decision_cap:
+        limits["per_run_decision_cap"] = int(args.decision_cap)
+    if args.token_cap:
+        limits["per_run_input_token_cap"] = int(args.token_cap)
+    if args.per_run_cost:
+        limits["per_run_cost_cap_cny"] = Decimal(str(args.per_run_cost))
+    return limits
+
 def _approval(args: argparse.Namespace) -> LiveApproval:
     approved = bool(args.i_have_budget_approval)
     return LiveApproval(
@@ -83,12 +97,24 @@ def _specs(args: argparse.Namespace) -> list[dict[str, Any]]:
     seeds = [int(seed) for seed in args.seeds]
     seeds = seeds[:1] if args.pilot else seeds
     replicates = 1 if args.pilot else int(args.replicates)
+    limits = _limits(args)
+    maps = None
+    if args.map_override:
+        maps = {"E1-a": ["MAP-22"], "E2-a": ["MAP-16"], "E3": ["MAP-22"]}
+        for item in args.map_override:
+            group, _, map_id = item.partition("=")
+            maps[group.strip()] = [map_id.strip()]
     specs = plan_a_specs(
+        maps=maps,
         seeds=seeds,
         replicates=replicates,
         mode=ExperimentMode.LIVE,
         provider_id=args.provider,
         model=args.model,
+        limits=limits or None,
+        experiment_cost_cap_cny=Decimal(str(args.approval_cap)),
+        experiment_kind=args.kind,
+        name_prefix=f"v14-{args.phase}" if args.phase else "v14",
     )
     if args.groups:
         wanted = {item.strip() for item in args.groups}
@@ -176,6 +202,27 @@ def main() -> int:
     parser.add_argument("--submit", action="store_true")
     parser.add_argument("--wait-timeout", type=float, default=0.0)
     parser.add_argument("--out", type=Path, default=LIVE_DIR)
+    parser.add_argument(
+        "--phase",
+        default="",
+        help="补充实验的阶段名（同时写入实验名与幂等键），例如 supplement-e2",
+    )
+    parser.add_argument(
+        "--kind",
+        default="ablation",
+        choices=["ablation", "supplement", "replicate", "budget_extension", "matrix"],
+        help="实验类别（预算扩展必须用 budget_extension，不能与 90 请求批配对）",
+    )
+    parser.add_argument("--request-cap", type=int, default=None)
+    parser.add_argument("--decision-cap", type=int, default=None)
+    parser.add_argument("--token-cap", type=int, default=None)
+    parser.add_argument("--per-run-cost", default=None)
+    parser.add_argument(
+        "--map-override",
+        nargs="+",
+        default=None,
+        help="覆盖某组的测试地图，例如 E3=MAP-19（候选图需先通过离线触发诊断）",
+    )
     args = parser.parse_args()
 
     specs = _specs(args)
@@ -205,7 +252,7 @@ def main() -> int:
     try:
         for item in specs:
             spec = item["spec"]
-            phase = "pilot" if args.pilot else "main"
+            phase = args.phase or ("pilot" if args.pilot else "main")
             key = f"v14:{phase}:{item['arm_id']}:{spec.fingerprint()[:12]}"
             experiment_id = service.create_experiment(spec, idempotency_key=key)
             try:
@@ -231,7 +278,9 @@ def main() -> int:
                 break
     finally:
         state = {
-            "mode": "pilot" if args.pilot else "main",
+            "mode": args.phase or ("pilot" if args.pilot else "main"),
+            "kind": args.kind,
+            "limits": {key: str(value) for key, value in _limits(args).items()},
             "model": args.model,
             "provider": args.provider,
             "approval_cap_cny": args.approval_cap,
@@ -239,7 +288,12 @@ def main() -> int:
             "experiments": created,
             "stop_reason": stop_reason,
         }
-        (args.out / ("pilot-summary.json" if args.pilot else "main-summary.json")).write_text(
+        summary_name = (
+            f"{args.phase}-summary.json"
+            if args.phase
+            else ("pilot-summary.json" if args.pilot else "main-summary.json")
+        )
+        (args.out / summary_name).write_text(
             json.dumps(state, ensure_ascii=False, indent=1) + "\n",
             encoding="utf-8",
             newline="\n",

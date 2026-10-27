@@ -11,8 +11,8 @@
 
 **15 项 `DONE`；P0-4/P0-5 已拿到部分 LIVE 证据（机制成立、效果未定）；P0-6 为 `NO_TREATMENT_EXPOSURE`（零干预）；1 项本地 `DONE` + 外部 `BLOCKED_EXTERNAL`（P2-6）。**
 
-- LIVE 执行：真实 MiMo，**39 局 / 1 313 请求 / ¥0.72437412**（1 局 unknown_spend 预留，0 重复 0 孤儿）；
-- 停批原因：`unknown_spend`（DCR-V14-05）；reflection 零暴露（DCR-V14-04）。
+- LIVE 执行：真实 MiMo，**122 局 / 3 822 请求 / ¥2.06710508**（2 局 unknown_spend 预留，0 重复 0 孤儿）；
+- 停批原因：2 次 `unknown_spend`（DCR-V14-05）；reflection 在 MAP-22 零暴露（DCR-V14-04），换 MAP-19 后暴露达成。
 
 - 没有任何一项被静默跳过：未完成的都写明了原因与需要谁授权。
 - LIVE 证据从"零"变为"部分"：E1-a 零差异、E2-a 臂不完整、E3 零暴露 → `LIVE_EVIDENCE_VERIFIED` 与 `STAGE_II_FINAL_READY` 仍**不满足**。
@@ -25,9 +25,9 @@
 | P0-1 | HEAD/CI 证据基线审计 | `PARTIAL` | `DONE` | `baseline-audit.md`（10 项门禁复跑）、`ci-evidence.md`（10 次 run + 7 次连续 `lab-e2e` success） |
 | P0-2 | 历史数据/构念效度口径修正 | `DEFECT` | `DONE` | `lab/v13/validity.py` 三档计数；`lab/v14/data_audit.py`；`docs/v14/data-validity.md`；`budget-audit.md`；14 + 114 测试 |
 | P0-3 | 重复实验与单因子公平性强化 | `PARTIAL` | `DONE` | `lab/v14/conditions.py`（8 元组身份/seed 白名单/三档判定/配对字段）；`docs/v14/pairing-audit.md`、`experiment-protocol.md`、`live-plan.md`；33 测试 |
-| P0-4 | Memory v2 有效性方案与消融 | `PARTIAL` | `DONE（机制）/ LIVE 部分` | `lab/v14/agent_studies.py`；**LIVE E1-a 20 局**：`route_recall` 0.045→0.557（机制成立），成功率 0/10 vs 0/10（无差异），费用 +25%；`docs/v14/live-report.md` 第 2 节 |
-| P0-5 | Planning v2 收益–成本验证 | `PARTIAL` | `DONE（机制）/ LIVE 部分（臂不完整）` | `lab/v14/planning_study.py`；**LIVE E2-a 17 局**：off 0/10、on 3/7（3.43 次计划/局）；因 `unknown_spend` 停批（DCR-V14-05）；`live-report.md` 第 3 节 |
-| P0-6 | Reflection v2 激活与效果验证 | `PARTIAL` | `DONE（离线）/ LIVE 零暴露` | `lab/v14/reflection_study.py`；**LIVE E3 2 局 `triggered=0`** → `NO_TREATMENT_EXPOSURE`（DCR-V14-04），已停止扩展；`live-report.md` 第 4 节 |
+| P0-4 | Memory v2 有效性方案与消融 | `PARTIAL` | `DONE（机制）/ LIVE 条件性` | `lab/v14/agent_studies.py`；**LIVE E1-a 55 局**：90 请求下 0/10 vs 0/10；150 请求下 seed 2 **2/9 → 8/8**、seed 0/1 仍 0；`route_recall` 0.045→0.557；每成功局 ¥0.207→¥0.033；`live-report.md` 第 3 节 |
+| P0-5 | Planning v2 收益–成本验证 | `PARTIAL` | `DONE（机制）/ LIVE 强描述性信号` | `lab/v14/planning_study.py`；**LIVE E2-a 47 局**（两个独立父实验）：off **0/25**、on **14/15 有效局**（7 局截尾），每成功局 ¥0.0498；`live-report.md` 第 2 节 |
+| P0-6 | Reflection v2 激活与效果验证 | `PARTIAL` | `DONE（离线）/ LIVE 暴露达成·效果不可测` | `lab/v14/reflection_study.py`；MAP-22 零暴露（DCR-V14-04）→ 离线诊断后换 MAP-19：**on 3/9 局真触发**，但两臂 0/9 成功（地板）→ `NOT_MEASURABLE`；`live-report.md` 第 4 节 |
 
 ## 2. P1（6 项）
 
@@ -60,10 +60,9 @@
 |---|---|---|
 | 工程/机制（离线） | `DONE` | 确定性 probe、单因子臂、成本归因、暴露门禁、选择偏倚防护 |
 | 真实运行是否存在 | `DONE` | 39 局真实 MiMo，账本自洽（0 重复/0 孤儿） |
-| 真实**效果**证据 | **不足** | E1-a 零差异；E2-a 臂被 Provider 错误截断（7/9）；E3 零暴露 |
+| 真实**效果**证据 | **部分** | E2-a 0/25 vs 14/15（强描述性）；E1-a 仅 seed 2 有效（2/9→8/8）；E3 暴露达成但图为地板 |
 
-因此写作 `DONE（机制）/ LIVE 部分` 与 `DONE（离线）/ LIVE 零暴露`，
-不写 `DONE`——否则等于把"没测出效果"说成"已验证"。
+因此写作 `DONE（机制）/ LIVE ...`，不写 `DONE`——否则等于把"没测出效果"说成"已验证"。
 
 ## 5. 复算入口
 

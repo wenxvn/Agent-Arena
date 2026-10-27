@@ -217,6 +217,7 @@ conclusion: INSUFFICIENT / NO_TREATMENT_EXPOSURE / NOT_MEASURABLE
 | `uv run python scripts/audit_v14_engineering.py --write` | 生成 `engineering-boundaries.md` / `.json` |
 | `uv run pytest -q tests/test_v14_engineering.py` | **18 passed** |
 | `uv run ruff check .` / `uv run mypy src` | 通过 / 334 files 0 issues |
+| `uv run pytest -q`（批次边界全量） | **1791 passed**，120.02s |
 | `uv run pytest -q`（批次边界全量） | **1790 passed**，207.14s |
 
 ```text
@@ -254,4 +255,23 @@ CI 变更：`quality` job 新增 `V14 Lab 1.2 离线验收` 步骤（`scripts/ve
 | `uv run pytest -q tests/test_v14_conditions.py` | **24 passed**（含 2 条新增干预口径测试） |
 | `uv run python scripts/verify_v14.py` | 14/14 |
 | `uv run pytest -q`（批次边界全量） | **1791 passed**，140.40s |
+| `uv run ruff check .` / `uv run mypy src` | 通过 / 334 files 0 issues |
+
+## 14. Batch 14（LIVE 补充实验，2026-10-27）
+
+| 阶段 | 命令 | 结果 |
+|---|---|---|
+| suppl-e2 | `run_v14_live.py --groups E2-a --replicates 5 --kind supplement` | 30 局；off 0/15、on 11 成功 + 3 截尾 |
+| suppl-e1-budget | `--groups E1-a --request-cap 150 --kind budget_extension` | 7/9 局后 `unknown_spend` → 停批 |
+| suppl2-e1-budget-on | 同上（新阶段） | 18 局；off 0/9、on 3/9（全 seed2） |
+| suppl2-e3-map19 | `--groups E3 --map-override E3=MAP-19` | 18 局；on 3/9 触发，两臂 0 成功 |
+| suppl3-e1-seed2 | `--groups E1-a --seeds 2 --replicates 5 --request-cap 150` | 10 局；off 2/5、on 5/5 |
+| 离线触发诊断 | `SIMULATED` MAP-19/20/29 × 3 局 | 触发 8/9/9 次（零费用） |
+
+累计账本：**122 局 / 3 822 请求 / ¥2.06710508 / 2 局 unknown 预留 / 0 重复 / 0 孤儿**。
+
+| 命令 | 结果 |
+|---|---|
+| `uv run python scripts/summarize_v14_live.py --write` | 重新生成 `live-results.md/.json`（含 by_kind 与 by_seed） |
+| `uv run python scripts/verify_v14.py` | 14/14 |
 | `uv run ruff check .` / `uv run mypy src` | 通过 / 334 files 0 issues |

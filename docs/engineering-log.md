@@ -2133,3 +2133,20 @@ recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12`
 - 验证：`1791 pytest passed`、ruff clean、mypy 334 文件 0 issues、`verify_v14` 14/14。
 
 详见 `docs/v14/live-report.md`、`docs/v14/live-results.md`。
+
+## 2026-10-27 · V14 LIVE 补充实验（三轮）
+
+- 用户指令："选择你更推荐的就行，钱不是问题" → 选择消除三个混淆：
+  ① 补足 planning 臂（每 seed 5 次重复）② 预算扩展 150 请求 ③ reflection 换图（先离线诊断）。
+- 执行器扩展：`--phase/--kind/--request-cap/--decision-cap/--token-cap/--per-run-cost/--map-override`，
+  驱动脚本 `scripts/run_v14_supplement.sh` / `run_v14_supplement2.sh`。
+- 累计 122 局 / 3 822 请求 / ¥2.06710508；2 次 `unknown_spend` 各自停批、未重试；0 重复 0 孤儿。
+- 结果：
+  - **planning.v2**：off **0/25** vs on **14/15 有效局**（7 截尾），每成功局 ¥0.0498 —— 强描述性收益；
+  - **route_log**：90 请求 0/10 vs 0/10；150 请求 seed 2 **2/9 → 8/8**、seed 0/1 全败 → 条件性
+    （DCR-V14-06 瓶颈是 MAP-22 的 44 步移动预算；DCR-V14-07 效果依赖地图实例）；
+  - **reflection.v2**：MAP-22 零暴露；离线诊断 MAP-19/20/29（8/9/9 次触发）后上 MAP-19，
+    on 臂 **3/9 局真触发**，但两臂 0/9（`THERMAL_RUNAWAY`）→ 效果 `NOT_MEASURABLE`。
+- 验证：`verify_v14` 14/14、ruff/mypy 干净、`pytest` 全量见 validation-report。
+
+详见 `docs/v14/live-report.md`、`DCR-V14-06/07`。
