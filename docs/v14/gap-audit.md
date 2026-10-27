@@ -28,10 +28,10 @@
 |---|---|---|---|---|
 | P1-1 | MAP-30 约束阶梯与失败类型 | `DONE` | `DONE` | `lab/v14/map_audit.py::map30_three_axis`（三档 × 三维 + 瓶颈轴 + 保守区间）；`docs/v14/map-audit.md` 第 2 节 |
 | P1-2 | 关键/候选地图效度再核验 | `PARTIAL` | `DONE` | `six_map_recheck` + `candidate_map_audit`（MAP-19/20/29 只读）；`map-audit.md` 第 1/3 节；12 测试 |
-| P1-3 | 七层失败归因审计 | `PARTIAL` | `TODO` | — |
-| P1-4 | 六维能力画像稳健化 | `PARTIAL` | `TODO` | — |
+| P1-3 | 七层失败归因审计 | `PARTIAL` | `DONE` | `lab/v14/failure_capability.py`（锚点三态 + 3 fixture + 层级可进性矩阵）；`failure-and-capability.md` 第 1 节 |
+| P1-4 | 六维能力画像稳健化 | `PARTIAL` | `DONE` | `capability_with_gaps`（UNAVAILABLE/seed/重复/缺口并列）；`failure-and-capability.md` 第 2 节 |
 | P1-5 | 轨迹 Diff 与六图可视化增强 | `PARTIAL` | `TODO` | — |
-| P1-6 | 报告可复现与结论强度修正 | `PARTIAL` | `TODO` | — |
+| P1-6 | 报告可复现与结论强度修正 | `PARTIAL` | `DONE` | `conclusion_strength`（三字段 + forbidden_claims）；`failure-and-capability.md` 第 3 节；16 测试 |
 
 ## 3. P2（7 项）
 

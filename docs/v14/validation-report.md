@@ -42,7 +42,7 @@ declared_total_runs: 229 -> 221（修正后一致）
 plans: A 54 / B 186 / C 221
 ```
 
-## 8. Batch 8–12
+## 9. Batch 9–12
 
 > 后续批次在此追加。
 
@@ -158,4 +158,20 @@ six_map_labels: 08 CEILING / 16,18,22 SUITABLE / 26 CEILING / 30 CENSORED（全�
 map30_axes: req=90 REQUESTS(8/8) / req=180 UNSPECIFIED / req=180+600k UNSPECIFIED
 map30_intervals: [113,155] / [111,155] / [334,460]
 candidates: MAP-19/20/29 → NEEDS_MORE_EVIDENCE（V12 无该三图数据）
+```
+
+## 8. Batch 8（P1-3 + P1-4 + P1-6，2026-10-27）
+
+| 命令 | 结果 |
+|---|---|
+| `uv run pytest -q tests/test_v14_failure_capability.py` | **16 passed** |
+| `uv run python scripts/audit_v14_failures.py --write` | 生成 `failure-and-capability.md` / `.json` |
+| `uv run ruff check .` / `uv run mypy src` | 通过 / 332 files 0 issues |
+| `uv run pytest -q`（批次边界全量） | **1760 passed**，185.15s |
+
+```text
+fixtures: REJECTED_NO_PROGRESS(POLICY, 可进) / PROGRESS_THEN_BUDGET_CENSORED(不可进) / INTERFACE_ARTEFACT(不可进)
+capability: information_gathering/memory_tracking/planning_replanning/resource_constraints/evidence_reasoning AVAILABLE
+            failure_recovery UNAVAILABLE（V12 无 MAP-05/19/20 数据）
+conclusion: INSUFFICIENT / NO_TREATMENT_EXPOSURE / NOT_MEASURABLE
 ```

@@ -1,0 +1,411 @@
+{
+ "anchors": {
+  "anchored": 0,
+  "by_status": {},
+  "findings": 0,
+  "partial": 0,
+  "rows": [],
+  "rule": "没有 (run_id, decision_index, action, public_result) 的结论只能标 `UNANCHORED`，不得写成「Agent 不理解……」。",
+  "schema": "v14-finding-anchors-1",
+  "unanchored": 0
+ },
+ "capability": {
+  "aggregation_rule": "按机制维度聚合，不对异质指标求总分；每个维度都带适用样本、独立 seed、重复数与观察缺口。",
+  "dimension_count": 6,
+  "dimensions": [
+   {
+    "applicable_maps": 10,
+    "budget_censored": 2,
+    "dimension": "information_gathering",
+    "evidence_level": "SUPPORTED",
+    "gaps": [
+     "NO_REPLICATES",
+     "HAS_CENSORED_RUNS",
+     "MISSING_MAPS"
+    ],
+    "independent_seed_count": 3,
+    "independent_seeds": [
+     0,
+     1,
+     2
+    ],
+    "label": "信息搜集",
+    "measurable_runs": 38,
+    "mechanism_failures": 15,
+    "note": "`UNAVAILABLE` 表示没有可测样本，**不是能力为 0**；样本/seed/重复数必须与成功率并列展示。",
+    "observed_maps": 3,
+    "replicate_indices": [
+     0
+    ],
+    "runs": 39,
+    "status": "AVAILABLE",
+    "success_rate": 0.5526,
+    "successes": 21
+   },
+   {
+    "applicable_maps": 7,
+    "budget_censored": 2,
+    "dimension": "memory_tracking",
+    "evidence_level": "SUPPORTED",
+    "gaps": [
+     "NO_REPLICATES",
+     "HAS_CENSORED_RUNS",
+     "MISSING_MAPS"
+    ],
+    "independent_seed_count": 3,
+    "independent_seeds": [
+     0,
+     1,
+     2
+    ],
+    "label": "记忆 / 状态追踪",
+    "measurable_runs": 20,
+    "mechanism_failures": 15,
+    "note": "`UNAVAILABLE` 表示没有可测样本，**不是能力为 0**；样本/seed/重复数必须与成功率并列展示。",
+    "observed_maps": 1,
+    "replicate_indices": [
+     0
+    ],
+    "runs": 21,
+    "status": "AVAILABLE",
+    "success_rate": 0.15,
+    "successes": 3
+   },
+   {
+    "applicable_maps": 10,
+    "budget_censored": 1,
+    "dimension": "planning_replanning",
+    "evidence_level": "SUPPORTED",
+    "gaps": [
+     "HAS_CENSORED_RUNS",
+     "MISSING_MAPS"
+    ],
+    "independent_seed_count": 5,
+    "independent_seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "label": "规划 / 重规划",
+    "measurable_runs": 72,
+    "mechanism_failures": 54,
+    "note": "`UNAVAILABLE` 表示没有可测样本，**不是能力为 0**；样本/seed/重复数必须与成功率并列展示。",
+    "observed_maps": 2,
+    "replicate_indices": [
+     0,
+     1,
+     2
+    ],
+    "runs": 72,
+    "status": "AVAILABLE",
+    "success_rate": 0.2361,
+    "successes": 17
+   },
+   {
+    "applicable_maps": 13,
+    "budget_censored": 21,
+    "dimension": "resource_constraints",
+    "evidence_level": "SUPPORTED",
+    "gaps": [
+     "HAS_CENSORED_RUNS",
+     "MISSING_MAPS"
+    ],
+    "independent_seed_count": 5,
+    "independent_seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "label": "资源约束",
+    "measurable_runs": 108,
+    "mechanism_failures": 61,
+    "note": "`UNAVAILABLE` 表示没有可测样本，**不是能力为 0**；样本/seed/重复数必须与成功率并列展示。",
+    "observed_maps": 4,
+    "replicate_indices": [
+     0,
+     1,
+     2
+    ],
+    "runs": 108,
+    "status": "AVAILABLE",
+    "success_rate": 0.2407,
+    "successes": 26
+   },
+   {
+    "applicable_maps": 9,
+    "budget_censored": 0,
+    "dimension": "failure_recovery",
+    "evidence_level": "NOT_TESTED",
+    "gaps": [
+     "UNAVAILABLE",
+     "FEW_INDEPENDENT_SEEDS",
+     "NO_REPLICATES",
+     "MISSING_MAPS"
+    ],
+    "independent_seed_count": 0,
+    "independent_seeds": [],
+    "label": "故障恢复",
+    "measurable_runs": 0,
+    "mechanism_failures": 0,
+    "note": "`UNAVAILABLE` 表示没有可测样本，**不是能力为 0**；样本/seed/重复数必须与成功率并列展示。",
+    "observed_maps": 0,
+    "replicate_indices": [],
+    "runs": 0,
+    "status": "UNAVAILABLE",
+    "success_rate": null,
+    "successes": 0
+   },
+   {
+    "applicable_maps": 11,
+    "budget_censored": 20,
+    "dimension": "evidence_reasoning",
+    "evidence_level": "INSUFFICIENT",
+    "gaps": [
+     "NO_REPLICATES",
+     "HAS_CENSORED_RUNS",
+     "MISSING_MAPS"
+    ],
+    "independent_seed_count": 3,
+    "independent_seeds": [
+     0,
+     1,
+     2
+    ],
+    "label": "证据推理",
+    "measurable_runs": 36,
+    "mechanism_failures": 7,
+    "note": "`UNAVAILABLE` 表示没有可测样本，**不是能力为 0**；样本/seed/重复数必须与成功率并列展示。",
+    "observed_maps": 2,
+    "replicate_indices": [
+     0
+    ],
+    "runs": 36,
+    "status": "AVAILABLE",
+    "success_rate": null,
+    "successes": 9
+   }
+  ],
+  "label_note": "本画像由 Agent 生成，状态只能是 `agent_reviewed`；`human_approved` 必须由真实人工批准，Agent 不得自行盖章。",
+  "label_status": "agent_reviewed",
+  "schema": "v14-capability-1",
+  "unavailable": [
+   "failure_recovery"
+  ]
+ },
+ "conclusion": {
+  "effect_direction": "NOT_MEASURABLE",
+  "evidence_level": "INSUFFICIENT",
+  "forbidden_claims": [
+   "不得写成「已证实」",
+   "不得写成「策略无效」（干预从未发生）",
+   "不得写成「有效」或「显著提升」",
+   "`SUPPORTED` 不等于显著改善，也不等于因果证实"
+  ],
+  "mechanism_exposure": "NO_TREATMENT_EXPOSURE",
+  "reading": "三个字段独立：证据形式（能不能算）、干预暴露（有没有发生）、效果方向（描述性差异）。任一为否定时都不能给出「策略有效」的结论。",
+  "reasons": [
+   "V14 未获真实模型试验批准：没有 LIVE 样本。",
+   "历史 V12 CSV 缺 mechanism_triggered 字段，机制暴露未知。"
+  ]
+ },
+ "dimensions": [
+  "information_gathering",
+  "memory_tracking",
+  "planning_replanning",
+  "resource_constraints",
+  "failure_recovery",
+  "evidence_reasoning"
+ ],
+ "fixtures": {
+  "fixtures": [
+   {
+    "anchor": {
+     "action": {
+      "bearing": "north",
+      "tool": "move"
+     },
+     "anchor": "fixture-rejected#1",
+     "category": "repeated_rejected_action",
+     "decision_index": 1,
+     "evidence_event_ids": [],
+     "evidence_steps": [
+      1,
+      2,
+      3
+     ],
+     "note": "锚点完整：可定位到具体决策与公开结果。",
+     "public_result": "BEARING_NOT_AVAILABLE",
+     "run_id": "fixture-rejected",
+     "status": "ANCHORED"
+    },
+    "expected_capability_eligible": true,
+    "expected_layer": "POLICY_BEHAVIOUR",
+    "fixture": "REJECTED_NO_PROGRESS",
+    "progress_steps": 0,
+    "public_progress_after_step_0": false,
+    "reading": "被拒且没有公开进展 → 归因到策略/接口层，可以进能力分母；但若被拒是契约形状导致，则应改判 INTERFACE_CONTRACT（见反例）。",
+    "rejected_steps": 3,
+    "trace": [
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "decision_index": 0,
+      "public_result": "MOVED"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "decision_index": 1,
+      "public_result": "BEARING_NOT_AVAILABLE"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "decision_index": 2,
+      "public_result": "BEARING_NOT_AVAILABLE"
+     },
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "decision_index": 3,
+      "public_result": "BEARING_NOT_AVAILABLE"
+     }
+    ]
+   },
+   {
+    "anchor": {
+     "action": {
+      "bearing": "south",
+      "tool": "move"
+     },
+     "anchor": "fixture-budget#3",
+     "category": "budget_censored",
+     "decision_index": 3,
+     "evidence_event_ids": [],
+     "evidence_steps": [
+      3
+     ],
+     "note": "锚点完整：可定位到具体决策与公开结果。",
+     "public_result": "MOVED",
+     "run_id": "fixture-budget",
+     "status": "ANCHORED"
+    },
+    "expected_capability_eligible": false,
+    "expected_layer": "BUDGET_CENSORED",
+    "fixture": "PROGRESS_THEN_BUDGET_CENSORED",
+    "progress_steps": 3,
+    "public_progress_after_step_0": true,
+    "reading": "有公开进展但预算耗尽 → 归因到 BUDGET_CENSORED，**不得**算进能力分母，也不得写成「推理能力极弱」。",
+    "rejected_steps": 0,
+    "trace": [
+     {
+      "action": {
+       "bearing": "north",
+       "tool": "move"
+      },
+      "decision_index": 0,
+      "public_result": "MOVED"
+     },
+     {
+      "action": {
+       "bearing": "east",
+       "tool": "move"
+      },
+      "decision_index": 1,
+      "public_result": "MOVED"
+     },
+     {
+      "action": {
+       "tool": "read_map"
+      },
+      "decision_index": 2,
+      "public_result": "MAP_READ"
+     },
+     {
+      "action": {
+       "bearing": "south",
+       "tool": "move"
+      },
+      "decision_index": 3,
+      "public_result": "MOVED"
+     }
+    ]
+   },
+   {
+    "anchor": {
+     "action": {
+      "facts": {
+       "key": "path_state"
+      },
+      "tool": "write_memory"
+     },
+     "anchor": "fixture-interface#0",
+     "category": "memory_payload_rejected",
+     "decision_index": 0,
+     "evidence_event_ids": [],
+     "evidence_steps": [
+      0,
+      1
+     ],
+     "note": "锚点完整：可定位到具体决策与公开结果。",
+     "public_result": "INVALID_MEMORY_PAYLOAD",
+     "run_id": "fixture-interface",
+     "status": "ANCHORED"
+    },
+    "expected_capability_eligible": false,
+    "expected_layer": "INTERFACE_CONTRACT",
+    "fixture": "INTERFACE_ARTEFACT",
+    "progress_steps": 0,
+    "public_progress_after_step_0": false,
+    "reading": "同样「被拒且无进展」，但原因是契约形状 → INTERFACE_CONTRACT，**不得**进能力分母。这就是正反 fixture 必须成对存在的原因。",
+    "rejected_steps": 2,
+    "trace": [
+     {
+      "action": {
+       "facts": {
+        "key": "path_state"
+       },
+       "tool": "write_memory"
+      },
+      "decision_index": 0,
+      "public_result": "INVALID_MEMORY_PAYLOAD"
+     },
+     {
+      "action": {
+       "facts": {
+        "key": "path_state"
+       },
+       "tool": "write_memory"
+      },
+      "decision_index": 1,
+      "public_result": "INVALID_MEMORY_PAYLOAD"
+     }
+    ]
+   }
+  ],
+  "layer_eligibility": {
+   "BUDGET_CENSORED": true,
+   "ENVIRONMENT_MECHANISM": true,
+   "INTERFACE_CONTRACT": false,
+   "MEASUREMENT_COVERAGE": false,
+   "POLICY_BEHAVIOUR": true,
+   "PROVIDER": false,
+   "UNKNOWN": false
+  },
+  "note": "「被拒无进展」与「有进展但预算耗尽」必须分开；「契约形状导致被拒」必须再单独一层。三者混算会同时高估接口缺陷与低估能力。",
+  "schema": "v14-failure-fixtures-1"
+ },
+ "schema": "v14-failure-capability-1"
+}

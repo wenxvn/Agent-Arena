@@ -139,3 +139,22 @@
   两档的 5 局/7 局截尾**公开终态码没有暴露撞哪一维**，因此标 `UNSPECIFIED`，不强行归因。
 - 测试：`pytest tests/test_v14_map_audit.py` **12 passed**。
 - commit：`feat(v14): map applicability audit with MAP-30 three-axis ladder`
+
+## Batch 8 · P1-3 + P1-4 + P1-6 诊断、能力画像与结论语言
+
+- 新模块：`lab/v14/failure_capability.py`
+  - `finding_anchor` / `audit_findings`：锚点校验 `(run_id, decision_index, action, public_result)`，
+    三态 `ANCHORED` / `PARTIALLY_ANCHORED` / `UNANCHORED`；
+  - 三个 fixture：`REJECTED_NO_PROGRESS`（策略层，可进能力分母）、
+    `PROGRESS_THEN_BUDGET_CENSORED`（截尾，不可进）、`INTERFACE_ARTEFACT`（接口层，不可进）；
+    层级可进性矩阵显式列出；
+  - `capability_with_gaps`：六维 + 适用样本 + 独立 seed + 重复编号 + 缺口
+    （`UNAVAILABLE` / `FEW_INDEPENDENT_SEEDS` / `NO_REPLICATES` / `HAS_CENSORED_RUNS` / `MISSING_MAPS`）；
+  - `conclusion_strength`：`evidence_level` / `mechanism_exposure` / `effect_direction`
+    三字段独立 + `forbidden_claims`。
+- 实测（历史 138 局）：`failure_recovery` 维度 **`UNAVAILABLE`**（V12 无 MAP-05/19/20 数据），
+  其余五维可测但都缺重复或存在截尾；结论强度为
+  `INSUFFICIENT` / `NO_TREATMENT_EXPOSURE` / `NOT_MEASURABLE`。
+- 脚本：`scripts/audit_v14_failures.py --write` → `docs/v14/failure-and-capability.md` + `.json`。
+- 测试：`pytest tests/test_v14_failure_capability.py` **16 passed**。
+- commit：`feat(v14): anchored failure attribution and capability gaps`
