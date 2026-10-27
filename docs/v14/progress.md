@@ -226,3 +226,8 @@
 - 最终状态：`ENGINEERING_VERIFIED` 满足；`LIVE_EVIDENCE_VERIFIED` 与
   `STAGE_II_FINAL_READY` **不满足**（零 LIVE 请求）。
 - commit：`feat(v14): final delivery package with verify_v14 gate`
+
+## 远端 CI 复核（Batch 10 收尾）
+
+切换为阻断门禁后连续成功 4 次：`40482235016` / `40482773825` / `40486150217` / `40487657690`；
+其中 `40487657690` 的 `V14 Lab 1.2 离线验收` 步骤也通过。此前 `40477841302` 的失败记录保留。
