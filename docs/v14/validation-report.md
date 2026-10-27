@@ -253,3 +253,5 @@ CI 变更：`quality` job 新增 `V14 Lab 1.2 离线验收` 步骤（`scripts/ve
 | 账本 | 39/39 started=settled、1 313 请求、¥0.72437412、0 重复、0 孤儿 |
 | `uv run pytest -q tests/test_v14_conditions.py` | **24 passed**（含 2 条新增干预口径测试） |
 | `uv run python scripts/verify_v14.py` | 14/14 |
+| `uv run pytest -q`（批次边界全量） | **1791 passed**，140.40s |
+| `uv run ruff check .` / `uv run mypy src` | 通过 / 334 files 0 issues |

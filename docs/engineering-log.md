@@ -2113,3 +2113,23 @@ recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12`
 - 真机读屏 `NOT_VERIFIED`；macOS / Ollama 按用户指示暂缓。
 
 详见 `docs/v14/final-report.md`、`docs/v14/gap-audit.md`、`docs/v14/release-checklist.md`。
+
+## 2026-10-27 · V14 LIVE 执行（真实 MiMo，方案 A 子集）
+
+- 授权：用户"按提纲执行，可自行调用 mimo"；按 `docs/v14/live-plan.md` 方案 A，上限 **¥5.00**。
+- 新增 `scripts/run_v14_live.py`（钉住配置的 6 个父实验、`--pilot`/`--groups`/`--submit`、
+  独立账本 `runs/v14/live/`）与 `scripts/summarize_v14_live.py`（只读聚合）。
+- 执行：`mimo-v2.6-flash`，Pilot 6 局 + 主矩阵 33 局 = **39 局 / 1 313 请求 / ¥0.72437412**；
+  1 局 `unknown_spend`（预留，不计结算）；0 重复、0 孤儿；用量 14.5%。
+- 结果：
+  - E1-a（MAP-22 `memory.v2 route_log` on/off，20 局）：`route_recall` 0.045 → **0.557**（4 局满分），
+    成功率 **0/10 vs 0/10**，费用 ¥0.0242 → ¥0.0302（+25%），1 局 `budget_censored`；
+  - E2-a（MAP-16 `planning.v2` on/off，17 局）：off **0/10**、on **3/7**（3.43 次计划/局），
+    但 `PROVIDER_ERROR` + `unknown_spend` 触发停批 → 臂只有 7/9，**描述性**；
+  - E3（MAP-22 `reflection.v2`，2 局）：`triggered = 0` → **`NO_TREATMENT_EXPOSURE`**，停止扩展。
+- 事件：`DCR-V14-04`（reflection 零暴露）、`DCR-V14-05`（Provider 错误 → 停批封账、不重试）。
+- 修掉真实缺陷：V14 `condition_comparison` 把 effective `prompt_hash` 当硬不匹配，
+  on/off 臂全判 `INCOMPARABLE` → 改为比较 `base_prompt_hash`，配置/effective prompt 标 `INTERVENTION`。
+- 验证：`1791 pytest passed`、ruff clean、mypy 334 文件 0 issues、`verify_v14` 14/14。
+
+详见 `docs/v14/live-report.md`、`docs/v14/live-results.md`。
