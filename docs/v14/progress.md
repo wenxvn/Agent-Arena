@@ -177,3 +177,18 @@
   critical/serious/moderate 全 0。
 - 测试：`pytest tests/test_v14_ui_views.py` **12 passed**。
 - commit：`feat(v14): lab views for divergence, seed groups, map22 and map30`
+
+## Batch 10 · P2-1 CI 浏览器 E2E 正式门禁
+
+- 前置证据：`lab-e2e` 连续 **7 次**远端 success（不同 commit、`run_attempt=1`），见 `ci-evidence.md` 第 2 节。
+- 切换：`34a83fe` 移除 `continue-on-error: true`，`lab-e2e` 变为**阻断**门禁。
+- 第一次真实红灯（**保留证据**）：`40477841302`（`34a83fe`）`quality` success、`lab-e2e` **failure**。
+  根因是本轮新增的 E2E 断言用"固定 sleep + body 子串"判断页面渲染，CI 慢时读到中间态。
+- 修复（`babe194`）：改为显式 `wait_for` 元素；新增 `--report runs/v14/e2e-report.json`、
+  `AGENT_ARENA_E2E_KEEP=1` 与 CI `if: failure()` 上传 artifact；**未**用 skip/xfail/降级断言或恢复
+  `continue-on-error` 掩盖。
+- 修复后验证：`40482235016`（`babe194`）两个 job 均 success，门禁保持阻断。
+- 本地：`e2e_lab.py --start --port 8516 --report ...` 通过；`a11y_v12 --browser` 0 critical/serious/moderate。
+- 仍未验证：本机 Playwright 自带 chromium 因 CDN 受限未安装，`AGENT_ARENA_E2E_BROWSER=chromium`
+  的本地复现路径记为 `NOT_VERIFIED`。
+- commit：`34a83fe`、`babe194`

@@ -198,3 +198,14 @@ conclusion: INSUFFICIENT / NO_TREATMENT_EXPOSURE / NOT_MEASURABLE
 06-lab-result-dark.png          深色模式
 07-lab-audit.png                报告与审计
 ```
+
+## 10. Batch 10（P2-1，2026-10-27）
+
+| 项 | 结果 |
+|---|---|
+| 切换前远端证据 | `lab-e2e` 连续 7 次 success |
+| 切换后第一次运行 `40477841302` | `quality` success / `lab-e2e` **failure**（新断言时序问题，保留） |
+| 修复后运行 `40482235016` | `quality` success / **`lab-e2e` success**（门禁阻断生效） |
+| 本地 `e2e_lab.py --start --port 8516 --report runs/v14/e2e-report.json` | `{"ok": true, ...}` |
+| 本地 `a11y_v12.py --browser --start` | critical/serious/moderate 全 0 |
+| 本地 chromium 复现（`AGENT_ARENA_E2E_BROWSER=chromium`） | `NOT_VERIFIED`（CDN 下载受限） |

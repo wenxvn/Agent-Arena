@@ -37,7 +37,7 @@
 
 | ID | 任务 | 起点 | 当前 | 证据 |
 |---|---|---|---|---|
-| P2-1 | CI 浏览器 E2E 正式门禁 | `PARTIAL` | `TODO` | — |
+| P2-1 | CI 浏览器 E2E 正式门禁 | `PARTIAL` | `DONE` | `ci.yml` 移除 `continue-on-error`（`34a83fe`）；切换后一次红灯保留在 `40477841302`，修复见 `babe194`，`40482235016` 双 job success |
 | P2-2 | 大历史/冷启动/异常负载 | `PARTIAL` | `TODO` | — |
 | P2-3 | Lab Web 用户体验 | `PARTIAL` | `DONE` | 可比性门禁横幅、MAP-30 阶梯、窄屏/深色截图；`e2e_lab.py` 通过 + a11y 0 critical/serious/moderate |
 | P2-4 | 自动报告/导出一致性 | `PARTIAL` | `TODO` | — |
