@@ -61,4 +61,16 @@ jobs:
           uv sync --frozen --all-groups --extra web
           uv run --with playwright playwright install --with-deps chromium
       - name: Lab E2E（配置 → 预检 → 离线提交 → 监控 → 结果 → 导出）
-        run: uv run --with playwright python scripts/e2e_lab.py --start --port 8512
+        env:
+          AGENT_ARENA_E2E_KEEP: "1"
+        run: >-
+          uv run --with playwright python scripts/e2e_lab.py
+          --start --port 8512 --report runs/v14/e2e-report.json
+      - name: 失败时保留 E2E 现场（报告 + 临时 runs）
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab-e2e-report
+          path: runs/v14/e2e-report.json
+          if-no-files-found: warn
+          retention-days: 7

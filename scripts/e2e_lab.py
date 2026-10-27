@@ -124,21 +124,34 @@ def _run_flow(page: Page, url: str) -> dict[str, Any]:
     assert "COMPARABLE" in result_body or "DESCRIPTIVE_ONLY" in result_body
 
     # 4b. V14：可视化页的 MAP-22 探索视图必须声明"被拒移动不画成路径"。
+    #     注意：这里必须**等待元素**，不能靠固定 sleep + 子串检查（CI 慢时会假阳性失败）。
     page.get_by_role("tab", name="可视化").first.click()
-    page.wait_for_timeout(800)
-    render_body = page.locator("body").inner_text()
-    if "exploration_graph" in render_body:
-        assert "没有改变位置" in render_body, "MAP-22 视图缺少被拒移动的声明"
-    # 4c. V14：证据与差异页的首次分歧高亮 + 不可比门禁。
+    map22_ok = False
+    try:
+        page.get_by_text("没有改变位置", exact=False).first.wait_for(timeout=30_000)
+        map22_ok = True
+    except Exception:  # noqa: BLE001 - 选中的不是 MAP-22 时该声明不出现
+        render_body = page.locator("body").inner_text()
+        map22_ok = "exploration_graph" not in render_body
+    assert map22_ok, "MAP-22 视图缺少「被拒移动不改变位置」的声明"
+
+    # 4c. V14：证据与差异页的首次分歧高亮 + 可比性口径。
     page.get_by_role("tab", name="证据与差异").first.click()
     page.wait_for_timeout(600)
+    divergence_ok = False
     pairwise_buttons = page.get_by_role("button", name=re.compile("生成对照"))
     if pairwise_buttons.count():
         pairwise_buttons.first.click()
-        page.wait_for_timeout(1200)
-        diff_body = page.locator("body").inner_text()
-        assert "首次差异" in diff_body or "首次分歧" in diff_body
-        assert "可比" in diff_body or "不可" in diff_body
+        try:
+            page.get_by_text(
+                re.compile("首次差异|首次分歧|公开动作序列上没有差异"), exact=False
+            ).first.wait_for(timeout=40_000)
+            divergence_ok = True
+        except Exception:  # noqa: BLE001 - 对照失败时由报告工件定位
+            divergence_ok = False
+    assert divergence_ok, "两条轨迹对照没有给出首次差异/无差异结论"
+    diff_body = page.locator("body").inner_text()
+    assert "可比" in diff_body or "不可" in diff_body
 
     # 5. V13：稳定性与效度页（翻转率/效度/能力画像）。
     _goto_view(page, url, LAB_STABILITY)
@@ -186,17 +199,40 @@ def _run_flow(page: Page, url: str) -> dict[str, Any]:
         "monitor_state": "COMPLETED",
         "report_bytes": Path(path).stat().st_size,
         "report_lines": len(report.splitlines()),
-        "v14_map22_view": True,
-        "v14_first_divergence": True,
+        "v14_map22_view": bool(map22_ok),
+        "v14_first_divergence": bool(divergence_ok),
         "v13_stability_page": True,
         "v13_audit_page": True,
         "v13_sdk_selfcheck": True,
     }
 
 
-def _launch(playwright: Any) -> Any:
-    """优先用系统 Chrome（本地）；CI 没有时回退到 Playwright 自带 chromium。"""
+def _tempdir() -> tempfile.TemporaryDirectory[str]:
+    """临时目录；``AGENT_ARENA_E2E_KEEP=1`` 时保留现场供失败排查。"""
 
+    return tempfile.TemporaryDirectory(
+        prefix="agent-arena-lab-e2e-", ignore_cleanup_errors=True
+    )
+
+def _write_report(path: Path | None, payload: dict[str, Any]) -> None:
+    if path is None:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=1) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+def _launch(playwright: Any) -> Any:
+    """优先用系统 Chrome（本地）；CI 没有时回退到 Playwright 自带 chromium。
+
+    ``AGENT_ARENA_E2E_BROWSER=chromium`` 可强制使用 Playwright 自带浏览器，
+    用来在本地复现 CI 环境。
+    """
+
+    if os.environ.get("AGENT_ARENA_E2E_BROWSER") == "chromium":
+        return playwright.chromium.launch(headless=True)
     try:
         return playwright.chromium.launch(channel="chrome", headless=True)
     except Exception:  # noqa: BLE001 - CI 环境通常没有系统 Chrome
@@ -208,6 +244,12 @@ def main() -> int:
     parser.add_argument("--start", action="store_true", help="自动启动临时 Streamlit")
     parser.add_argument("--url", default="http://127.0.0.1:8501")
     parser.add_argument("--port", type=int, default=8512)
+    parser.add_argument(
+        "--report",
+        type=Path,
+        default=None,
+        help="把 E2E 结果（成功或失败原因）写成 JSON；CI 失败时用它定位",
+    )
     args = parser.parse_args()
 
     process: subprocess.Popen[bytes] | None = None
@@ -215,9 +257,7 @@ def main() -> int:
     url = args.url
     try:
         if args.start:
-            temporary = tempfile.TemporaryDirectory(
-                prefix="agent-arena-lab-e2e-", ignore_cleanup_errors=True
-            )
+            temporary = _tempdir()
             base = Path(temporary.name) / "runs"
             process = _start_server(args.port, base / "web", base / "lab")
             url = f"http://127.0.0.1:{args.port}"
@@ -226,8 +266,19 @@ def main() -> int:
             page = browser.new_page(viewport={"width": 1440, "height": 1200})
             result = _run_flow(page, url)
             browser.close()
-        print(json.dumps({"ok": True, **result}, ensure_ascii=False))
+        payload = {"ok": True, **result}
+        _write_report(args.report, payload)
+        print(json.dumps(payload, ensure_ascii=False))
         return 0
+    except Exception as exc:  # noqa: BLE001 - 失败也要留证据
+        _write_report(
+            args.report,
+            {
+                "ok": False,
+                "error": f"{type(exc).__name__}: {exc}"[:2000],
+            },
+        )
+        raise
     finally:
         if process is not None:
             process.terminate()
@@ -237,7 +288,7 @@ def main() -> int:
                 process.kill()
                 process.wait(timeout=10)
             time.sleep(0.5)
-        if temporary is not None:
+        if temporary is not None and os.environ.get("AGENT_ARENA_E2E_KEEP") != "1":
             temporary.cleanup()
 
 
