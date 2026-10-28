@@ -282,9 +282,9 @@ def collect() -> dict[str, Any]:
     }
     kinds: dict[str, list[dict[str, Any]]] = {}
     for record in records:
-        kinds.setdefault(f"{record['group']}|{record.get('experiment_kind')}", []).append(
-            record
-        )
+        kinds.setdefault(
+            f"{record['group']}|{record.get('experiment_kind')}|{record.get('model')}", []
+        ).append(record)
     for key, items in sorted(kinds.items()):
         arms: dict[str, list[dict[str, Any]]] = {}
         for item in items:
@@ -295,7 +295,9 @@ def collect() -> dict[str, Any]:
     pooled: dict[str, list[dict[str, Any]]] = {}
     for record in records:
         pooled.setdefault(
-            f"{record['group']}|req={record['request_cap']}", []
+            f"{record['group']}|{record['map_id']}|req={record['request_cap']}"
+            f"|{record['model']}",
+            [],
         ).append(record)
     report["by_seed"] = {}
     for key, items in sorted(pooled.items()):

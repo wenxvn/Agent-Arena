@@ -2150,3 +2150,14 @@ recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12`
 - 验证：`verify_v14` 14/14、ruff/mypy 干净、`pytest` 全量见 validation-report。
 
 详见 `docs/v14/live-report.md`、`DCR-V14-06/07`。
+
+## 2026-10-28 · V14 泛化验证（跨图 / 跨模型 / 留出 seed / 反思单因子）
+
+- 累计 **191 局 / 5 542 请求 / CNY 3.21921168**（3 次 `unknown_spend` 各自停批，0 重复 0 孤儿）。
+- **planning.v2**：MAP-16 flash `0/25 → 14/15`；**MAP-16 pro `2/12 → 12/12`**（留出 seed 3 `0/3 → 3/3`，
+  off 臂 2–3 决策即 `DEADLOCK`）；MAP-18 flash `2/9 → 4/9`。
+- **route_log**：150 请求下 seed 2 `2/9 → 8/8`，seed 0/1/3 两臂全 0（seed 3 新增复核）；
+  每成功局 ¥0.283 → ¥0.059。瓶颈是 MAP-22 的 44 步移动预算（DCR-V14-06/07）。
+- **reflection.v2**：MAP-16 上 2–12 决策即失败（触发不了）→ 改 MAP-22@150：
+  `trigger_only` 2/6 vs `reflection_on` 1/6，触发 4/6 vs 5/6 → 暴露稳定、效果未检出（n=6）。
+- 验证：`verify_v14` 14/14、ruff/mypy 干净、全量 pytest 见 validation-report。

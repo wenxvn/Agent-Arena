@@ -116,6 +116,25 @@ def _specs(args: argparse.Namespace) -> list[dict[str, Any]]:
         experiment_kind=args.kind,
         name_prefix=f"v14-{args.phase}" if args.phase else "v14",
     )
+    if args.e3_control == "trigger_only":
+        from agent_arena.lab.contracts import AgentArm
+
+        for item in specs:
+            if item["group"] != "E3" or not item["arm_id"].endswith("control"):
+                continue
+            spec = item["spec"]
+            arm = spec.agent_arms[0]
+            config = {**arm.config, "enabled": True, "trigger_only": True}
+            item["spec"] = spec.model_copy(
+                update={
+                    "agent_arms": [
+                        AgentArm(
+                            agent_id=arm.agent_id, config=config, label=arm.label
+                        )
+                    ]
+                }
+            )
+            item["config_hash"] = item["spec"].agent_arms[0].config_hash
     if args.groups:
         wanted = {item.strip() for item in args.groups}
         specs = [item for item in specs if item["group"] in wanted]
@@ -217,6 +236,12 @@ def main() -> int:
     parser.add_argument("--decision-cap", type=int, default=None)
     parser.add_argument("--token-cap", type=int, default=None)
     parser.add_argument("--per-run-cost", default=None)
+    parser.add_argument(
+        "--e3-control",
+        choices=["disabled", "trigger_only"],
+        default="disabled",
+        help="E3 的对照臂：disabled=完全不反思；trigger_only=只判定触发不请求（单因子问法）",
+    )
     parser.add_argument(
         "--map-override",
         nargs="+",

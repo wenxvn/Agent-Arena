@@ -275,3 +275,23 @@ CI 变更：`quality` job 新增 `V14 Lab 1.2 离线验收` 步骤（`scripts/ve
 | `uv run python scripts/summarize_v14_live.py --write` | 重新生成 `live-results.md/.json`（含 by_kind 与 by_seed） |
 | `uv run python scripts/verify_v14.py` | 14/14 |
 | `uv run ruff check .` / `uv run mypy src` | 通过 / 334 files 0 issues |
+
+## 15. Batch 15（泛化验证 + 第四/五轮，2026-10-28）
+
+| 阶段 | 内容 | 结果 |
+|---|---|---|
+| gen-a-map18 | planning on/off，MAP-18，flash，3 seed × 3 重复 | off 2/9、on 4/9 |
+| gen-b-model-pro | planning on/off，MAP-16，`mimo-v2.6-pro` | off 2/9、**on 9/9** |
+| round4-seed3 | route_log，MAP-22 seed 3 @150，5 重复 | off 0/5、on 0/5 |
+| round4-reflect-m16 | reflection trigger_only vs on，MAP-16 | 5 局后 `unknown_spend` 停批（MAP-16 2–12 决策即失败） |
+| round5-holdout | planning，MAP-16 **seed 3**，pro，3 重复 | off **0/3**（DEADLOCK 2–3 决策）、on **3/3** |
+| round5-reflect-m22 | reflection 单因子，MAP-22 @150，seed 2/0 × 3 | trigger_only 2/6（触发 4/6）、on 1/6（触发 5/6） |
+
+累计账本：**191 局 / 5 542 请求 / ¥3.21921168 / 3 局 unknown 预留 / 0 重复 / 0 孤儿**。
+
+| 命令 | 结果 |
+|---|---|
+| `uv run python scripts/summarize_v14_live.py --write` | 重新生成（by_kind 含模型维度、by_seed 含 map/req/model） |
+| `uv run python scripts/verify_v14.py` | 14/14 |
+| `uv run ruff check .` / `uv run mypy src` | 通过 / 334 files 0 issues |
+| `uv run pytest -q` | **1791 passed**，113.36s |

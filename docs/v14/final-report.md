@@ -3,14 +3,14 @@
 - 执行日期：2026-10-27（本地）
 - 起点 HEAD：`60c9ba2b64a3bd8d5cd549a7b76d0f3eb3ad092a`
 - 终点 HEAD：见 `docs/v14/progress.md` 的最后一条 commit
-- **V14 真实付费执行：122 局 / 3 822 请求 / CNY 2.06710508**（方案 A + 三轮补充；2 局 unknown_spend 预留）
+- **V14 真实付费执行：191 局 / 5 542 请求 / CNY 3.21921168**（flash + pro，方案 A + 五轮补充；3 局 unknown_spend 预留）
 
 ## 0. 结论先行
 
 | 判定 | 是否满足 | 说明 |
 |---|---|---|
 | `ENGINEERING_VERIFIED` | **满足** | 1790 项离线测试、mypy/ruff、冻结与复算、V11–V14 验收、浏览器 E2E、a11y 全部通过 |
-| `LIVE_EVIDENCE_VERIFIED` | **不满足（部分达成）** | 122 局真实样本：规划有强描述性收益（0/25 → 14/15）、记忆仅在 seed 2+150 请求有效（2/9 → 8/8）、反思暴露达成但效果不可测 |
+| `LIVE_EVIDENCE_VERIFIED` | **不满足（部分达成）** | 191 局：规划跨模型与留出 seed 复现（pro 2/12 → 12/12）；记忆仅 seed 2 有效；反思暴露稳定但 n=6 效果未检出；缺负向对照与账单核对 |
 | `STAGE_II_FINAL_READY` | **不满足** | 缺少 LEGIT 的 LIVE 证据分母；按提纲不得宣称收官 |
 
 V14 的真实增量不是"再写一套工程"，而是**修掉了会误导结论的测量缺陷**，并把
@@ -53,9 +53,10 @@ V14 的真实增量不是"再写一套工程"，而是**修掉了会误导结论
 - 成本：Planner 请求与动作请求同属 `requests`（adaptive 15 请求 / 3 次 Planner），
   `disabled` 12 请求 / 0 次 Planner；预算守卫与 `max_plans` 两条挡下路径都有证据。
 - 单因子：E2-a `enabled`、E2-b `planning_mode`、E2-c 频率（4→12）。
-- **真实收益**：两个独立父实验合并，off **0/25**（全部 `NODE_CAPACITY_CONFLICT`，多在 3–13 决策内）、
-  on **14/15 有效局**（7 局截尾为请求上限）；每成功局 ¥0.0498。
-  → **强描述性收益**；仍需跨图、跨模型复现，且采样未登记 → 不作因果断言。
+- **真实收益**：MAP-16 flash off **0/25** → on **14/15 有效局**；**pro off 2/12 → on 12/12**
+  （其中 seed 3 为留出未用过：`0/3 → 3/3`）；MAP-18 flash `2/9 → 4/9`。
+  → **跨模型、跨图、留出 seed 均复现的描述性收益**；每成功局 ¥0.021–0.050。
+  仍缺负向对照图（规划无关的图）与因果断言条件。
 
 ### 2.3 Reflection（`reflection.v2`）
 
@@ -63,9 +64,9 @@ V14 的真实增量不是"再写一套工程"，而是**修掉了会误导结论
   `false_triggers` / `recoveries`；`reflection_on` 12 决策里真触发 3 次、恢复 2 次。
 - `trigger_only`：暴露 9 次但 0 请求（证明触发判定本身不注入提示）。
 - 全程有进度的脚本 → `NO_TREATMENT_EXPOSURE`，**不写成"反思无效"**。
-- **真实收益**：MAP-22 两局 `triggered = 0` → `NO_TREATMENT_EXPOSURE`（DCR-V14-04）；
-  离线诊断 MAP-19/20/29 后换 MAP-19 → **on 臂 3/9 局真触发**（暴露达成），
-  但两臂 0/9 成功（全部 `THERMAL_RUNAWAY`）→ **效果 `NOT_MEASURABLE`**。
+- **真实收益**：MAP-22@90 零暴露（DCR-V14-04）→ MAP-19 3/9 触发但两臂 0/9（地板）→
+  **MAP-22@150 单因子：`trigger_only` 2/6 vs `reflection_on` 1/6，触发 4/6 vs 5/6**。
+  → **暴露稳定，效果 `NOT_MEASURABLE`**（n=6、无功效，且 on 臂多花约 11 请求/局）。
 
 ## 3. 负面结果与保留项（不修饰）
 
@@ -114,10 +115,10 @@ uv run python scripts/e2e_lab.py --start --port 8512
 ## 6. 建议
 
 1. **不要**在未批准的情况下进入第三阶段结论；当前只能交付"工程可信 + 真实效果待测"。
-2. LIVE 已执行 122 局 / ¥2.0671（各阶段上限内）：
-   - 最值得做的是**验证 `planning.v2` 的泛化**（MAP-18/17 + 第二个模型）；
-   - `route_log` 需补 seed 3 与更多重复，确认"实例依赖"是否稳定；
-   - `reflection` 应换到"能成功但会卡"的图（如 MAP-16）做 trigger_only→on 单因子。
+2. LIVE 已执行 191 局 / ¥3.2192（各阶段上限内）：
+   - **负向对照**：MAP-17/13 上 planning on/off，验证"只在需要规划的图上有效"；
+   - **reflection 功效**：MAP-22@150 seed 2 固定、每臂 ≥10 局；
+   - **route_log 拓扑归因**：对 MAP-22 的 4 个 seed 输出迷宫特征，解释"为什么只有 seed 2"（离线零成本）。
 3. 下一轮应当**先**给 trace 补上 `contract_version` 与 `prompt_hash`（DCR-V14-01），
    否则跨版本分析仍然只能靠文件名猜测。
 4. MAP-30 若要继续，优先提高**请求上限**（第一档瓶颈是请求数），而不是继续抬 token。

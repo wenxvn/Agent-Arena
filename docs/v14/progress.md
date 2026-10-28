@@ -270,3 +270,18 @@
 - 事件：2 次 `unknown_spend` 各自停批（DCR-V14-05），未重试；累计 0 重复 0 孤儿。
 - 文档：`live-report.md` 重写；`gap-audit.md` / `final-report.md` / `release-checklist.md` / `README.md` 同步。
 - commit：`feat(v14): supplement live runs for planning, memory budget and reflection exposure`
+
+## Batch 15 · 泛化验证 + 第四/五轮（跨图、跨模型、留出 seed、反思单因子）
+
+- 用户："继续" → 按推荐顺序推进：跨图（MAP-18）、跨模型（`mimo-v2.6-pro`）、留出 seed（MAP-16 seed 3）、
+  reflection 单因子（`trigger_only` vs `on`）。
+- 执行器扩展：`--e3-control trigger_only`；`--kind matrix` 用于跨图/跨模型复现。
+- 结果（累计 **191 局 / 5 542 请求 / ¥3.21921168**，3 局 unknown 预留，0 重复 0 孤儿）：
+  - **planning 跨模型复现**：MAP-16 pro `off 2/12` → **`on 12/12`**；留出 seed 3 `0/3 → 3/3`（off 臂 2–3 决策即 DEADLOCK）；
+  - **planning 跨图**：MAP-18 flash `2/9 → 4/9`（方向一致、幅度小）；
+  - **route_log** seed 3 复核：两臂 0/5 → 效果仍只在 seed 2（2/9 → 8/8）；
+  - **reflection 单因子**：MAP-16 太短（2–12 决策即冲突/死锁）→ 改 MAP-22@150；
+    `trigger_only` 2/6、`reflection_on` 1/6，触发 4/6 vs 5/6 → **暴露稳定、效果未检出**。
+- 文档：`live-report.md` 重写为 191 局版本；`gap-audit.md` / `README.md` / `release-checklist.md` /
+  `final-report.md` 同步。
+- commit：`feat(v14): generalization runs across map, model and held-out seed`
