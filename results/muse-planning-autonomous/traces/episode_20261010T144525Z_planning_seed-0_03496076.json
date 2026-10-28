@@ -1,0 +1,2457 @@
+{
+  "episode_id": "03496076-a76e-4766-916b-a39da8d2993a",
+  "created_at": "2026-10-10T14:45:25.461335Z",
+  "world_version": "spaceship-escape-v2-zh",
+  "seed": 0,
+  "agent": "planning",
+  "prompt_version": "planning_v1",
+  "provider": "openai",
+  "trace_schema_version": 2,
+  "provenance": {
+    "trace_contract_version": "experiment_v2",
+    "world": "spaceship-escape",
+    "world_definition_id": "spaceship_escape_v1",
+    "world_definition_hash": "8132331a75b43c7834c934ce0921e2840324031eb388c4e285f3ee360f82aa4f",
+    "max_output_tokens": null,
+    "model_name": "muse-spark-1.3-contributor",
+    "temperature": 0.0,
+    "enable_thinking": false,
+    "request_timeout_seconds": 30,
+    "retry_count": 2,
+    "retry_backoff_seconds": [
+      1,
+      2
+    ],
+    "step_limit": 30,
+    "reasoning_effort": "none",
+    "response_format": "json_schema",
+    "provider_request_version": "decision_request_v1",
+    "base_prompt_version": "planning_executor_v1",
+    "base_prompt_hash": "265010e0d3e4b938aeed7a4bf72e2c1c44a8acd4957495790a208c76dd4d5bf4",
+    "runtime_feedback_enabled": false,
+    "public_action_hints_enabled": false,
+    "recent_history_enabled": false,
+    "recent_history_window": 0,
+    "structured_milestones_enabled": false,
+    "public_action_guard_enabled": false,
+    "stuck_recovery_enabled": false,
+    "concrete_action_candidates_enabled": false,
+    "public_phase_context_enabled": false,
+    "candidate_selection_enabled": false,
+    "memory_schema_version": null,
+    "memory_renderer_version": null,
+    "planning_enabled": true,
+    "planner_prompt_version": "planning_v1",
+    "executor_prompt_version": "planning_executor_v1",
+    "plan_monitor_version": "plan_monitor_v2",
+    "planning_policy": "event_triggered"
+  },
+  "outcome": "step_limit",
+  "executed_action_count": 30,
+  "invalid_output_count": 0,
+  "rejected_action_count": 5,
+  "latency_ms": 394296,
+  "steps": [
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": null
+      },
+      "correction": false,
+      "decision_reason": "在control_room停留用look确认control_terminal与corridor信息，直接推进当前子目标",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 37707,
+      "input_tokens": 1350,
+      "output_tokens": 4831,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "8e5e1251-2e27-4099-b1aa-b83275c3d8d1",
+      "plan_version": "planning_v1",
+      "current_subgoal": "在control_room停留并确认control_terminal与corridor出口信息",
+      "planner_called": true,
+      "replan_reason": "episode_start",
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": 25198,
+      "planner_input_tokens": 622,
+      "planner_output_tokens": 3354,
+      "executor_latency_ms": 12508,
+      "executor_input_tokens": 728,
+      "executor_output_tokens": 1477,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "子目标需确认终端信息，当前未读取过终端，直接读取以获取缺失公开信息",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 8605,
+      "input_tokens": 744,
+      "output_tokens": 1153,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "control_terminal",
+            "predicate": "result",
+            "value": "no_power"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "8e5e1251-2e27-4099-b1aa-b83275c3d8d1",
+      "plan_version": "planning_v1",
+      "current_subgoal": "在control_room停留并确认control_terminal与corridor出口信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 8605,
+      "executor_input_tokens": 744,
+      "executor_output_tokens": 1153,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "留在control_room检查control_terminal，确认终端状态以推进当前子目标",
+      "action": {
+        "tool": "inspect",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "read_terminal_required",
+        "summary": "终端请使用 read_terminal 工具读取。"
+      },
+      "latency_ms": 8574,
+      "input_tokens": 745,
+      "output_tokens": 1100,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "control_terminal",
+            "predicate": "result",
+            "value": "read_terminal_required"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "8e5e1251-2e27-4099-b1aa-b83275c3d8d1",
+      "plan_version": "planning_v1",
+      "current_subgoal": "在control_room停留并确认control_terminal与corridor出口信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 8573,
+      "executor_input_tokens": 745,
+      "executor_output_tokens": 1100,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需用read_terminal读取control_terminal以确认其信息，推进停留确认子目标",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 6804,
+      "input_tokens": 749,
+      "output_tokens": 855,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "8e5e1251-2e27-4099-b1aa-b83275c3d8d1",
+      "plan_version": "planning_v1",
+      "current_subgoal": "在control_room停留并确认control_terminal与corridor出口信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 6804,
+      "executor_input_tokens": 749,
+      "executor_output_tokens": 855,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "留在control_room检查control_terminal，确认终端状态以推进当前子目标",
+      "action": {
+        "tool": "inspect",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "read_terminal_required",
+        "summary": "终端请使用 read_terminal 工具读取。"
+      },
+      "latency_ms": 8755,
+      "input_tokens": 745,
+      "output_tokens": 1100,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "8e5e1251-2e27-4099-b1aa-b83275c3d8d1",
+      "plan_version": "planning_v1",
+      "current_subgoal": "在control_room停留并确认control_terminal与corridor出口信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 8755,
+      "executor_input_tokens": 745,
+      "executor_output_tokens": 1100,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需用read_terminal读取control_terminal以确认其信息，推进停留确认子目标",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 7697,
+      "input_tokens": 749,
+      "output_tokens": 855,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "8e5e1251-2e27-4099-b1aa-b83275c3d8d1",
+      "plan_version": "planning_v1",
+      "current_subgoal": "在control_room停留并确认control_terminal与corridor出口信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": "no_progress",
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 7697,
+      "executor_input_tokens": 749,
+      "executor_output_tokens": 855,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "子目标需进入corridor，直接移动推进并满足room_reached标准",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 33708,
+      "input_tokens": 1609,
+      "output_tokens": 4018,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": true,
+      "replan_reason": "no_progress",
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": 28367,
+      "planner_input_tokens": 890,
+      "planner_output_tokens": 3507,
+      "executor_latency_ms": 5341,
+      "executor_input_tokens": 719,
+      "executor_output_tokens": 511,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已在corridor满足到达标准，look获取走廊线索为下一步探索提供信息",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 16205,
+      "input_tokens": 717,
+      "output_tokens": 1913,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 16205,
+      "executor_input_tokens": 717,
+      "executor_output_tokens": 1913,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已到达corridor，需探索相邻storage_room寻找推进任务的新线索",
+      "action": {
+        "tool": "move",
+        "destination": "storage_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 8147,
+      "input_tokens": 718,
+      "output_tokens": 968,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 8147,
+      "executor_input_tokens": 718,
+      "executor_output_tokens": 968,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已在storage_room需探索相邻区域线索，检查可见密封箱获取推进任务信息",
+      "action": {
+        "tool": "inspect",
+        "target": "storage_crate"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "密封箱内有一把螺丝刀和一枚备用保险丝。"
+      },
+      "latency_ms": 19660,
+      "input_tokens": 715,
+      "output_tokens": 2272,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "密封箱内有一把螺丝刀和一枚备用保险丝。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "visible_objects"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 19660,
+      "executor_input_tokens": 715,
+      "executor_output_tokens": 2272,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "密封箱内有一把螺丝刀和一枚备用保险丝。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "当前在storage_room且corridor出口可用，直接移动可达成到达corridor的success_criteria",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 7202,
+      "input_tokens": 734,
+      "output_tokens": 665,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 7202,
+      "executor_input_tokens": 734,
+      "executor_output_tokens": 665,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已到达corridor满足成功标准，用look获取周围信息以推进探索新线索",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 18909,
+      "input_tokens": 717,
+      "output_tokens": 1619,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 18909,
+      "executor_input_tokens": 717,
+      "executor_output_tokens": 1619,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已到达corridor，需探索相邻storage_room寻找新线索推进任务",
+      "action": {
+        "tool": "move",
+        "destination": "storage_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 7096,
+      "input_tokens": 718,
+      "output_tokens": 691,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 7096,
+      "executor_input_tokens": 718,
+      "executor_output_tokens": 691,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "当前在storage_room，计划success要求到达corridor且出口可用，直接移动可满足标准并推进探索。",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 13373,
+      "input_tokens": 724,
+      "output_tokens": 1613,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 13373,
+      "executor_input_tokens": 724,
+      "executor_output_tokens": 1613,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已到达corridor满足到达条件，需探索相邻未探房间获取新线索，前往storage_room",
+      "action": {
+        "tool": "move",
+        "destination": "storage_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 12300,
+      "input_tokens": 717,
+      "output_tokens": 1464,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 12300,
+      "executor_input_tokens": 717,
+      "executor_output_tokens": 1464,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已进入storage_room属相邻探索，发现replacement_fuse可解决无电源约束，先拾取推进子目标",
+      "action": {
+        "tool": "pickup",
+        "item": "replacement_fuse"
+      },
+      "result": {
+        "status": "success",
+        "reason": "picked_up",
+        "summary": "你将物品放入了背包。"
+      },
+      "latency_ms": 25446,
+      "input_tokens": 724,
+      "output_tokens": 3230,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "picked_up",
+          "summary": "你将物品放入了背包。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "visible_objects",
+          "inventory"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 25446,
+      "executor_input_tokens": 724,
+      "executor_output_tokens": 3230,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "picked_up",
+          "summary": "你将物品放入了背包。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需到达corridor以满足成功标准，经可用出口直接移动推进子目标",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 7703,
+      "input_tokens": 727,
+      "output_tokens": 993,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 7703,
+      "executor_input_tokens": 727,
+      "executor_output_tokens": 993,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已到达corridor满足位置条件，需继续探索相邻未访问区域以获取新线索",
+      "action": {
+        "tool": "move",
+        "destination": "storage_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 14977,
+      "input_tokens": 722,
+      "output_tokens": 1854,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 14977,
+      "executor_input_tokens": 722,
+      "executor_output_tokens": 1854,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "当前位于storage_room且出口含corridor，移动可直接满足到达corridor的成功标准",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 5422,
+      "input_tokens": 724,
+      "output_tokens": 598,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 5422,
+      "executor_input_tokens": 724,
+      "executor_output_tokens": 598,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已在corridor满足到达标准，look获取相邻区域新线索供重规划",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 13334,
+      "input_tokens": 722,
+      "output_tokens": 1657,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 13334,
+      "executor_input_tokens": 722,
+      "executor_output_tokens": 1657,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已在corridor满足到达标准，需探索相邻maintenance_room寻找新线索推进任务",
+      "action": {
+        "tool": "move",
+        "destination": "maintenance_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 9211,
+      "input_tokens": 723,
+      "output_tokens": 1104,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 9211,
+      "executor_input_tokens": 723,
+      "executor_output_tokens": 1104,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "当前在maintenance_room且有corridor出口，直接移动可满足到达corridor的成功标准并推进探索子目标",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 6061,
+      "input_tokens": 721,
+      "output_tokens": 880,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 6061,
+      "executor_input_tokens": 721,
+      "executor_output_tokens": 880,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已到达corridor满足成功标准，look获取走廊线索以解答另一侧未知并支撑继续探索",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 13996,
+      "input_tokens": 722,
+      "output_tokens": 1831,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 13996,
+      "executor_input_tokens": 722,
+      "executor_output_tokens": 1831,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已在corridor满足到达标准，需探索相邻storage_room获取新线索推进子目标",
+      "action": {
+        "tool": "move",
+        "destination": "storage_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 11097,
+      "input_tokens": 723,
+      "output_tokens": 1411,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 11097,
+      "executor_input_tokens": 723,
+      "executor_output_tokens": 1411,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "子目标要求到达corridor，当前出口可直达，直接移动推进",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 4215,
+      "input_tokens": 724,
+      "output_tokens": 495,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 4215,
+      "executor_input_tokens": 724,
+      "executor_output_tokens": 495,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已在corridor满足到达标准，look获取走廊及相邻线索并保持位置供确认，避免立即离开导致回退。",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 15014,
+      "input_tokens": 722,
+      "output_tokens": 1919,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 15014,
+      "executor_input_tokens": 722,
+      "executor_output_tokens": 1919,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已在corridor满足到达标准，需探索相邻新区域，maintenance_room可能与保险丝恢复供电相关",
+      "action": {
+        "tool": "move",
+        "destination": "maintenance_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 12177,
+      "input_tokens": 723,
+      "output_tokens": 1122,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 12177,
+      "executor_input_tokens": 723,
+      "executor_output_tokens": 1122,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "当前在maintenance_room且可用出口含corridor，直接移动即可满足到达corridor的子目标",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 6844,
+      "input_tokens": 721,
+      "output_tokens": 857,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 6844,
+      "executor_input_tokens": 721,
+      "executor_output_tokens": 857,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已在corridor满足到达标准，可见物为空，需look补充走廊线索以推进探索子目标",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 21464,
+      "input_tokens": 722,
+      "output_tokens": 2142,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 21464,
+      "executor_input_tokens": 722,
+      "executor_output_tokens": 2142,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已在corridor满足到达标准，需探索相邻未知区域以回答另一侧情况，优先前往maintenance_room排查供电相关线索。",
+      "action": {
+        "tool": "move",
+        "destination": "maintenance_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 12593,
+      "input_tokens": 723,
+      "output_tokens": 1496,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "97ff9862-adb0-4a0e-9cb0-30713c8a0f93",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room并探索相邻区域以寻找推进任务的新线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 12593,
+      "executor_input_tokens": 723,
+      "executor_output_tokens": 1496,
+      "summary": null,
+      "invalid_output_reason": null
+    }
+  ]
+}

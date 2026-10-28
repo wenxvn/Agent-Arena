@@ -1,0 +1,2399 @@
+{
+  "episode_id": "52e4c2e0-650c-462a-9d75-06d9e3200eaa",
+  "created_at": "2026-10-10T15:05:03.424580Z",
+  "world_version": "spaceship-escape-v2-zh",
+  "seed": 3,
+  "agent": "planning",
+  "prompt_version": "planning_v1",
+  "provider": "openai",
+  "trace_schema_version": 2,
+  "provenance": {
+    "trace_contract_version": "experiment_v2",
+    "world": "spaceship-escape",
+    "world_definition_id": "spaceship_escape_v1",
+    "world_definition_hash": "8132331a75b43c7834c934ce0921e2840324031eb388c4e285f3ee360f82aa4f",
+    "max_output_tokens": null,
+    "model_name": "muse-spark-1.3-contributor",
+    "temperature": 0.0,
+    "enable_thinking": false,
+    "request_timeout_seconds": 30,
+    "retry_count": 2,
+    "retry_backoff_seconds": [
+      1,
+      2
+    ],
+    "step_limit": 30,
+    "reasoning_effort": "none",
+    "response_format": "json_schema",
+    "provider_request_version": "decision_request_v1",
+    "base_prompt_version": "planning_executor_v1",
+    "base_prompt_hash": "265010e0d3e4b938aeed7a4bf72e2c1c44a8acd4957495790a208c76dd4d5bf4",
+    "runtime_feedback_enabled": false,
+    "public_action_hints_enabled": false,
+    "recent_history_enabled": false,
+    "recent_history_window": 0,
+    "structured_milestones_enabled": false,
+    "public_action_guard_enabled": false,
+    "stuck_recovery_enabled": false,
+    "concrete_action_candidates_enabled": false,
+    "public_phase_context_enabled": false,
+    "candidate_selection_enabled": false,
+    "memory_schema_version": null,
+    "memory_renderer_version": null,
+    "planning_enabled": true,
+    "planner_prompt_version": "planning_v1",
+    "executor_prompt_version": "planning_executor_v1",
+    "plan_monitor_version": "plan_monitor_v2",
+    "planning_policy": "event_triggered"
+  },
+  "outcome": "step_limit",
+  "executed_action_count": 30,
+  "invalid_output_count": 0,
+  "rejected_action_count": 7,
+  "latency_ms": 439798,
+  "steps": [
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": null
+      },
+      "correction": false,
+      "decision_reason": "当前子目标需围绕control_terminal收集信息，尚缺ToolResult成功状态，选择检查终端获取公开信息。",
+      "action": {
+        "tool": "inspect",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "read_terminal_required",
+        "summary": "终端请使用 read_terminal 工具读取。"
+      },
+      "latency_ms": 45031,
+      "input_tokens": 1361,
+      "output_tokens": 5763,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "control_terminal",
+            "predicate": "result",
+            "value": "read_terminal_required"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "14849dd7-7dbe-463c-b115-b49622e7b811",
+      "plan_version": "planning_v1",
+      "current_subgoal": "在control_room内围绕control_terminal收集初始信息",
+      "planner_called": true,
+      "replan_reason": "episode_start",
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": 30859,
+      "planner_input_tokens": 622,
+      "planner_output_tokens": 3911,
+      "executor_latency_ms": 14172,
+      "executor_input_tokens": 739,
+      "executor_output_tokens": 1852,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需读取control_terminal获取初始信息，推进当前子目标并满足success标准",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 4309,
+      "input_tokens": 760,
+      "output_tokens": 453,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "control_terminal",
+            "predicate": "result",
+            "value": "no_power"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "14849dd7-7dbe-463c-b115-b49622e7b811",
+      "plan_version": "planning_v1",
+      "current_subgoal": "在control_room内围绕control_terminal收集初始信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 4309,
+      "executor_input_tokens": 760,
+      "executor_output_tokens": 453,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "终端无电源读取失败，改用inspect获取其公开信息以满足success标准，推进当前子目标",
+      "action": {
+        "tool": "inspect",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "read_terminal_required",
+        "summary": "终端请使用 read_terminal 工具读取。"
+      },
+      "latency_ms": 8130,
+      "input_tokens": 756,
+      "output_tokens": 946,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "14849dd7-7dbe-463c-b115-b49622e7b811",
+      "plan_version": "planning_v1",
+      "current_subgoal": "在control_room内围绕control_terminal收集初始信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 8130,
+      "executor_input_tokens": 756,
+      "executor_output_tokens": 946,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需读取control_terminal获取初始信息，推进当前子目标并满足success标准",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 3906,
+      "input_tokens": 760,
+      "output_tokens": 453,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "14849dd7-7dbe-463c-b115-b49622e7b811",
+      "plan_version": "planning_v1",
+      "current_subgoal": "在control_room内围绕control_terminal收集初始信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 3906,
+      "executor_input_tokens": 760,
+      "executor_output_tokens": 453,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "围绕control_terminal收集初始信息，inspect可获公开状态并避免重复无电源读取",
+      "action": {
+        "tool": "inspect",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "read_terminal_required",
+        "summary": "终端请使用 read_terminal 工具读取。"
+      },
+      "latency_ms": 8774,
+      "input_tokens": 756,
+      "output_tokens": 1119,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "14849dd7-7dbe-463c-b115-b49622e7b811",
+      "plan_version": "planning_v1",
+      "current_subgoal": "在control_room内围绕control_terminal收集初始信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": "no_progress",
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 8774,
+      "executor_input_tokens": 756,
+      "executor_output_tokens": 1119,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "为推进收集control_terminal信息子目标，需用read_terminal获取成功结果",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 35131,
+      "input_tokens": 1678,
+      "output_tokens": 4809,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "f2cfbe98-0dd4-45c1-a669-e847cd03ee78",
+      "plan_version": "planning_v1",
+      "current_subgoal": "在control_room内围绕control_terminal收集初始信息",
+      "planner_called": true,
+      "replan_reason": "no_progress",
+      "plan_signal": "no_progress",
+      "subgoal_completed": false,
+      "planner_latency_ms": 27856,
+      "planner_input_tokens": 905,
+      "planner_output_tokens": 4071,
+      "executor_latency_ms": 7275,
+      "executor_input_tokens": 773,
+      "executor_output_tokens": 738,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需经corridor离开control_room探索电源线索，直接推进当前子目标",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 29630,
+      "input_tokens": 1634,
+      "output_tokens": 3625,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": true,
+      "replan_reason": "no_progress",
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": 24395,
+      "planner_input_tokens": 914,
+      "planner_output_tokens": 3189,
+      "executor_latency_ms": 5234,
+      "executor_input_tokens": 720,
+      "executor_output_tokens": 436,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达corridor且走廊无可见线索，需前往maintenance_room寻找恢复电源线索",
+      "action": {
+        "tool": "move",
+        "destination": "maintenance_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 12796,
+      "input_tokens": 718,
+      "output_tokens": 1684,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 12796,
+      "executor_input_tokens": 718,
+      "executor_output_tokens": 1684,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达maintenance_room，检查diagnostic_terminal寻找恢复电源线索",
+      "action": {
+        "tool": "read_terminal",
+        "target": "diagnostic_terminal"
+      },
+      "result": {
+        "status": "success",
+        "reason": "diagnostic_read",
+        "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+      },
+      "latency_ms": 43902,
+      "input_tokens": 717,
+      "output_tokens": 1915,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "diagnostic_terminal",
+            "predicate": "result",
+            "value": "diagnostic_read"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 43902,
+      "executor_input_tokens": 717,
+      "executor_output_tokens": 1915,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "诊断提示需手动修复反应堆，经reactor_room可推进电源恢复并获取新公开信息",
+      "action": {
+        "tool": "move",
+        "destination": "reactor_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 11977,
+      "input_tokens": 726,
+      "output_tokens": 1428,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 11977,
+      "executor_input_tokens": 726,
+      "executor_output_tokens": 1428,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达reactor_room，发现reactor_panel，需检查获取恢复电源线索推进子目标",
+      "action": {
+        "tool": "inspect",
+        "target": "reactor_panel"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "反应堆面板由螺丝固定。"
+      },
+      "latency_ms": 8628,
+      "input_tokens": 713,
+      "output_tokens": 1093,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "反应堆面板由螺丝固定。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 8628,
+      "executor_input_tokens": 713,
+      "executor_output_tokens": 1093,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "反应堆面板由螺丝固定。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达reactor_room，需前往maintenance_room继续探索恢复电源线索",
+      "action": {
+        "tool": "move",
+        "destination": "maintenance_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 9663,
+      "input_tokens": 716,
+      "output_tokens": 877,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 9663,
+      "executor_input_tokens": 716,
+      "executor_output_tokens": 877,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达maintenance_room，读取diagnostic_terminal以寻找恢复电源线索",
+      "action": {
+        "tool": "read_terminal",
+        "target": "diagnostic_terminal"
+      },
+      "result": {
+        "status": "success",
+        "reason": "diagnostic_read",
+        "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+      },
+      "latency_ms": 13870,
+      "input_tokens": 717,
+      "output_tokens": 1664,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 13870,
+      "executor_input_tokens": 717,
+      "executor_output_tokens": 1664,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room，诊断提示需手动修复反应堆，前往reactor_room推进电源恢复",
+      "action": {
+        "tool": "move",
+        "destination": "reactor_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 12044,
+      "input_tokens": 726,
+      "output_tokens": 1548,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 12044,
+      "executor_input_tokens": 726,
+      "executor_output_tokens": 1548,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达reactor_room，发现reactor_panel与恢复电源相关，检查获取线索推进子目标",
+      "action": {
+        "tool": "inspect",
+        "target": "reactor_panel"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "反应堆面板由螺丝固定。"
+      },
+      "latency_ms": 7839,
+      "input_tokens": 713,
+      "output_tokens": 821,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "反应堆面板由螺丝固定。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 7839,
+      "executor_input_tokens": 713,
+      "executor_output_tokens": 821,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "反应堆面板由螺丝固定。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "面板由螺丝固定需工具，当前无工具，需经唯一出口去maintenance_room继续探索找电源线索",
+      "action": {
+        "tool": "move",
+        "destination": "maintenance_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 19171,
+      "input_tokens": 716,
+      "output_tokens": 2317,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 19171,
+      "executor_input_tokens": 716,
+      "executor_output_tokens": 2317,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达maintenance_room，检查diagnostic_terminal可获取恢复电源线索",
+      "action": {
+        "tool": "inspect",
+        "target": "diagnostic_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "read_terminal_required",
+        "summary": "终端请使用 read_terminal 工具读取。"
+      },
+      "latency_ms": 16757,
+      "input_tokens": 717,
+      "output_tokens": 2263,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "diagnostic_terminal",
+            "predicate": "result",
+            "value": "read_terminal_required"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 16757,
+      "executor_input_tokens": 717,
+      "executor_output_tokens": 2263,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "上次操作被拒提示需read_terminal读取，读取diagnostic_terminal可获取恢复电源线索并争取success状态",
+      "action": {
+        "tool": "read_terminal",
+        "target": "diagnostic_terminal"
+      },
+      "result": {
+        "status": "success",
+        "reason": "diagnostic_read",
+        "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+      },
+      "latency_ms": 10876,
+      "input_tokens": 723,
+      "output_tokens": 1359,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 10876,
+      "executor_input_tokens": 723,
+      "executor_output_tokens": 1359,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "诊断提示需手动修复反应堆，前往reactor_room推进电源恢复线索",
+      "action": {
+        "tool": "move",
+        "destination": "reactor_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 7768,
+      "input_tokens": 726,
+      "output_tokens": 1075,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 7768,
+      "executor_input_tokens": 726,
+      "executor_output_tokens": 1075,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达reactor_room，需检查reactor_panel获取恢复电源线索",
+      "action": {
+        "tool": "inspect",
+        "target": "reactor_panel"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "反应堆面板由螺丝固定。"
+      },
+      "latency_ms": 6887,
+      "input_tokens": 713,
+      "output_tokens": 837,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "反应堆面板由螺丝固定。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 6887,
+      "executor_input_tokens": 713,
+      "executor_output_tokens": 837,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "反应堆面板由螺丝固定。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达reactor_room，面板被螺丝固定需找工具，去maintenance_room继续探索恢复电源线索",
+      "action": {
+        "tool": "move",
+        "destination": "maintenance_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 19267,
+      "input_tokens": 716,
+      "output_tokens": 1079,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 19267,
+      "executor_input_tokens": 716,
+      "executor_output_tokens": 1079,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达maintenance_room，检查diagnostic_terminal以获取恢复电源线索",
+      "action": {
+        "tool": "read_terminal",
+        "target": "diagnostic_terminal"
+      },
+      "result": {
+        "status": "success",
+        "reason": "diagnostic_read",
+        "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+      },
+      "latency_ms": 15871,
+      "input_tokens": 717,
+      "output_tokens": 1285,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 15871,
+      "executor_input_tokens": 717,
+      "executor_output_tokens": 1285,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "诊断提示主电源未恢复需手动修复反应堆，前往reactor_room推进电源线索探索",
+      "action": {
+        "tool": "move",
+        "destination": "reactor_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 10639,
+      "input_tokens": 726,
+      "output_tokens": 1264,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 10639,
+      "executor_input_tokens": 726,
+      "executor_output_tokens": 1264,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达reactor_room，发现reactor_panel，检查以获取恢复电源线索推进探索子目标",
+      "action": {
+        "tool": "inspect",
+        "target": "reactor_panel"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "反应堆面板由螺丝固定。"
+      },
+      "latency_ms": 10987,
+      "input_tokens": 713,
+      "output_tokens": 1037,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "反应堆面板由螺丝固定。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 10987,
+      "executor_input_tokens": 713,
+      "executor_output_tokens": 1037,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "反应堆面板由螺丝固定。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达reactor_room，面板需工具开启，继续向maintenance_room探索寻找恢复电源线索",
+      "action": {
+        "tool": "move",
+        "destination": "maintenance_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 10783,
+      "input_tokens": 716,
+      "output_tokens": 1225,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 10783,
+      "executor_input_tokens": 716,
+      "executor_output_tokens": 1225,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达maintenance_room，需读取diagnostic_terminal获取恢复电源线索",
+      "action": {
+        "tool": "read_terminal",
+        "target": "diagnostic_terminal"
+      },
+      "result": {
+        "status": "success",
+        "reason": "diagnostic_read",
+        "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+      },
+      "latency_ms": 11374,
+      "input_tokens": 717,
+      "output_tokens": 1320,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 11374,
+      "executor_input_tokens": 717,
+      "executor_output_tokens": 1320,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "诊断提示需手动修复反应堆，前往reactor_room推进电源恢复线索",
+      "action": {
+        "tool": "move",
+        "destination": "reactor_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 12700,
+      "input_tokens": 726,
+      "output_tokens": 1220,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 12700,
+      "executor_input_tokens": 726,
+      "executor_output_tokens": 1220,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达reactor_room，需检查reactor_panel获取恢复电源线索",
+      "action": {
+        "tool": "inspect",
+        "target": "reactor_panel"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "反应堆面板由螺丝固定。"
+      },
+      "latency_ms": 6867,
+      "input_tokens": 713,
+      "output_tokens": 835,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "反应堆面板由螺丝固定。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 6867,
+      "executor_input_tokens": 713,
+      "executor_output_tokens": 835,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "反应堆面板由螺丝固定。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "反应堆面板被螺丝固定且背包为空，需前往maintenance_room探索寻找开面板工具以推进恢复电源",
+      "action": {
+        "tool": "move",
+        "destination": "maintenance_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 11829,
+      "input_tokens": 716,
+      "output_tokens": 1325,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 11829,
+      "executor_input_tokens": 716,
+      "executor_output_tokens": 1325,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已离开control_room到达maintenance_room，需读取diagnostic_terminal获取恢复电源线索",
+      "action": {
+        "tool": "read_terminal",
+        "target": "diagnostic_terminal"
+      },
+      "result": {
+        "status": "success",
+        "reason": "diagnostic_read",
+        "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+      },
+      "latency_ms": 12392,
+      "input_tokens": 717,
+      "output_tokens": 1668,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "6f797739-6522-4aac-8899-ac0f946f25af",
+      "plan_version": "planning_v1",
+      "current_subgoal": "经由corridor离开control_room探索以寻找恢复电源的线索",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 12392,
+      "executor_input_tokens": 717,
+      "executor_output_tokens": 1668,
+      "summary": null,
+      "invalid_output_reason": null
+    }
+  ]
+}

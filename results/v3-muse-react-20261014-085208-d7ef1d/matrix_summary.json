@@ -1,0 +1,22 @@
+{
+  "experiment_id": "v3-muse-react-20261014-085208-d7ef1d",
+  "status": "superseded_incomplete",
+  "planned_episode_attempts": 150,
+  "attempts_with_trace": 89,
+  "complete_successes": 6,
+  "censored_at_30_step_limit": 64,
+  "outcome_counts": {
+    "partial_success": 10,
+    "scenario_failure": 9,
+    "scenario_success": 6,
+    "step_limit": 64
+  },
+  "attempt_status_counts": {
+    "completed_superseded": 89,
+    "interrupted_superseded": 17,
+    "not_started_superseded": 44
+  },
+  "provider_errors": 0,
+  "note": "Not the requested steps-to-completion measurement. Superseded; traces retained separately.",
+  "updated_at": "2026-10-14T01:31:33.274068+00:00"
+}

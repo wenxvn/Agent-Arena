@@ -1,0 +1,2379 @@
+{
+  "episode_id": "f1436bbb-f589-4c76-97f9-60398c2d7a62",
+  "created_at": "2026-10-10T15:06:46.214106Z",
+  "world_version": "spaceship-escape-v2-zh",
+  "seed": 1,
+  "agent": "planning",
+  "prompt_version": "planning_v1",
+  "provider": "openai",
+  "trace_schema_version": 2,
+  "provenance": {
+    "trace_contract_version": "experiment_v2",
+    "world": "spaceship-escape",
+    "world_definition_id": "spaceship_escape_v1",
+    "world_definition_hash": "8132331a75b43c7834c934ce0921e2840324031eb388c4e285f3ee360f82aa4f",
+    "max_output_tokens": null,
+    "model_name": "muse-spark-1.3-contributor",
+    "temperature": 0.0,
+    "enable_thinking": false,
+    "request_timeout_seconds": 30,
+    "retry_count": 2,
+    "retry_backoff_seconds": [
+      1,
+      2
+    ],
+    "step_limit": 30,
+    "reasoning_effort": "none",
+    "response_format": "json_schema",
+    "provider_request_version": "decision_request_v1",
+    "base_prompt_version": "planning_executor_v1",
+    "base_prompt_hash": "265010e0d3e4b938aeed7a4bf72e2c1c44a8acd4957495790a208c76dd4d5bf4",
+    "runtime_feedback_enabled": false,
+    "public_action_hints_enabled": false,
+    "recent_history_enabled": false,
+    "recent_history_window": 0,
+    "structured_milestones_enabled": false,
+    "public_action_guard_enabled": false,
+    "stuck_recovery_enabled": false,
+    "concrete_action_candidates_enabled": false,
+    "public_phase_context_enabled": false,
+    "candidate_selection_enabled": false,
+    "memory_schema_version": null,
+    "memory_renderer_version": null,
+    "planning_enabled": true,
+    "planner_prompt_version": "planning_v1",
+    "executor_prompt_version": "planning_executor_v1",
+    "plan_monitor_version": "plan_monitor_v2",
+    "planning_policy": "event_triggered"
+  },
+  "outcome": "step_limit",
+  "executed_action_count": 30,
+  "invalid_output_count": 0,
+  "rejected_action_count": 11,
+  "latency_ms": 424472,
+  "steps": [
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": null
+      },
+      "correction": false,
+      "decision_reason": "control_terminal可见，需读取获取信息以推进当前子目标并满足success标准",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 34551,
+      "input_tokens": 1289,
+      "output_tokens": 3954,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "control_terminal",
+            "predicate": "result",
+            "value": "no_power"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "7f01bb61-ea19-4604-94f0-39c3655c21ff",
+      "plan_version": "planning_v1",
+      "current_subgoal": "调查 control_room 内 control_terminal 获取信息",
+      "planner_called": true,
+      "replan_reason": "episode_start",
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": 28525,
+      "planner_input_tokens": 622,
+      "planner_output_tokens": 3401,
+      "executor_latency_ms": 6026,
+      "executor_input_tokens": 667,
+      "executor_output_tokens": 553,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "终端无电源重试难成功，先look补充房间公开信息并避免重复失败",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 28127,
+      "input_tokens": 684,
+      "output_tokens": 3369,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "7f01bb61-ea19-4604-94f0-39c3655c21ff",
+      "plan_version": "planning_v1",
+      "current_subgoal": "调查 control_room 内 control_terminal 获取信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": "subgoal_completed",
+      "subgoal_completed": true,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 28127,
+      "executor_input_tokens": 684,
+      "executor_output_tokens": 3369,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "当前子目标需读取control_terminal获取任务信息，直接执行读取动作。",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 63940,
+      "input_tokens": 1528,
+      "output_tokens": 3461,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": true,
+      "replan_reason": "success_criteria_met",
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": 59016,
+      "planner_input_tokens": 830,
+      "planner_output_tokens": 2983,
+      "executor_latency_ms": 4924,
+      "executor_input_tokens": 698,
+      "executor_output_tokens": 478,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "控制终端无主电源无法读取，避免重复操作，前往唯一出口corridor探索电源与新信息以推进子目标。",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 20676,
+      "input_tokens": 699,
+      "output_tokens": 2527,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 20676,
+      "executor_input_tokens": 699,
+      "executor_output_tokens": 2527,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需读取control_terminal但当前在corridor，应移动至control_room以推进子目标",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 8468,
+      "input_tokens": 697,
+      "output_tokens": 961,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 8468,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 961,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "当前子目标需读取control_terminal，需执行read_terminal获取信息满足success_criteria",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 5234,
+      "input_tokens": 697,
+      "output_tokens": 617,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 5234,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 617,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "终端无主电源无法读取，需前往corridor寻找电源或线索以推进子目标",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 11861,
+      "input_tokens": 699,
+      "output_tokens": 1417,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 11861,
+      "executor_input_tokens": 699,
+      "executor_output_tokens": 1417,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "身处走廊无目标终端，需移动至control_room以读取control_terminal推进子目标",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 6698,
+      "input_tokens": 697,
+      "output_tokens": 847,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 6698,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 847,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需读取control_terminal获取任务信息以推进current_subgoal并满足info_obtained标准",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 5934,
+      "input_tokens": 697,
+      "output_tokens": 650,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 5934,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 650,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "控制终端无电源无法读取，需前往corridor寻找电源或新线索",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 7230,
+      "input_tokens": 699,
+      "output_tokens": 762,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 7230,
+      "executor_input_tokens": 699,
+      "executor_output_tokens": 762,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "走廊无control_terminal，需返回control_room以读取终端推进当前子目标",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 7139,
+      "input_tokens": 697,
+      "output_tokens": 913,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 7139,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 913,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需读取control_terminal获取任务信息以推进current_subgoal并满足info_obtained标准",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 6337,
+      "input_tokens": 697,
+      "output_tokens": 650,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 6337,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 650,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "控制终端无主电源无法读取，需前往corridor寻找电源或线索以推进子目标",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 47492,
+      "input_tokens": 699,
+      "output_tokens": 946,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 47492,
+      "executor_input_tokens": 699,
+      "executor_output_tokens": 946,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "身处corridor无control_terminal，需返回control_room读取终端推进子目标",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 4822,
+      "input_tokens": 697,
+      "output_tokens": 606,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 4822,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 606,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "当前子目标需读取control_terminal，需执行read_terminal获取信息满足success_criteria",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 7457,
+      "input_tokens": 697,
+      "output_tokens": 617,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 7457,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 617,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "终端无主电源无法读取，重复读取无进展，转往corridor寻找电源与新信息以推进子目标。",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 14579,
+      "input_tokens": 699,
+      "output_tokens": 1722,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 14579,
+      "executor_input_tokens": 699,
+      "executor_output_tokens": 1722,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "身处走廊无终端，需进入control_room读取control_terminal推进子目标",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 6332,
+      "input_tokens": 697,
+      "output_tokens": 826,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 6332,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 826,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "当前子目标需读取control_terminal获取任务信息，直接执行读取动作。",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 6722,
+      "input_tokens": 697,
+      "output_tokens": 641,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 6722,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 641,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "控制终端无主电源无法读取，需前往corridor寻找电源或任务线索",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 8463,
+      "input_tokens": 699,
+      "output_tokens": 944,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 8463,
+      "executor_input_tokens": 699,
+      "executor_output_tokens": 944,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "身处corridor无终端，需返回control_room找control_terminal推进子目标",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 6592,
+      "input_tokens": 697,
+      "output_tokens": 860,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 6592,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 860,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "当前子目标是读取control_terminal获取任务信息，需执行read_terminal推进",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 6563,
+      "input_tokens": 697,
+      "output_tokens": 757,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 6563,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 757,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "终端无主电源无法读取，需前往corridor寻找电源或线索以获取缺失信息",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 11953,
+      "input_tokens": 699,
+      "output_tokens": 1472,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 11953,
+      "executor_input_tokens": 699,
+      "executor_output_tokens": 1472,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "身处走廊无终端，需进入control_room读取control_terminal推进子目标",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 5907,
+      "input_tokens": 697,
+      "output_tokens": 826,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 5907,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 826,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "当前子目标是读取control_terminal，需直接读取以获取任务信息满足success_criteria",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 6710,
+      "input_tokens": 697,
+      "output_tokens": 651,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 6710,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 651,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "终端无主电源无法读取，需经corridor寻找电源及任务相关公开信息以推进子目标",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 46418,
+      "input_tokens": 699,
+      "output_tokens": 1579,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 46418,
+      "executor_input_tokens": 699,
+      "executor_output_tokens": 1579,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "当前在corridor无control_terminal，需返回control_room读取终端推进子目标",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 7914,
+      "input_tokens": 697,
+      "output_tokens": 945,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 7914,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 945,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需读取control_terminal获取任务信息，直接推进当前子目标",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 6454,
+      "input_tokens": 697,
+      "output_tokens": 900,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 6454,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 900,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "控制终端无主电源无法读取，需前往corridor寻找电源及任务信息以推进子目标",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 11684,
+      "input_tokens": 699,
+      "output_tokens": 800,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 11684,
+      "executor_input_tokens": 699,
+      "executor_output_tokens": 800,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "走廊无control_terminal，需返回control_room以读取终端推进当前子目标",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 6738,
+      "input_tokens": 697,
+      "output_tokens": 939,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 6737,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 939,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需读取control_terminal获取任务信息以推进current_subgoal并满足info_obtained标准",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 5477,
+      "input_tokens": 697,
+      "output_tokens": 650,
+      "runtime_feedback": null,
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": "2eb4cfd1-3678-4987-b1d5-2eb159b94071",
+      "plan_version": "planning_v1",
+      "current_subgoal": "读取 control_terminal 获取任务信息",
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": 5477,
+      "executor_input_tokens": 697,
+      "executor_output_tokens": 650,
+      "summary": null,
+      "invalid_output_reason": null
+    }
+  ]
+}

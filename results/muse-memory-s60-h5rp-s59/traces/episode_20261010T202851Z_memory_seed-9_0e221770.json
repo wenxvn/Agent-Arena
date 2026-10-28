@@ -1,0 +1,4768 @@
+{
+  "episode_id": "0e221770-a860-4c0d-9946-c1d94f62a517",
+  "created_at": "2026-10-10T20:28:51.276712Z",
+  "world_version": "spaceship-escape-v2-zh",
+  "seed": 9,
+  "agent": "memory",
+  "prompt_version": "memory_v2",
+  "provider": "openai",
+  "trace_schema_version": 2,
+  "provenance": {
+    "trace_contract_version": "experiment_v2",
+    "world": "spaceship-escape",
+    "world_definition_id": "spaceship_escape_v1",
+    "world_definition_hash": "8132331a75b43c7834c934ce0921e2840324031eb388c4e285f3ee360f82aa4f",
+    "max_output_tokens": null,
+    "model_name": "muse-spark-1.3-contributor",
+    "temperature": 0.0,
+    "enable_thinking": false,
+    "request_timeout_seconds": 30,
+    "retry_count": 2,
+    "retry_backoff_seconds": [
+      1,
+      2
+    ],
+    "step_limit": 60,
+    "reasoning_effort": "none",
+    "response_format": "json_schema",
+    "provider_request_version": "decision_request_v1",
+    "base_prompt_version": "react_v12_autonomous",
+    "base_prompt_hash": "5dc2038b42efc04b58c75c68a399a135928fc1de5017bcb1f4c0979992fc5dbb",
+    "runtime_feedback_enabled": true,
+    "public_action_hints_enabled": false,
+    "recent_history_enabled": true,
+    "recent_history_window": 5,
+    "structured_milestones_enabled": false,
+    "public_action_guard_enabled": false,
+    "stuck_recovery_enabled": true,
+    "concrete_action_candidates_enabled": false,
+    "public_phase_context_enabled": true,
+    "candidate_selection_enabled": false,
+    "memory_schema_version": "memory_v1",
+    "memory_renderer_version": "memory_v1",
+    "planning_enabled": false,
+    "planner_prompt_version": null,
+    "executor_prompt_version": null,
+    "plan_monitor_version": null,
+    "planning_policy": null
+  },
+  "outcome": "success",
+  "executed_action_count": 57,
+  "invalid_output_count": 0,
+  "rejected_action_count": 1,
+  "latency_ms": 530064,
+  "steps": [
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": null
+      },
+      "correction": false,
+      "decision_reason": "控制终端可能有工具位置线索，先读取获取新信息再去走廊寻找。",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "控制终端没有主电源。"
+      },
+      "latency_ms": 8173,
+      "input_tokens": 664,
+      "output_tokens": 822,
+      "runtime_feedback": "当前公开阶段：收集修理工具。已完成：无。未完成：获得 replacement_fuse、screwdriver。",
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "control_terminal",
+            "predicate": "result",
+            "value": "no_power"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "控制终端没有主电源。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "控制终端无电源需先找工具，前往未探索走廊寻找保险丝和螺丝刀。",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 9546,
+      "input_tokens": 823,
+      "output_tokens": 545,
+      "runtime_feedback": "当前公开阶段：收集修理工具。已完成：无。未完成：获得 replacement_fuse、screwdriver。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "走廊无物品，去未探索storage_room寻找fuse和screwdriver",
+      "action": {
+        "tool": "move",
+        "destination": "storage_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 4303,
+      "input_tokens": 942,
+      "output_tokens": 262,
+      "runtime_feedback": "当前公开阶段：收集修理工具。已完成：无。未完成：获得 replacement_fuse、screwdriver。",
+      "next_observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "Placeholder",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 2915,
+      "input_tokens": 1052,
+      "output_tokens": 260,
+      "runtime_feedback": "当前公开阶段：收集修理工具。已完成：无。未完成：获得 replacement_fuse、screwdriver。",
+      "next_observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "1234567890",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 3721,
+      "input_tokens": 1149,
+      "output_tokens": 390,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：收集修理工具。已完成：无。未完成：获得 replacement_fuse、screwdriver。",
+      "next_observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "储藏室有未检查的密封箱，可能藏有修理工具，需检查获取新信息。",
+      "action": {
+        "tool": "inspect",
+        "target": "storage_crate"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "密封箱内有一把螺丝刀和一枚备用保险丝。"
+      },
+      "latency_ms": 4129,
+      "input_tokens": 1267,
+      "output_tokens": 390,
+      "runtime_feedback": "当前公开阶段：收集修理工具。已完成：无。未完成：获得 replacement_fuse、screwdriver。",
+      "next_observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "密封箱内有一把螺丝刀和一枚备用保险丝。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "visible_objects"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "密封箱内有一把螺丝刀和一枚备用保险丝。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "发现保险丝和螺丝刀，先拾取保险丝推进工具收集阶段",
+      "action": {
+        "tool": "pickup",
+        "item": "replacement_fuse"
+      },
+      "result": {
+        "status": "success",
+        "reason": "picked_up",
+        "summary": "你将物品放入了背包。"
+      },
+      "latency_ms": 3398,
+      "input_tokens": 1296,
+      "output_tokens": 335,
+      "runtime_feedback": "当前公开阶段：收集修理工具。已完成：无。未完成：获得 screwdriver。",
+      "next_observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "picked_up",
+          "summary": "你将物品放入了背包。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "visible_objects",
+          "inventory"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [
+          "storage_crate",
+          "screwdriver"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "picked_up",
+          "summary": "你将物品放入了背包。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需取得螺丝刀以完成收集修理工具阶段，当前可见可拾取。",
+      "action": {
+        "tool": "pickup",
+        "item": "screwdriver"
+      },
+      "result": {
+        "status": "success",
+        "reason": "picked_up",
+        "summary": "你将物品放入了背包。"
+      },
+      "latency_ms": 3191,
+      "input_tokens": 1319,
+      "output_tokens": 254,
+      "runtime_feedback": "当前公开阶段：恢复主电源。已完成：修理工具。未完成：打开反应堆面板。",
+      "next_observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "picked_up",
+          "summary": "你将物品放入了背包。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "visible_objects",
+          "inventory"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "storage_room",
+        "description": "补给储藏室的一侧放着一个密封箱。",
+        "visible_objects": [],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "picked_up",
+          "summary": "你将物品放入了背包。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已拿到螺丝刀和保险丝，储藏室无可见物，需返回走廊寻找反应堆面板。",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 3394,
+      "input_tokens": 1336,
+      "output_tokens": 363,
+      "runtime_feedback": "当前公开阶段：恢复主电源。已完成：修理工具。未完成：打开反应堆面板。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "未探索maintenance_room，可能有反应堆面板，去查看以恢复主电源。",
+      "action": {
+        "tool": "move",
+        "destination": "maintenance_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 2590,
+      "input_tokens": 1351,
+      "output_tokens": 259,
+      "runtime_feedback": "当前公开阶段：恢复主电源。已完成：修理工具。未完成：打开反应堆面板。",
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "在维修室需先读取诊断终端，了解故障系统和恢复主电源线索，再去反应堆舱。",
+      "action": {
+        "tool": "read_terminal",
+        "target": "diagnostic_terminal"
+      },
+      "result": {
+        "status": "success",
+        "reason": "diagnostic_read",
+        "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+      },
+      "latency_ms": 8373,
+      "input_tokens": 1378,
+      "output_tokens": 929,
+      "runtime_feedback": "当前公开阶段：恢复主电源。已完成：修理工具。未完成：打开反应堆面板。",
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "diagnostic_terminal",
+            "predicate": "result",
+            "value": "diagnostic_read"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源未恢复，请手动修复反应堆。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "诊断提示需手动修复反应堆，前往反应堆室推进主电源恢复",
+      "action": {
+        "tool": "move",
+        "destination": "reactor_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 3795,
+      "input_tokens": 1410,
+      "output_tokens": 384,
+      "runtime_feedback": "当前公开阶段：恢复主电源。已完成：修理工具。未完成：打开反应堆面板。",
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需先检查反应堆面板获取状态与修复线索，为恢复主电源做准备。",
+      "action": {
+        "tool": "inspect",
+        "target": "reactor_panel"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "反应堆面板由螺丝固定。"
+      },
+      "latency_ms": 10836,
+      "input_tokens": 1406,
+      "output_tokens": 934,
+      "runtime_feedback": "当前公开阶段：恢复主电源。已完成：修理工具。未完成：打开反应堆面板。",
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "反应堆面板由螺丝固定。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "reactor_panel"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "反应堆面板由螺丝固定。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "面板由螺丝固定，需用螺丝刀打开以推进恢复主电源",
+      "action": {
+        "tool": "use",
+        "item": "screwdriver",
+        "target": "reactor_panel"
+      },
+      "result": {
+        "status": "success",
+        "reason": "panel_opened",
+        "summary": "反应堆面板已打开。"
+      },
+      "latency_ms": 4087,
+      "input_tokens": 1411,
+      "output_tokens": 413,
+      "runtime_feedback": "当前公开阶段：恢复主电源。已完成：修理工具和反应堆面板。未完成：恢复主电源。",
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "damaged_fuse"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "panel_opened",
+          "summary": "反应堆面板已打开。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "reactor_panel",
+            "predicate": "result",
+            "value": "panel_opened"
+          }
+        ],
+        "state_changes": [
+          "visible_objects"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "damaged_fuse"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "panel_opened",
+          "summary": "反应堆面板已打开。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "面板已打开并露出损坏保险丝，先检查确认故障再更换以恢复主电源。",
+      "action": {
+        "tool": "inspect",
+        "target": "damaged_fuse"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "损坏的保险丝需要更换。"
+      },
+      "latency_ms": 5325,
+      "input_tokens": 1431,
+      "output_tokens": 520,
+      "runtime_feedback": "当前公开阶段：恢复主电源。已完成：修理工具和反应堆面板。未完成：恢复主电源。",
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "damaged_fuse"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "损坏的保险丝需要更换。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [
+          "damaged_fuse"
+        ],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "损坏的保险丝需要更换。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "损坏保险丝需更换且持有备用保险丝，用备用件替换以恢复主电源。",
+      "action": {
+        "tool": "use",
+        "item": "replacement_fuse",
+        "target": "damaged_fuse"
+      },
+      "result": {
+        "status": "success",
+        "reason": "power_restored",
+        "summary": "主电源已恢复。"
+      },
+      "latency_ms": 3802,
+      "input_tokens": 1441,
+      "output_tokens": 458,
+      "runtime_feedback": "当前公开阶段：读取逃生授权码。已完成：修理工具和主电源。未完成：读取授权码。",
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "power_restored",
+          "summary": "主电源已恢复。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "damaged_fuse",
+            "predicate": "result",
+            "value": "power_restored"
+          }
+        ],
+        "state_changes": [
+          "visible_objects"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "power_restored",
+          "summary": "主电源已恢复。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "1234567890",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 4693,
+      "input_tokens": 1427,
+      "output_tokens": 452,
+      "runtime_feedback": "当前公开阶段：读取逃生授权码。已完成：修理工具和主电源。未完成：读取授权码。",
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [],
+        "available_exits": [
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "主电源已恢复，需返回控制室读取逃生授权码，先从反应堆舱移动到维修间。",
+      "action": {
+        "tool": "move",
+        "destination": "maintenance_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 3362,
+      "input_tokens": 1406,
+      "output_tokens": 372,
+      "runtime_feedback": "当前公开阶段：读取逃生授权码。已完成：修理工具和主电源。未完成：读取授权码。",
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "主电源已恢复，当前房间有诊断终端，读取可确认修复状态并获取逃生授权码相关信息，推进读取授权码阶段。",
+      "action": {
+        "tool": "read_terminal",
+        "target": "diagnostic_terminal"
+      },
+      "result": {
+        "status": "success",
+        "reason": "diagnostic_read",
+        "summary": "诊断结果：主电源运行稳定。"
+      },
+      "latency_ms": 17502,
+      "input_tokens": 1406,
+      "output_tokens": 1737,
+      "runtime_feedback": "当前公开阶段：读取逃生授权码。已完成：修理工具和主电源。未完成：读取授权码。",
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源运行稳定。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源运行稳定。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "主电源已恢复诊断稳定，需经走廊返回控制室读取逃生授权码。",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 4450,
+      "input_tokens": 1417,
+      "output_tokens": 465,
+      "runtime_feedback": "当前公开阶段：读取逃生授权码。已完成：修理工具和主电源。未完成：读取授权码。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "主电源已恢复，前往控制室读取逃生授权码",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 4375,
+      "input_tokens": 1415,
+      "output_tokens": 352,
+      "runtime_feedback": "当前公开阶段：读取逃生授权码。已完成：修理工具和主电源。未完成：读取授权码。",
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "主电源已恢复，之前无电源失败条件已消除，应重试读取控制终端获取授权码",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "success",
+        "reason": "code_read",
+        "summary": "逃生授权码：ALPHA-731"
+      },
+      "latency_ms": 4172,
+      "input_tokens": 1407,
+      "output_tokens": 381,
+      "runtime_feedback": "当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "逃生授权码：ALPHA-731"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "control_terminal",
+            "predicate": "result",
+            "value": "code_read"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "逃生授权码：ALPHA-731"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已获得授权码，控制室无逃生舱，需返回走廊寻找逃生舱位置。",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 18835,
+      "input_tokens": 1442,
+      "output_tokens": 1658,
+      "runtime_feedback": "当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已恢复电源并获得授权码，需启动逃生舱，look寻找逃生舱位置或新出口。",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 6201,
+      "input_tokens": 1449,
+      "output_tokens": 570,
+      "runtime_feedback": "当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "走廊无目标无逃生舱出口，需先look确认状态再前往储藏室等处寻找逃生舱",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 10676,
+      "input_tokens": 1441,
+      "output_tokens": 1117,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已获授权码且电源恢复，需回控制室用终端启动逃生舱。",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 11370,
+      "input_tokens": 1463,
+      "output_tokens": 823,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "主电源和授权码已完成，需经走廊寻找逃生舱继续推进。",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 19870,
+      "input_tokens": 1463,
+      "output_tokens": 2381,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "Need to check current room state and available exits before proceeding.",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 55920,
+      "input_tokens": 1458,
+      "output_tokens": 2785,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "123",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 3967,
+      "input_tokens": 1451,
+      "output_tokens": 407,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "主电源已恢复，控制终端应可用，前往控制室读取终端推进逃生舱启动。",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 3780,
+      "input_tokens": 1452,
+      "output_tokens": 386,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "主电源已恢复，之前失败条件已改变，重试读取控制终端以启动逃生舱。",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "success",
+        "reason": "code_read",
+        "summary": "逃生授权码：ALPHA-731"
+      },
+      "latency_ms": 12050,
+      "input_tokens": 1455,
+      "output_tokens": 1460,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "逃生授权码：ALPHA-731"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "逃生授权码：ALPHA-731"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已获得授权码，需返回走廊寻找逃生舱推进任务",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 5194,
+      "input_tokens": 1464,
+      "output_tokens": 518,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "走廊无可见物且电力授权已完成，需经维修室探索逃生舱路径",
+      "action": {
+        "tool": "move",
+        "destination": "maintenance_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 14410,
+      "input_tokens": 1463,
+      "output_tokens": 1472,
+      "runtime_feedback": "当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "刚进入维修室，需先查看当前房间完整信息，确认逃生舱线索再决定去向。",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 12804,
+      "input_tokens": 1438,
+      "output_tokens": 1425,
+      "runtime_feedback": "当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "电源与授权码已完成，需读取诊断终端确认逃生舱状态以推进启动阶段",
+      "action": {
+        "tool": "read_terminal",
+        "target": "diagnostic_terminal"
+      },
+      "result": {
+        "status": "success",
+        "reason": "diagnostic_read",
+        "summary": "诊断结果：主电源运行稳定。"
+      },
+      "latency_ms": 15006,
+      "input_tokens": 1437,
+      "output_tokens": 1699,
+      "runtime_feedback": "当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源运行稳定。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "诊断结果：主电源运行稳定。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "Need to find escape pod location; look for new exits or objects after power restored.",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 8041,
+      "input_tokens": 1445,
+      "output_tokens": 913,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 7528,
+      "input_tokens": 1464,
+      "output_tokens": 724,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "主电源已恢复，需返回control_room重试终端，用授权码启动逃生舱，先经corridor中转。",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 5122,
+      "input_tokens": 1456,
+      "output_tokens": 513,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "主电源已恢复，前往控制室用授权码ALPHA-731启动逃生舱",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 4712,
+      "input_tokens": 1456,
+      "output_tokens": 487,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "Need fresh detail; will inspect room before terminal use.",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 5981,
+      "input_tokens": 1461,
+      "output_tokens": 707,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "PLACEHOLDER",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 5862,
+      "input_tokens": 1452,
+      "output_tokens": 707,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "主电源已恢复，之前读取失败条件已改变，需重试控制终端推进逃生舱启动",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "success",
+        "reason": "code_read",
+        "summary": "逃生授权码：ALPHA-731"
+      },
+      "latency_ms": 5916,
+      "input_tokens": 1450,
+      "output_tokens": 535,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "逃生授权码：ALPHA-731"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "逃生授权码：ALPHA-731"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已获得授权码且电源恢复，控制室无新操作，需返回走廊寻找逃生舱。",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 10829,
+      "input_tokens": 1464,
+      "output_tokens": 1267,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "身处走廊且已获授权码和电源，需先查看走廊寻找逃生舱线索或新出口，再决定去向。",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 21153,
+      "input_tokens": 1463,
+      "output_tokens": 2561,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "走廊无可见目标，需换房间推进逃生舱阶段",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 23373,
+      "input_tokens": 1460,
+      "output_tokens": 2512,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "走廊无可见对象且look已重复，需换房间推进逃生舱阶段，去维修室找新出口或线索。",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 18278,
+      "input_tokens": 1461,
+      "output_tokens": 2097,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "走廊无可交互目标，需返回主控制中心用授权码ALPHA-731启动逃生舱。",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 8253,
+      "input_tokens": 1461,
+      "output_tokens": 894,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已获授权码和电源，控制室无逃生舱，需经走廊寻找新出口推进",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 11695,
+      "input_tokens": 1455,
+      "output_tokens": 1355,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "主电源已恢复，控制终端之前因缺电失败，现需返回控制室读取终端以启动逃生舱。",
+      "action": {
+        "tool": "move",
+        "destination": "control_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 8216,
+      "input_tokens": 1451,
+      "output_tokens": 853,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "主电源已恢复，之前无电源失败的读取条件已改变，需重新读取控制终端推进逃生舱启动。",
+      "action": {
+        "tool": "read_terminal",
+        "target": "control_terminal"
+      },
+      "result": {
+        "status": "success",
+        "reason": "code_read",
+        "summary": "逃生授权码：ALPHA-731"
+      },
+      "latency_ms": 9093,
+      "input_tokens": 1455,
+      "output_tokens": 1058,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "逃生授权码：ALPHA-731"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "control_room",
+        "description": "主控制中心一片昏暗，只有紧急指示灯仍在闪烁。",
+        "visible_objects": [
+          "control_terminal"
+        ],
+        "available_exits": [
+          "corridor"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "逃生授权码：ALPHA-731"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已获得授权码ALPHA-731，控制室无逃生舱，需返回走廊寻找逃生舱推进任务。",
+      "action": {
+        "tool": "move",
+        "destination": "corridor"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 7132,
+      "input_tokens": 1468,
+      "output_tokens": 812,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "corridor",
+        "description": "中央走廊连接着飞船的各个关键舱室。",
+        "visible_objects": [],
+        "available_exits": [
+          "control_room",
+          "storage_room",
+          "maintenance_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "电源和授权码已完成，需找逃生舱，去维修间探索新线索。",
+      "action": {
+        "tool": "move",
+        "destination": "maintenance_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 11091,
+      "input_tokens": 1470,
+      "output_tokens": 1316,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "maintenance_room",
+        "description": "维修控制台正在监测飞船故障中的系统。",
+        "visible_objects": [
+          "diagnostic_terminal"
+        ],
+        "available_exits": [
+          "corridor",
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "电源与授权码已齐，需找逃生舱，前往相邻反应堆舱探索新出口。",
+      "action": {
+        "tool": "move",
+        "destination": "reactor_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 24231,
+      "input_tokens": 1468,
+      "output_tokens": 2810,
+      "runtime_feedback": "当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [],
+        "available_exits": [
+          "maintenance_room",
+          "escape_pod"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [],
+        "available_exits": [
+          "maintenance_room",
+          "escape_pod"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前房间。"
+      },
+      "latency_ms": 5599,
+      "input_tokens": 1436,
+      "output_tokens": 545,
+      "runtime_feedback": "当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [],
+        "available_exits": [
+          "maintenance_room",
+          "escape_pod"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "reactor_room",
+        "description": "反应堆舱内有主电源面板。",
+        "visible_objects": [],
+        "available_exits": [
+          "maintenance_room",
+          "escape_pod"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "主电源已恢复并获得授权码，需前往逃生舱启动逃生程序。",
+      "action": {
+        "tool": "move",
+        "destination": "escape_pod"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定房间。"
+      },
+      "latency_ms": 3511,
+      "input_tokens": 1428,
+      "output_tokens": 420,
+      "runtime_feedback": "当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "escape_pod",
+        "description": "逃生舱已准备就绪，等待有效授权后发射。",
+        "visible_objects": [
+          "escape_pod"
+        ],
+        "available_exits": [
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "escape_pod",
+        "description": "逃生舱已准备就绪，等待有效授权后发射。",
+        "visible_objects": [
+          "escape_pod"
+        ],
+        "available_exits": [
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定房间。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需获取逃生舱启动方式，利用授权码ALPHA-731前先检查舱体获取新信息。",
+      "action": {
+        "tool": "inspect",
+        "target": "escape_pod"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "逃生舱需要授权码才能启动。"
+      },
+      "latency_ms": 4672,
+      "input_tokens": 1444,
+      "output_tokens": 548,
+      "runtime_feedback": "当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "escape_pod",
+        "description": "逃生舱已准备就绪，等待有效授权后发射。",
+        "visible_objects": [
+          "escape_pod"
+        ],
+        "available_exits": [
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "逃生舱需要授权码才能启动。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "escape_pod",
+        "description": "逃生舱已准备就绪，等待有效授权后发射。",
+        "visible_objects": [
+          "escape_pod"
+        ],
+        "available_exits": [
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "逃生舱需要授权码才能启动。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已获得授权码ALPHA-731，需将其用于逃生舱以启动发射。",
+      "action": {
+        "tool": "use",
+        "item": "ALPHA-731",
+        "target": "escape_pod"
+      },
+      "result": {
+        "status": "success",
+        "reason": "escaped",
+        "summary": "逃生舱已成功发射。"
+      },
+      "latency_ms": 9561,
+      "input_tokens": 1460,
+      "output_tokens": 1066,
+      "runtime_feedback": "当前公开阶段：启动逃生舱。已完成：修理工具、主电源和授权码。未完成：启动逃生舱。",
+      "next_observation": {
+        "current_room": "escape_pod",
+        "description": "逃生舱已准备就绪，等待有效授权后发射。",
+        "visible_objects": [
+          "escape_pod"
+        ],
+        "available_exits": [
+          "reactor_room"
+        ],
+        "inventory": [
+          "replacement_fuse",
+          "screwdriver"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "escaped",
+          "summary": "逃生舱已成功发射。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "escape_pod",
+            "predicate": "result",
+            "value": "escaped"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    }
+  ]
+}

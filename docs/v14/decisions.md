@@ -213,3 +213,21 @@
 - **教训**：`n<15/臂` 的二项比例对比不能作为方向性证据；
   V14 后续任何"方向性"结论都必须附 Wilson 区间与功效估算。
 - **可回滚**：不适用（只读分析；原始局全部保留）。
+
+## D-V14-006 · `results/` 纳入版本库（改变既有仓库规则）
+
+- **背景**：`AGENTS.md` 原规则是"`runs/` 和 `results/` 是本地生成物，默认不纳入 Git，
+  除非未来 scope 明确改变该规则"。V14 收尾时用户提出：如果对其他人/AI 审计项目有用，是否该推。
+- **评估**（实测）：
+  - `results/` **7.8M / 152 文件**，内容全是 `benchmark_v3` + `evaluation_v2` 的聚合
+    JSON/CSV（33 个 benchmark 文件 / 110 条 `rows`）+ 2 份 V3 Muse 的 `manifest.json`；
+  - 密钥扫描：`sk-` / `Bearer` / `api_key=` / `OPENAI_API_KEY` **0 命中**；
+  - 本机路径与用户名扫描：`D:\wenxvn` / `10556` / `C:\Users` **0 命中**；
+  - 对比 `runs/` **487M**（其中 320M 是 V3 遗留）、`logs/` 3.8M，且 `runs/` 有 **164 个文件**
+    含本机绝对路径 `.venv\Scripts\python`。
+- **决定**（用户 2026-10-28）：**只推 `results/`**；`runs/` 与 `logs/` 继续不入库。
+  排除运行时锁 `*.lock`（9 个 0 字节文件）、`__pycache__/`、`*.pyc`。
+- **理由**：`docs/` 里 V1/V2/V3 阶段的历史基准数字需要可核对的原始聚合；
+  原始逐局 trace 的审计缺口由 `docs/v14/stage2-closure.md` §8 明确标注为已知限制。
+- **可回滚**：是（`git rm -r --cached results` 并恢复 `.gitignore`；历史仍会保留体积）。
+- **同步**：`AGENTS.md` 项目约束、`docs/scope/scope.md` 第 26 项、`results/README.md`。

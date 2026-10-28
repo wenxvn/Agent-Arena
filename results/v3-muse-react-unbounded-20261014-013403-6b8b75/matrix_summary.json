@@ -1,0 +1,1021 @@
+{
+  "experiment_id": "v3-muse-react-unbounded-20261014-013403-6b8b75",
+  "status": "incomplete",
+  "updated_at": "2026-10-14T11:00:46.411080+00:00",
+  "planned_episode_attempts": 155,
+  "finished_attempts": 155,
+  "traces_written": 149,
+  "episode_step_limit": null,
+  "natural_terminal_outcomes": [
+    "failure",
+    "partial_success",
+    "scenario_failure",
+    "scenario_success",
+    "success"
+  ],
+  "complete_successes": 10,
+  "natural_terminal_episodes": 25,
+  "mean_steps_to_natural_terminal": 19.76,
+  "complete_success_episodes_with_step_count": 10,
+  "mean_steps_among_complete_successes": 28.6,
+  "median_steps_among_complete_successes": 26.5,
+  "complete_success_step_counts": [
+    47,
+    60,
+    39,
+    23,
+    36,
+    30,
+    12,
+    13,
+    18,
+    8
+  ],
+  "success_rate_over_all_planned_attempts": 0.06451612903225806,
+  "outcome_counts": {
+    "partial_success": 10,
+    "provider_error": 124,
+    "scenario_failure": 5,
+    "scenario_success": 10
+  },
+  "attempt_status_counts": {
+    "completed": 149,
+    "interrupted": 4,
+    "launch_error": 2
+  },
+  "scenarios": [
+    {
+      "scenario_id": "AB-E",
+      "world": "abyss-escape",
+      "world_version": "abyss-escape-world-v3-easy-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 5,
+      "mean_steps_to_natural_terminal": 16.2,
+      "natural_terminal_episodes": 5,
+      "mean_steps_among_complete_successes": 16.2,
+      "complete_success_step_counts": [
+        30,
+        12,
+        13,
+        18,
+        8
+      ],
+      "outcomes": {
+        "scenario_success": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "72f5d22c-2ca2-4b91-9657-615310602306",
+        "b7a9c4f3-36c2-43ba-a6cb-7414ef8f5db9",
+        "01c6ede9-6f53-4177-bb96-29cb7d9f2929",
+        "48d439b8-85c0-4742-a71c-d80986cd025d",
+        "bafbc1b1-e213-427f-a6e4-0a616f9f1f87"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-E\\seed-0\\episode_20261014T030613Z_react_seed-0_72f5d22c.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-E\\seed-1\\episode_20261014T030613Z_react_seed-1_b7a9c4f3.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-E\\seed-2\\episode_20261014T030613Z_react_seed-2_01c6ede9.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-E\\seed-3\\episode_20261014T030613Z_react_seed-3_48d439b8.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-E\\seed-4\\episode_20261014T030613Z_react_seed-4_bafbc1b1.json"
+      ]
+    },
+    {
+      "scenario_id": "AB-H",
+      "world": "abyss-escape",
+      "world_version": "abyss-escape-world-v3-hard-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": 31.8,
+      "natural_terminal_episodes": 5,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "scenario_failure": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "0a67bb16-c34f-42c2-8326-e499fb16ed20",
+        "e09cd7e7-4577-4aeb-8da5-4e61f1c18227",
+        "17f0e051-c9ee-4aa1-b3bc-25027eb0e4d3",
+        "86b5dbf1-8fdf-4114-9e59-34b270540c65",
+        "fe7c3f3f-21f2-4d34-bdc6-874aa1e4583d"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-H\\seed-0\\episode_20261014T030613Z_react_seed-0_0a67bb16.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-H\\seed-1\\episode_20261014T030613Z_react_seed-1_e09cd7e7.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-H\\seed-2\\episode_20261014T030731Z_react_seed-2_17f0e051.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-H\\seed-3\\episode_20261014T030756Z_react_seed-3_86b5dbf1.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-H\\seed-4\\episode_20261014T030833Z_react_seed-4_fe7c3f3f.json"
+      ]
+    },
+    {
+      "scenario_id": "AB-M",
+      "world": "abyss-escape",
+      "world_version": "abyss-escape-world-v3-medium-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "9ec3ad42-0f83-4fa5-8371-f9ae72e06ecd",
+        "bb97192c-5c69-47a4-b740-c164f6f2fd1c",
+        "e993060b-e62d-4c0b-9425-75c5975023b2",
+        "446e179e-011e-497c-a744-d44f82e57eae",
+        "3fcc87f1-5b01-4e81-9798-ed1919b13db0"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-M\\seed-0\\episode_20261014T030613Z_react_seed-0_9ec3ad42.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-M\\seed-1\\episode_20261014T030613Z_react_seed-1_bb97192c.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-M\\seed-2\\episode_20261014T030613Z_react_seed-2_e993060b.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-M\\seed-3\\episode_20261014T030613Z_react_seed-3_446e179e.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\AB-M\\seed-4\\episode_20261014T030613Z_react_seed-4_3fcc87f1.json"
+      ]
+    },
+    {
+      "scenario_id": "CA-E",
+      "world": "castle-escape",
+      "world_version": "castle-escape-world-v3-easy-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "b54c289f-fd3d-466c-bf03-53c6dcc961fe",
+        "9c06c4bc-735b-4b46-9ee4-f95e3c157693",
+        "9da732df-a2ee-440a-b44e-8e7982da10a2",
+        "52ac98ed-3156-48cf-8981-302b61e2c085",
+        "91d204d5-0b32-44a6-9661-a1ee4ef595f1"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-E\\seed-0\\episode_20261014T033545Z_react_seed-0_b54c289f.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-E\\seed-1\\episode_20261014T033545Z_react_seed-1_9c06c4bc.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-E\\seed-2\\episode_20261014T033545Z_react_seed-2_9da732df.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-E\\seed-3\\episode_20261014T033545Z_react_seed-3_52ac98ed.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-E\\seed-4\\episode_20261014T033546Z_react_seed-4_91d204d5.json"
+      ]
+    },
+    {
+      "scenario_id": "CA-H",
+      "world": "castle-escape",
+      "world_version": "castle-escape-world-v3-hard-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "e3ac6dbf-c1f1-4f58-9277-ee476bb1f117",
+        "e4ca4e41-0eec-4176-a314-28b3eb6973e4",
+        "18b0fa00-dc3b-4795-a47f-a907cd40780f",
+        "cc349648-7378-4b75-90f2-913a735e0695",
+        "24a7cc2f-969d-4bf9-bef3-b56c6cb5206d"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-H\\seed-0\\episode_20261014T033546Z_react_seed-0_e3ac6dbf.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-H\\seed-1\\episode_20261014T033546Z_react_seed-1_e4ca4e41.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-H\\seed-2\\episode_20261014T033546Z_react_seed-2_18b0fa00.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-H\\seed-3\\episode_20261014T033548Z_react_seed-3_cc349648.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-H\\seed-4\\episode_20261014T033549Z_react_seed-4_24a7cc2f.json"
+      ]
+    },
+    {
+      "scenario_id": "CA-M",
+      "world": "castle-escape",
+      "world_version": "castle-escape-world-v3-medium-zh",
+      "attempts_planned": 8,
+      "traces_written": 8,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 8
+      },
+      "attempt_statuses": {
+        "completed": 8
+      },
+      "episode_ids": [
+        "1717281c-6a7a-446c-8305-98ab025b5cca",
+        "5c3f13fe-dac1-4267-8c10-069a934a3dbb",
+        "a6ca9dd6-6834-4988-9c1a-55350d4ab0b0",
+        "11aa004b-6b72-4846-94d3-e2f556b5208f",
+        "e464d27f-ee49-421d-9156-3125cfef5b1a",
+        "7e9dc2e1-1bf3-46e5-8adb-3439cd38ee59",
+        "fb7a0142-ec2c-4480-b1ef-4f793ef9595c",
+        "8db6bd24-097e-46a7-85cb-b5b9d6936bfb"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-M\\seed-0\\episode_20261014T033546Z_react_seed-0_1717281c.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-M\\seed-1\\episode_20261014T033546Z_react_seed-1_5c3f13fe.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-M\\seed-2\\episode_20261014T033546Z_react_seed-2_a6ca9dd6.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-M\\seed-3\\episode_20261014T033546Z_react_seed-3_11aa004b.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-M\\seed-4\\episode_20261014T033546Z_react_seed-4_e464d27f.json",
+        "runs/v3-muse-react-unbounded-20261014-013403-6b8b75/CA-M/seed-0/episode_20261014T065331Z_react_seed-0_7e9dc2e1.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-M\\seed-0-attempt-03\\episode_20261014T070116Z_react_seed-0_fb7a0142.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\CA-M\\seed-0-attempt-04\\episode_20261014T070855Z_react_seed-0_8db6bd24.json"
+      ]
+    },
+    {
+      "scenario_id": "JU-E",
+      "world": "jungle-escape",
+      "world_version": "jungle-escape-world-v3-easy-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "373dfef9-87ce-4864-9f3b-36171ccf455d",
+        "ecc876c1-1402-4a91-be5a-533a754dc616",
+        "7f6fd1b8-acff-4436-b74c-6e1762f6400b",
+        "e06c8b31-7312-49a4-bb38-d58fd6b9d5b8",
+        "56ba5bc7-07b6-4ffa-99e2-aff3e13d21dc"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-E\\seed-0\\episode_20261014T033513Z_react_seed-0_373dfef9.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-E\\seed-1\\episode_20261014T033519Z_react_seed-1_ecc876c1.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-E\\seed-2\\episode_20261014T033518Z_react_seed-2_7f6fd1b8.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-E\\seed-3\\episode_20261014T033519Z_react_seed-3_e06c8b31.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-E\\seed-4\\episode_20261014T033520Z_react_seed-4_56ba5bc7.json"
+      ]
+    },
+    {
+      "scenario_id": "JU-H",
+      "world": "jungle-escape",
+      "world_version": "jungle-escape-world-v3-hard-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "4f43432f-e010-4543-9a75-2a0f026718ac",
+        "d2793ec7-909f-4c56-a6c3-a6bd1e4b19b5",
+        "cd99d4ba-03ad-4dc8-8fae-eea8232572de",
+        "033194e9-6ab5-46b9-9ff2-5d025c6af5eb",
+        "39023ae5-b9ab-4e99-8586-013f58c30729"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-H\\seed-0\\episode_20261014T033520Z_react_seed-0_4f43432f.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-H\\seed-1\\episode_20261014T033520Z_react_seed-1_d2793ec7.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-H\\seed-2\\episode_20261014T033520Z_react_seed-2_cd99d4ba.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-H\\seed-3\\episode_20261014T033520Z_react_seed-3_033194e9.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-H\\seed-4\\episode_20261014T033520Z_react_seed-4_39023ae5.json"
+      ]
+    },
+    {
+      "scenario_id": "JU-M",
+      "world": "jungle-escape",
+      "world_version": "jungle-escape-world-v3-medium-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "3c932eb1-ddae-4b64-aaab-f1e516f08e10",
+        "0463956e-4036-4cc7-898f-b36fb6a904ce",
+        "5e1b235b-fc95-4fcb-bc66-a2ad93025b4f",
+        "778fc674-2abc-4e48-bd38-5a4303fa615d",
+        "2a127d08-c957-4744-9265-abbd92210912"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-M\\seed-0\\episode_20261014T033520Z_react_seed-0_3c932eb1.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-M\\seed-1\\episode_20261014T033520Z_react_seed-1_0463956e.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-M\\seed-2\\episode_20261014T033520Z_react_seed-2_5e1b235b.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-M\\seed-3\\episode_20261014T033520Z_react_seed-3_778fc674.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\JU-M\\seed-4\\episode_20261014T033520Z_react_seed-4_2a127d08.json"
+      ]
+    },
+    {
+      "scenario_id": "LH-E",
+      "world": "lighthouse-escape",
+      "world_version": "lighthouse-escape-world-v3-easy-zh",
+      "attempts_planned": 7,
+      "traces_written": 2,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 2
+      },
+      "attempt_statuses": {
+        "completed": 2,
+        "interrupted": 3,
+        "launch_error": 2
+      },
+      "episode_ids": [
+        "60eac477-64e0-4582-8bf7-25e79873580f",
+        "7ab33e29-e5d0-425e-86e7-68590993564f"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LH-E\\seed-0\\episode_20261014T033549Z_react_seed-0_60eac477.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LH-E\\seed-2\\episode_20261014T033552Z_react_seed-2_7ab33e29.json"
+      ]
+    },
+    {
+      "scenario_id": "LH-H",
+      "world": "lighthouse-escape",
+      "world_version": "lighthouse-escape-world-v3-hard-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "cf66e05d-daca-4528-8a81-99556117ce85",
+        "b9cc05bc-f26a-4b5a-9843-e26282fc878c",
+        "4c017fa3-d611-4be7-b3ff-ea7ef5011feb",
+        "1e817eb4-b692-4ad0-9fd3-8a39e99f7b71",
+        "f9a908a2-db6a-41ec-89a4-a353bf4be32e"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LH-H\\seed-0\\episode_20261014T030613Z_react_seed-0_cf66e05d.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LH-H\\seed-1\\episode_20261014T030613Z_react_seed-1_b9cc05bc.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LH-H\\seed-2\\episode_20261014T030613Z_react_seed-2_4c017fa3.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LH-H\\seed-3\\episode_20261014T030613Z_react_seed-3_1e817eb4.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LH-H\\seed-4\\episode_20261014T030613Z_react_seed-4_f9a908a2.json"
+      ]
+    },
+    {
+      "scenario_id": "LH-M",
+      "world": "lighthouse-escape",
+      "world_version": "lighthouse-escape-world-v3-medium-zh",
+      "attempts_planned": 5,
+      "traces_written": 4,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 4
+      },
+      "attempt_statuses": {
+        "completed": 4,
+        "interrupted": 1
+      },
+      "episode_ids": [
+        "e15ac949-a053-4128-b9e1-fab8f5636186",
+        "4cafe5b6-d379-4c89-bf91-96dbcca4332d",
+        "3b7d9c06-c33f-4c40-adc6-5d74e42e42bc",
+        "af3eadae-7ae0-4259-bd0e-25f03144bd6d"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LH-M\\seed-1\\episode_20261014T030613Z_react_seed-1_e15ac949.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LH-M\\seed-2\\episode_20261014T030613Z_react_seed-2_4cafe5b6.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LH-M\\seed-3\\episode_20261014T030613Z_react_seed-3_3b7d9c06.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LH-M\\seed-4\\episode_20261014T030613Z_react_seed-4_af3eadae.json"
+      ]
+    },
+    {
+      "scenario_id": "LU-E",
+      "world": "lunar-escape",
+      "world_version": "lunar-escape-world-v3-easy-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "f0656773-2b35-40c8-8f08-7f3c2e6ddcee",
+        "674fcd81-25c2-4ff4-9d73-a582b98825f6",
+        "4761d8c0-0330-47b4-8f0c-65194ba51f12",
+        "fddee74e-956c-4d47-8d14-50eba284350d",
+        "40c6017a-b686-4c08-a967-68dc2daa1f8d"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-E\\seed-0\\episode_20261014T033520Z_react_seed-0_f0656773.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-E\\seed-1\\episode_20261014T033521Z_react_seed-1_674fcd81.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-E\\seed-2\\episode_20261014T033521Z_react_seed-2_4761d8c0.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-E\\seed-3\\episode_20261014T033522Z_react_seed-3_fddee74e.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-E\\seed-4\\episode_20261014T033522Z_react_seed-4_40c6017a.json"
+      ]
+    },
+    {
+      "scenario_id": "LU-H",
+      "world": "lunar-escape",
+      "world_version": "lunar-escape-world-v3-hard-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "f2ad5d06-1849-4d1c-b154-7f27ffae6554",
+        "4ede03b2-1bbe-4b4c-849d-619423048798",
+        "80253245-9a04-49f2-8427-5fcd633bea53",
+        "951de510-eec1-495e-a5aa-fa3163e51779",
+        "0452b222-0888-4446-9b9a-fdea0eb89dbe"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-H\\seed-0\\episode_20261014T033540Z_react_seed-0_f2ad5d06.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-H\\seed-1\\episode_20261014T033541Z_react_seed-1_4ede03b2.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-H\\seed-2\\episode_20261014T033541Z_react_seed-2_80253245.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-H\\seed-3\\episode_20261014T033543Z_react_seed-3_951de510.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-H\\seed-4\\episode_20261014T033544Z_react_seed-4_0452b222.json"
+      ]
+    },
+    {
+      "scenario_id": "LU-M",
+      "world": "lunar-escape",
+      "world_version": "lunar-escape-world-v3-medium-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "816675d1-4c5c-441f-b29d-24ed6a6fffbd",
+        "d31b5b5e-e5ce-4d89-be05-8c67f1784c04",
+        "824c3804-29b9-479f-b102-7e25a934ee3d",
+        "32743ee9-633c-4b6d-bc2f-ced1e7b31b5b",
+        "01576897-0060-47a4-ad00-c7b707ced1cd"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-M\\seed-0\\episode_20261014T033523Z_react_seed-0_816675d1.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-M\\seed-1\\episode_20261014T033525Z_react_seed-1_d31b5b5e.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-M\\seed-2\\episode_20261014T033531Z_react_seed-2_824c3804.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-M\\seed-3\\episode_20261014T033532Z_react_seed-3_32743ee9.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\LU-M\\seed-4\\episode_20261014T033534Z_react_seed-4_01576897.json"
+      ]
+    },
+    {
+      "scenario_id": "PO-E",
+      "world": "polar-escape",
+      "world_version": "polar-escape-world-v3-easy-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "da0fa259-0278-47c7-ab22-b5243780a9f8",
+        "df03af5f-86e7-491f-8c31-f5998671e48f",
+        "e9e32249-02a1-4cc6-b47e-a8915686c2e2",
+        "97b3ee65-eff7-44bf-b6be-d2d59e76f9e7",
+        "82f1ef22-00d1-40c0-b2b7-6e82809e73dc"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-E\\seed-0\\episode_20261014T031035Z_react_seed-0_da0fa259.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-E\\seed-1\\episode_20261014T031045Z_react_seed-1_df03af5f.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-E\\seed-2\\episode_20261014T031116Z_react_seed-2_e9e32249.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-E\\seed-3\\episode_20261014T031201Z_react_seed-3_97b3ee65.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-E\\seed-4\\episode_20261014T031247Z_react_seed-4_82f1ef22.json"
+      ]
+    },
+    {
+      "scenario_id": "PO-H",
+      "world": "polar-escape",
+      "world_version": "polar-escape-world-v3-hard-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "47e321b3-6712-470b-b4c9-5610a8adc4fb",
+        "93570b1d-e187-4802-a10c-bbd7d3cc44bc",
+        "a5053c58-d7f3-4db8-a7e0-017054fe6619",
+        "b3d3c9d5-d9b0-4796-9d91-80b975c8b11b",
+        "13fc8c22-0048-4cda-9f54-6e1ee40986fa"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-H\\seed-0\\episode_20261014T033424Z_react_seed-0_47e321b3.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-H\\seed-1\\episode_20261014T033424Z_react_seed-1_93570b1d.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-H\\seed-2\\episode_20261014T033432Z_react_seed-2_a5053c58.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-H\\seed-3\\episode_20261014T033432Z_react_seed-3_b3d3c9d5.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-H\\seed-4\\episode_20261014T033432Z_react_seed-4_13fc8c22.json"
+      ]
+    },
+    {
+      "scenario_id": "PO-M",
+      "world": "polar-escape",
+      "world_version": "polar-escape-world-v3-medium-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "d714a4b8-fb94-493b-9a2a-1d83b65b1bba",
+        "840240e8-b424-4c93-b938-9d633e124a0f",
+        "96ba13d0-1e65-4848-a876-468d7d19179d",
+        "04967526-2556-4af2-ad7b-49b9e20172af",
+        "c85d6553-ba06-472a-bf07-a18aebb4504e"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-M\\seed-0\\episode_20261014T031455Z_react_seed-0_d714a4b8.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-M\\seed-1\\episode_20261014T031528Z_react_seed-1_840240e8.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-M\\seed-2\\episode_20261014T033424Z_react_seed-2_96ba13d0.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-M\\seed-3\\episode_20261014T033424Z_react_seed-3_04967526.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PO-M\\seed-4\\episode_20261014T033424Z_react_seed-4_c85d6553.json"
+      ]
+    },
+    {
+      "scenario_id": "PY-E",
+      "world": "pyramid-escape",
+      "world_version": "pyramid-escape-world-v3-easy-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "80b300c6-1039-4e60-90b0-18c7c277d833",
+        "9c9ca723-8951-47d8-a112-a57aca1665c2",
+        "8cecc6dd-5f6e-4a5f-8293-1482dbe5c686",
+        "1c3c8037-5a06-46ad-9b31-747b43c11783",
+        "f4db3fd8-905a-4fca-86d3-1fcbc8552883"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-E\\seed-0\\episode_20261014T033432Z_react_seed-0_80b300c6.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-E\\seed-1\\episode_20261014T033432Z_react_seed-1_9c9ca723.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-E\\seed-2\\episode_20261014T033433Z_react_seed-2_8cecc6dd.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-E\\seed-3\\episode_20261014T033433Z_react_seed-3_1c3c8037.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-E\\seed-4\\episode_20261014T033433Z_react_seed-4_f4db3fd8.json"
+      ]
+    },
+    {
+      "scenario_id": "PY-H",
+      "world": "pyramid-escape",
+      "world_version": "pyramid-escape-world-v3-hard-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "eb37fe4f-ea52-4188-a638-78e2b1bbf6f1",
+        "98368315-5f00-4567-9a51-0e5ae65fde35",
+        "1b756615-5583-4fe8-9635-bb9f8e149c5b",
+        "8a6bf387-35dd-43c3-b552-f082489652f8",
+        "e93aaddc-b09c-43bf-8c43-f6b4a31bfdea"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-H\\seed-0\\episode_20261014T033433Z_react_seed-0_eb37fe4f.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-H\\seed-1\\episode_20261014T033433Z_react_seed-1_98368315.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-H\\seed-2\\episode_20261014T033433Z_react_seed-2_1b756615.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-H\\seed-3\\episode_20261014T033436Z_react_seed-3_8a6bf387.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-H\\seed-4\\episode_20261014T033436Z_react_seed-4_e93aaddc.json"
+      ]
+    },
+    {
+      "scenario_id": "PY-M",
+      "world": "pyramid-escape",
+      "world_version": "pyramid-escape-world-v3-medium-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "8544386a-6754-4457-b67f-947338f2e3eb",
+        "22c84b06-84dc-484d-8243-2cd78d677471",
+        "6c1764ed-07c9-43a2-9109-845c383aea72",
+        "4a5bf442-333f-4e68-8757-af3962945d28",
+        "b2573798-b71b-47a9-9523-bce5470877fa"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-M\\seed-0\\episode_20261014T033433Z_react_seed-0_8544386a.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-M\\seed-1\\episode_20261014T033433Z_react_seed-1_22c84b06.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-M\\seed-2\\episode_20261014T033433Z_react_seed-2_6c1764ed.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-M\\seed-3\\episode_20261014T033433Z_react_seed-3_4a5bf442.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\PY-M\\seed-4\\episode_20261014T033433Z_react_seed-4_b2573798.json"
+      ]
+    },
+    {
+      "scenario_id": "SP-E",
+      "world": "spaceship-escape",
+      "world_version": "spaceship-escape-world-v3-easy-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 5,
+      "mean_steps_to_natural_terminal": 41.0,
+      "natural_terminal_episodes": 5,
+      "mean_steps_among_complete_successes": 41.0,
+      "complete_success_step_counts": [
+        47,
+        60,
+        39,
+        23,
+        36
+      ],
+      "outcomes": {
+        "scenario_success": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "06ab8458-93cd-4c9f-8f8a-718813a6537f",
+        "3b609f5a-431c-4447-a66b-d128a052f77a",
+        "b717bc84-c0ce-49db-9fef-e6533d7c786a",
+        "a82eccdf-a412-463e-8c39-7d1f9b3dc3ce",
+        "27a96bc0-b157-488b-b384-0bbcf70a66b4"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-E\\seed-0\\episode_20261014T013438Z_react_seed-0_06ab8458.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-E\\seed-1\\episode_20261014T013437Z_react_seed-1_3b609f5a.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-E\\seed-2\\episode_20261014T013438Z_react_seed-2_b717bc84.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-E\\seed-3\\episode_20261014T013438Z_react_seed-3_a82eccdf.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-E\\seed-4\\episode_20261014T013437Z_react_seed-4_27a96bc0.json"
+      ]
+    },
+    {
+      "scenario_id": "SP-H",
+      "world": "spaceship-escape",
+      "world_version": "spaceship-escape-world-v3-hard-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": 6.8,
+      "natural_terminal_episodes": 5,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "partial_success": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "75d05428-7ee5-4768-990f-e757270795c2",
+        "0cbb02e3-5439-48cc-9fe7-61e59132f256",
+        "f3b56179-eb2a-4c6d-82bb-5eeb3fba66fa",
+        "171d22d0-0264-4ddd-a6fb-bce82107767e",
+        "2d69cdb0-b295-47d9-9542-93445319d402"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-H\\seed-0\\episode_20261014T013438Z_react_seed-0_75d05428.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-H\\seed-1\\episode_20261014T013438Z_react_seed-1_0cbb02e3.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-H\\seed-2\\episode_20261014T013438Z_react_seed-2_f3b56179.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-H\\seed-3\\episode_20261014T013438Z_react_seed-3_171d22d0.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-H\\seed-4\\episode_20261014T013439Z_react_seed-4_2d69cdb0.json"
+      ]
+    },
+    {
+      "scenario_id": "SP-M",
+      "world": "spaceship-escape",
+      "world_version": "spaceship-escape-world-v3-medium-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": 3.0,
+      "natural_terminal_episodes": 5,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "partial_success": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "3374a197-c95b-402e-855d-e73c73202e98",
+        "af43ef08-d5e4-4be9-86b8-d533e58a4e6c",
+        "a31af3dd-fb12-4d2f-a1c2-8ed10427315d",
+        "5a6ded73-26e1-445c-8497-43d96e831f11",
+        "c173191e-36a1-488c-9ab2-15556bf2dc73"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-M\\seed-0\\episode_20261014T013438Z_react_seed-0_3374a197.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-M\\seed-1\\episode_20261014T013438Z_react_seed-1_af43ef08.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-M\\seed-2\\episode_20261014T013438Z_react_seed-2_a31af3dd.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-M\\seed-3\\episode_20261014T013438Z_react_seed-3_5a6ded73.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SP-M\\seed-4\\episode_20261014T013438Z_react_seed-4_c173191e.json"
+      ]
+    },
+    {
+      "scenario_id": "SU-E",
+      "world": "subway-escape",
+      "world_version": "subway-escape-world-v3-easy-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "9ff84193-4bd3-4164-8ac0-706e1a0726df",
+        "e99436c3-585d-4ac9-86cc-1f808fac2295",
+        "ea66dd9a-9734-4ba6-8ced-db867eed3818",
+        "e7f29642-6f44-49a3-bda5-1d878293c5cb",
+        "034bd7d8-634a-4697-ae71-d5d9f0f6a325"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-E\\seed-0\\episode_20261014T033436Z_react_seed-0_9ff84193.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-E\\seed-1\\episode_20261014T033436Z_react_seed-1_e99436c3.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-E\\seed-2\\episode_20261014T033436Z_react_seed-2_ea66dd9a.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-E\\seed-3\\episode_20261014T033451Z_react_seed-3_e7f29642.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-E\\seed-4\\episode_20261014T033453Z_react_seed-4_034bd7d8.json"
+      ]
+    },
+    {
+      "scenario_id": "SU-H",
+      "world": "subway-escape",
+      "world_version": "subway-escape-world-v3-hard-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "7903503b-9023-4342-8c50-5393cff99dd9",
+        "845cb7f7-3053-40cb-bd24-c1d9840b8adf",
+        "9a5a6c53-111e-491b-aa66-03e8ba0e639e",
+        "17e1cf35-538c-497d-bccd-d5efc07916cc",
+        "d56ed54d-7715-4d3e-a35b-06fb05b2ef29"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-H\\seed-0\\episode_20261014T033457Z_react_seed-0_7903503b.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-H\\seed-1\\episode_20261014T033457Z_react_seed-1_845cb7f7.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-H\\seed-2\\episode_20261014T033457Z_react_seed-2_9a5a6c53.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-H\\seed-3\\episode_20261014T033458Z_react_seed-3_17e1cf35.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-H\\seed-4\\episode_20261014T033458Z_react_seed-4_d56ed54d.json"
+      ]
+    },
+    {
+      "scenario_id": "SU-M",
+      "world": "subway-escape",
+      "world_version": "subway-escape-world-v3-medium-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "7120cd23-3d5b-41cd-a5d0-5a4c6a0efb29",
+        "17b95921-4376-4ff9-b6e2-4d6a15609521",
+        "79154bf9-511f-4ba3-bd94-9b1c2432b204",
+        "b0dde43c-6e09-46cb-a468-8332633d0639",
+        "ddbfe1c1-2102-4363-8935-bc525720e75d"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-M\\seed-0\\episode_20261014T033454Z_react_seed-0_7120cd23.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-M\\seed-1\\episode_20261014T033454Z_react_seed-1_17b95921.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-M\\seed-2\\episode_20261014T033455Z_react_seed-2_79154bf9.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-M\\seed-3\\episode_20261014T033457Z_react_seed-3_b0dde43c.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\SU-M\\seed-4\\episode_20261014T033457Z_react_seed-4_ddbfe1c1.json"
+      ]
+    },
+    {
+      "scenario_id": "VO-E",
+      "world": "volcano-escape",
+      "world_version": "volcano-escape-world-v3-easy-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "f5e53f68-374d-44ca-9ba8-e01cdcac1b3b",
+        "04198a92-84d0-4900-a21e-90b1ab59335e",
+        "2f952631-a69b-49d1-90b9-1d11cb28dd69",
+        "4ee4a2ba-2328-4641-931f-eecec98d3b20",
+        "86ed24bf-09ce-487e-9c3d-bb507bf160dc"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-E\\seed-0\\episode_20261014T033458Z_react_seed-0_f5e53f68.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-E\\seed-1\\episode_20261014T033458Z_react_seed-1_04198a92.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-E\\seed-2\\episode_20261014T033458Z_react_seed-2_2f952631.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-E\\seed-3\\episode_20261014T033458Z_react_seed-3_4ee4a2ba.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-E\\seed-4\\episode_20261014T033459Z_react_seed-4_86ed24bf.json"
+      ]
+    },
+    {
+      "scenario_id": "VO-H",
+      "world": "volcano-escape",
+      "world_version": "volcano-escape-world-v3-hard-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "788817ef-95e4-45a7-825d-70fa9942c09a",
+        "2f53d676-1542-4653-b677-ff80cec62e57",
+        "3580228b-9a54-442b-9420-afb7dd9f325e",
+        "f9d9fcc0-774d-4706-80a5-7def7cc37d85",
+        "cd53629f-3262-47f8-afcb-a42455c6bafb"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-H\\seed-0\\episode_20261014T033504Z_react_seed-0_788817ef.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-H\\seed-1\\episode_20261014T033505Z_react_seed-1_2f53d676.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-H\\seed-2\\episode_20261014T033506Z_react_seed-2_3580228b.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-H\\seed-3\\episode_20261014T033507Z_react_seed-3_f9d9fcc0.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-H\\seed-4\\episode_20261014T033512Z_react_seed-4_cd53629f.json"
+      ]
+    },
+    {
+      "scenario_id": "VO-M",
+      "world": "volcano-escape",
+      "world_version": "volcano-escape-world-v3-medium-zh",
+      "attempts_planned": 5,
+      "traces_written": 5,
+      "complete_successes": 0,
+      "mean_steps_to_natural_terminal": null,
+      "natural_terminal_episodes": 0,
+      "mean_steps_among_complete_successes": null,
+      "complete_success_step_counts": [],
+      "outcomes": {
+        "provider_error": 5
+      },
+      "attempt_statuses": {
+        "completed": 5
+      },
+      "episode_ids": [
+        "8385e930-c5a5-4da5-a77e-446f5dcbb6f6",
+        "7b4f9f11-5748-4f4f-b584-39792ed9fc9d",
+        "322fefca-5298-4edf-a365-01f1616357cd",
+        "1dc6ae8a-57b3-4ca7-85bd-3737fb31f69e",
+        "12c8f5de-aa15-40b6-a118-555a60cb504f"
+      ],
+      "trace_paths": [
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-M\\seed-0\\episode_20261014T033459Z_react_seed-0_8385e930.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-M\\seed-1\\episode_20261014T033458Z_react_seed-1_7b4f9f11.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-M\\seed-2\\episode_20261014T033459Z_react_seed-2_322fefca.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-M\\seed-3\\episode_20261014T033458Z_react_seed-3_1dc6ae8a.json",
+        "runs\\v3-muse-react-unbounded-20261014-013403-6b8b75\\VO-M\\seed-4\\episode_20261014T033502Z_react_seed-4_12c8f5de.json"
+      ]
+    }
+  ]
+}

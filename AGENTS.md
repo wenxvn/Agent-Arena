@@ -89,7 +89,8 @@ Skateboard。先交付一个真正可运行的最小闭环：确定性环境、�
 - 每个运行版本只使用一种 Action contract，所有 LLM 输出在执行前必须校验；Legacy 使用 `legacy_v1`，V3 使用 spec 0017 的 `scenario_v3`，不得混用。
 - 每局运行保存一个 JSON Episode Trace，trace 中不能包含密钥或完整思维链。
 - 首个 MVP 不引入 LangChain、向量数据库、多 Agent 编排、RAG、数据库存储或复杂 UI。
-- `runs/` 和 `results/` 是本地生成物，默认不纳入 Git，除非未来 scope 明确改变该规则。
+- `runs/` 和 `logs/` 是本地生成物，默认不纳入 Git（原始 trace 体积大且含本机绝对路径）。
+- **`results/` 自 V14 起纳入 Git**（scope 第 26 项明确改变该规则）：它只保存 `benchmark_v3` / `evaluation_v2` 的聚合 JSON/CSV，是 `docs/` 里历史基准数字的可核对来源；运行时锁文件 `*.lock`、`__pycache__/`、`*.pyc` 仍被忽略。说明见 `results/README.md`。
 
 ## 辅助工具建议
 

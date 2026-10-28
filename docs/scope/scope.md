@@ -559,6 +559,7 @@ Tag：`v14-stage2-exploratory-complete`；收尾 HEAD `d11bd97`。
   `verify_v11` 7/7、`verify_v12` 15/15、`verify_v13` 18/18、**`verify_v14` 15/15**、
   `e2e_lab` 通过、`a11y` 0 critical/serious/moderate、CI 连续 17 次阻断门禁成功。
 - [x] 收尾：`docs/v14/stage2-closure.md` 记录结论、用户接受的 3 项非阻断例外与第三阶段候选清单。
+- [x] 仓库规则变更（用户 2026-10-28 决定）：**`results/` 纳入版本库**，用于让 `docs/` 引用的历史基准数字可核对；`runs/` 与 `logs/` 继续不入库（487M / 3.8M，且 `runs/` 含本机绝对路径）。排除 `*.lock` / `__pycache__/` / `*.pyc`；说明见 `results/README.md`。
 
 边界：`EXPLORATORY_COMPLETE` 表示**阶段性探索完成、工程可信、研究问题已答**，
 **不表示** `STAGE_II_FINAL_READY`。三项例外由用户接受：① 外部账单 `BLOCKED_EXTERNAL`；

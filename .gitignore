@@ -14,9 +14,15 @@ venv/
 !.env.example
 
 # Generated experiment output
+# runs/ and logs/ stay local (raw traces are large and contain machine paths;
+#   see docs/v14/stage2-closure.md for the accepted audit gap).
+# results/ IS tracked: it holds benchmark aggregates (benchmark_v3 /
+#   evaluation_v2 JSON+CSV) that back the numbers quoted in docs/.
 runs/
-results/
 logs/
+
+# Runtime junk that must never be committed even inside results/
+*.lock
 
 # Editor and OS files
 .DS_Store

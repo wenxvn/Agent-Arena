@@ -1,0 +1,4787 @@
+{
+  "episode_id": "658d2de2-28e4-448f-ad67-ecd8c54bc07d",
+  "created_at": "2026-10-11T01:48:11.197101Z",
+  "world_version": "lighthouse-escape-v1-zh",
+  "seed": 4,
+  "agent": "memory",
+  "prompt_version": "memory_v2",
+  "provider": "openai",
+  "trace_schema_version": 2,
+  "provenance": {
+    "trace_contract_version": "experiment_v2",
+    "world": "lighthouse-escape",
+    "world_definition_id": "lighthouse_escape_v1",
+    "world_definition_hash": "58909477c853532af0e24565007431c7cf697b18462100d2861c594b4e65a7d2",
+    "max_output_tokens": null,
+    "model_name": "muse-spark-1.3-contributor",
+    "temperature": 0.0,
+    "enable_thinking": false,
+    "request_timeout_seconds": 30,
+    "retry_count": 2,
+    "retry_backoff_seconds": [
+      1,
+      2
+    ],
+    "step_limit": 60,
+    "reasoning_effort": "none",
+    "response_format": "json_schema",
+    "provider_request_version": "decision_request_v1",
+    "base_prompt_version": "react_v12_autonomous",
+    "base_prompt_hash": "5dc2038b42efc04b58c75c68a399a135928fc1de5017bcb1f4c0979992fc5dbb",
+    "runtime_feedback_enabled": true,
+    "public_action_hints_enabled": false,
+    "recent_history_enabled": true,
+    "recent_history_window": 5,
+    "structured_milestones_enabled": false,
+    "public_action_guard_enabled": false,
+    "stuck_recovery_enabled": true,
+    "concrete_action_candidates_enabled": false,
+    "public_phase_context_enabled": true,
+    "candidate_selection_enabled": false,
+    "memory_schema_version": "memory_v1",
+    "memory_renderer_version": "memory_v1",
+    "planning_enabled": false,
+    "planner_prompt_version": null,
+    "executor_prompt_version": null,
+    "plan_monitor_version": null,
+    "planning_policy": null
+  },
+  "outcome": "success",
+  "executed_action_count": 57,
+  "invalid_output_count": 0,
+  "rejected_action_count": 7,
+  "latency_ms": 646360,
+  "steps": [
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "cliff_base",
+        "description": "悬崖边的空地风很大，不远处有一块信号板，岔路通向棚屋和车间。",
+        "visible_objects": [
+          "signal_board"
+        ],
+        "available_exits": [
+          "supply_shed",
+          "workshop_path"
+        ],
+        "inventory": [],
+        "last_action_result": null
+      },
+      "correction": false,
+      "decision_reason": "先检查可见的信号板获取线索，再前往棚屋和车间寻找工具。",
+      "action": {
+        "tool": "inspect",
+        "target": "signal_board"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "read_terminal_required",
+        "summary": "终端请使用 read_terminal 工具读取。"
+      },
+      "latency_ms": 8539,
+      "input_tokens": 687,
+      "output_tokens": 762,
+      "runtime_feedback": "当前公开阶段：收集修理工具。已完成：无。未完成：获得 spare_cell、wrench。",
+      "next_observation": {
+        "current_room": "cliff_base",
+        "description": "悬崖边的空地风很大，不远处有一块信号板，岔路通向棚屋和车间。",
+        "visible_objects": [
+          "signal_board"
+        ],
+        "available_exits": [
+          "supply_shed",
+          "workshop_path"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "signal_board",
+            "predicate": "result",
+            "value": "read_terminal_required"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "cliff_base",
+        "description": "悬崖边的空地风很大，不远处有一块信号板，岔路通向棚屋和车间。",
+        "visible_objects": [
+          "signal_board"
+        ],
+        "available_exits": [
+          "supply_shed",
+          "workshop_path"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "上次inspect被拒提示用read_terminal读取，信号板可能含任务线索，需读取获取新信息。",
+      "action": {
+        "tool": "read_terminal",
+        "target": "signal_board"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "no_power",
+        "summary": "信号板没有电力。"
+      },
+      "latency_ms": 3164,
+      "input_tokens": 856,
+      "output_tokens": 314,
+      "runtime_feedback": "当前公开阶段：收集修理工具。已完成：无。未完成：获得 spare_cell、wrench。",
+      "next_observation": {
+        "current_room": "cliff_base",
+        "description": "悬崖边的空地风很大，不远处有一块信号板，岔路通向棚屋和车间。",
+        "visible_objects": [
+          "signal_board"
+        ],
+        "available_exits": [
+          "supply_shed",
+          "workshop_path"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "信号板没有电力。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "signal_board",
+            "predicate": "result",
+            "value": "no_power"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "cliff_base",
+        "description": "悬崖边的空地风很大，不远处有一块信号板，岔路通向棚屋和车间。",
+        "visible_objects": [
+          "signal_board"
+        ],
+        "available_exits": [
+          "supply_shed",
+          "workshop_path"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "no_power",
+          "summary": "信号板没有电力。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "信号板无电需先收集工具，去未探索的棚屋寻找spare_cell和wrench",
+      "action": {
+        "tool": "move",
+        "destination": "supply_shed"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 4927,
+      "input_tokens": 1018,
+      "output_tokens": 440,
+      "runtime_feedback": "当前公开阶段：收集修理工具。已完成：无。未完成：获得 spare_cell、wrench。",
+      "next_observation": {
+        "current_room": "supply_shed",
+        "description": "补给棚里堆着杂物，角落有一个工具箱。",
+        "visible_objects": [
+          "tool_chest"
+        ],
+        "available_exits": [
+          "cliff_base"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "supply_shed",
+        "description": "补给棚里堆着杂物，角落有一个工具箱。",
+        "visible_objects": [
+          "tool_chest"
+        ],
+        "available_exits": [
+          "cliff_base"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "123",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 2486,
+      "input_tokens": 1143,
+      "output_tokens": 186,
+      "runtime_feedback": "当前公开阶段：收集修理工具。已完成：无。未完成：获得 spare_cell、wrench。",
+      "next_observation": {
+        "current_room": "supply_shed",
+        "description": "补给棚里堆着杂物，角落有一个工具箱。",
+        "visible_objects": [
+          "tool_chest"
+        ],
+        "available_exits": [
+          "cliff_base"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "supply_shed",
+        "description": "补给棚里堆着杂物，角落有一个工具箱。",
+        "visible_objects": [
+          "tool_chest"
+        ],
+        "available_exits": [
+          "cliff_base"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "Placeholder look to satisfy required output format.",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 4908,
+      "input_tokens": 1244,
+      "output_tokens": 375,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：收集修理工具。已完成：无。未完成：获得 spare_cell、wrench。",
+      "next_observation": {
+        "current_room": "supply_shed",
+        "description": "补给棚里堆着杂物，角落有一个工具箱。",
+        "visible_objects": [
+          "tool_chest"
+        ],
+        "available_exits": [
+          "cliff_base"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "supply_shed",
+        "description": "补给棚里堆着杂物，角落有一个工具箱。",
+        "visible_objects": [
+          "tool_chest"
+        ],
+        "available_exits": [
+          "cliff_base"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "supply_shed有tool_chest未检查，inspect获取修理工具线索",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 3011,
+      "input_tokens": 1366,
+      "output_tokens": 257,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：收集修理工具。已完成：无。未完成：获得 spare_cell、wrench。",
+      "next_observation": {
+        "current_room": "supply_shed",
+        "description": "补给棚里堆着杂物，角落有一个工具箱。",
+        "visible_objects": [
+          "tool_chest"
+        ],
+        "available_exits": [
+          "cliff_base"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "supply_shed",
+        "description": "补给棚里堆着杂物，角落有一个工具箱。",
+        "visible_objects": [
+          "tool_chest"
+        ],
+        "available_exits": [
+          "cliff_base"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "补给棚有未检查的工具箱，可能藏有spare_cell和wrench，先检查获取新信息。",
+      "action": {
+        "tool": "inspect",
+        "target": "tool_chest"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "工具箱里有一把扳手和一枚备用电芯。"
+      },
+      "latency_ms": 3244,
+      "input_tokens": 1360,
+      "output_tokens": 221,
+      "runtime_feedback": "当前公开阶段：收集修理工具。已完成：无。未完成：获得 spare_cell、wrench。",
+      "next_observation": {
+        "current_room": "supply_shed",
+        "description": "补给棚里堆着杂物，角落有一个工具箱。",
+        "visible_objects": [
+          "tool_chest",
+          "spare_cell",
+          "wrench"
+        ],
+        "available_exits": [
+          "cliff_base"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "工具箱里有一把扳手和一枚备用电芯。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "visible_objects"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "supply_shed",
+        "description": "补给棚里堆着杂物，角落有一个工具箱。",
+        "visible_objects": [
+          "tool_chest",
+          "spare_cell",
+          "wrench"
+        ],
+        "available_exits": [
+          "cliff_base"
+        ],
+        "inventory": [],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "工具箱里有一把扳手和一枚备用电芯。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已发现扳手和备用电芯，先拾取扳手推进收集修理工具阶段。",
+      "action": {
+        "tool": "pickup",
+        "item": "wrench"
+      },
+      "result": {
+        "status": "success",
+        "reason": "picked_up",
+        "summary": "你将物品放入了背包。"
+      },
+      "latency_ms": 2959,
+      "input_tokens": 1355,
+      "output_tokens": 279,
+      "runtime_feedback": "当前公开阶段：收集修理工具。已完成：无。未完成：获得 spare_cell。",
+      "next_observation": {
+        "current_room": "supply_shed",
+        "description": "补给棚里堆着杂物，角落有一个工具箱。",
+        "visible_objects": [
+          "tool_chest",
+          "spare_cell"
+        ],
+        "available_exits": [
+          "cliff_base"
+        ],
+        "inventory": [
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "picked_up",
+          "summary": "你将物品放入了背包。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "visible_objects",
+          "inventory"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "supply_shed",
+        "description": "补给棚里堆着杂物，角落有一个工具箱。",
+        "visible_objects": [
+          "tool_chest",
+          "spare_cell"
+        ],
+        "available_exits": [
+          "cliff_base"
+        ],
+        "inventory": [
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "picked_up",
+          "summary": "你将物品放入了背包。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需收集备用电芯，spare_cell可见，直接拾取推进任务。",
+      "action": {
+        "tool": "pickup",
+        "item": "spare_cell"
+      },
+      "result": {
+        "status": "success",
+        "reason": "picked_up",
+        "summary": "你将物品放入了背包。"
+      },
+      "latency_ms": 2856,
+      "input_tokens": 1363,
+      "output_tokens": 176,
+      "runtime_feedback": "当前公开阶段：恢复电力。已完成：修理工具。未完成：打开引擎盖板。",
+      "next_observation": {
+        "current_room": "supply_shed",
+        "description": "补给棚里堆着杂物，角落有一个工具箱。",
+        "visible_objects": [],
+        "available_exits": [
+          "cliff_base"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "picked_up",
+          "summary": "你将物品放入了背包。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "visible_objects",
+          "inventory"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "supply_shed",
+        "description": "补给棚里堆着杂物，角落有一个工具箱。",
+        "visible_objects": [],
+        "available_exits": [
+          "cliff_base"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "picked_up",
+          "summary": "你将物品放入了背包。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "棚屋已无可见物，返回cliff_base寻找车间与引擎盖板推进电力恢复",
+      "action": {
+        "tool": "move",
+        "destination": "cliff_base"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 3824,
+      "input_tokens": 1383,
+      "output_tokens": 393,
+      "runtime_feedback": "当前公开阶段：恢复电力。已完成：修理工具。未完成：打开引擎盖板。",
+      "next_observation": {
+        "current_room": "cliff_base",
+        "description": "悬崖边的空地风很大，不远处有一块信号板，岔路通向棚屋和车间。",
+        "visible_objects": [
+          "signal_board"
+        ],
+        "available_exits": [
+          "supply_shed",
+          "workshop_path"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "cliff_base",
+        "description": "悬崖边的空地风很大，不远处有一块信号板，岔路通向棚屋和车间。",
+        "visible_objects": [
+          "signal_board"
+        ],
+        "available_exits": [
+          "supply_shed",
+          "workshop_path"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 3873,
+      "input_tokens": 1407,
+      "output_tokens": 411,
+      "runtime_feedback": "当前公开阶段：恢复电力。已完成：修理工具。未完成：打开引擎盖板。",
+      "next_observation": {
+        "current_room": "cliff_base",
+        "description": "悬崖边的空地风很大，不远处有一块信号板，岔路通向棚屋和车间。",
+        "visible_objects": [
+          "signal_board"
+        ],
+        "available_exits": [
+          "supply_shed",
+          "workshop_path"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "cliff_base",
+        "description": "悬崖边的空地风很大，不远处有一块信号板，岔路通向棚屋和车间。",
+        "visible_objects": [
+          "signal_board"
+        ],
+        "available_exits": [
+          "supply_shed",
+          "workshop_path"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "信号板无电需恢复电力，去未探索的workshop_path推进打开引擎盖板任务。",
+      "action": {
+        "tool": "move",
+        "destination": "workshop_path"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 2878,
+      "input_tokens": 1427,
+      "output_tokens": 286,
+      "runtime_feedback": "当前公开阶段：恢复电力。已完成：修理工具。未完成：打开引擎盖板。",
+      "next_observation": {
+        "current_room": "workshop_path",
+        "description": "车间小道上有一台野战电台，滋滋作响。再往前是引擎洞的入口。",
+        "visible_objects": [
+          "field_radio"
+        ],
+        "available_exits": [
+          "cliff_base",
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "workshop_path",
+        "description": "车间小道上有一台野战电台，滋滋作响。再往前是引擎洞的入口。",
+        "visible_objects": [
+          "field_radio"
+        ],
+        "available_exits": [
+          "cliff_base",
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "首次到车间小道，先inspect野战电台获取电力线索，再前往引擎洞推进任务。",
+      "action": {
+        "tool": "inspect",
+        "target": "field_radio"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "read_terminal_required",
+        "summary": "终端请使用 read_terminal 工具读取。"
+      },
+      "latency_ms": 10826,
+      "input_tokens": 1464,
+      "output_tokens": 592,
+      "runtime_feedback": "当前公开阶段：恢复电力。已完成：修理工具。未完成：打开引擎盖板。",
+      "next_observation": {
+        "current_room": "workshop_path",
+        "description": "车间小道上有一台野战电台，滋滋作响。再往前是引擎洞的入口。",
+        "visible_objects": [
+          "field_radio"
+        ],
+        "available_exits": [
+          "cliff_base",
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "field_radio",
+            "predicate": "result",
+            "value": "read_terminal_required"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "workshop_path",
+        "description": "车间小道上有一台野战电台，滋滋作响。再往前是引擎洞的入口。",
+        "visible_objects": [
+          "field_radio"
+        ],
+        "available_exits": [
+          "cliff_base",
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "read_terminal_required",
+          "summary": "终端请使用 read_terminal 工具读取。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "1234567890",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 6744,
+      "input_tokens": 1512,
+      "output_tokens": 386,
+      "runtime_feedback": "当前公开阶段：恢复电力。已完成：修理工具。未完成：打开引擎盖板。",
+      "next_observation": {
+        "current_room": "workshop_path",
+        "description": "车间小道上有一台野战电台，滋滋作响。再往前是引擎洞的入口。",
+        "visible_objects": [
+          "field_radio"
+        ],
+        "available_exits": [
+          "cliff_base",
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "workshop_path",
+        "description": "车间小道上有一台野战电台，滋滋作响。再往前是引擎洞的入口。",
+        "visible_objects": [
+          "field_radio"
+        ],
+        "available_exits": [
+          "cliff_base",
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "Placeholder response to continue trajectory; no valid tool information available.",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 5739,
+      "input_tokens": 1513,
+      "output_tokens": 336,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 当前可达但尚未访问的出口：engine_cave。\n当前公开阶段：恢复电力。已完成：修理工具。未完成：打开引擎盖板。",
+      "next_observation": {
+        "current_room": "workshop_path",
+        "description": "车间小道上有一台野战电台，滋滋作响。再往前是引擎洞的入口。",
+        "visible_objects": [
+          "field_radio"
+        ],
+        "available_exits": [
+          "cliff_base",
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "workshop_path",
+        "description": "车间小道上有一台野战电台，滋滋作响。再往前是引擎洞的入口。",
+        "visible_objects": [
+          "field_radio"
+        ],
+        "available_exits": [
+          "cliff_base",
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "inspect提示电台需用read_terminal读取，可获新线索推进恢复电力，故先读取。",
+      "action": {
+        "tool": "read_terminal",
+        "target": "field_radio"
+      },
+      "result": {
+        "status": "success",
+        "reason": "diagnostic_read",
+        "summary": "电台广播：电力中断，请手动修复引擎洞的老引擎。"
+      },
+      "latency_ms": 7427,
+      "input_tokens": 1551,
+      "output_tokens": 799,
+      "runtime_feedback": "当前公开阶段：恢复电力。已完成：修理工具。未完成：打开引擎盖板。",
+      "next_observation": {
+        "current_room": "workshop_path",
+        "description": "车间小道上有一台野战电台，滋滋作响。再往前是引擎洞的入口。",
+        "visible_objects": [
+          "field_radio"
+        ],
+        "available_exits": [
+          "cliff_base",
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "电台广播：电力中断，请手动修复引擎洞的老引擎。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "field_radio",
+            "predicate": "result",
+            "value": "diagnostic_read"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "workshop_path",
+        "description": "车间小道上有一台野战电台，滋滋作响。再往前是引擎洞的入口。",
+        "visible_objects": [
+          "field_radio"
+        ],
+        "available_exits": [
+          "cliff_base",
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "diagnostic_read",
+          "summary": "电台广播：电力中断，请手动修复引擎洞的老引擎。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "电台提示去引擎洞修复老引擎，需前往引擎洞打开盖板推进恢复电力",
+      "action": {
+        "tool": "move",
+        "destination": "engine_cave"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 3235,
+      "input_tokens": 1561,
+      "output_tokens": 349,
+      "runtime_feedback": "当前公开阶段：恢复电力。已完成：修理工具。未完成：打开引擎盖板。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [
+          "engine_cover"
+        ],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [
+          "engine_cover"
+        ],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "Placeholder, will be replaced by correct reasoning and action in final analysis.",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 4303,
+      "input_tokens": 1601,
+      "output_tokens": 472,
+      "runtime_feedback": "当前公开阶段：恢复电力。已完成：修理工具。未完成：打开引擎盖板。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [
+          "engine_cover"
+        ],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [
+          "engine_cover"
+        ],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "引擎盖板紧闭，需用扳手打开以检修老引擎恢复电力。",
+      "action": {
+        "tool": "use",
+        "item": "wrench",
+        "target": "engine_cover"
+      },
+      "result": {
+        "status": "success",
+        "reason": "panel_opened",
+        "summary": "引擎盖板已打开。"
+      },
+      "latency_ms": 4325,
+      "input_tokens": 1598,
+      "output_tokens": 470,
+      "runtime_feedback": "当前公开阶段：恢复电力。已完成：修理工具和引擎盖板。未完成：恢复电力。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [
+          "burnt_cell"
+        ],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "panel_opened",
+          "summary": "引擎盖板已打开。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "engine_cover",
+            "predicate": "result",
+            "value": "panel_opened"
+          }
+        ],
+        "state_changes": [
+          "visible_objects"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [
+          "burnt_cell"
+        ],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "panel_opened",
+          "summary": "引擎盖板已打开。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "1234567890",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 6583,
+      "input_tokens": 1621,
+      "output_tokens": 737,
+      "runtime_feedback": "当前公开阶段：恢复电力。已完成：修理工具和引擎盖板。未完成：恢复电力。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [
+          "burnt_cell"
+        ],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [
+          "burnt_cell"
+        ],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "1234567890",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 5883,
+      "input_tokens": 1628,
+      "output_tokens": 557,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 当前可达但尚未访问的出口：lamp_room。\n当前公开阶段：恢复电力。已完成：修理工具和引擎盖板。未完成：恢复电力。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [
+          "burnt_cell"
+        ],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [
+          "burnt_cell"
+        ],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "盖板已打开并发现burnt_cell，需先检查确认更换方式再恢复电力",
+      "action": {
+        "tool": "inspect",
+        "target": "burnt_cell"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "烧坏的电芯需要更换。"
+      },
+      "latency_ms": 9261,
+      "input_tokens": 1648,
+      "output_tokens": 761,
+      "runtime_feedback": "当前公开阶段：恢复电力。已完成：修理工具和引擎盖板。未完成：恢复电力。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [
+          "burnt_cell"
+        ],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "烧坏的电芯需要更换。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [
+          "burnt_cell"
+        ],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "烧坏的电芯需要更换。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "烧坏电芯需更换且已有备用电芯，用备用电芯更换以恢复电力。",
+      "action": {
+        "tool": "use",
+        "item": "spare_cell",
+        "target": "burnt_cell"
+      },
+      "result": {
+        "status": "success",
+        "reason": "power_restored",
+        "summary": "电力已恢复。"
+      },
+      "latency_ms": 9205,
+      "input_tokens": 1632,
+      "output_tokens": 873,
+      "runtime_feedback": "当前公开阶段：读取潮汐码。已完成：修理工具和电力。未完成：读取潮汐码。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "power_restored",
+          "summary": "电力已恢复。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "burnt_cell",
+            "predicate": "result",
+            "value": "power_restored"
+          }
+        ],
+        "state_changes": [
+          "visible_objects"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "power_restored",
+          "summary": "电力已恢复。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "电力已恢复，需重新查看引擎洞以刷新可见物与出口，寻找潮汐码线索。",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 6207,
+      "input_tokens": 1634,
+      "output_tokens": 573,
+      "runtime_feedback": "当前公开阶段：读取潮汐码。已完成：修理工具和电力。未完成：读取潮汐码。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "电力已恢复，灯室是未探索的新出口，可能有潮汐码，先去查看。",
+      "action": {
+        "tool": "move",
+        "destination": "lamp_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 8823,
+      "input_tokens": 1620,
+      "output_tokens": 905,
+      "runtime_feedback": "当前公开阶段：读取潮汐码。已完成：修理工具和电力。未完成：读取潮汐码。",
+      "next_observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "初到灯室需先获取控制台新信息，检查可明确潮汐码读取方式",
+      "action": {
+        "tool": "inspect",
+        "target": "lamp_console"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "not_visible",
+        "summary": "当前地点看不到该目标。"
+      },
+      "latency_ms": 12175,
+      "input_tokens": 1620,
+      "output_tokens": 1412,
+      "runtime_feedback": "当前公开阶段：读取潮汐码。已完成：修理工具和电力。未完成：读取潮汐码。",
+      "next_observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "not_visible",
+          "summary": "当前地点看不到该目标。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "lamp_console",
+            "predicate": "result",
+            "value": "not_visible"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "not_visible",
+          "summary": "当前地点看不到该目标。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "lamp_console是终端且电力已恢复，用read_terminal读取潮汐码推进任务。",
+      "action": {
+        "tool": "read_terminal",
+        "target": "lamp_console"
+      },
+      "result": {
+        "status": "success",
+        "reason": "code_read",
+        "summary": "潮汐码：TIDE-2049"
+      },
+      "latency_ms": 3536,
+      "input_tokens": 1644,
+      "output_tokens": 367,
+      "runtime_feedback": "当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "潮汐码：TIDE-2049"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "lamp_console",
+            "predicate": "result",
+            "value": "code_read"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "潮汐码：TIDE-2049"
+        }
+      },
+      "correction": false,
+      "decision_reason": "刚拿到潮汐码但信号灯仍灭，需先look查看灯室全貌找点灯线索，再返回引擎洞推进乘艇。",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 22833,
+      "input_tokens": 1642,
+      "output_tokens": 2278,
+      "runtime_feedback": "当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "123",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 8809,
+      "input_tokens": 1607,
+      "output_tokens": 873,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已获潮汐码需前往雾中小湾乘艇，先返回引擎洞查看新出口。",
+      "action": {
+        "tool": "move",
+        "destination": "engine_cave"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 4363,
+      "input_tokens": 1619,
+      "output_tokens": 418,
+      "runtime_feedback": "当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "look",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 3768,
+      "input_tokens": 1596,
+      "output_tokens": 334,
+      "runtime_feedback": "当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "电力已恢复并获得潮汐码，需前往雾中小湾乘坐小艇离开，探索新区域。",
+      "action": {
+        "tool": "move",
+        "destination": "skiff_cove"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 2953,
+      "input_tokens": 1612,
+      "output_tokens": 333,
+      "runtime_feedback": "当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "Need fresh detail; look may reveal exits/objects to progress.",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 7213,
+      "input_tokens": 1643,
+      "output_tokens": 796,
+      "runtime_feedback": "当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "小艇需出发信号，先检查小艇获取离开条件。",
+      "action": {
+        "tool": "inspect",
+        "target": "harbor_skiff"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "小艇需要潮汐码才能出发。"
+      },
+      "latency_ms": 3230,
+      "input_tokens": 1650,
+      "output_tokens": 277,
+      "runtime_feedback": "当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "小艇需要潮汐码才能出发。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "小艇需要潮汐码才能出发。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "小艇需潮汐码出发信号，需回引擎洞转往灯室或悬崖信号板发送信号，先移回引擎洞。",
+      "action": {
+        "tool": "move",
+        "destination": "engine_cave"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 9538,
+      "input_tokens": 1683,
+      "output_tokens": 884,
+      "runtime_feedback": "当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "引擎洞无可见目标，需去灯室操作信号灯发出离港信号再乘艇离开。",
+      "action": {
+        "tool": "move",
+        "destination": "lamp_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 8196,
+      "input_tokens": 1704,
+      "output_tokens": 956,
+      "runtime_feedback": "当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "灯室控制台可能控制出发信号，需先读取终端获取操作信息再前往小艇。",
+      "action": {
+        "tool": "read_terminal",
+        "target": "lamp_console"
+      },
+      "result": {
+        "status": "success",
+        "reason": "code_read",
+        "summary": "潮汐码：TIDE-2049"
+      },
+      "latency_ms": 7148,
+      "input_tokens": 1686,
+      "output_tokens": 723,
+      "runtime_feedback": "当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "潮汐码：TIDE-2049"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "潮汐码：TIDE-2049"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已拿到潮汐码TIDE-2049，需返回雾中小湾乘艇，先经引擎洞中转。",
+      "action": {
+        "tool": "move",
+        "destination": "engine_cave"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 9979,
+      "input_tokens": 1671,
+      "output_tokens": 1014,
+      "runtime_feedback": "当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已获得潮汐码且电力恢复，需前往雾中小湾乘坐小艇离开。",
+      "action": {
+        "tool": "move",
+        "destination": "skiff_cove"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 13478,
+      "input_tokens": 1687,
+      "output_tokens": 1594,
+      "runtime_feedback": "当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "小艇需潮汐码出发，已获TIDE-2049，需读取小艇终端确认出发方式获取新信息。",
+      "action": {
+        "tool": "read_terminal",
+        "target": "harbor_skiff"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "wrong_target",
+        "summary": "当前不能将该物品用于这个目标。"
+      },
+      "latency_ms": 15901,
+      "input_tokens": 1682,
+      "output_tokens": 1822,
+      "runtime_feedback": "当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "wrong_target",
+          "summary": "当前不能将该物品用于这个目标。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "harbor_skiff",
+            "predicate": "result",
+            "value": "wrong_target"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "wrong_target",
+          "summary": "当前不能将该物品用于这个目标。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "小艇需要潮汐码出发，先inspect查看使用方式再推进离开",
+      "action": {
+        "tool": "inspect",
+        "target": "harbor_skiff"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "小艇需要潮汐码才能出发。"
+      },
+      "latency_ms": 5137,
+      "input_tokens": 1734,
+      "output_tokens": 440,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "小艇需要潮汐码才能出发。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "小艇需要潮汐码才能出发。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "小艇等待出发信号，需回引擎洞去灯室或信号板发送信号，潮汐码已拿到。",
+      "action": {
+        "tool": "move",
+        "destination": "engine_cave"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 22489,
+      "input_tokens": 1760,
+      "output_tokens": 2509,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "小艇需出发信号，灯室信号灯还灭着，先去灯室查看控制台点亮信号。",
+      "action": {
+        "tool": "move",
+        "destination": "lamp_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 45860,
+      "input_tokens": 1778,
+      "output_tokens": 1353,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "灯室控制台可见且电力已恢复，需读取以发送小艇出发信号，推进离开目标。",
+      "action": {
+        "tool": "read_terminal",
+        "target": "lamp_console"
+      },
+      "result": {
+        "status": "success",
+        "reason": "code_read",
+        "summary": "潮汐码：TIDE-2049"
+      },
+      "latency_ms": 9080,
+      "input_tokens": 1773,
+      "output_tokens": 863,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "潮汐码：TIDE-2049"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "潮汐码：TIDE-2049"
+        }
+      },
+      "correction": false,
+      "decision_reason": "电力已恢复但信号灯仍灭，小艇等待出发信号，需先查看灯控制台获得开启方式再返回小湾。",
+      "action": {
+        "tool": "inspect",
+        "target": "lamp_console"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "not_visible",
+        "summary": "当前地点看不到该目标。"
+      },
+      "latency_ms": 48755,
+      "input_tokens": 1759,
+      "output_tokens": 1551,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "not_visible",
+          "summary": "当前地点看不到该目标。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "not_visible",
+          "summary": "当前地点看不到该目标。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已获得潮汐码，需经引擎洞返回雾中小湾乘艇，灯室唯一出口是引擎洞。",
+      "action": {
+        "tool": "move",
+        "destination": "engine_cave"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 56629,
+      "input_tokens": 1746,
+      "output_tokens": 2287,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "123",
+      "action": {
+        "tool": "look"
+      },
+      "result": {
+        "status": "success",
+        "reason": "looked",
+        "summary": "你查看了当前地点。"
+      },
+      "latency_ms": 9856,
+      "input_tokens": 1748,
+      "output_tokens": 1121,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "looked",
+          "summary": "你查看了当前地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "电力和潮汐码已齐，需前往雾中小湾乘小艇离开。",
+      "action": {
+        "tool": "move",
+        "destination": "skiff_cove"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 2697,
+      "input_tokens": 1752,
+      "output_tokens": 291,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "小艇需潮汐码出发，先inspect获取出发操作信息推进离开",
+      "action": {
+        "tool": "inspect",
+        "target": "harbor_skiff"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "小艇需要潮汐码才能出发。"
+      },
+      "latency_ms": 7339,
+      "input_tokens": 1742,
+      "output_tokens": 676,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "小艇需要潮汐码才能出发。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "小艇需要潮汐码才能出发。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "小艇需出发信号，需回引擎洞转往灯室或悬崖信号板发送信号，唯一出口是engine_cave。",
+      "action": {
+        "tool": "move",
+        "destination": "engine_cave"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 17747,
+      "input_tokens": 1757,
+      "output_tokens": 1915,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "引擎洞无可见目标，需去灯室操作信号灯控制台发出小艇出发信号，推进离开阶段。",
+      "action": {
+        "tool": "move",
+        "destination": "lamp_room"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 13685,
+      "input_tokens": 1773,
+      "output_tokens": 1493,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "电力已恢复且灯控制台可见，需读取终端点亮信号灯并发小艇出发信号",
+      "action": {
+        "tool": "read_terminal",
+        "target": "lamp_console"
+      },
+      "result": {
+        "status": "success",
+        "reason": "code_read",
+        "summary": "潮汐码：TIDE-2049"
+      },
+      "latency_ms": 14318,
+      "input_tokens": 1769,
+      "output_tokens": 1766,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "潮汐码：TIDE-2049"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_rejected",
+      "observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "code_read",
+          "summary": "潮汐码：TIDE-2049"
+        }
+      },
+      "correction": false,
+      "decision_reason": "灯还灭着而小艇等出发信号，需先查看灯控制台获取点灯方法再回小湾。",
+      "action": {
+        "tool": "inspect",
+        "target": "lamp_console"
+      },
+      "result": {
+        "status": "rejected",
+        "reason": "not_visible",
+        "summary": "当前地点看不到该目标。"
+      },
+      "latency_ms": 16000,
+      "input_tokens": 1761,
+      "output_tokens": 1028,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "not_visible",
+          "summary": "当前地点看不到该目标。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "lamp_room",
+        "description": "灯室中央有一盏信号灯控制台，灯还灭着。",
+        "visible_objects": [
+          "lamp_console"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "rejected",
+          "reason": "not_visible",
+          "summary": "当前地点看不到该目标。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已取得潮汐码，需返回小艇，需先经引擎洞中转离开灯室。",
+      "action": {
+        "tool": "move",
+        "destination": "engine_cave"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 20929,
+      "input_tokens": 1741,
+      "output_tokens": 1211,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "engine_cave",
+        "description": "引擎洞里有一台老式引擎，盖板紧闭。洞壁上有岔道，分别通向灯室和雾中小湾。",
+        "visible_objects": [],
+        "available_exits": [
+          "workshop_path",
+          "lamp_room",
+          "skiff_cove"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已获得潮汐码，需返回雾中小湾操作小艇离开，避免重复去灯室。",
+      "action": {
+        "tool": "move",
+        "destination": "skiff_cove"
+      },
+      "result": {
+        "status": "success",
+        "reason": "moved",
+        "summary": "你移动到了指定地点。"
+      },
+      "latency_ms": 24419,
+      "input_tokens": 1748,
+      "output_tokens": 1681,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "progress": {
+        "state_progress": true,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [
+          "current_room",
+          "visible_objects",
+          "available_exits"
+        ],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "moved",
+          "summary": "你移动到了指定地点。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "需查看小艇了解出发信号输入方式，推进离开阶段。",
+      "action": {
+        "tool": "inspect",
+        "target": "harbor_skiff"
+      },
+      "result": {
+        "status": "success",
+        "reason": "inspected",
+        "summary": "小艇需要潮汐码才能出发。"
+      },
+      "latency_ms": 7908,
+      "input_tokens": 1745,
+      "output_tokens": 666,
+      "runtime_feedback": "你重复了同一公开状态下已完成的动作；不要再次执行它。 请使用当前可见对象或出口选择不同的推进动作。\n当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "小艇需要潮汐码才能出发。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": false,
+        "new_facts": [],
+        "state_changes": [],
+        "progress": false
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    },
+    {
+      "event": "action_validated",
+      "observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "inspected",
+          "summary": "小艇需要潮汐码才能出发。"
+        }
+      },
+      "correction": false,
+      "decision_reason": "已获得潮汐码TIDE-2049且小艇等待出发信号，用潮汐码尝试出发。",
+      "action": {
+        "tool": "use",
+        "item": "TIDE-2049",
+        "target": "harbor_skiff"
+      },
+      "result": {
+        "status": "success",
+        "reason": "escaped",
+        "summary": "小艇已成功出发。"
+      },
+      "latency_ms": 55162,
+      "input_tokens": 1743,
+      "output_tokens": 2750,
+      "runtime_feedback": "当前公开阶段：乘坐小艇离开。已完成：修理工具、电力和潮汐码。未完成：乘坐小艇离开。",
+      "next_observation": {
+        "current_room": "skiff_cove",
+        "description": "雾中小湾停着一艘小艇，缆绳已经解开，只等出发信号。",
+        "visible_objects": [
+          "harbor_skiff"
+        ],
+        "available_exits": [
+          "engine_cave"
+        ],
+        "inventory": [
+          "spare_cell",
+          "wrench"
+        ],
+        "last_action_result": {
+          "status": "success",
+          "reason": "escaped",
+          "summary": "小艇已成功出发。"
+        }
+      },
+      "progress": {
+        "state_progress": false,
+        "epistemic_progress": true,
+        "new_facts": [
+          {
+            "subject": "harbor_skiff",
+            "predicate": "result",
+            "value": "escaped"
+          }
+        ],
+        "state_changes": [],
+        "progress": true
+      },
+      "planner_feedback": null,
+      "planner_feedback_hash": null,
+      "suggested_action": null,
+      "plan_id": null,
+      "plan_version": null,
+      "current_subgoal": null,
+      "planner_called": false,
+      "replan_reason": null,
+      "plan_signal": null,
+      "subgoal_completed": false,
+      "planner_latency_ms": null,
+      "planner_input_tokens": null,
+      "planner_output_tokens": null,
+      "executor_latency_ms": null,
+      "executor_input_tokens": null,
+      "executor_output_tokens": null,
+      "summary": null,
+      "invalid_output_reason": null
+    }
+  ]
+}
