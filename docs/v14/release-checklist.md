@@ -3,7 +3,7 @@
 - 版本：Agent Arena Lab 1.2 / Stage II Final Evidence & Delivery
 - 日期：2026-10-27
 - 基线 HEAD：`60c9ba2b64a3bd8d5cd549a7b76d0f3eb3ad092a`（V14 起点）
-- 真实付费执行：**191 局 / 5 542 请求 / CNY 3.21921168**（方案 A + 五轮补充；3 局 unknown_spend 预留）
+- 真实付费执行：**227 局 / 6 273 请求 / CNY 3.89636556**（方案 A + 六轮补充；3 局 unknown_spend 预留）
 
 > 判定分成三层，**不允许混写**：
 > `ENGINEERING_VERIFIED` / `LIVE_EVIDENCE_VERIFIED` / `STAGE_II_FINAL_READY`。
@@ -60,7 +60,7 @@
 | 项 | 状态 | 原因 |
 |---|---|---|
 | `memory.v2` 真实效果 | 已测（65 局）| 90 请求 0/10 vs 0/10；150 请求 seed 2 **2/9 → 8/8**，seed 0/1/3 两臂全败 → **条件性** |
-| `planning.v2` 真实效果 | 已测（77 局）| MAP-16 flash 0/25 → 14/15；**pro 2/12 → 12/12（含留出 seed）**；MAP-18 2/9 → 4/9 |
+| `planning.v2` 真实效果 | 已测（121 局 / 4 图 × 2 模型）| MAP-16 flash 0/25 → 14/22；**pro 2/12 → 12/12（含留出 seed）**；MAP-18 2/9 → 4/9；MAP-26 9/9→9/9（天花板）；MAP-14 0/9→0/9（地板） |
 | `reflection.v2` 真实效果 | 暴露稳定 / 效果未检出 | MAP-22@150 单因子 trigger_only 2/6 vs on 1/6（n=6 无功效） |
 | 外部账单对账 | `BLOCKED_EXTERNAL` | 用户未提供脱敏账单 CSV |
 | 本机 Playwright 自带 chromium 复现 | `NOT_VERIFIED` | CDN 下载受限；CI 侧已真实验证 |
@@ -71,7 +71,7 @@
 ## 5. 最终状态
 
 - `ENGINEERING_VERIFIED`：**满足**。
-- `LIVE_EVIDENCE_VERIFIED`：**不满足（部分达成）**——191 局；规划已跨模型+留出 seed 复现，但仍缺负向对照图、记忆的实例归因与外部账单核对。
+- `LIVE_EVIDENCE_VERIFIED`：**不满足（部分达成）**——227 局；规划已跨模型/跨图/留出 seed 复现且有天花板+地板对照，但仍缺外部账单核对、记忆的实例归因与反思功效。
 - `STAGE_II_FINAL_READY`：**不满足**；
   按提纲要求，此时不得宣称"第二阶段最终实证完成"。
 

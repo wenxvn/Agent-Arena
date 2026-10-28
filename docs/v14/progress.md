@@ -285,3 +285,14 @@
 - 文档：`live-report.md` 重写为 191 局版本；`gap-audit.md` / `README.md` / `release-checklist.md` /
   `final-report.md` 同步。
 - commit：`feat(v14): generalization runs across map, model and held-out seed`
+
+## Batch 16 · 负向对照（planning 的天花板与地板）
+
+- 目的：把"规划有效"收紧为"在需要排程的图上有效、不损害已成功的图、救不回推理地板"。
+- 执行：`scripts/run_v14_negative.sh`；MAP-26（维修链，V12 记录 9/9）与 MAP-14（说谎祭司）各 18 局。
+- 结果（累计 **227 局 / 6 273 请求 / ¥3.89636556**）：
+  - **MAP-26：off 9/9、on 9/9** → 天花板，规划无增益也无损害（每成功局 ¥0.0031 vs ¥0.0024）；
+  - **MAP-14：off 0/9、on 0/9** → 推理地板，规划救不回来（on 臂 2 局截尾）。
+- 意义：配合 MAP-16（0/25→14/22、pro 2/12→12/12）与 MAP-18（2/9→4/9），
+  planning 的结论现在是"4 图 × 2 模型 + 天花板/地板对照"，不再是"单图观察"。
+- commit：`feat(v14): negative controls for planning on ceiling and floor maps`

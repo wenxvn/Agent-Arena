@@ -2161,3 +2161,11 @@ recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12`
 - **reflection.v2**：MAP-16 上 2–12 决策即失败（触发不了）→ 改 MAP-22@150：
   `trigger_only` 2/6 vs `reflection_on` 1/6，触发 4/6 vs 5/6 → 暴露稳定、效果未检出（n=6）。
 - 验证：`verify_v14` 14/14、ruff/mypy 干净、全量 pytest 见 validation-report。
+
+## 2026-10-28 · V14 负向对照（planning）
+
+- 累计 **227 局 / 6 273 请求 / CNY 3.89636556**。
+- **MAP-26（天花板）**：off 9/9、on 9/9 → 规划不损害已成功路径（每成功局 ¥0.0024 → ¥0.0031）。
+- **MAP-14（推理地板）**：off 0/9、on 0/9 → 规划救不回推理地板（on 臂 2 局截尾）。
+- 与 MAP-16（flash 0/25→14/22、pro 2/12→12/12）和 MAP-18（2/9→4/9）合起来，
+  planning 的效果边界现在是 4 图 × 2 模型 + 天花板/地板对照。

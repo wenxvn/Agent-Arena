@@ -171,54 +171,54 @@
    "E2-a/off": {
     "censored": 0,
     "invalid_actions": 0,
-    "mean_cost_cny": 0.007287,
-    "mean_decisions": 9.555556,
-    "mean_input_tokens": 13972.888889,
-    "mean_requests": 9.555556,
-    "mechanism_failures": 7,
-    "rejected_actions": 7,
+    "mean_cost_cny": 0.007277,
+    "mean_decisions": 12.592593,
+    "mean_input_tokens": 12524.518519,
+    "mean_requests": 12.592593,
+    "mechanism_failures": 16,
+    "rejected_actions": 58,
     "replicates": [
      0,
      1,
      2
     ],
-    "runs": 9,
+    "runs": 27,
     "seeds": [
      0,
      1,
      2
     ],
-    "success_rate": 0.2222,
-    "successes": 2,
-    "total_cost_cny": 0.06557984,
+    "success_rate": 0.4074,
+    "successes": 11,
+    "total_cost_cny": 0.1964836,
     "unknown_cost_runs": 0,
-    "valid": 9
+    "valid": 27
    },
    "E2-a/on": {
-    "censored": 0,
+    "censored": 2,
     "invalid_actions": 0,
-    "mean_cost_cny": 0.017608,
-    "mean_decisions": 10.0,
-    "mean_input_tokens": 22035.111111,
-    "mean_requests": 12.777778,
-    "mechanism_failures": 5,
-    "rejected_actions": 1,
+    "mean_cost_cny": 0.026101,
+    "mean_decisions": 18.777778,
+    "mean_input_tokens": 27986.407407,
+    "mean_requests": 21.925926,
+    "mechanism_failures": 12,
+    "rejected_actions": 53,
     "replicates": [
      0,
      1,
      2
     ],
-    "runs": 9,
+    "runs": 27,
     "seeds": [
      0,
      1,
      2
     ],
-    "success_rate": 0.4444,
-    "successes": 4,
-    "total_cost_cny": 0.15847576,
+    "success_rate": 0.4815,
+    "successes": 13,
+    "total_cost_cny": 0.70472588,
     "unknown_cost_runs": 0,
-    "valid": 9
+    "valid": 27
    }
   },
   "E2-a|matrix|mimo-v2.6-pro": {
@@ -569,6 +569,42 @@
     }
    }
   },
+  "E2-a|MAP-14|req=90|mimo-v2.6-flash": {
+   "E2-a/off": {
+    "0": {
+     "censored": 0,
+     "runs": 3,
+     "successes": 0
+    },
+    "1": {
+     "censored": 0,
+     "runs": 3,
+     "successes": 0
+    },
+    "2": {
+     "censored": 0,
+     "runs": 3,
+     "successes": 0
+    }
+   },
+   "E2-a/on": {
+    "0": {
+     "censored": 1,
+     "runs": 3,
+     "successes": 0
+    },
+    "1": {
+     "censored": 1,
+     "runs": 3,
+     "successes": 0
+    },
+    "2": {
+     "censored": 0,
+     "runs": 3,
+     "successes": 0
+    }
+   }
+  },
   "E2-a|MAP-16|req=90|mimo-v2.6-flash": {
    "E2-a/off": {
     "0": {
@@ -687,6 +723,42 @@
     }
    }
   },
+  "E2-a|MAP-26|req=90|mimo-v2.6-flash": {
+   "E2-a/off": {
+    "0": {
+     "censored": 0,
+     "runs": 3,
+     "successes": 3
+    },
+    "1": {
+     "censored": 0,
+     "runs": 3,
+     "successes": 3
+    },
+    "2": {
+     "censored": 0,
+     "runs": 3,
+     "successes": 3
+    }
+   },
+   "E2-a/on": {
+    "0": {
+     "censored": 0,
+     "runs": 3,
+     "successes": 3
+    },
+    "1": {
+     "censored": 0,
+     "runs": 3,
+     "successes": 3
+    },
+    "2": {
+     "censored": 0,
+     "runs": 3,
+     "successes": 3
+    }
+   }
+  },
   "E3|MAP-16|req=90|mimo-v2.6-flash": {
    "E3/trigger_only": {
     "0": {
@@ -780,7 +852,7 @@
    }
   }
  },
- "experiments": 30,
+ "experiments": 34,
  "groups": {
   "E1-a|req=150": {
    "arms": {
@@ -1638,12 +1710,12 @@
     "E2-a/off": {
      "censored": 0,
      "invalid_actions": 0,
-     "mean_cost_cny": 0.003511,
-     "mean_decisions": 7.804348,
-     "mean_input_tokens": 8172.76087,
-     "mean_requests": 7.804348,
-     "mechanism_failures": 42,
-     "rejected_actions": 35,
+     "mean_cost_cny": 0.004569,
+     "mean_decisions": 9.578125,
+     "mean_input_tokens": 9193.015625,
+     "mean_requests": 9.578125,
+     "mechanism_failures": 51,
+     "rejected_actions": 86,
      "replicates": [
       0,
       1,
@@ -1651,28 +1723,28 @@
       3,
       4
      ],
-     "runs": 46,
+     "runs": 64,
      "seeds": [
       0,
       1,
       2,
       3
      ],
-     "success_rate": 0.087,
-     "successes": 4,
-     "total_cost_cny": 0.16151964,
+     "success_rate": 0.2031,
+     "successes": 13,
+     "total_cost_cny": 0.2924234,
      "unknown_cost_runs": 0,
-     "valid": 46
+     "valid": 64
     },
     "E2-a/on": {
-     "censored": 3,
+     "censored": 5,
      "invalid_actions": 5,
-     "mean_cost_cny": 0.024825,
-     "mean_decisions": 19.930233,
-     "mean_input_tokens": 31531.976744,
-     "mean_requests": 24.023256,
-     "mechanism_failures": 10,
-     "rejected_actions": 97,
+     "mean_cost_cny": 0.026455,
+     "mean_decisions": 20.885246,
+     "mean_input_tokens": 31363.803279,
+     "mean_requests": 24.754098,
+     "mechanism_failures": 17,
+     "rejected_actions": 149,
      "replicates": [
       0,
       1,
@@ -1680,18 +1752,18 @@
       3,
       4
      ],
-     "runs": 43,
+     "runs": 61,
      "seeds": [
       0,
       1,
       2,
       3
      ],
-     "success_rate": 0.6977,
-     "successes": 30,
-     "total_cost_cny": 1.0674946,
+     "success_rate": 0.6393,
+     "successes": 39,
+     "total_cost_cny": 1.61374472,
      "unknown_cost_runs": 1,
-     "valid": 43
+     "valid": 61
     }
    },
    "mechanism": {},
@@ -1703,6 +1775,87 @@
     "available": true,
     "left_arm": "E2-a/off",
     "pairs": [
+     {
+      "left_category": "mechanism_failure",
+      "left_cost": 0.01993504,
+      "pair_key": "MAP-14|seed=0|rep=0",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "budget_censored",
+      "right_cost": 0.0969274,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "mechanism_failure",
+      "left_cost": 0.00309092,
+      "pair_key": "MAP-14|seed=0|rep=1",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "mechanism_failure",
+      "right_cost": 0.03915236,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "mechanism_failure",
+      "left_cost": 0.002246,
+      "pair_key": "MAP-14|seed=0|rep=2",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "mechanism_failure",
+      "right_cost": 0.03160324,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "mechanism_failure",
+      "left_cost": 0.01336876,
+      "pair_key": "MAP-14|seed=1|rep=0",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "mechanism_failure",
+      "right_cost": 0.02232044,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "mechanism_failure",
+      "left_cost": 0.02458,
+      "pair_key": "MAP-14|seed=1|rep=1",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "mechanism_failure",
+      "right_cost": 0.0460042,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "mechanism_failure",
+      "left_cost": 0.00853444,
+      "pair_key": "MAP-14|seed=1|rep=2",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "budget_censored",
+      "right_cost": 0.11289716,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "mechanism_failure",
+      "left_cost": 0.02046176,
+      "pair_key": "MAP-14|seed=2|rep=0",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "mechanism_failure",
+      "right_cost": 0.04531376,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "mechanism_failure",
+      "left_cost": 0.01882764,
+      "pair_key": "MAP-14|seed=2|rep=1",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "mechanism_failure",
+      "right_cost": 0.04575524,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "mechanism_failure",
+      "left_cost": 0.01259416,
+      "pair_key": "MAP-14|seed=2|rep=2",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "mechanism_failure",
+      "right_cost": 0.08598284,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
      {
       "left_category": "mechanism_failure",
       "left_cost": 0.00361796,
@@ -1945,21 +2098,168 @@
       "right_category": "completed_success",
       "right_cost": 0.0213382,
       "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "completed_success",
+      "left_cost": 0.001978,
+      "pair_key": "MAP-26|seed=0|rep=0",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "completed_success",
+      "right_cost": 0.00436552,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "completed_success",
+      "left_cost": 0.00022184,
+      "pair_key": "MAP-26|seed=0|rep=1",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "completed_success",
+      "right_cost": 0.00202496,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "completed_success",
+      "left_cost": 0.00022184,
+      "pair_key": "MAP-26|seed=0|rep=2",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "completed_success",
+      "right_cost": 0.0029244,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "completed_success",
+      "left_cost": 0.001978,
+      "pair_key": "MAP-26|seed=1|rep=0",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "completed_success",
+      "right_cost": 0.00171056,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "completed_success",
+      "left_cost": 0.00022184,
+      "pair_key": "MAP-26|seed=1|rep=1",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "completed_success",
+      "right_cost": 0.00150696,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "completed_success",
+      "left_cost": 0.00022184,
+      "pair_key": "MAP-26|seed=1|rep=2",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "completed_success",
+      "right_cost": 0.00212912,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "completed_success",
+      "left_cost": 0.001978,
+      "pair_key": "MAP-26|seed=2|rep=0",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "completed_success",
+      "right_cost": 0.00205556,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "completed_success",
+      "left_cost": 0.00022184,
+      "pair_key": "MAP-26|seed=2|rep=1",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "completed_success",
+      "right_cost": 0.00213044,
+      "verdict": "DESCRIPTIVE_ONLY"
+     },
+     {
+      "left_category": "completed_success",
+      "left_cost": 0.00022184,
+      "pair_key": "MAP-26|seed=2|rep=2",
+      "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
+      "right_category": "completed_success",
+      "right_cost": 0.00144596,
+      "verdict": "DESCRIPTIVE_ONLY"
      }
     ],
     "preconditions": {
      "descriptive_only": true,
-     "independent_seed_count": 7,
+     "independent_seed_count": 13,
      "interval_precondition": "若要给区间，必须说明：抽样单位是环境 seed，区间只覆盖已观测 seed；重复次数只反映模型采样波动，不扩大 seed 覆盖。",
      "reasons": [
       "可比对仅 0 对（< 3）：样本不足以谈稳定性。",
-      "27 对因版本/采样/预算未登记而降级为描述性。"
+      "45 对因版本/采样/预算未登记而降级为描述性。"
      ],
      "sampling_unit": "environment_seed（同 seed 的重复观测不是独立样本）"
     },
     "right_arm": "E2-a/on",
     "summary": {
      "by_seed": [
+      {
+       "both_success": 0,
+       "comparable": 0,
+       "cost_cny_delta_mean": 0.04747,
+       "cost_cny_delta_total": 0.14241104,
+       "descriptive": 3,
+       "environment_seed": 0,
+       "incomparable": 0,
+       "input_tokens_delta_mean": 38367.333333,
+       "left_only": 0,
+       "left_successes": 0,
+       "map_id": "MAP-14",
+       "n_comparable_pairs": 0,
+       "neither": 0,
+       "paired_difference": null,
+       "pairs": 3,
+       "requests_delta_mean": 28.0,
+       "resource_delta_pairs": 3,
+       "resource_pairs": 3,
+       "right_only": 0,
+       "right_successes": 0
+      },
+      {
+       "both_success": 0,
+       "comparable": 0,
+       "cost_cny_delta_mean": 0.044913,
+       "cost_cny_delta_total": 0.1347386,
+       "descriptive": 3,
+       "environment_seed": 1,
+       "incomparable": 0,
+       "input_tokens_delta_mean": 39219.0,
+       "left_only": 0,
+       "left_successes": 0,
+       "map_id": "MAP-14",
+       "n_comparable_pairs": 0,
+       "neither": 0,
+       "paired_difference": null,
+       "pairs": 3,
+       "requests_delta_mean": 23.0,
+       "resource_delta_pairs": 3,
+       "resource_pairs": 3,
+       "right_only": 0,
+       "right_successes": 0
+      },
+      {
+       "both_success": 0,
+       "comparable": 0,
+       "cost_cny_delta_mean": 0.041723,
+       "cost_cny_delta_total": 0.12516828,
+       "descriptive": 3,
+       "environment_seed": 2,
+       "incomparable": 0,
+       "input_tokens_delta_mean": 33007.0,
+       "left_only": 0,
+       "left_successes": 0,
+       "map_id": "MAP-14",
+       "n_comparable_pairs": 0,
+       "neither": 0,
+       "paired_difference": null,
+       "pairs": 3,
+       "requests_delta_mean": 19.666667,
+       "resource_delta_pairs": 3,
+       "resource_pairs": 3,
+       "right_only": 0,
+       "right_successes": 0
+      },
       {
        "both_success": 0,
        "comparable": 0,
@@ -2113,23 +2413,89 @@
        "resource_pairs": 3,
        "right_only": 0,
        "right_successes": 0
+      },
+      {
+       "both_success": 0,
+       "comparable": 0,
+       "cost_cny_delta_mean": 0.002298,
+       "cost_cny_delta_total": 0.0068932,
+       "descriptive": 3,
+       "environment_seed": 0,
+       "incomparable": 0,
+       "input_tokens_delta_mean": 2020.0,
+       "left_only": 0,
+       "left_successes": 0,
+       "map_id": "MAP-26",
+       "n_comparable_pairs": 0,
+       "neither": 0,
+       "paired_difference": null,
+       "pairs": 3,
+       "requests_delta_mean": 1.666667,
+       "resource_delta_pairs": 3,
+       "resource_pairs": 3,
+       "right_only": 0,
+       "right_successes": 0
+      },
+      {
+       "both_success": 0,
+       "comparable": 0,
+       "cost_cny_delta_mean": 0.000975,
+       "cost_cny_delta_total": 0.00292496,
+       "descriptive": 3,
+       "environment_seed": 1,
+       "incomparable": 0,
+       "input_tokens_delta_mean": 1180.0,
+       "left_only": 0,
+       "left_successes": 0,
+       "map_id": "MAP-26",
+       "n_comparable_pairs": 0,
+       "neither": 0,
+       "paired_difference": null,
+       "pairs": 3,
+       "requests_delta_mean": 1.0,
+       "resource_delta_pairs": 3,
+       "resource_pairs": 3,
+       "right_only": 0,
+       "right_successes": 0
+      },
+      {
+       "both_success": 0,
+       "comparable": 0,
+       "cost_cny_delta_mean": 0.00107,
+       "cost_cny_delta_total": 0.00321028,
+       "descriptive": 3,
+       "environment_seed": 2,
+       "incomparable": 0,
+       "input_tokens_delta_mean": 1177.0,
+       "left_only": 0,
+       "left_successes": 0,
+       "map_id": "MAP-26",
+       "n_comparable_pairs": 0,
+       "neither": 0,
+       "paired_difference": null,
+       "pairs": 3,
+       "requests_delta_mean": 1.0,
+       "resource_delta_pairs": 3,
+       "resource_pairs": 3,
+       "right_only": 0,
+       "right_successes": 0
       }
      ],
      "comparable_pairs": 0,
-     "descriptive_pairs": 27,
+     "descriptive_pairs": 45,
      "evidence_level": "DESCRIPTIVE_ONLY",
      "incomparable_pairs": 0,
      "left_censored": 0,
-     "left_completed_runs": 27,
-     "left_mechanism_failures": 25,
-     "left_successes": 2,
-     "left_valid_runs": 27,
+     "left_completed_runs": 45,
+     "left_mechanism_failures": 34,
+     "left_successes": 11,
+     "left_valid_runs": 45,
      "note": "只有 COMPARABLE 的对进入方向统计；DESCRIPTIVE_ONLY 与 INCOMPARABLE 单独计数且不得当作效果证据。同一 seed 的重复观测不是新的环境样本，不能据此宣称跨环境泛化。",
-     "pairs": 27,
-     "right_censored": 2,
-     "right_mechanism_failures": 9,
-     "right_successes": 16,
-     "right_valid_runs": 27
+     "pairs": 45,
+     "right_censored": 4,
+     "right_mechanism_failures": 16,
+     "right_successes": 25,
+     "right_valid_runs": 45
     }
    },
    "seed_detail": {
@@ -2137,7 +2503,17 @@
      [
       0,
       0,
+      "OK"
+     ],
+     [
+      0,
+      0,
       "mechanism_failure"
+     ],
+     [
+      0,
+      1,
+      "OK"
      ],
      [
       0,
@@ -2167,12 +2543,27 @@
      [
       1,
       0,
+      "OK"
+     ],
+     [
+      1,
+      0,
       "mechanism_failure"
      ],
      [
       1,
       1,
+      "OK"
+     ],
+     [
+      1,
+      1,
       "mechanism_failure"
+     ],
+     [
+      1,
+      2,
+      "OK"
      ],
      [
       1,
@@ -2208,6 +2599,11 @@
       2,
       1,
       "mechanism_failure"
+     ],
+     [
+      2,
+      2,
+      "OK"
      ],
      [
       2,
@@ -2249,6 +2645,11 @@
      [
       0,
       0,
+      "budget_censored"
+     ],
+     [
+      0,
+      0,
       "mechanism_failure"
      ],
      [
@@ -2270,6 +2671,11 @@
       0,
       2,
       "budget_censored"
+     ],
+     [
+      0,
+      2,
+      "mechanism_failure"
      ],
      [
       0,
@@ -2309,6 +2715,11 @@
      [
       1,
       2,
+      "budget_censored"
+     ],
+     [
+      1,
+      2,
       "mechanism_failure"
      ],
      [
@@ -2328,13 +2739,28 @@
      ],
      [
       2,
+      0,
+      "mechanism_failure"
+     ],
+     [
+      2,
       1,
       "OK"
      ],
      [
       2,
+      1,
+      "mechanism_failure"
+     ],
+     [
+      2,
       2,
       "OK"
+     ],
+     [
+      2,
+      2,
+      "mechanism_failure"
      ],
      [
       2,
@@ -2847,14 +3273,14 @@
  "ledger": {
   "available": true,
   "duplicates": 0,
-  "entries": 382,
+  "entries": 454,
   "orphans": 0,
-  "requests": 5542,
-  "settled": 191,
-  "settled_cost_cny": "3.21921168",
-  "started": 191,
+  "requests": 6273,
+  "settled": 227,
+  "settled_cost_cny": "3.89636556",
+  "started": 227,
   "unknown_cost_runs": 3
  },
- "records": 191,
+ "records": 227,
  "schema": "v14-live-results-1"
 }
