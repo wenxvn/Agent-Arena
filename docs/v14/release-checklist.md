@@ -70,6 +70,10 @@
 
 ## 5. 最终状态
 
+> 2026-10-28：本阶段按用户决定**收尾**，标记 `EXPLORATORY_COMPLETE`
+> （tag `v14-stage2-exploratory-complete`）。收尾声明、用户接受的 3 项非阻断例外与
+> 第三阶段候选见 `docs/v14/stage2-closure.md`。
+
 - `ENGINEERING_VERIFIED`：**满足**。
 - `LIVE_EVIDENCE_VERIFIED`：**不满足（部分达成）**——308 局；规划已可复现、记忆瓶颈已定位、反思无差异；仍缺外部账单核对。
 - `STAGE_II_FINAL_READY`：**不满足**；

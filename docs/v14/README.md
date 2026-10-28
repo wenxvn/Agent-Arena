@@ -1,6 +1,7 @@
 # V14 · Agent Arena Lab 1.2 / Stage II Final Evidence & Delivery
 
-> **当前状态：`ENGINEERING_VERIFIED` / `LIVE_PARTIAL`。**
+> **当前状态：`EXPLORATORY_COMPLETE`（第二阶段探索已收尾）/ `ENGINEERING_VERIFIED` / `LIVE_PARTIAL`。**
+> Tag：`v14-stage2-exploratory-complete`。收尾声明见 `stage2-closure.md`。
 > 真实 MiMo 已执行 **308 局 / ¥5.55809328**（flash + pro，方案 A + 九轮补充）：
 > `planning.v2` 跨模型/跨图/留出 seed 复现（MAP-16 flash 0/25→14/22；pro 2/12→**12/12**；
 > MAP-18 2/9→4/9），并有负向对照（MAP-26 天花板 9/9→9/9、MAP-14 地板 0/9→0/9）；
@@ -28,6 +29,7 @@ CI 与产品交付验收。不新增世界、不改冻结规则、不做公网�
 
 | 文件 | 内容 |
 |---|---|
+| `stage2-closure.md` | **第二阶段收尾声明**（结论、用户接受的例外、第三阶段候选） |
 | `baseline-audit.md` | 最新 HEAD、门禁复跑、V13→V14 真实增量、19 项起点 |
 | `live-plan.md` | LIVE 方案 A 预注册（54 局 / ¥2.11 预估 / ¥5.00 上限） |
 | `live-report.md` | **真实 MiMo 执行报告**（39 局、账本、三组结果、停批事件） |

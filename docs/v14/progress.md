@@ -349,3 +349,15 @@
 - **自我更正（DCR-V14-10）**：把 `TENTATIVE / IMPROVED（方向性）` 改为
   `NO_DIFFERENCE`，并记录"n<15/臂 的二项对比不能作为方向性证据"的教训。
 - commit：`feat(v14): complete reflection power study and correct the earlier signal`
+
+## Batch 21 · 第二阶段探索收尾（用户决定，2026-10-28）
+
+- 用户问"第二阶段阶段性探索是否可以收尾"，答"可以（工程与探索层），但不能自宣最终实证"，
+  用户确认"可以，收尾。把所有必要的文件都 push"。
+- 新增 `docs/v14/stage2-closure.md`：结论分层、事实基线、4 条研究结论、3 项用户接受的例外、
+  6 个已修缺陷、未做项、第三阶段候选清单、复现入口。
+- 更新：`docs/scope/scope.md` 新增第 26 项（V14 · `EXPLORATORY_COMPLETE`）、
+  `研究总纲.md`（第二阶段收尾状态 + Release 5）、`AGENTS.md`、`docs/v14/README.md`、
+  `docs/v14/release-checklist.md`、`docs/v14/ci-evidence.md`（17 次连续成功）。
+- Tag：`v14-stage2-exploratory-complete`（HEAD `d11bd97`）。
+- commit：`docs(v14): close stage II exploration with accepted exceptions`

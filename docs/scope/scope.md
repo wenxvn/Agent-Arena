@@ -519,3 +519,49 @@ Spec [0018](../specs/0018-v5-six-map-measurement.md)
 - [x] 验证：**1639 pytest passed**、mypy 323 文件 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 15/15、`verify_v13` 18/18、`e2e_lab` 通过、`e2e_web` 通过。
 
 边界：`LAB_1_1_ENGINEERING_READY` 指 P0/P1/P2 工程交付完成；**真实模型效果仍是 `WAITING_USER_APPROVAL`**（V12 的 ¥6 已结束，余额不挪用）。CI 浏览器 E2E 仍非阻断（`NOT_VERIFIED`），Provider 后台账单对账为 `BLOCKED_EXTERNAL`。详见 `docs/v13/final-report.md` 与 `docs/v13/gap-audit.md`。
+
+### 26. V14 第二阶段探索收尾（Lab 1.2 · `EXPLORATORY_COMPLETE`）· closed（2026-10-28）
+
+按根目录 `研究提纲/V14Agent-Arena_V14_第二阶段最终实证与交付提纲.md` 执行 Batch 0–20。
+V8/V9/V10 冻结规则、账本与历史 trace 全程只读；V11/V12/V13 交付物保持可用。
+Tag：`v14-stage2-exploratory-complete`；收尾 HEAD `d11bd97`。
+
+- [x] Batch 0：HEAD `60c9ba2` 审计；10 项门禁复跑全绿（`pytest` 基线 1639 passed）。
+- [x] Batch 1（P0-2）：`validity_markdown` 的 `UNKNOWN`/`0` 分离（三档计数）；V13 预算表算术修正
+  （逐行 **221** 局、方案 A 54/¥2.11、B 186/¥5.60、C 221/¥10.97）；`lab/v14/data_audit.py` 协议隔离 + 差异表。
+- [x] Batch 2（P0-3）：8 元组观测条件身份、`budget_profile`/`sampling_profile`、seed 白名单、
+  三档可比性判定、配对统计（方向只取 `COMPARABLE`、缺失不补零）、`DESCRIPTIVE_ONLY` 前提。
+- [x] Batch 3–5（P0-4/5/6）：`memory.v2` / `planning.v2` / `reflection.v2` 的机制 probe、
+  单因子臂、成本归因、六态暴露计数与选择偏倚防护（全部 SIMULATED，零请求）。
+- [x] Batch 6：LIVE 方案 A 预注册（54 局 / ¥2.11 预估 / ¥5.00 上限，`PLANNED_ONLY`）。
+- [x] Batch 7（P1-1/2）：MAP-30 三维预算阶梯 + 瓶颈轴 + 保守区间；六图标签复算；MAP-19/20/29 只读候选审计。
+- [x] Batch 8（P1-3/4/6）：锚点三态 + 3 个正反 fixture；六维画像缺口（`failure_recovery = UNAVAILABLE`）；
+  结论强度三字段（`evidence_level` / `mechanism_exposure` / `effect_direction`）。
+- [x] Batch 9（P1-5/P2-3）：Lab 视图（首次分歧高亮、seed 分组、MAP-22 不画被拒移动、MAP-30 阶梯、可比性门禁）
+  + 7 张截图（含 430px 窄屏与深色）；`e2e_lab` 与 `a11y` 通过。
+- [x] Batch 10（P2-1）：`lab-e2e` 由 `continue-on-error` 改为**阻断门禁**；切换后第一次红灯
+  `40477841302` 保留并修复（显式 `wait_for` + 失败工件），此后**连续 17 次成功**。
+- [x] Batch 11（P2-2/4/5/6）：冷启动/损坏 manifest/并发写/TTL/1000 局导出实测；导出四类一致性；
+  SDK 8+3 项加固；本地账本复算 159/159、5 641 请求、¥5.43680012、0 重复 0 孤儿。
+- [x] Batch 12（P2-7）：`scripts/verify_v14.py` **14 项**事实边界；`docs/v14/` 全套 + CI 步骤 + 交付定稿。
+- [x] Batch 13–20（LIVE，用户授权 MiMo）：方案 A + 九轮补充，**308 局 / 10 034 请求 / CNY 5.55809328**
+  （43 父实验、0 重复、0 孤儿、4 次 `unknown_spend` 各自封账未重试）。
+  - **planning.v2**：MAP-16 flash `0/25 → 14/22`、**pro `2/12 → 12/12`**（留出 seed `0/3 → 3/3`）、
+    MAP-18 `2/9 → 4/9`；负向对照 MAP-26 天花板 `9/9 → 9/9`、MAP-14 地板 `0/9 → 0/9`。
+  - **memory.v2 `route_log`**：150 请求下仅 seed 2 `2/9 → 8/8`；公开轨迹归因显示写入全部成立
+    （recall 0.19–1.0）而仅 seed 2 折返下降 → 瓶颈是「记了不用」（DCR-V14-08）；
+    `route_write_every=1` 把 recall 提到 0.977 仍不降折返（**负向结果**，DCR-V14-09）。
+  - **reflection.v2**：暴露已解决（seed 2 两臂各 33–36 局全部触发），但
+    `trigger_only` **16/36** vs `reflection_on` **15/33**（Fisher p=1.0）→ **无可检出差异**；
+    n=13 时的 3/13 vs 7/13 已自我更正（DCR-V14-10）。
+- [x] 验证：**1791 pytest passed**、`mypy src` 334 文件 0 issues、`ruff check .` clean、lock 0、
+  freeze 9/9 unchanged、recompute 1093/1093、independent 0 违规、
+  `verify_v11` 7/7、`verify_v12` 15/15、`verify_v13` 18/18、**`verify_v14` 14/14**、
+  `e2e_lab` 通过、`a11y` 0 critical/serious/moderate、CI 连续 17 次阻断门禁成功。
+- [x] 收尾：`docs/v14/stage2-closure.md` 记录结论、用户接受的 3 项非阻断例外与第三阶段候选清单。
+
+边界：`EXPLORATORY_COMPLETE` 表示**阶段性探索完成、工程可信、研究问题已答**，
+**不表示** `STAGE_II_FINAL_READY`。三项例外由用户接受：① 外部账单 `BLOCKED_EXTERNAL`；
+② MiMo 采样未登记 → 全部配对 `DESCRIPTIVE_ONLY`（不宣称因果）；③ 效果结论不是“涨点”
+（提纲明确 `LIVE_EVIDENCE_VERIFIED` 不要求涨点）。第三阶段候选见 `stage2-closure.md` §7，
+本阶段不启动。详见 `docs/v14/final-report.md`、`docs/v14/live-report.md`、`docs/v14/gap-audit.md`。

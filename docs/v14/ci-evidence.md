@@ -96,24 +96,33 @@
 （与 CI 一致）。本机因 CDN 下载受限未能装成 chromium，**这一条仍是本地未验证项**；
 CI 侧通过真实运行验证。
 
-### 5.4 切换后的计数（最终）
+### 5.4 切换后的计数（最终，2026-10-28）
 
 | run ID | head SHA | `quality` | `lab-e2e` | 备注 |
 |---|---|---|---|---|
-| 40477841302 | `34a83fe9e343` | success | **failure** | 新断言时序问题（已修复，保留证据） |
+| 40477841302 | `34a83fe9e343` | success | **failure** | 新断言时序问题（已修复，**保留**） |
 | 40482235016 | `babe194f06fe` | success | success | 修复后第 1 次 |
-| 40482773825 | `eb23e430d2f4` | success | success | 第 2 次 |
-| 40486150217 | `4180b044cb5a` | success | success | 第 3 次 |
-| 40487657690 | `4f2b816673b8` | success | success | 第 4 次；`V14 Lab 1.2 离线验收` 步骤也通过 |
-| 40488122409 | `161db53f46ea` | success | success | 第 5 次 |
-| 40489612838 | `53b3e654b7fa` | success | success | 第 6 次；含 `AGENTS.md` / `engineering-log.md` 同步 |
-| 40490096357 | `951e300fe526` | success | success | 第 7 次 |
-| 40505409250 | `2015dccafafb` | success | success | 第 8 次（LIVE 首批结果） |
-| 40538466852 | `7b24f31d8e55` | success | success | 第 9 次（LIVE 补充实验） |
+| 40482773825 | `eb23e430d2f4` | success | success | 2 |
+| 40486150217 | `4180b044cb5a` | success | success | 3 |
+| 40487657690 | `4f2b816673b8` | success | success | 4（新增 `V14 Lab 1.2 离线验收` 步骤） |
+| 40488122409 | `161db53f46ea` | success | success | 5 |
+| 40489612838 | `53b3e654b7fa` | success | success | 6 |
+| 40490096357 | `951e300fe526` | success | success | 7 |
+| 40490558963 | `933c8e0f4620` | success | success | 8 |
+| 40505409250 | `2015dccafafb` | success | success | 9（LIVE 首批结果） |
+| 40538466852 | `7b24f31d8e55` | success | success | 10（LIVE 补充实验） |
+| 40539177767 | `ee7a89a60174` | success | success | 11 |
+| 40620478968 | `66e1bb05d0a3` | success | success | 12（泛化验证） |
+| 40627136090 | `6563bea807e9` | success | success | 13 |
+| 40628043954 | `b3a55b890ced` | success | success | 14（MAP-22 归因） |
+| 40633452366 | `e1aca6e3aa75` | success | success | 15（reflection 功效） |
+| 40637277395 | `675a5b0e6a4e` | success | success | 16（写入频率负向结果） |
+| 40649510281 | `d11bd9773931` | success | success | 17（reflection 结论更正） |
 
 | 指标 | 值 |
 |---|---|
-| 切换后连续成功 | **9 次**（远超提纲要求的 3 次） |
+| 切换后**连续成功** | **17 次**（远超提纲要求的 3 次） |
 | 切换后失败次数 | 1（`40477841302`，已修复，未删除记录） |
 | 当前门禁状态 | **阻断**（`lab-e2e` 失败会让整个 workflow 红） |
-| `verify_v14` 步骤 | 已在 `quality` job 中通过（`40487657690`） |
+| `verify_v14` 步骤 | 已在 `quality` job 中通过（自 `40487657690` 起每次都在跑） |
+
