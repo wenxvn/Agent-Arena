@@ -391,3 +391,21 @@
 - 实测：`ruff check .` clean（排除 results 后）、mypy 334 文件 0 issues、`uv lock --check` 通过、
   freeze 通过、`verify_v14` 15/15、**1791 pytest passed**。
 - commit：`11eaf04`（results）、`33b154e`（ruff exclude）、`c9115e1`（研究总纲计数同步）
+
+## Batch 24 · 交付后维护审计（2026-10-28）
+
+- 触发：用户要求「第二阶段交付后检查整个项目，清理过期/冗余文件，补完善，然后 push」。
+- 只读审计范围：git 状态与 tag、README / 研究总纲 / scope / architecture、`docs/v13`–`docs/v14`
+  全部状态声明、CI 实证、628 份 Markdown 相对链接、773 个跟踪文件的重复内容扫描。
+- 结论：代码与门禁无回归（1791 passed / mypy 334 文件 0 issues / ruff clean）；问题全在文档。
+- 修复 13 类（明细见 `docs/maintenance/2026-10-28-maintenance.md`）：
+  - 过期状态：`agent-studies.md`（`LIVE_PENDING` → 已执行 + 真实结论表）、`live-plan.md`
+    与 `docs/v13/*` 加「已执行 / 由 V14 承接」横幅；
+  - 数字统一：1790→1791、`verify_v14` 14→15 项、CI 17/18/21/22→**24 次**；
+  - README 补 V14 现状段、修正 `results/` 入库口径、补齐 V13/V14 门禁；
+  - `scope.md` At a glance 补 V14 行；`architecture.md` 补 `lab/v14/` 模块；
+  - `validation-report.md` 追加第 16 节最终复跑；`engineering-log.md` 加阅读顺序说明。
+- 清理：`.v14tmp/`（59 个一次性 patch）与 `__pycache__` 删除；`runs/`、`logs/`、`results/` 不动。
+- 验证（本轮实测）：`uv lock --check`、ruff、mypy、**1791 pytest passed**（162.33s）、freeze 9/9、
+  recompute 1093/1093、independent 0 违规、`verify_v11/12/13/14` = **7/15/18/15**。
+- 未复跑：浏览器 E2E / a11y（Playwright CDN 受限），沿用本地最近通过 + 远端 CI 双 job success。
