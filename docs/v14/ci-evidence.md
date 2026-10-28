@@ -1,6 +1,9 @@
 # V14 远端 CI 证据
 
-- 查询时间：2026-10-27（本地）
+- 查询时间：2026-10-27；2026-10-28 补追维护提交（run `40672947276`）
+
+> 计数只追到本文档最后一次更新。此后每推一次 CI 都会 +1，**不再逐次回写**；
+> 最新状态以 5.4 表最后一行 + `GET /repos/wenxvn/Agent-Arena/actions/runs` 为准。
 - 仓库：`wenxvn/Agent-Arena`
 - 查询方式：GitHub REST API（未认证，只读）
   `GET /repos/wenxvn/Agent-Arena/actions/runs` 与 `/actions/runs/{id}/jobs`
@@ -124,11 +127,12 @@ CI 侧通过真实运行验证。
 | 40659803453 | `ecf9a11d03d7` | success | success | 21（新 trace 字段回归检查） |
 | 40653998531 | `378b849885c8` | success | success | 22（同 SHA 的 tag 触发运行，`40654091107` 的重复） |
 | 40660424924 | `0808504b4e49` | success | success | 23 |
-| 40666398316 | `544fb905564d` | success | success | 24（当前 `main` HEAD） |
+| 40666398316 | `544fb905564d` | success | success | 24 |
+| 40672947276 | `dfd9f703ebae` | success | success | 25（2026-10-28 交付后维护提交） |
 
 | 指标 | 值 |
 |---|---|
-| 切换后**连续成功** | **24 次**（23 个独立 commit；`378b849` 因 tag 推送有 2 次同 SHA 运行） |
+| 切换后**连续成功** | **25 次**（24 个独立 commit；`378b849` 因 tag 推送有 2 次同 SHA 运行） |
 | 切换后失败次数 | 1（`40477841302`，已修复，未删除记录） |
 | 当前门禁状态 | **阻断**（`lab-e2e` 失败会让整个 workflow 红） |
 | `verify_v14` 步骤 | 已在 `quality` job 中通过（自 `40487657690` 起每次都在跑） |

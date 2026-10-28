@@ -220,7 +220,7 @@ uv run python scripts/verify_v14.py
 
 当前 V14 结果：**1791 pytest passed**、mypy 334 文件 0 issues、ruff clean、lock 0、
 freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、
-`verify_v11/12/13/14` = **7/15/18/15**、`lab-e2e` 为阻断门禁且切换后连续 24 次成功。
+`verify_v11/12/13/14` = **7/15/18/15**、`lab-e2e` 为阻断门禁且切换后连续 24 次以上成功。
 详见 [V14 验证报告](docs/v14/validation-report.md) 与 [V14 交付清单](docs/v14/release-checklist.md)。
 
 ## 研究背景（简版）

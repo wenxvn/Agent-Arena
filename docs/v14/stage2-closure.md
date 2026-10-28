@@ -13,7 +13,7 @@
 
 | 判定 | 状态 | 说明 |
 |---|---|---|
-| `ENGINEERING_VERIFIED` | ✅ **满足** | 19/19 项有可核查证据；10 项门禁全绿；CI 连续 24 次阻断门禁成功 |
+| `ENGINEERING_VERIFIED` | ✅ **满足** | 19/19 项有可核查证据；10 项门禁全绿；CI 连续 24 次以上阻断门禁成功 |
 | **阶段性探索完成**（`EXPLORATORY_COMPLETE`） | ✅ **满足** | 3 个 v2 策略均有真实数据 + 机制证据 + 负向结果 + DCR，且无一条是“看起来成功”的假结论 |
 | `LIVE_EVIDENCE_VERIFIED` | ⚠️ **部分**（用户已接受例外） | 308 局真实数据；但配对全为 `DESCRIPTIVE_ONLY`、外部账单未对 |
 | `STAGE_II_FINAL_READY` | ❌ **不满足** | 缺“显著性/因果级”证据与外部账单核对；不因收尾而改写 |
@@ -31,7 +31,7 @@
 | 冻结校验 | freeze 9/9 unchanged；recompute 1093/1093；independent 0 违规 | 同上 |
 | 验收脚本 | `verify_v11` 7/7、`verify_v12` 15/15、`verify_v13` 18/18、**`verify_v14` 15/15** | 同上 |
 | 浏览器 | `e2e_lab` 通过（含 V14 新断言）；`a11y` 浅/深色 0 critical/serious/moderate | 同上 |
-| 远端 CI | `lab-e2e` 为**阻断**门禁，切换后**连续 24 次成功** | `docs/v14/ci-evidence.md` |
+| 远端 CI | `lab-e2e` 为**阻断**门禁，切换后**连续 24 次以上成功** | `docs/v14/ci-evidence.md` |
 
 ## 3. 这一阶段真正立住的 4 条研究结论
 
@@ -159,7 +159,7 @@ independent 0 违规；v11/v12/v13 = 7/15/18；E2E `{"ok": true}`。
 | `docs/v14/release-checklist.md` | 交付验收清单 |
 | `docs/v14/decisions.md` | D-V14-001…005、DCR-V14-01…10 |
 | `docs/v14/validation-report.md` | 全部实际运行的命令与结果 |
-| `docs/v14/ci-evidence.md` | 远端 CI 逐条证据（24 次连续成功） |
+| `docs/v14/ci-evidence.md` | 远端 CI 逐条证据（24 次以上连续成功） |
 | `docs/v14/experiment-protocol.md` | 可比性、重复、门禁、批准边界 |
 | `docs/v14/data-validity.md` / `pairing-audit.md` / `budget-audit.md` / `validity-diff.md` | 数据口径复算 |
 | `docs/v14/agent-studies.md` | 三个 v2 策略的机制证据 |

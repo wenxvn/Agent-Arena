@@ -314,7 +314,7 @@ CI 变更：`quality` job 新增 `V14 Lab 1.2 离线验收` 步骤（`scripts/ve
 | `uv run python scripts/verify_v12.py` | **15/15**，`ok: true` |
 | `uv run python scripts/verify_v13.py` | **18/18**，`ok: true` |
 | `uv run python scripts/verify_v14.py` | **15/15**，`failed: []`，`external_requests: 0` |
-| 远端 CI | `lab-e2e` 阻断门禁切换后**连续 24 次成功**（最新 `40666398316` / `544fb905564d`） |
+| 远端 CI | `lab-e2e` 阻断门禁切换后**连续 24 次以上成功**（最新 `40666398316` / `544fb905564d`） |
 
 未在本轮复跑：浏览器 E2E 与可访问性审计（依赖 Playwright CDN，本机下载受限），
 以最近一次本地通过与远端 CI 双 job success 为准；Provider 后台账单仍 `BLOCKED_EXTERNAL`。

@@ -541,7 +541,7 @@ Tag：`v14-stage2-exploratory-complete`；收尾 HEAD `d11bd97`。
 - [x] Batch 9（P1-5/P2-3）：Lab 视图（首次分歧高亮、seed 分组、MAP-22 不画被拒移动、MAP-30 阶梯、可比性门禁）
   + 7 张截图（含 430px 窄屏与深色）；`e2e_lab` 与 `a11y` 通过。
 - [x] Batch 10（P2-1）：`lab-e2e` 由 `continue-on-error` 改为**阻断门禁**；切换后第一次红灯
-  `40477841302` 保留并修复（显式 `wait_for` + 失败工件），此后**连续 24 次成功**。
+  `40477841302` 保留并修复（显式 `wait_for` + 失败工件），此后**连续 24 次以上成功**。
 - [x] Batch 11（P2-2/4/5/6）：冷启动/损坏 manifest/并发写/TTL/1000 局导出实测；导出四类一致性；
   SDK 8+3 项加固；本地账本复算 159/159、5 641 请求、¥5.43680012、0 重复 0 孤儿。
 - [x] Batch 12（P2-7）：`scripts/verify_v14.py` **15 项**事实边界；`docs/v14/` 全套 + CI 步骤 + 交付定稿。
@@ -558,7 +558,7 @@ Tag：`v14-stage2-exploratory-complete`；收尾 HEAD `d11bd97`。
 - [x] 验证：**1791 pytest passed**、`mypy src` 334 文件 0 issues、`ruff check .` clean、lock 0、
   freeze 9/9 unchanged、recompute 1093/1093、independent 0 违规、
   `verify_v11` 7/7、`verify_v12` 15/15、`verify_v13` 18/18、**`verify_v14` 15/15**、
-  `e2e_lab` 通过、`a11y` 0 critical/serious/moderate、CI 连续 24 次阻断门禁成功。
+  `e2e_lab` 通过、`a11y` 0 critical/serious/moderate、CI 连续 24 次以上阻断门禁成功。
 - [x] 收尾：`docs/v14/stage2-closure.md` 记录结论、用户接受的 3 项非阻断例外与第三阶段候选清单。
 - [x] 仓库规则变更（用户 2026-10-28 决定）：**`results/` 纳入版本库**，用于让 `docs/` 引用的历史基准数字可核对；`runs/` 与 `logs/` 继续不入库（487M / 3.8M，且 `runs/` 含本机绝对路径）。排除 `*.lock` / `__pycache__/` / `*.pyc`；说明见 `results/README.md`。
 
