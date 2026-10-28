@@ -78,7 +78,7 @@ def _features(run: dict[str, Any]) -> dict[str, Any]:
     return {
         "run_id": result.get("run_id"),
         "agent": result.get("agent"),
-        "arm": "on" if config.get("route_log") else "off",
+        "arm": _arm_label(config),
         "model": result.get("model"),
         "seed": int(result.get("environment_seed") or 0),
         "replicate_index": int(result.get("replicate_index") or 0),
@@ -97,6 +97,12 @@ def _features(run: dict[str, Any]) -> dict[str, Any]:
         "route_recall": (metrics.get("map22.v10.route_recall") or {}).get("value"),
         "wasted_moves": (metrics.get("map22.v10.wasted_moves") or {}).get("value"),
     }
+
+def _arm_label(config: dict[str, Any]) -> str:
+    if not config.get("route_log"):
+        return "off"
+    every = int(config.get("route_write_every") or 2)
+    return "on" if every == 2 else f"on-we{every}"
 
 def _opposite(bearing: str) -> str:
     return {"north": "south", "south": "north", "east": "west", "west": "east"}.get(

@@ -323,3 +323,17 @@
   - 达到 80% 功效约需每臂 40 局。
 - 结论变化：`NOT_MEASURABLE` → **`TENTATIVE` / `IMPROVED（方向性）`**。
 - commit：`feat(v14): reflection power run, 13 per arm on the solvable instance`
+
+
+## Batch 19 · 修复尝试："记录未被使用"能否靠配置修好（负向结果）
+
+- 假设：`route_write_every=2` 让模型看到过时路线 → 改成 1（每步写）应提高利用率。
+- 单因子实验：MAP-22 @150，`route_log=True` 两臂，唯一变量 `route_write_every`（2 vs 1），
+  seeds 0/1/3 × 3 重复 = 9 局/臂。执行器新增 `--e1-write-every CONTROL TREATMENT`。
+- 结果（累计 **265 局 / 8 177 请求 / ¥4.77211952**）：
+  - 成功率：`we=2` 在 0/1/3 上 0/11、`we=1` 0/9 → 无差异；
+  - `route_recall`：`we=1` 更高（seed 0 **0.977**）；
+  - **折返数不降**：seed 0 `off 25.2 / we=2 28.5 / we=1 28.0`。
+- 结论（**DCR-V14-09**）：记忆可用性不是瓶颈；提高写入频率无效。
+  要修必须改策略（另立版本），配置层已排除。
+- commit：`feat(v14): negative result on memory write frequency`

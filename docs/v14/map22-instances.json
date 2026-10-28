@@ -25,15 +25,27 @@
    "successes": 0
   },
   {
+   "key": "seed=0|on-we1|req=150",
+   "max_moves_used": 44,
+   "mean_backtracks": 28.0,
+   "mean_decisions": 47.333,
+   "mean_distinct_signs": 4.0,
+   "mean_moves_rejected": 1.0,
+   "mean_revisit_steps": 43.333,
+   "mean_route_recall": 0.977,
+   "runs": 3,
+   "successes": 0
+  },
+  {
    "key": "seed=0|on|req=150",
    "max_moves_used": 44,
-   "mean_backtracks": 28.667,
-   "mean_decisions": 49.667,
-   "mean_distinct_signs": 4.0,
-   "mean_moves_rejected": 1.333,
-   "mean_revisit_steps": 45.667,
-   "mean_route_recall": 0.189,
-   "runs": 3,
+   "mean_backtracks": 28.5,
+   "mean_decisions": 49.333,
+   "mean_distinct_signs": 4.5,
+   "mean_moves_rejected": 1.167,
+   "mean_revisit_steps": 44.833,
+   "mean_route_recall": 0.587,
+   "runs": 6,
    "successes": 0
   },
   {
@@ -73,15 +85,27 @@
    "successes": 0
   },
   {
-   "key": "seed=1|on|req=150",
+   "key": "seed=1|on-we1|req=150",
    "max_moves_used": 44,
-   "mean_backtracks": 28.333,
+   "mean_backtracks": 27.667,
    "mean_decisions": 48.333,
    "mean_distinct_signs": 3.0,
    "mean_moves_rejected": 1.0,
    "mean_revisit_steps": 45.333,
-   "mean_route_recall": 1.0,
+   "mean_route_recall": 0.402,
    "runs": 3,
+   "successes": 0
+  },
+  {
+   "key": "seed=1|on|req=150",
+   "max_moves_used": 44,
+   "mean_backtracks": 28.0,
+   "mean_decisions": 51.167,
+   "mean_distinct_signs": 3.0,
+   "mean_moves_rejected": 1.0,
+   "mean_revisit_steps": 48.167,
+   "mean_route_recall": 0.674,
+   "runs": 6,
    "successes": 0
   },
   {
@@ -157,15 +181,27 @@
    "successes": 0
   },
   {
+   "key": "seed=3|on-we1|req=150",
+   "max_moves_used": 44,
+   "mean_backtracks": 20.0,
+   "mean_decisions": 51.0,
+   "mean_distinct_signs": 6.0,
+   "mean_moves_rejected": 1.0,
+   "mean_revisit_steps": 45.0,
+   "mean_route_recall": 0.682,
+   "runs": 3,
+   "successes": 0
+  },
+  {
    "key": "seed=3|on|req=150",
    "max_moves_used": 44,
-   "mean_backtracks": 24.4,
-   "mean_decisions": 51.0,
-   "mean_distinct_signs": 5.2,
+   "mean_backtracks": 23.5,
+   "mean_decisions": 50.625,
+   "mean_distinct_signs": 5.5,
    "mean_moves_rejected": 1.0,
-   "mean_revisit_steps": 45.8,
-   "mean_route_recall": 0.695,
-   "runs": 5,
+   "mean_revisit_steps": 45.125,
+   "mean_route_recall": 0.69,
+   "runs": 8,
    "successes": 0
   }
  ],
@@ -192,6 +228,6 @@
    "seed": 3
   }
  ],
- "runs": 65,
+ "runs": 83,
  "schema": "v14-map22-instances-1"
 }

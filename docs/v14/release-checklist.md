@@ -3,7 +3,7 @@
 - 版本：Agent Arena Lab 1.2 / Stage II Final Evidence & Delivery
 - 日期：2026-10-27
 - 基线 HEAD：`60c9ba2b64a3bd8d5cd549a7b76d0f3eb3ad092a`（V14 起点）
-- 真实付费执行：**247 局 / 7 278 请求 / CNY 4.25913568**（方案 A + 七轮补充；3 局 unknown_spend 预留）
+- 真实付费执行：**265 局 / 8 177 请求 / CNY 4.77211952**（方案 A + 八轮补充；3 局 unknown_spend 预留）
 
 > 判定分成三层，**不允许混写**：
 > `ENGINEERING_VERIFIED` / `LIVE_EVIDENCE_VERIFIED` / `STAGE_II_FINAL_READY`。

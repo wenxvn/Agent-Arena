@@ -1,7 +1,7 @@
 # V14 · Agent Arena Lab 1.2 / Stage II Final Evidence & Delivery
 
 > **当前状态：`ENGINEERING_VERIFIED` / `LIVE_PARTIAL`。**
-> 真实 MiMo 已执行 **247 局 / ¥4.25913568**（flash + pro，方案 A + 七轮补充）：
+> 真实 MiMo 已执行 **265 局 / ¥4.77211952**（flash + pro，方案 A + 八轮补充）：
 > `planning.v2` 跨模型/跨图/留出 seed 复现（MAP-16 flash 0/25→14/22；pro 2/12→**12/12**；
 > MAP-18 2/9→4/9），并有负向对照（MAP-26 天花板 9/9→9/9、MAP-14 地板 0/9→0/9）；
 > `route_log` 仅在 MAP-22 seed 2 且 ≥150 请求时有效（2/9→8/8）；

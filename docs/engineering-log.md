@@ -2186,3 +2186,11 @@ recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12`
   两臂各 13/13 触发；Fisher 双侧 p=0.226、Wilson 区间重叠 → 方向性正向但未达显著。
 - 结论从 `NOT_MEASURABLE` 调整为 `TENTATIVE / IMPROVED（方向性）`；
   80% 功效需约 40 局/臂。
+
+## 2026-10-28 · V14 "记录未被使用"的修复尝试（负向）
+
+- 累计 **265 局 / 8 177 请求 / CNY 4.77211952**。
+- 单因子：`route_write_every` 2 vs 1（MAP-22 @150，seeds 0/1/3，9 局/臂）。
+- 结果：`we=1` 把 `route_recall` 提到 **0.977**（seed 0），但折返数 28.0（`off` 25.2）、
+  成功率 0/9 → **记忆可用性不是瓶颈**（DCR-V14-09）。
+- 含义：要改进必须动策略（例如显式"按记录返程"），配置层已排除。

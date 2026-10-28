@@ -116,6 +116,32 @@ def _specs(args: argparse.Namespace) -> list[dict[str, Any]]:
         experiment_kind=args.kind,
         name_prefix=f"v14-{args.phase}" if args.phase else "v14",
     )
+    if args.e1_write_every:
+        from agent_arena.lab.contracts import AgentArm
+
+        control_every, treatment_every = args.e1_write_every
+        for item in specs:
+            if item["group"] != "E1-a":
+                continue
+            is_control = item["arm_id"].endswith("control")
+            spec = item["spec"]
+            arm = spec.agent_arms[0]
+            config = {
+                **arm.config,
+                "route_log": True,
+                "route_mode": "context_only",
+                "route_write_every": control_every if is_control else treatment_every,
+            }
+            item["spec"] = spec.model_copy(
+                update={
+                    "agent_arms": [
+                        AgentArm(
+                            agent_id=arm.agent_id, config=config, label=arm.label
+                        )
+                    ]
+                }
+            )
+            item["config_hash"] = item["spec"].agent_arms[0].config_hash
     if args.e3_control == "trigger_only":
         from agent_arena.lab.contracts import AgentArm
 
@@ -241,6 +267,14 @@ def main() -> int:
         choices=["disabled", "trigger_only"],
         default="disabled",
         help="E3 的对照臂：disabled=完全不反思；trigger_only=只判定触发不请求（单因子问法）",
+    )
+    parser.add_argument(
+        "--e1-write-every",
+        nargs=2,
+        type=int,
+        default=None,
+        metavar=("CONTROL", "TREATMENT"),
+        help="E1 改为 route_write_every 的单因子对照（两臂都 route_log=True）",
     )
     parser.add_argument(
         "--map-override",

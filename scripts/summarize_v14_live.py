@@ -85,8 +85,11 @@ def _experiments() -> list[dict[str, Any]]:
 
 def _group_of(agent_id: str, config: dict[str, Any]) -> tuple[str, str]:
     if agent_id == "memory.v2":
-        arm = "on" if config.get("route_log") else "off"
-        return "E1-a", f"E1-a/{arm}"
+        if not config.get("route_log"):
+            return "E1-a", "E1-a/off"
+        every = int(config.get("route_write_every") or 2)
+        # route_write_every 是 V14 的第二组单因子（记录频率）；默认值 2 记为 "on"。
+        return "E1-a", ("E1-a/on" if every == 2 else f"E1-a/on-we{every}")
     if agent_id == "planning.v2":
         arm = "on" if config.get("enabled") else "off"
         return "E2-a", f"E2-a/{arm}"
