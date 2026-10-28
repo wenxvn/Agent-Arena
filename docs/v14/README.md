@@ -10,7 +10,7 @@
 > 因此 **不是** `STAGE_II_FINAL_READY`——缺负向对照与账单核对，不得宣称收官。
 >
 > 验收：`uv run python scripts/verify_v14.py` → **15/15 通过**；
-> 全量 `uv run pytest -q` → **1790 passed**。
+> 全量 `uv run pytest -q` → **1791 passed**。
 
 ## 这是什么
 
@@ -32,7 +32,7 @@ CI 与产品交付验收。不新增世界、不改冻结规则、不做公网�
 | `stage2-closure.md` | **第二阶段收尾声明**（结论、用户接受的例外、第三阶段候选） |
 | `baseline-audit.md` | 最新 HEAD、门禁复跑、V13→V14 真实增量、19 项起点 |
 | `live-plan.md` | LIVE 方案 A 预注册（54 局 / ¥2.11 预估 / ¥5.00 上限） |
-| `live-report.md` | **真实 MiMo 执行报告**（39 局、账本、三组结果、停批事件） |
+| `live-report.md` | **真实 MiMo 执行报告**（308 局、账本、三组结果、停批事件） |
 | `live-results.md` / `.json` | 逐组数据明细（只读聚合生成） |
 | `map22-instances.md` / `.json` | MAP-22 实例差异归因（公开轨迹，解释「为什么只有 seed 2」） |
 | `engineering-boundaries.md` | 冷启动、异常负载、长历史导出、SDK 加固、账本复算 |
@@ -58,7 +58,7 @@ CI 与产品交付验收。不新增世界、不改冻结规则、不做公网�
 ```bash
 uv sync --extra web
 uv run agent-arena web          # 单机 Lab（无 Key 可跑 SIMULATED 全流程）
-uv run python scripts/verify_v14.py                 # 14 项 V14 事实边界
+uv run python scripts/verify_v14.py                 # 15 项 V14 事实边界
 uv run python scripts/audit_v14_data.py --write
 uv run python scripts/audit_v14_agents.py --write
 uv run python scripts/audit_v14_maps.py --write

@@ -1,12 +1,17 @@
 # V14 Agent 机制与 LIVE 状态
 
-- 版本：`v14-agent-studies-1`（2026-10-27）
-- 数据来源：`SIMULATED`（离线确定性 probe）+ `HISTORICAL`（V12 只读 CSV）
-- V14 新增真实付费请求：**0**
+> **状态：已执行（2026-10-28）。** 本文 §1–§3 保留 2026-10-27 的离线 probe 与预检登记快照，
+> 不代表当前 LIVE 状态。真实 MiMo 已于用户授权后执行 **308 局 / ¥5.55809328**，
+> 结果见 [live-report.md](live-report.md)、[live-results.md](live-results.md) 与
+> [stage2-closure.md](stage2-closure.md)；§4 汇总表已更新为最终状态。
+> 下面各节里的 `PLANNED_ONLY` / `LIVE_PENDING` 是**当时的登记值**，不是现在的结论。
+
+- 版本：`v14-agent-studies-1`（2026-10-27；2026-10-28 补注 LIVE 状态）
+- 数据来源：`SIMULATED`（离线确定性 probe）+ `HISTORICAL`（V12 只读 CSV）+ `LIVE`（V14 真实 MiMo）
+- V14 离线部分新增真实付费请求：**0**（LIVE 由独立的 V14 授权账本承担）
 - 三种证据严格分列：`SIMULATED` / `HISTORICAL` / `LIVE`
 
-> 本文件不构成执行授权。所有真实模型效果一律 `LIVE_PENDING`：
-> 未获用户对"模型 / 矩阵 / 总费用上限"的明确批准前，不得提交任何 LIVE 请求。
+> 本文件不构成执行授权。
 
 ## 1. Memory（P0-4）
 
@@ -193,11 +198,13 @@
 
 ## 4. 汇总状态
 
-| 机制 | 离线机制证据 | 单因子臂 | 预检登记 | 真实收益 |
+| 机制 | 离线机制证据 | 单因子臂 | LIVE 预检登记 | 真实效果（LIVE，2026-10-28） |
 |---|---|---|---|---|
-| Memory（`memory.v2`） | `SUPPORTED` | E1-a / E1-b | `PLANNED_ONLY` | `LIVE_PENDING` |
-| Planning（`planning.v2`） | `SUPPORTED` | E2-a / E2-b / E2-c | `PLANNED_ONLY` | `LIVE_PENDING` |
-| Reflection（`reflection.v2`） | `SUPPORTED` | E3 三臂 | `PLANNED_ONLY` | `LIVE_PENDING` |
+| Memory（`memory.v2`） | `SUPPORTED` | E1-a / E1-b | 已执行 | `CONDITIONAL`：仅 MAP-22 seed 2 且 ≥150 请求 `2/9 → 8/8`；seed 0/1/3 两臂全 0；瓶颈是「记了不用」（DCR-V14-08/09） |
+| Planning（`planning.v2`） | `SUPPORTED` | E2-a / E2-b / E2-c | 已执行 | `POSITIVE`：MAP-16 flash `0/25 → 14/22`、pro `2/12 → 12/12`；MAP-18 `2/9 → 4/9`；天花板 9/9→9/9、地板 0/9→0/9 |
+| Reflection（`reflection.v2`） | `SUPPORTED` | E3 三臂 | 已执行 | `NO_DIFFERENCE`：暴露稳定，`trigger_only` 16/36 vs `on` 15/33，Fisher p=1.0 |
+
+全部为**描述性**结论（采样支持状态 `UNKNOWN` → 配对 `DESCRIPTIVE_ONLY`），不构成因果断言。
 
 ## 5. 不支持的主张
 

@@ -1,7 +1,12 @@
 # V13 文档索引（Agent Arena Lab 1.1）
 
+> **历史版本。** V13 本轮确实没有付费请求，但它在 `docs/v13/` 里标记为 `WAITING_USER_APPROVAL`
+> 的真实模型验证**已由 V14 承接**：`memory.v2` / `planning.v2` / `reflection.v2` 已于 2026-10-27/28
+> 在 MiMo 上执行 308 局（¥5.55809328）。本文与各 study 文件中的 `WAITING_USER_APPROVAL`
+> 保留为**当时状态**，当前结论看 [V14 收尾声明](../v14/stage2-closure.md)。
+
 - **状态**：`LAB_1_1_ENGINEERING_READY`
-- **真实付费请求**：0 局 / CNY 0（`WAITING_USER_APPROVAL`）
+- **真实付费请求**：0 局 / CNY 0（`WAITING_USER_APPROVAL`；**后续由 V14 承接**）
 - **起始 HEAD**：`32e27826eab33093d2d5d640d08f47bbd4974df3`
 
 ## 先读哪一篇

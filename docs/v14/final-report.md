@@ -9,12 +9,12 @@
 
 | 判定 | 是否满足 | 说明 |
 |---|---|---|
-| `ENGINEERING_VERIFIED` | **满足** | 1790 项离线测试、mypy/ruff、冻结与复算、V11–V14 验收、浏览器 E2E、a11y 全部通过 |
+| `ENGINEERING_VERIFIED` | **满足** | 1791 项离线测试、mypy/ruff、冻结与复算、V11–V14 验收、浏览器 E2E、a11y 全部通过 |
 | `LIVE_EVIDENCE_VERIFIED` | **不满足（部分达成）** | 308 局：规划已跨模型/跨图/留出 seed 复现 + 天花板地板对照；记忆已定位「记录未被使用」且配置层修复无效；反思 33–36 局/臂无可检出差异；缺外部账单核对 |
 | `STAGE_II_FINAL_READY` | **不满足** | 缺少 LEGIT 的 LIVE 证据分母；按提纲不得宣称收官 |
 
 V14 的真实增量不是"再写一套工程"，而是**修掉了会误导结论的测量缺陷**，并把
-"不许夸大的边界"变成可执行检查（`scripts/verify_v14.py` 14 项）。
+"不许夸大的边界"变成可执行检查（`scripts/verify_v14.py` 15 项）。
 
 ## 1. 修掉的五个实质问题
 
@@ -95,8 +95,9 @@ V14 的真实增量不是"再写一套工程"，而是**修掉了会误导结论
 见 `docs/v14/gap-audit.md`。汇总：
 
 - **15 项 `DONE`**；
-- **P0-4 / P0-5** 机制与真实运行均完成，但效果证据不足（零差异 / 臂不完整）；
-- **P0-6** `NO_TREATMENT_EXPOSURE`（零干预）；
+- **P0-4** 机制与真实运行均完成，效果**条件性**（仅 MAP-22 seed 2 @≥150 请求）；
+- **P0-5** 机制与真实运行均完成，效果为**强描述性正向信号 + 天花板/地板负向对照**；
+- **P0-6** 暴露已达成（33–36 局/臂），但效果**无可检出差异**（Fisher p=1.0）；
 - **1 项**（P2-6）本地 `DONE`、外部账单 `BLOCKED_EXTERNAL`。
 
 ## 5. 复现方式
@@ -104,7 +105,7 @@ V14 的真实增量不是"再写一套工程"，而是**修掉了会误导结论
 ```bash
 uv sync --extra web
 uv run agent-arena web                  # 单机 Lab（无 Key，SIMULATED 全流程）
-uv run python scripts/verify_v14.py     # 14 项 V14 事实边界
+uv run python scripts/verify_v14.py     # 15 项 V14 事实边界
 uv run python scripts/audit_v14_data.py --write
 uv run python scripts/audit_v14_agents.py --write
 uv run python scripts/audit_v14_maps.py --write

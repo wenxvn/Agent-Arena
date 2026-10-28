@@ -1,5 +1,9 @@
 # V13 最终报告：Agent Arena Lab 1.1
 
+> **后续状态（2026-10-28）**：本报告中的 `WAITING_USER_APPROVAL` 已由 V14 承接——
+> V14 在独立账本上完成了三个 v2 策略的真实 MiMo 对照（308 局 / ¥5.55809328）。
+> V13 自己的 0 局 / CNY 0 仍是史实；当前结论见 [V14 收尾声明](../v14/stage2-closure.md)。
+
 - **结论**：`LAB_1_1_ENGINEERING_READY`（P0 6/6、P1 6/6、P2 7/7 工程交付；
   真实模型部分 `WAITING_USER_APPROVAL`）
 - **真实付费实验**：**本轮 0 局、CNY 0**（未获 V13 授权；V12 的 ¥6 已结束，余额不挪用）

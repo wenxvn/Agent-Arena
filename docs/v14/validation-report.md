@@ -295,3 +295,26 @@ CI 变更：`quality` job 新增 `V14 Lab 1.2 离线验收` 步骤（`scripts/ve
 | `uv run python scripts/verify_v14.py` | 14/14 |
 | `uv run ruff check .` / `uv run mypy src` | 通过 / 334 files 0 issues |
 | `uv run pytest -q` | **1791 passed**，113.36s |
+
+## 16. 最终复跑（维护轮，2026-10-28）
+
+> 上文第 10–15 节保留了当时批次的原始数字（`14/14`、`1790 passed` 等），**不回头改写**。
+> 本节是收尾后的统一复跑，作为当前事实基线。
+
+| 命令 | 结果 |
+|---|---|
+| `uv lock --check` | 通过（65 packages） |
+| `uv run ruff check .` | clean |
+| `uv run mypy src` | 334 files，0 issues |
+| `uv run pytest -q` | **1791 passed**，162.33s |
+| `uv run python -m agent_arena.v10.freeze verify` | 9/9 unchanged |
+| `uv run python -m agent_arena.v10.recompute --check` | 1093/1093，0 mismatch |
+| `uv run python -m agent_arena.v10.independent_check --check` | 30 图 / 144 实例 / 0 违规；回放确定 30/30；seed 互异 30/30 |
+| `uv run python scripts/verify_v11.py` | **7/7**，`ok: true` |
+| `uv run python scripts/verify_v12.py` | **15/15**，`ok: true` |
+| `uv run python scripts/verify_v13.py` | **18/18**，`ok: true` |
+| `uv run python scripts/verify_v14.py` | **15/15**，`failed: []`，`external_requests: 0` |
+| 远端 CI | `lab-e2e` 阻断门禁切换后**连续 24 次成功**（最新 `40666398316` / `544fb905564d`） |
+
+未在本轮复跑：浏览器 E2E 与可访问性审计（依赖 Playwright CDN，本机下载受限），
+以最近一次本地通过与远端 CI 双 job success 为准；Provider 后台账单仍 `BLOCKED_EXTERNAL`。

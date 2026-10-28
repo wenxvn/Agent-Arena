@@ -5,18 +5,18 @@
 
 - 生成：2026-10-27
 - 基线 HEAD：`60c9ba2b64a3bd8d5cd549a7b76d0f3eb3ad092a`
-- 真实付费请求：**39 局 / ¥0.72437412**（用户授权 MiMo，方案 A 子集，已停批封账）
+- 真实付费请求：**308 局 / 10 034 请求 / ¥5.55809328**（用户授权 MiMo flash + pro，方案 A + 九轮补充，已封账）
 
 ## 0. 一句话结论
 
-**15 项 `DONE`；P0-4/P0-5 已拿到部分 LIVE 证据（机制成立、效果未定）；P0-6 为 `NO_TREATMENT_EXPOSURE`（零干预）；1 项本地 `DONE` + 外部 `BLOCKED_EXTERNAL`（P2-6）。**
+**15 项 `DONE`；P0-4 为条件性 LIVE 证据、P0-5 为强描述性正向信号 + 负向对照、P0-6 暴露达成但无可检出差异；1 项本地 `DONE` + 外部 `BLOCKED_EXTERNAL`（P2-6）。**
 
 - LIVE 执行：真实 MiMo（flash + pro），**308 局 / 10 034 请求 / ¥5.55809328**（4 局 unknown_spend 预留，0 重复 0 孤儿）；
-- 停批原因：3 次 `unknown_spend`（DCR-V14-05）；reflection 先在 MAP-22 零暴露（DCR-V14-04），换 MAP-19 与 MAP-22@150 后暴露稳定。
+- 停批原因：4 次 `unknown_spend`（DCR-V14-05）；reflection 先在 MAP-22 零暴露（DCR-V14-04），换 MAP-19 与 MAP-22@150 后暴露稳定。
 
 - 没有任何一项被静默跳过：未完成的都写明了原因与需要谁授权。
-- LIVE 证据从"零"变为"部分"：E1-a 零差异、E2-a 臂不完整、E3 零暴露 → `LIVE_EVIDENCE_VERIFIED` 与 `STAGE_II_FINAL_READY` 仍**不满足**。
-- 验收：`scripts/verify_v14.py` **15/15**；全量 pytest **1790 passed**。
+- LIVE 证据从"零"变为"部分"：E1-a 仅 1 个实例有效、E2-a 跨模型/跨图复现但有天花板地板边界、E3 暴露稳定却无差异 → `LIVE_EVIDENCE_VERIFIED` 部分、`STAGE_II_FINAL_READY` 仍**不满足**。
+- 验收：`scripts/verify_v14.py` **15/15**；全量 pytest **1791 passed**。
 
 ## 1. P0（6 项）
 
@@ -50,7 +50,7 @@
 | P2-4 | 自动报告/导出一致性 | `PARTIAL` | `DONE` | `export_consistency`（行数/分母/模式/空值）+ 真实导出样本；`engineering-boundaries.md` 第 6 节 |
 | P2-5 | 第三方 Agent SDK 加固 | `PARTIAL` | `DONE` | `sdk_hardening`（8 项 + 旧签名/异常隔离/预算网关 3 项）；`engineering-boundaries.md` 第 4 节 |
 | P2-6 | 本地账本/外部账单核对 | `DONE`/`BLOCKED_EXTERNAL` | `DONE（本地）/ BLOCKED_EXTERNAL（外部）` | `ledger_recompute` 复算 159/159、5641 请求、¥5.43680012、0 重复 0 孤儿；外部账单 `NO_EXTERNAL_BILL_PROVIDED` |
-| P2-7 | V14 最终交付封装 | `PARTIAL` | `DONE` | `docs/v14/` 16 份文档 + 7 张截图 + `scripts/verify_v14.py`（14 项）+ CI 步骤 |
+| P2-7 | V14 最终交付封装 | `PARTIAL` | `DONE` | `docs/v14/` 16 份文档 + 7 张截图 + `scripts/verify_v14.py`（15 项）+ CI 步骤 |
 
 ## 4. 为什么 P0-4/5/6 仍不能标 `DONE`
 
@@ -59,7 +59,7 @@
 | 层 | 状态 | 证据 |
 |---|---|---|
 | 工程/机制（离线） | `DONE` | 确定性 probe、单因子臂、成本归因、暴露门禁、选择偏倚防护 |
-| 真实运行是否存在 | `DONE` | 39 局真实 MiMo，账本自洽（0 重复/0 孤儿） |
+| 真实运行是否存在 | `DONE` | 308 局真实 MiMo，账本自洽（0 重复/0 孤儿） |
 | 真实**效果**证据 | **部分** | E2-a 跨模型/跨图/留出 seed + 天花板地板对照；E1-a 仅 seed 2 有效（已定位为「记录未被使用」，配置层修复无效）；E3 33–36 局/臂无可检出差异 |
 
 因此写作 `DONE（机制）/ LIVE ...`，不写 `DONE`——否则等于把"没测出效果"说成"已验证"。

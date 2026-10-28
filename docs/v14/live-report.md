@@ -27,7 +27,7 @@
 
 | 项 | 值 |
 |---|---|
-| 父实验 | 40 |
+| 父实验 | 43（`live-results.json` 复算） |
 | 局数 | **308** |
 | started / settled | 308 / 308（**0 孤儿、0 重复结算**） |
 | 请求 | **10 034** |
@@ -35,7 +35,8 @@
 | 费用未知局 | **4**（Provider 错误，预留保留、不计结算） |
 | 停批事件 | 4 次 `unknown_spend` → 各自停批、**未重试**（DCR-V14-05） |
 
-状态分布：`SUCCEEDED` 45、`FAILED` 127、`BUDGET_REACHED` 6、`PROVIDER_ERROR` 3（其余为中断保留）。
+状态分布（**早期快照**，第 40 个父实验时的手记，未随后续九轮更新；总量与账本以 `live-results.json` 为准）：
+`SUCCEEDED` 45、`FAILED` 127、`BUDGET_REACHED` 6、`PROVIDER_ERROR` 3。逐组成功/截尾数见下文 §2–§6。
 
 ## 2. `planning.v2`：唯一稳定的正向结论
 

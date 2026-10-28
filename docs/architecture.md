@@ -29,6 +29,7 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 | `src/agent_arena/web/` | V11 服务层：RunService、持久化、预算、catalog、导出、自检；不依赖 Streamlit | Streamlit 渲染、地图规则 |
 | `src/agent_arena/lab/` | V12 Lab：策略契约与注册表、受控模型网关、单局 Runner、父实验与队列、配对比较、证据级诊断、六图 view-model、导出与报告、SDK | 修改 V10 规则、直接调 Provider、读写 V8/V9/V10 账本 |
 | `src/agent_arena/lab/v13/` | V13 深化层（**只读**）：可比性画像与单变量检查、重复稳定性、消融模板与证据包、六图构念效度与 MAP-30 阶梯、七层失败归因、六维机制画像、模板化报告、账本审计与账单对账、SDK 自检、压力测试 | 创建环境、发 Provider 请求、改历史文件或账本 |
+| `src/agent_arena/lab/v14/` | V14 收尾层（**只读分析**）：8 元组条件身份与三档可比性、`UNKNOWN`/`0` 分离、协议隔离、预算阶梯与保守区间、诊断锚点三态、能力画像缺口、结论强度三字段、Lab 视图、账本复算、LIVE 预注册与批准门禁 | 发 Provider 请求、改冻结规则/历史 trace/已封账本 |
 | `src/agent_arena/web/index.py` | V13 只读历史索引：懒加载首页、mtime 增量刷新、服务端分页与聚合（有界内存） | 事件/回放读取、写 manifest |
 
 ## 当前闭环
@@ -37,7 +38,7 @@ Environment 保存完整世界状态并执行规则。Agent 只接收 Observatio
 2. 用环境规则测试固定该世界行为；V10 起有 154+172 条指标与公式级复算。
 3. 接入 Agent（Legacy React/Memory/Planning，或 V12 `basic/memory/planning/reflection`），运行受预算限制的循环。
 4. 保存 JSON Episode Trace 与 `result.json`。
-5. 离线复算指标、配对对照与失败归因；V11 网页可启动/回放/导出单局，V12 Lab 可跑多架构矩阵，V13 在其上加**重复稳定性、可比性协议、消融模板、构念效度、分层归因、机制画像、模板报告与账本审计**。
+5. 离线复算指标、配对对照与失败归因；V11 网页可启动/回放/导出单局，V12 Lab 可跑多架构矩阵，V13 在其上加**重复稳定性、可比性协议、消融模板、构念效度、分层归因、机制画像、模板报告与账本审计**，V14 再加**条件身份/可比性门禁、未知与零分离、协议隔离、结论强度三字段与 LIVE 批准阻断**。
 
 ## 稳定契约
 

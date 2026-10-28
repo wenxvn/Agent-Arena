@@ -4,6 +4,30 @@ Agent Arena 是一个用于学习、运行和比较 LLM Agent 行为的本地实
 
 ![地图大厅](docs/v11/screenshots/01-home.png)
 
+## V14：第二阶段探索收尾（现状）
+
+第二阶段（V12 Lab 1.0 → V13 Lab 1.1 → V14 Lab 1.2）的**阶段性探索已收尾**：
+状态 `EXPLORATORY_COMPLETE` / `ENGINEERING_VERIFIED` / `LIVE_PARTIAL`
+（tag `v14-stage2-exploratory-complete`）。
+
+```bash
+uv run python scripts/verify_v14.py      # 15 项事实边界检查（零请求）
+```
+
+在用户授权下完成真实 MiMo 执行 **308 局 / 10 034 请求 / CNY 5.55809328**
+（43 个父实验，0 重复结算、0 孤儿；4 次 `unknown_spend` 各自停批、未重试）。
+
+| 策略 | 结论 | 证据 |
+|---|---|---|
+| `planning.v2` | **唯一可复现的正向结论** | MAP-16 flash `0/25 → 14/22`；**pro `2/12 → 12/12`**（含留出 seed `0/3 → 3/3`）；MAP-18 `2/9 → 4/9`；天花板 MAP-26 `9/9 → 9/9`、地板 MAP-14 `0/9 → 0/9` |
+| `memory.v2` `route_log` | **瓶颈是「记了不用」** | 仅 MAP-22 seed 2 且 ≥150 请求 `2/9 → 8/8`；写入在全部 seed 成立（recall 0.19–1.0），但 `route_write_every=1` 把 recall 抬到 0.977 仍不降折返（负向结果） |
+| `reflection.v2` | **暴露稳定、效果无可检出差异** | `trigger_only` 16/36 vs `on` 15/33，Fisher p=1.0；早先 n=13 的「方向性正向」已自我更正 |
+
+**这不是 `STAGE_II_FINAL_READY`**：缺显著性/因果级证据与 Provider 账单核对，
+三项非阻断例外已由用户接受。全部结论为描述性（采样支持状态 `UNKNOWN`）。
+详见 [收尾声明](docs/v14/stage2-closure.md)、[真实结果](docs/v14/live-report.md)、
+[最终报告](docs/v14/final-report.md)、[差距清单](docs/v14/gap-audit.md)。
+
 ## V13：Agent Arena Lab 1.1（可信、可复现、可诊断）
 
 在 V12 Lab 1.0 之上回答下一层问题：**这些架构差异到底可不可信、机制有没有被激活、
@@ -36,9 +60,9 @@ V13 的真实增量（不是重复 V12）：
 - **模板化报告**：零 LLM，四级结论 + 逐数字锚点，负面结果保留；
 - **账本审计**：只读一致性检查 + 可选脱敏账单对账（无账单明确标注）。
 
-**本轮没有新的真实付费请求**（0 局 / CNY 0）。V12 的 ¥6 授权已结束，余额不挪用；
-真实模型验证状态是 `WAITING_USER_APPROVAL`，方案见
-[V13 LIVE 预算申请](docs/v13/live-budget-proposal.md)。
+**V13 本轮没有新的真实付费请求**（0 局 / CNY 0）；它的三个 v2 策略后来由
+[V14](docs/v14/stage2-closure.md) 在独立账本上完成真实对照（308 局 / ¥5.55809328）。
+V13 自己的预算申请保留为口径复核记录：[V13 LIVE 预算申请](docs/v13/live-budget-proposal.md)。
 
 详见 [V13 最终报告](docs/v13/final-report.md)、[实验协议](docs/v13/experiment-protocol.md)、
 [差距审计](docs/v13/gap-audit.md)、[交付清单](docs/v13/release-checklist.md)。
@@ -173,7 +197,9 @@ uv run agent-arena verify-model --provider ollama
 - 自检报告：`runs/v11/selfcheck.json`、`runs/v12/selfcheck.json`
 - 演示数据包（可提交）：`docs/v12/demo/`、`docs/v12/screenshots/`
 - 历史研究：`runs/v8/`、`runs/v9/`、`runs/v10/`（只读，不清理）
-- `runs/`、`results/`、`logs/`、`.env` 均不入库
+- `runs/`、`logs/`、`.env` 不入库（本机生成物，`runs/` 含本机绝对路径）
+- **`results/` 入库**：只含 `benchmark_v3` / `evaluation_v2` 的聚合 JSON/CSV，
+  是 `docs/` 里历史基准数字的可核对来源；规则见 [`results/README.md`](results/README.md)
 
 ## 质量门禁
 
@@ -188,9 +214,14 @@ uv run python -m agent_arena.v10.recompute --check
 uv run python -m agent_arena.v10.independent_check --check
 uv run python scripts/verify_v11.py
 uv run python scripts/verify_v12.py
+uv run python scripts/verify_v13.py
+uv run python scripts/verify_v14.py
 ```
 
-当前 V12 结果：**1525 pytest passed**、mypy 306 文件 0 issues、ruff clean、lock 0、freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 15/15。详见 [V12 验证报告](docs/v12/validation-report.md)。
+当前 V14 结果：**1791 pytest passed**、mypy 334 文件 0 issues、ruff clean、lock 0、
+freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、
+`verify_v11/12/13/14` = **7/15/18/15**、`lab-e2e` 为阻断门禁且切换后连续 24 次成功。
+详见 [V14 验证报告](docs/v14/validation-report.md) 与 [V14 交付清单](docs/v14/release-checklist.md)。
 
 ## 研究背景（简版）
 
@@ -198,6 +229,8 @@ uv run python scripts/verify_v12.py
 - V10 真实 MiMo：152 局有效，成功 57/152；结算 ¥2.27994884 + 未知预留 ¥0.13312000。
 - V11 真实 MiMo 冒烟：3 局（MAP-01/19/30），58 次已记录请求，结算 ¥0.04637556，未知预留 ¥0.073728；0 成功为环境规则/预算终局，未修改规则凑成功。
 - V12 完成多架构实验层（父实验 + 子局、三种架构 + 反思、六图诊断与可视化、第三方 SDK）；真实 MiMo 共 **20 个实验 / 159 局**，结算 **¥5.43680012**、未知消费 ¥0（批准 ¥6.00）。主矩阵 24/53 成功，同条件重复的结局翻转率 22.2%（2 次观测 4/18）/ 25.0%（3 次观测 3/12）——**1 次/条件不足以为架构排名**。四个测量缺陷（DCR-V12-01…04）与一个"触发器未激活"（DCR-V12-05）都已定位并记录。
+- V13 完成 Lab 1.1 深化层（重复身份、可比性协议、三个 v2 策略、七层归因、模板报告、账本审计）；本轮 0 局真实付费请求，全部 LIVE 留给下一轮。
+- V14 完成第二阶段探索收尾：修掉 6 个会误导结论的测量口径缺陷、完成 308 局真实 MiMo 对照（¥5.55809328）。结论是 planning 可复现、memory 瓶颈在「记了不用」、reflection 无可检出差异；**不宣称任何架构更优，也不宣称 `STAGE_II_FINAL_READY`**。第三阶段候选尚未启动。
 - 完整实验历史见 [开发进度](docs/scope/scope.md)、[工程记录](docs/engineering-log.md)、[V12 真实结果](docs/v12/mimo-results.md) 与 `docs/v8`–`docs/v12`。哪些提纲项没做见 [V12 差距清单](docs/v12/gap-audit.md)。
 
 ## 边界
@@ -210,6 +243,12 @@ uv run python scripts/verify_v12.py
 
 ## 文档入口
 
+- [V14 收尾声明（第二阶段结论）](docs/v14/stage2-closure.md)
+- [V14 最终报告](docs/v14/final-report.md)
+- [V14 真实结果](docs/v14/live-report.md)
+- [V14 差距清单](docs/v14/gap-audit.md)
+- [V14 验证报告](docs/v14/validation-report.md)
+- [V13 最终报告](docs/v13/final-report.md)
 - [V12 最终报告](docs/v12/final-report.md)
 - [V12 实验协议](docs/v12/experiment-protocol.md)
 - [V12 指标与归因](docs/v12/metrics-and-attribution.md)

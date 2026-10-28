@@ -15,7 +15,7 @@
 | 1 | 依赖锁 | `uv lock --check` | 通过 |
 | 2 | 代码规范 | `uv run ruff check .` | 通过 |
 | 3 | 类型检查 | `uv run mypy src` | 334 files，0 issues |
-| 4 | 离线测试 | `uv run pytest -q` | **1790 passed** |
+| 4 | 离线测试 | `uv run pytest -q` | **1791 passed** |
 | 5 | V8/V9/V10 冻结 | `uv run python -m agent_arena.v10.freeze verify` | 全部 unchanged |
 | 6 | 公式级复算 | `uv run python -m agent_arena.v10.recompute --check` | 1093/1093 |
 | 7 | 指标独立复核 | `uv run python -m agent_arena.v10.independent_check --check` | 0 违规 |
@@ -84,5 +84,5 @@
 ```bash
 uv sync --extra web
 uv run agent-arena web                 # 单机 Lab，无 Key 可跑完整 SIMULATED 流程
-uv run python scripts/verify_v14.py    # 14 项 V14 事实边界
+uv run python scripts/verify_v14.py    # 15 项 V14 事实边界
 ```

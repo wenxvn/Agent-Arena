@@ -50,7 +50,8 @@ CI 配置见 [ci.yml](../.github/workflows/ci.yml)。同一分支的新提交可
 | 研究证据与设计验收 | `docs/research/`、`docs/world-design-v3/` | 保留原身份、分母、删失与限制 |
 | 重要事件 | `docs/engineering-log.md` | 记录原因、改动、验证、下一步和提交 |
 | 工作方法 | `skills/`、本文件 | 统一入口，按需读取模板 |
-| 运行数据与本机环境 | `.env`、`.venv/`、`runs/`、`results/`、`logs/`、缓存 | 默认不入库；整理不能抹掉实验证据 |
+| 运行数据与本机环境 | `.env`、`.venv/`、`runs/`、`logs/`、缓存 | 默认不入库；整理不能抹掉实验证据 |
+| 基准聚合证据 | `results/` | **自 V14 起入库**（仅 `benchmark_v3` / `evaluation_v2` 聚合 JSON/CSV，规则见 `results/README.md`）；`*.lock`、`__pycache__/` 仍忽略 |
 
 删除前确认文件没有独立信息或用途，且引用已修复。历史负结果、原始提纲、冻结清单、账本和未提交用户文件均保留。缺失的本地结果应标注缺失状态，不伪造重建，也不为了修复链接而启动实验。
 
