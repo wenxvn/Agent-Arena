@@ -375,3 +375,19 @@
   HEAD / 轮次 / pytest / CI 计数。
 - 实测：`verify_v14` **15/15**；ruff/mypy 干净；CI `40655849128`（`6fe5a20`）双 job success。
 - commit：`chore(v14): add live trace field regression check and sync counts`
+
+## Batch 23 · `results/` 入库（D-V14-006，2026-10-28）
+
+- 用户决定：只推 `results/`，`runs/` 与 `logs/` 继续不入库。
+- 变更：
+  - `.gitignore`：移除 `results/`，保留 `runs/` + `logs/`，新增 `*.lock`（9 个 0 字节运行时锁）；
+  - 入库 **141 个文件 / 7.5M**（140 个聚合结果 + `results/README.md`）；
+  - `results/README.md`：说明内容、阶段归属、5 条口径提醒、不在此目录的东西、校验命令、卫生说明；
+  - `pyproject.toml`：ruff `extend-exclude` 增加 `results`——里面 4 个 `.py` 是 V3 Muse 驱动脚本的
+    **唯一副本**（冻结证据，不应被格式化）；不加会让 `ruff check .` 从 clean 变成 37 errors；
+  - `AGENTS.md` 项目约束、`docs/scope/scope.md` 第 26 项、`docs/v14/decisions.md` D-V14-006 同步。
+- 卫生扫描（入库前）：`sk-` / `Bearer` / `api_key=` / `OPENAI_API_KEY` **0 命中**；
+  `D:\wenxvn` / `10556` / `C:\Users` **0 命中**；`.lock` / `__pycache__` / `*.pyc` 已排除。
+- 实测：`ruff check .` clean（排除 results 后）、mypy 334 文件 0 issues、`uv lock --check` 通过、
+  freeze 通过、`verify_v14` 15/15、**1791 pytest passed**。
+- commit：`11eaf04`（results）、`33b154e`（ruff exclude）、`c9115e1`（研究总纲计数同步）
