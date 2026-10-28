@@ -32,6 +32,7 @@ CI 与产品交付验收。不新增世界、不改冻结规则、不做公网�
 | `live-plan.md` | LIVE 方案 A 预注册（54 局 / ¥2.11 预估 / ¥5.00 上限） |
 | `live-report.md` | **真实 MiMo 执行报告**（39 局、账本、三组结果、停批事件） |
 | `live-results.md` / `.json` | 逐组数据明细（只读聚合生成） |
+| `map22-instances.md` / `.json` | MAP-22 实例差异归因（公开轨迹，解释「为什么只有 seed 2」） |
 | `engineering-boundaries.md` | 冷启动、异常负载、长历史导出、SDK 加固、账本复算 |
 | `pairing-audit.md` | V12 三组消融按 8 元组条件身份重新配对 |
 | `budget-audit.md` | V13 预算申请算术复核（221 局 / ¥10.97） |

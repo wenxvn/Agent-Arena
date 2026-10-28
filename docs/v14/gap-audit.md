@@ -25,7 +25,7 @@
 | P0-1 | HEAD/CI 证据基线审计 | `PARTIAL` | `DONE` | `baseline-audit.md`（10 项门禁复跑）、`ci-evidence.md`（10 次 run + 7 次连续 `lab-e2e` success） |
 | P0-2 | 历史数据/构念效度口径修正 | `DEFECT` | `DONE` | `lab/v13/validity.py` 三档计数；`lab/v14/data_audit.py`；`docs/v14/data-validity.md`；`budget-audit.md`；14 + 114 测试 |
 | P0-3 | 重复实验与单因子公平性强化 | `PARTIAL` | `DONE` | `lab/v14/conditions.py`（8 元组身份/seed 白名单/三档判定/配对字段）；`docs/v14/pairing-audit.md`、`experiment-protocol.md`、`live-plan.md`；33 测试 |
-| P0-4 | Memory v2 有效性方案与消融 | `PARTIAL` | `DONE（机制）/ LIVE 条件性` | `lab/v14/agent_studies.py`；**LIVE E1-a 65 局**：90 请求 0/10 vs 0/10；150 请求 seed 2 **2/9 → 8/8**、seed 0/1/3 两臂全 0；每成功局 ¥0.283→¥0.059；`live-report.md` 第 3 节 |
+| P0-4 | Memory v2 有效性方案与消融 | `PARTIAL` | `DONE（机制）/ LIVE 条件性` | `lab/v14/agent_studies.py`；**LIVE E1-a 65 局**：90 请求 0/10 vs 0/10；150 请求 seed 2 **2/9 → 8/8**、seed 0/1/3 两臂全 0；每成功局 ¥0.283→¥0.059；**公开轨迹归因**：写入在全部 seed 成立（recall 0.19–1.0），仅 seed 2 折返下降（16.4→5.0）→ 瓶颈是「记录未被使用」（DCR-V14-08）；`live-report.md` 第 3 节、`map22-instances.md` |
 | P0-5 | Planning v2 收益–成本验证 | `PARTIAL` | `DONE（机制）/ LIVE 强描述性信号 + 负向对照` | `lab/v14/planning_study.py`；**LIVE E2-a 121 局 / 4 图 × 2 模型**：MAP-16 flash 0/25→14/22、pro 2/12→**12/12**（留出 seed `0/3→3/3`）、MAP-18 2/9→4/9、**MAP-26 天花板 9/9→9/9**、**MAP-14 地板 0/9→0/9**；`live-report.md` 第 2 节 |
 | P0-6 | Reflection v2 激活与效果验证 | `PARTIAL` | `DONE（离线）/ LIVE 暴露达成·效果未检出` | `lab/v14/reflection_study.py`；MAP-22@90 零暴露（DCR-V14-04）→ MAP-19 3/9 触发（地板）→ **MAP-22@150 单因子：trigger_only 2/6 vs on 1/6，触发 4/6 vs 5/6**；n=6 无功效 → `NOT_MEASURABLE`；`live-report.md` 第 4 节 |
 

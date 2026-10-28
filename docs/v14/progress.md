@@ -296,3 +296,18 @@
 - 意义：配合 MAP-16（0/25→14/22、pro 2/12→12/12）与 MAP-18（2/9→4/9），
   planning 的结论现在是"4 图 × 2 模型 + 天花板/地板对照"，不再是"单图观察"。
 - commit：`feat(v14): negative controls for planning on ceiling and floor maps`
+
+
+## Batch 17 · MAP-22 实例差异归因（只读，零请求）
+
+- 新增 `scripts/analyze_v14_map22.py`：只读 65 局 `memory.v2` 公开轨迹
+  （`current_sign` / `result` / `moves_used` / `ruin_recorded`），按 seed × 臂 × 预算聚合
+  折返数、重复访问步、发现路标数、`route_recall`、最大已用移动。
+- 关键发现（**DCR-V14-08**）：写入在所有 seed 都成立（recall 0.19–1.0），
+  但只有 seed 2 的折返数下降（16.4→5.0、重复访问 42.8→18.1）；
+  seed 3 的 recall 0.695 却与 off 臂折返持平（24.4 vs 25.0）。
+  → 失败模式是**「记录了却没有据此改动作」**，不是「记不住」。
+- 客观难度基线：4 个 seed 的最优移动数 10/12/12/14，都远低于 44 步预算
+  → 失败不是「路太长」，而是「走错路/折返太多」。
+- 产出：`docs/v14/map22-instances.md` / `.json`。
+- commit：`feat(v14): attribute MAP-22 instance difference from public traces`

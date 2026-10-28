@@ -1,0 +1,197 @@
+{
+ "by_bucket": [
+  {
+   "key": "seed=0|off|req=150",
+   "max_moves_used": 44,
+   "mean_backtracks": 25.167,
+   "mean_decisions": 48.167,
+   "mean_distinct_signs": 4.0,
+   "mean_moves_rejected": 1.0,
+   "mean_revisit_steps": 44.167,
+   "mean_route_recall": 0.062,
+   "runs": 6,
+   "successes": 0
+  },
+  {
+   "key": "seed=0|off|req=90",
+   "max_moves_used": 44,
+   "mean_backtracks": 25.5,
+   "mean_decisions": 47.25,
+   "mean_distinct_signs": 5.25,
+   "mean_moves_rejected": 1.25,
+   "mean_revisit_steps": 42.0,
+   "mean_route_recall": 0.034,
+   "runs": 4,
+   "successes": 0
+  },
+  {
+   "key": "seed=0|on|req=150",
+   "max_moves_used": 44,
+   "mean_backtracks": 28.667,
+   "mean_decisions": 49.667,
+   "mean_distinct_signs": 4.0,
+   "mean_moves_rejected": 1.333,
+   "mean_revisit_steps": 45.667,
+   "mean_route_recall": 0.189,
+   "runs": 3,
+   "successes": 0
+  },
+  {
+   "key": "seed=0|on|req=90",
+   "max_moves_used": 44,
+   "mean_backtracks": 30.0,
+   "mean_decisions": 47.75,
+   "mean_distinct_signs": 4.0,
+   "mean_moves_rejected": 1.0,
+   "mean_revisit_steps": 43.75,
+   "mean_route_recall": 0.023,
+   "runs": 4,
+   "successes": 0
+  },
+  {
+   "key": "seed=1|off|req=150",
+   "max_moves_used": 44,
+   "mean_backtracks": 27.667,
+   "mean_decisions": 47.667,
+   "mean_distinct_signs": 3.0,
+   "mean_moves_rejected": 1.0,
+   "mean_revisit_steps": 44.667,
+   "mean_route_recall": 0.023,
+   "runs": 6,
+   "successes": 0
+  },
+  {
+   "key": "seed=1|off|req=90",
+   "max_moves_used": 44,
+   "mean_backtracks": 27.667,
+   "mean_decisions": 46.667,
+   "mean_distinct_signs": 3.0,
+   "mean_moves_rejected": 1.0,
+   "mean_revisit_steps": 43.667,
+   "mean_route_recall": null,
+   "runs": 3,
+   "successes": 0
+  },
+  {
+   "key": "seed=1|on|req=150",
+   "max_moves_used": 44,
+   "mean_backtracks": 28.333,
+   "mean_decisions": 48.333,
+   "mean_distinct_signs": 3.0,
+   "mean_moves_rejected": 1.0,
+   "mean_revisit_steps": 45.333,
+   "mean_route_recall": 1.0,
+   "runs": 3,
+   "successes": 0
+  },
+  {
+   "key": "seed=1|on|req=90",
+   "max_moves_used": 44,
+   "mean_backtracks": 28.0,
+   "mean_decisions": 49.333,
+   "mean_distinct_signs": 3.0,
+   "mean_moves_rejected": 1.0,
+   "mean_revisit_steps": 46.333,
+   "mean_route_recall": 1.0,
+   "runs": 3,
+   "successes": 0
+  },
+  {
+   "key": "seed=2|off|req=150",
+   "max_moves_used": 44,
+   "mean_backtracks": 16.444,
+   "mean_decisions": 50.444,
+   "mean_distinct_signs": 7.667,
+   "mean_moves_rejected": 0.778,
+   "mean_revisit_steps": 42.778,
+   "mean_route_recall": 0.057,
+   "runs": 9,
+   "successes": 2
+  },
+  {
+   "key": "seed=2|off|req=90",
+   "max_moves_used": 44,
+   "mean_backtracks": 21.667,
+   "mean_decisions": 54.333,
+   "mean_distinct_signs": 7.667,
+   "mean_moves_rejected": 1.0,
+   "mean_revisit_steps": 46.667,
+   "mean_route_recall": 0.057,
+   "runs": 3,
+   "successes": 0
+  },
+  {
+   "key": "seed=2|on|req=150",
+   "max_moves_used": 30,
+   "mean_backtracks": 5.0,
+   "mean_decisions": 25.5,
+   "mean_distinct_signs": 7.375,
+   "mean_moves_rejected": 0.0,
+   "mean_revisit_steps": 18.125,
+   "mean_route_recall": 0.253,
+   "runs": 8,
+   "successes": 8
+  },
+  {
+   "key": "seed=2|on|req=90",
+   "max_moves_used": 44,
+   "mean_backtracks": 14.667,
+   "mean_decisions": 64.667,
+   "mean_distinct_signs": 7.667,
+   "mean_moves_rejected": 0.667,
+   "mean_revisit_steps": 57.0,
+   "mean_route_recall": 0.47,
+   "runs": 3,
+   "successes": 0
+  },
+  {
+   "key": "seed=3|off|req=150",
+   "max_moves_used": 44,
+   "mean_backtracks": 25.0,
+   "mean_decisions": 48.4,
+   "mean_distinct_signs": 5.8,
+   "mean_moves_rejected": 1.2,
+   "mean_revisit_steps": 42.6,
+   "mean_route_recall": 0.045,
+   "runs": 5,
+   "successes": 0
+  },
+  {
+   "key": "seed=3|on|req=150",
+   "max_moves_used": 44,
+   "mean_backtracks": 24.4,
+   "mean_decisions": 51.0,
+   "mean_distinct_signs": 5.2,
+   "mean_moves_rejected": 1.0,
+   "mean_revisit_steps": 45.8,
+   "mean_route_recall": 0.695,
+   "runs": 5,
+   "successes": 0
+  }
+ ],
+ "note": "只用公开轨迹字段（current_sign / result / moves_used / ruin_recorded）；不读隐藏真值，不重跑任何局。",
+ "oracle": [
+  {
+   "oracle_actions": 18,
+   "oracle_moves": 10,
+   "seed": 0
+  },
+  {
+   "oracle_actions": 21,
+   "oracle_moves": 12,
+   "seed": 1
+  },
+  {
+   "oracle_actions": 21,
+   "oracle_moves": 12,
+   "seed": 2
+  },
+  {
+   "oracle_actions": 24,
+   "oracle_moves": 14,
+   "seed": 3
+  }
+ ],
+ "runs": 65,
+ "schema": "v14-map22-instances-1"
+}
