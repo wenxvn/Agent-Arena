@@ -2178,3 +2178,11 @@ recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12`
   seed 3 recall 0.695 却与 off 臂折返持平（24.4 vs 25.0）。
   → 记忆的真实瓶颈是「记录了却没有据此改动作」，不是「记不住」。
 - 客观基线：MAP-22 四个 seed 的最优移动数 10/12/12/14，远低于 44 步预算。
+
+## 2026-10-28 · V14 reflection 功效补充
+
+- 累计 **247 局 / 7 278 请求 / CNY 4.25913568**（3 次 `unknown_spend` 各自停批）。
+- MAP-22 @150 · seed 2，每臂 13 局：`trigger_only` **3/13** vs `reflection_on` **7/13**，
+  两臂各 13/13 触发；Fisher 双侧 p=0.226、Wilson 区间重叠 → 方向性正向但未达显著。
+- 结论从 `NOT_MEASURABLE` 调整为 `TENTATIVE / IMPROVED（方向性）`；
+  80% 功效需约 40 局/臂。

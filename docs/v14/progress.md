@@ -311,3 +311,15 @@
   → 失败不是「路太长」，而是「走错路/折返太多」。
 - 产出：`docs/v14/map22-instances.md` / `.json`。
 - commit：`feat(v14): attribute MAP-22 instance difference from public traces`
+
+
+## Batch 18 · reflection 功效补充（每臂 13 局）
+
+- 动机：上一轮 n=6 的 2/6 vs 1/6 是噪声，无法判断；补到每臂 13 局（MAP-22 @150 · seed 2，唯一能成功的实例）。
+- 结果（累计 **247 局 / 7 278 请求 / ¥4.25913568**）：
+  - `trigger_only` **3/13**（Wilson [0.082, 0.503]）、`reflection_on` **7/13**（[0.291, 0.768]）；
+  - 两臂**各 13/13 局触发**（暴露彻底解决）；
+  - **Fisher 双侧 p = 0.226**，区间重叠 → **不能宣称显著**，但方向一致、效应量 23%→54%；
+  - 达到 80% 功效约需每臂 40 局。
+- 结论变化：`NOT_MEASURABLE` → **`TENTATIVE` / `IMPROVED（方向性）`**。
+- commit：`feat(v14): reflection power run, 13 per arm on the solvable instance`

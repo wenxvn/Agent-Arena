@@ -11,7 +11,7 @@
 
 **15 项 `DONE`；P0-4/P0-5 已拿到部分 LIVE 证据（机制成立、效果未定）；P0-6 为 `NO_TREATMENT_EXPOSURE`（零干预）；1 项本地 `DONE` + 外部 `BLOCKED_EXTERNAL`（P2-6）。**
 
-- LIVE 执行：真实 MiMo（flash + pro），**227 局 / 6 273 请求 / ¥3.89636556**（3 局 unknown_spend 预留，0 重复 0 孤儿）；
+- LIVE 执行：真实 MiMo（flash + pro），**247 局 / 7 278 请求 / ¥4.25913568**（3 局 unknown_spend 预留，0 重复 0 孤儿）；
 - 停批原因：3 次 `unknown_spend`（DCR-V14-05）；reflection 先在 MAP-22 零暴露（DCR-V14-04），换 MAP-19 与 MAP-22@150 后暴露稳定。
 
 - 没有任何一项被静默跳过：未完成的都写明了原因与需要谁授权。
@@ -27,7 +27,7 @@
 | P0-3 | 重复实验与单因子公平性强化 | `PARTIAL` | `DONE` | `lab/v14/conditions.py`（8 元组身份/seed 白名单/三档判定/配对字段）；`docs/v14/pairing-audit.md`、`experiment-protocol.md`、`live-plan.md`；33 测试 |
 | P0-4 | Memory v2 有效性方案与消融 | `PARTIAL` | `DONE（机制）/ LIVE 条件性` | `lab/v14/agent_studies.py`；**LIVE E1-a 65 局**：90 请求 0/10 vs 0/10；150 请求 seed 2 **2/9 → 8/8**、seed 0/1/3 两臂全 0；每成功局 ¥0.283→¥0.059；**公开轨迹归因**：写入在全部 seed 成立（recall 0.19–1.0），仅 seed 2 折返下降（16.4→5.0）→ 瓶颈是「记录未被使用」（DCR-V14-08）；`live-report.md` 第 3 节、`map22-instances.md` |
 | P0-5 | Planning v2 收益–成本验证 | `PARTIAL` | `DONE（机制）/ LIVE 强描述性信号 + 负向对照` | `lab/v14/planning_study.py`；**LIVE E2-a 121 局 / 4 图 × 2 模型**：MAP-16 flash 0/25→14/22、pro 2/12→**12/12**（留出 seed `0/3→3/3`）、MAP-18 2/9→4/9、**MAP-26 天花板 9/9→9/9**、**MAP-14 地板 0/9→0/9**；`live-report.md` 第 2 节 |
-| P0-6 | Reflection v2 激活与效果验证 | `PARTIAL` | `DONE（离线）/ LIVE 暴露达成·效果未检出` | `lab/v14/reflection_study.py`；MAP-22@90 零暴露（DCR-V14-04）→ MAP-19 3/9 触发（地板）→ **MAP-22@150 单因子：trigger_only 2/6 vs on 1/6，触发 4/6 vs 5/6**；n=6 无功效 → `NOT_MEASURABLE`；`live-report.md` 第 4 节 |
+| P0-6 | Reflection v2 激活与效果验证 | `PARTIAL` | `DONE（离线）/ LIVE 方向性正向（未达显著）` | `lab/v14/reflection_study.py`；MAP-22@90 零暴露（DCR-V14-04）→ MAP-19 3/9 触发（地板）→ **MAP-22@150 seed 2，每臂 13 局：`trigger_only` 3/13 vs `reflection_on` 7/13（Fisher p=0.226，Wilson 区间重叠），两臂各 13/13 触发**；`live-report.md` 第 4 节 |
 
 ## 2. P1（6 项）
 
@@ -60,7 +60,7 @@
 |---|---|---|
 | 工程/机制（离线） | `DONE` | 确定性 probe、单因子臂、成本归因、暴露门禁、选择偏倚防护 |
 | 真实运行是否存在 | `DONE` | 39 局真实 MiMo，账本自洽（0 重复/0 孤儿） |
-| 真实**效果**证据 | **部分** | E2-a 跨模型+留出 seed 复现（pro 2/12→12/12）；E1-a 仅 seed 2 有效；E3 暴露达成但 n=6 无功效 |
+| 真实**效果**证据 | **部分** | E2-a 跨模型/跨图/留出 seed + 天花板地板对照；E1-a 仅 seed 2 有效（已定位为「记录未被使用」）；E3 13 局/臂方向性正向（p=0.23） |
 
 因此写作 `DONE（机制）/ LIVE ...`，不写 `DONE`——否则等于把"没测出效果"说成"已验证"。
 

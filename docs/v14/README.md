@@ -1,11 +1,11 @@
 # V14 · Agent Arena Lab 1.2 / Stage II Final Evidence & Delivery
 
 > **当前状态：`ENGINEERING_VERIFIED` / `LIVE_PARTIAL`。**
-> 真实 MiMo 已执行 **227 局 / ¥3.89636556**（flash + pro，方案 A + 六轮补充）：
+> 真实 MiMo 已执行 **247 局 / ¥4.25913568**（flash + pro，方案 A + 七轮补充）：
 > `planning.v2` 跨模型/跨图/留出 seed 复现（MAP-16 flash 0/25→14/22；pro 2/12→**12/12**；
 > MAP-18 2/9→4/9），并有负向对照（MAP-26 天花板 9/9→9/9、MAP-14 地板 0/9→0/9）；
 > `route_log` 仅在 MAP-22 seed 2 且 ≥150 请求时有效（2/9→8/8）；
-> `reflection.v2` 暴露已稳定（MAP-22@150 触发 4/6 vs 5/6），但 n=6 效果未检出。
+> `reflection.v2` 暴露已稳定，且 seed 2 上 13 局/臂出现方向性正向（3/13 → 7/13，未达显著）。
 > 因此 **不是** `STAGE_II_FINAL_READY`——缺负向对照与账单核对，不得宣称收官。
 >
 > 验收：`uv run python scripts/verify_v14.py` → **14/14 通过**；
