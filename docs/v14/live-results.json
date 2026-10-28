@@ -460,13 +460,13 @@
     "valid": 9
    },
    "E3/on": {
-    "censored": 2,
-    "invalid_actions": 2,
-    "mean_cost_cny": 0.016547,
-    "mean_decisions": 36.64,
-    "mean_input_tokens": 35072.92,
-    "mean_requests": 38.0,
-    "mechanism_failures": 16,
+    "censored": 3,
+    "invalid_actions": 4,
+    "mean_cost_cny": 0.022437,
+    "mean_decisions": 43.533333,
+    "mean_input_tokens": 43899.4,
+    "mean_requests": 45.355556,
+    "mechanism_failures": 27,
     "rejected_actions": 0,
     "replicates": [
      0,
@@ -480,26 +480,26 @@
      8,
      9
     ],
-    "runs": 25,
+    "runs": 45,
     "seeds": [
      0,
      1,
      2
     ],
-    "success_rate": 0.28,
-    "successes": 7,
-    "total_cost_cny": 0.413675,
+    "success_rate": 0.3333,
+    "successes": 15,
+    "total_cost_cny": 1.00965532,
     "unknown_cost_runs": 0,
-    "valid": 25
+    "valid": 45
    },
    "E3/trigger_only": {
     "censored": 1,
-    "invalid_actions": 3,
-    "mean_cost_cny": 0.015663,
-    "mean_decisions": 56.8125,
-    "mean_input_tokens": 40934.125,
-    "mean_requests": 56.8125,
-    "mechanism_failures": 12,
+    "invalid_actions": 11,
+    "mean_cost_cny": 0.011297,
+    "mean_decisions": 42.948718,
+    "mean_input_tokens": 30956.358974,
+    "mean_requests": 42.948718,
+    "mechanism_failures": 22,
     "rejected_actions": 0,
     "replicates": [
      0,
@@ -513,16 +513,16 @@
      8,
      9
     ],
-    "runs": 16,
+    "runs": 39,
     "seeds": [
      0,
      2
     ],
-    "success_rate": 0.1875,
-    "successes": 3,
-    "total_cost_cny": 0.25060336,
-    "unknown_cost_runs": 0,
-    "valid": 16
+    "success_rate": 0.4103,
+    "successes": 16,
+    "total_cost_cny": 0.4405968,
+    "unknown_cost_runs": 1,
+    "valid": 39
    }
   }
  },
@@ -874,9 +874,9 @@
      "successes": 0
     },
     "2": {
-     "censored": 0,
-     "runs": 13,
-     "successes": 7
+     "censored": 1,
+     "runs": 33,
+     "successes": 15
     }
    },
    "E3/trigger_only": {
@@ -887,8 +887,8 @@
     },
     "2": {
      "censored": 1,
-     "runs": 13,
-     "successes": 3
+     "runs": 36,
+     "successes": 16
     }
    }
   },
@@ -909,7 +909,7 @@
    }
   }
  },
- "experiments": 38,
+ "experiments": 43,
  "groups": {
   "E1-a|req=150": {
    "arms": {
@@ -2660,13 +2660,13 @@
   "E3|req=150": {
    "arms": {
     "E3/on": {
-     "censored": 0,
-     "invalid_actions": 0,
-     "mean_cost_cny": 0.022219,
-     "mean_decisions": 42.9375,
-     "mean_input_tokens": 39598.25,
-     "mean_requests": 44.5,
-     "mechanism_failures": 9,
+     "censored": 1,
+     "invalid_actions": 2,
+     "mean_cost_cny": 0.02643,
+     "mean_decisions": 48.055556,
+     "mean_input_tokens": 48117.277778,
+     "mean_requests": 50.083333,
+     "mechanism_failures": 20,
      "rejected_actions": 0,
      "replicates": [
       0,
@@ -2680,25 +2680,25 @@
       8,
       9
      ],
-     "runs": 16,
+     "runs": 36,
      "seeds": [
       0,
       2
      ],
-     "success_rate": 0.4375,
-     "successes": 7,
-     "total_cost_cny": 0.35551144,
+     "success_rate": 0.4167,
+     "successes": 15,
+     "total_cost_cny": 0.95149176,
      "unknown_cost_runs": 0,
-     "valid": 16
+     "valid": 36
     },
     "E3/trigger_only": {
      "censored": 1,
-     "invalid_actions": 3,
-     "mean_cost_cny": 0.015663,
-     "mean_decisions": 56.8125,
-     "mean_input_tokens": 40934.125,
-     "mean_requests": 56.8125,
-     "mechanism_failures": 12,
+     "invalid_actions": 11,
+     "mean_cost_cny": 0.011297,
+     "mean_decisions": 42.948718,
+     "mean_input_tokens": 30956.358974,
+     "mean_requests": 42.948718,
+     "mechanism_failures": 22,
      "rejected_actions": 0,
      "replicates": [
       0,
@@ -2712,16 +2712,16 @@
       8,
       9
      ],
-     "runs": 16,
+     "runs": 39,
      "seeds": [
       0,
       2
      ],
-     "success_rate": 0.1875,
-     "successes": 3,
-     "total_cost_cny": 0.25060336,
-     "unknown_cost_runs": 0,
-     "valid": 16
+     "success_rate": 0.4103,
+     "successes": 16,
+     "total_cost_cny": 0.4405968,
+     "unknown_cost_runs": 1,
+     "valid": 39
     }
    },
    "mechanism": {},
@@ -2951,6 +2951,16 @@
      ],
      [
       2,
+      0,
+      "budget_censored"
+     ],
+     [
+      2,
+      0,
+      "mechanism_failure"
+     ],
+     [
+      2,
       1,
       "OK"
      ],
@@ -2981,8 +2991,18 @@
      ],
      [
       2,
+      4,
+      "mechanism_failure"
+     ],
+     [
+      2,
       5,
       "OK"
+     ],
+     [
+      2,
+      5,
+      "mechanism_failure"
      ],
      [
       2,
@@ -2993,6 +3013,11 @@
       2,
       7,
       "mechanism_failure"
+     ],
+     [
+      2,
+      8,
+      "OK"
      ],
      [
       2,
@@ -3024,6 +3049,11 @@
      [
       2,
       0,
+      "OK"
+     ],
+     [
+      2,
+      0,
       "mechanism_failure"
      ],
      [
@@ -3049,7 +3079,17 @@
      [
       2,
       3,
+      "OK"
+     ],
+     [
+      2,
+      3,
       "mechanism_failure"
+     ],
+     [
+      2,
+      4,
+      "OK"
      ],
      [
       2,
@@ -3059,7 +3099,17 @@
      [
       2,
       5,
+      "OK"
+     ],
+     [
+      2,
+      5,
       "mechanism_failure"
+     ],
+     [
+      2,
+      6,
+      "OK"
      ],
      [
       2,
@@ -3073,13 +3123,33 @@
      ],
      [
       2,
+      7,
+      "mechanism_failure"
+     ],
+     [
+      2,
+      8,
+      "OK"
+     ],
+     [
+      2,
       8,
       "mechanism_failure"
      ],
      [
       2,
       9,
+      "OK"
+     ],
+     [
+      2,
+      9,
       "budget_censored"
+     ],
+     [
+      2,
+      9,
+      "mechanism_failure"
      ]
     ]
    }
@@ -3307,14 +3377,14 @@
  "ledger": {
   "available": true,
   "duplicates": 0,
-  "entries": 530,
+  "entries": 616,
   "orphans": 0,
-  "requests": 8177,
-  "settled": 265,
-  "settled_cost_cny": "4.77211952",
-  "started": 265,
-  "unknown_cost_runs": 3
+  "requests": 10034,
+  "settled": 308,
+  "settled_cost_cny": "5.55809328",
+  "started": 308,
+  "unknown_cost_runs": 4
  },
- "records": 265,
+ "records": 308,
  "schema": "v14-live-results-1"
 }

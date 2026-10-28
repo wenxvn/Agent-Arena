@@ -3,7 +3,7 @@
 - 版本：Agent Arena Lab 1.2 / Stage II Final Evidence & Delivery
 - 日期：2026-10-27
 - 基线 HEAD：`60c9ba2b64a3bd8d5cd549a7b76d0f3eb3ad092a`（V14 起点）
-- 真实付费执行：**265 局 / 8 177 请求 / CNY 4.77211952**（方案 A + 八轮补充；3 局 unknown_spend 预留）
+- 真实付费执行：**308 局 / 10 034 请求 / CNY 5.55809328**（方案 A + 九轮补充；4 局 unknown_spend 预留）
 
 > 判定分成三层，**不允许混写**：
 > `ENGINEERING_VERIFIED` / `LIVE_EVIDENCE_VERIFIED` / `STAGE_II_FINAL_READY`。
@@ -61,7 +61,7 @@
 |---|---|---|
 | `memory.v2` 真实效果 | 已测（65 局）| 90 请求 0/10 vs 0/10；150 请求 seed 2 **2/9 → 8/8**，seed 0/1/3 两臂全败 → **条件性** |
 | `planning.v2` 真实效果 | 已测（121 局 / 4 图 × 2 模型）| MAP-16 flash 0/25 → 14/22；**pro 2/12 → 12/12（含留出 seed）**；MAP-18 2/9 → 4/9；MAP-26 9/9→9/9（天花板）；MAP-14 0/9→0/9（地板） |
-| `reflection.v2` 真实效果 | 方向性正向（未达显著）| MAP-22@150 seed 2 每臂 13 局：3/13 → 7/13（Fisher p=0.226） |
+| `reflection.v2` 真实效果 | 无可检出差异 | MAP-22@150 seed 2 每臂 33–36 局：16/36 vs 15/33（p=1.0）；n=13 的 3/13→7/13 已证伪 |
 | 外部账单对账 | `BLOCKED_EXTERNAL` | 用户未提供脱敏账单 CSV |
 | 本机 Playwright 自带 chromium 复现 | `NOT_VERIFIED` | CDN 下载受限；CI 侧已真实验证 |
 | 真机读屏软件 | `NOT_VERIFIED` | 无读屏环境（自动化 a11y 已 0 严重问题） |
@@ -71,7 +71,7 @@
 ## 5. 最终状态
 
 - `ENGINEERING_VERIFIED`：**满足**。
-- `LIVE_EVIDENCE_VERIFIED`：**不满足（部分达成）**——247 局；规划已可复现、记忆已定位瓶颈、反思有方向性信号，但仍缺外部账单核对与反思的显著性。
+- `LIVE_EVIDENCE_VERIFIED`：**不满足（部分达成）**——308 局；规划已可复现、记忆瓶颈已定位、反思无差异；仍缺外部账单核对。
 - `STAGE_II_FINAL_READY`：**不满足**；
   按提纲要求，此时不得宣称"第二阶段最终实证完成"。
 

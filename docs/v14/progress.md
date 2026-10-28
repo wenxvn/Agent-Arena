@@ -337,3 +337,15 @@
 - 结论（**DCR-V14-09**）：记忆可用性不是瓶颈；提高写入频率无效。
   要修必须改策略（另立版本），配置层已排除。
 - commit：`feat(v14): negative result on memory write frequency`
+
+
+## Batch 20 · reflection 功效补足（结论更正为"无差异"）
+
+- 契约限制 `replicates ≤ 10`，因此拆成 3 个独立父实验对（每对 10 次重复）；
+  第 3 对因 `unknown_spend` 停批，最终 seed 2 上 `trigger_only` 36 局、`reflection_on` 33 局。
+- 结果（累计 **308 局 / 10 034 请求 / ¥5.55809328**）：
+  - `trigger_only` **16/36 (44.4%)**、`reflection_on` **15/33 (45.5%)**，**Fisher p = 1.0**；
+  - 该样本量足以检出 54% vs 23% 的效应（约需 37/臂）→ 早先 n=13 的 7/13 vs 3/13 **未重现**；
+- **自我更正（DCR-V14-10）**：把 `TENTATIVE / IMPROVED（方向性）` 改为
+  `NO_DIFFERENCE`，并记录"n<15/臂 的二项对比不能作为方向性证据"的教训。
+- commit：`feat(v14): complete reflection power study and correct the earlier signal`
