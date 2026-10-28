@@ -16,7 +16,7 @@
 
 - 没有任何一项被静默跳过：未完成的都写明了原因与需要谁授权。
 - LIVE 证据从"零"变为"部分"：E1-a 零差异、E2-a 臂不完整、E3 零暴露 → `LIVE_EVIDENCE_VERIFIED` 与 `STAGE_II_FINAL_READY` 仍**不满足**。
-- 验收：`scripts/verify_v14.py` **14/14**；全量 pytest **1790 passed**。
+- 验收：`scripts/verify_v14.py` **15/15**；全量 pytest **1790 passed**。
 
 ## 1. P0（6 项）
 

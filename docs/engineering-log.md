@@ -2102,7 +2102,7 @@ freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、`verify_
 
 `1790 pytest passed`、mypy 334 文件 0 issues、ruff clean、lock 通过、freeze 9/9 unchanged、
 recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12` 15/15、
-`verify_v13` 18/18、**`verify_v14` 14/14**、`e2e_lab`（含 V14 新断言）通过、
+`verify_v13` 18/18、**`verify_v14` 15/15**、`e2e_lab`（含 V14 新断言）通过、
 `a11y_v12 --browser` 浅/深色 0 critical/serious/moderate、账本复算 159/159 + 5641 请求 + ¥5.43680012 + 0 重复 0 孤儿。
 
 ### 未完成（如实记录）
@@ -2130,7 +2130,7 @@ recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12`
 - 事件：`DCR-V14-04`（reflection 零暴露）、`DCR-V14-05`（Provider 错误 → 停批封账、不重试）。
 - 修掉真实缺陷：V14 `condition_comparison` 把 effective `prompt_hash` 当硬不匹配，
   on/off 臂全判 `INCOMPARABLE` → 改为比较 `base_prompt_hash`，配置/effective prompt 标 `INTERVENTION`。
-- 验证：`1791 pytest passed`、ruff clean、mypy 334 文件 0 issues、`verify_v14` 14/14。
+- 验证：`1791 pytest passed`、ruff clean、mypy 334 文件 0 issues、`verify_v14` 15/15。
 
 详见 `docs/v14/live-report.md`、`docs/v14/live-results.md`。
 
@@ -2147,7 +2147,7 @@ recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12`
     （DCR-V14-06 瓶颈是 MAP-22 的 44 步移动预算；DCR-V14-07 效果依赖地图实例）；
   - **reflection.v2**：MAP-22 零暴露；离线诊断 MAP-19/20/29（8/9/9 次触发）后上 MAP-19，
     on 臂 **3/9 局真触发**，但两臂 0/9（`THERMAL_RUNAWAY`）→ 效果 `NOT_MEASURABLE`。
-- 验证：`verify_v14` 14/14、ruff/mypy 干净、`pytest` 全量见 validation-report。
+- 验证：`verify_v14` 15/15、ruff/mypy 干净、`pytest` 全量见 validation-report。
 
 详见 `docs/v14/live-report.md`、`DCR-V14-06/07`。
 
@@ -2160,7 +2160,7 @@ recompute 1093/1093、independent 0 violations、`verify_v11` 7/7、`verify_v12`
   每成功局 ¥0.283 → ¥0.059。瓶颈是 MAP-22 的 44 步移动预算（DCR-V14-06/07）。
 - **reflection.v2**：MAP-16 上 2–12 决策即失败（触发不了）→ 改 MAP-22@150：
   `trigger_only` 2/6 vs `reflection_on` 1/6，触发 4/6 vs 5/6 → 暴露稳定、效果未检出（n=6）。
-- 验证：`verify_v14` 14/14、ruff/mypy 干净、全量 pytest 见 validation-report。
+- 验证：`verify_v14` 15/15、ruff/mypy 干净、全量 pytest 见 validation-report。
 
 ## 2026-10-28 · V14 负向对照（planning）
 

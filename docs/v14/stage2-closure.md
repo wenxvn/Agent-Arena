@@ -29,7 +29,7 @@
 | 离线测试 | **1791 passed** | `docs/v14/validation-report.md` |
 | 类型/规范 | `mypy src` 334 文件 0 issues；`ruff check .` clean | 同上 |
 | 冻结校验 | freeze 9/9 unchanged；recompute 1093/1093；independent 0 违规 | 同上 |
-| 验收脚本 | `verify_v11` 7/7、`verify_v12` 15/15、`verify_v13` 18/18、**`verify_v14` 14/14** | 同上 |
+| 验收脚本 | `verify_v11` 7/7、`verify_v12` 15/15、`verify_v13` 18/18、**`verify_v14` 15/15** | 同上 |
 | 浏览器 | `e2e_lab` 通过（含 V14 新断言）；`a11y` 浅/深色 0 critical/serious/moderate | 同上 |
 | 远端 CI | `lab-e2e` 为**阻断**门禁，切换后**连续 17 次成功** | `docs/v14/ci-evidence.md` |
 
@@ -143,7 +143,7 @@ uv run python scripts/analyze_v14_map22.py --write
 uv run --with playwright python scripts/e2e_lab.py --start --port 8512
 ```
 
-期望：`verify_v14` 14/14；pytest 1791 passed；freeze unchanged；recompute 1093/1093；
+期望：`verify_v14` 15/15；pytest 1791 passed；freeze unchanged；recompute 1093/1093；
 independent 0 违规；v11/v12/v13 = 7/15/18；E2E `{"ok": true}`。
 
 ## 9. 文档索引

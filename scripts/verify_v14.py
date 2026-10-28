@@ -301,6 +301,40 @@ def check_sdk_and_ledger() -> tuple[bool, str]:
         return True, "SDK 全通过；账本 159/5641/¥5.43680012 复算一致"
     return True, "SDK 全通过；本机无账本文件，账本项记为未复算（不伪造）"
 
+def check_live_trace_fields() -> tuple[bool, str]:
+    """DCR-V14-01 的回归防线：新 trace 必须带契约与提示指纹。
+
+    历史 CSV 缺这两列导致 MAP-22 跨契约无法在数据层区分；V14 起的新 trace 必须落
+    ``agent_contract_version`` 与 ``prompt_hash``/``base_prompt_hash``。
+    本机没有 LIVE 数据时（新克隆）跳过，不算失败。
+    """
+
+    import json
+
+    live = ROOT / "runs" / "v14" / "live" / "web"
+    if not live.is_dir():
+        return True, "本机无 runs/v14/live（新克隆属正常），跳过新 trace 字段检查"
+    results = sorted(live.glob("web-*/result.json"))
+    if not results:
+        return True, "本机无 LIVE result.json，跳过"
+    missing: dict[str, int] = {}
+    required = ("agent_contract_version", "prompt_hash", "base_prompt_hash")
+    for path in results:
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001 - 坏文件单独计数
+            missing["unreadable"] = missing.get("unreadable", 0) + 1
+            continue
+        for key in required:
+            if not payload.get(key):
+                missing[key] = missing.get(key, 0) + 1
+    if missing:
+        return False, f"{len(results)} 份 LIVE trace 中缺字段：{missing}"
+    return True, (
+        f"{len(results)} 份 LIVE trace 均含 "
+        "contract_version / prompt_hash / base_prompt_hash"
+    )
+
 def check_docs() -> tuple[bool, str]:
     required = [
         "README.md",
@@ -371,6 +405,7 @@ CHECKS: tuple[tuple[str, Callable[[], tuple[bool, str]]], ...] = (
     ("capability_gaps", check_capability_gaps),
     ("conclusion_strength", check_conclusion_strength),
     ("sdk_and_ledger", check_sdk_and_ledger),
+    ("live_trace_fields", check_live_trace_fields),
     ("docs_present", check_docs),
     ("frozen_assets", check_no_frozen_changes),
 )

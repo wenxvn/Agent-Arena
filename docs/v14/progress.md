@@ -361,3 +361,17 @@
   `docs/v14/release-checklist.md`、`docs/v14/ci-evidence.md`（17 次连续成功）。
 - Tag：`v14-stage2-exploratory-complete`（HEAD `d11bd97`）。
 - commit：`docs(v14): close stage II exploration with accepted exceptions`
+
+## Batch 22 · 推送补齐与回归检查（2026-10-28）
+
+- 用户要求把 `研究提纲/V12、V13、V14*.md` 一并 push（此前按 `60c9ba2` 的"user-local"决定保持未跟踪）。
+  已提交 `6fe5a20`，并注明**取代** `60c9ba2` 的决定；提交前扫描确认无密钥模式（`sk-` / api key 赋值）。
+- 新增回归检查 `verify_v14.py::check_live_trace_fields`：确认 V14 的 308 份 LIVE `result.json`
+  都带 `agent_contract_version` / `prompt_hash` / `base_prompt_hash`
+  （DCR-V14-01 只影响历史 CSV，不影响新数据）；本机无 LIVE 数据时跳过。
+  → `verify_v14` 由 **14 项增至 15 项**。
+- 文档同步：`decisions.md` 的 DCR-V14-01 补"已在新 trace 验证"；`README` / `gap-audit` /
+  `release-checklist` / `stage2-closure` 的验收数字改为 15/15；`AGENTS.md` 修正过期的
+  HEAD / 轮次 / pytest / CI 计数。
+- 实测：`verify_v14` **15/15**；ruff/mypy 干净；CI `40655849128`（`6fe5a20`）双 job success。
+- commit：`chore(v14): add live trace field regression check and sync counts`

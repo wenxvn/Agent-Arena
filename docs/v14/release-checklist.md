@@ -22,7 +22,7 @@
 | 8 | V11 验收 | `uv run python scripts/verify_v11.py` | 7/7 |
 | 9 | V12 验收 | `uv run python scripts/verify_v12.py` | 15/15 |
 | 10 | V13 验收 | `uv run python scripts/verify_v13.py` | 18/18 |
-| 11 | **V14 验收** | `uv run python scripts/verify_v14.py` | 14/14 |
+| 11 | **V14 验收** | `uv run python scripts/verify_v14.py` | 15/15 |
 | 12 | 浏览器 E2E | `e2e_lab.py --start --port 8516 --report runs/v14/e2e-report.json` | 通过 |
 | 13 | 可访问性 | `a11y_v12.py --browser --start` | critical/serious/moderate 全 0 |
 | 14 | 远端 CI | `docs/v14/ci-evidence.md` | `lab-e2e` 为阻断门禁，切换后连续成功 |

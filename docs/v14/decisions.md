@@ -56,6 +56,13 @@
   多组并存时标 `POOLED_ACROSS_PROTOCOLS` 并禁止合并求均值；不删数据、不改历史。
 - **后续要求**：V14 之后的新 trace 必须落 `prompt_hash` 与 `contract_version`，
   否则同类问题会重现。
+- **验证（2026-10-28）**：V14 的 308 份 LIVE `result.json` **确实**含
+  `agent_contract_version` / `prompt_hash` / `base_prompt_hash`（例：`agent_policy_v1`、
+  `37c740bd…`、`f547618f…`），因此该缺陷只影响**历史 CSV**，不影响新数据。
+  已把这条要求固化成回归检查：`scripts/verify_v14.py::check_live_trace_fields`
+  （`verify_v14` 由 14 项增至 **15 项**），本机无 LIVE 数据时跳过、不误报。
+- **仍未落**：`sampling`（模型采样支持）不在 result 里 → `SamplingProvenance.support`
+  仍为 `UNKNOWN`，这是所有 LIVE 配对只能 `DESCRIPTIVE_ONLY` 的直接原因。
 - **可回滚**：不适用（只读分析层）。
 
 ## DCR-V14-02 · 预算申请文档的算术错误

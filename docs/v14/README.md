@@ -9,7 +9,7 @@
 > `reflection.v2` 暴露已稳定，但 33–36 局/臂上**无可检出差异**（16/36 vs 15/33，p=1.0）。
 > 因此 **不是** `STAGE_II_FINAL_READY`——缺负向对照与账单核对，不得宣称收官。
 >
-> 验收：`uv run python scripts/verify_v14.py` → **14/14 通过**；
+> 验收：`uv run python scripts/verify_v14.py` → **15/15 通过**；
 > 全量 `uv run pytest -q` → **1790 passed**。
 
 ## 这是什么

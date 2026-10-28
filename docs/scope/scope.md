@@ -543,7 +543,7 @@ Tag：`v14-stage2-exploratory-complete`；收尾 HEAD `d11bd97`。
   `40477841302` 保留并修复（显式 `wait_for` + 失败工件），此后**连续 17 次成功**。
 - [x] Batch 11（P2-2/4/5/6）：冷启动/损坏 manifest/并发写/TTL/1000 局导出实测；导出四类一致性；
   SDK 8+3 项加固；本地账本复算 159/159、5 641 请求、¥5.43680012、0 重复 0 孤儿。
-- [x] Batch 12（P2-7）：`scripts/verify_v14.py` **14 项**事实边界；`docs/v14/` 全套 + CI 步骤 + 交付定稿。
+- [x] Batch 12（P2-7）：`scripts/verify_v14.py` **15 项**事实边界；`docs/v14/` 全套 + CI 步骤 + 交付定稿。
 - [x] Batch 13–20（LIVE，用户授权 MiMo）：方案 A + 九轮补充，**308 局 / 10 034 请求 / CNY 5.55809328**
   （43 父实验、0 重复、0 孤儿、4 次 `unknown_spend` 各自封账未重试）。
   - **planning.v2**：MAP-16 flash `0/25 → 14/22`、**pro `2/12 → 12/12`**（留出 seed `0/3 → 3/3`）、
@@ -556,7 +556,7 @@ Tag：`v14-stage2-exploratory-complete`；收尾 HEAD `d11bd97`。
     n=13 时的 3/13 vs 7/13 已自我更正（DCR-V14-10）。
 - [x] 验证：**1791 pytest passed**、`mypy src` 334 文件 0 issues、`ruff check .` clean、lock 0、
   freeze 9/9 unchanged、recompute 1093/1093、independent 0 违规、
-  `verify_v11` 7/7、`verify_v12` 15/15、`verify_v13` 18/18、**`verify_v14` 14/14**、
+  `verify_v11` 7/7、`verify_v12` 15/15、`verify_v13` 18/18、**`verify_v14` 15/15**、
   `e2e_lab` 通过、`a11y` 0 critical/serious/moderate、CI 连续 17 次阻断门禁成功。
 - [x] 收尾：`docs/v14/stage2-closure.md` 记录结论、用户接受的 3 项非阻断例外与第三阶段候选清单。
 
