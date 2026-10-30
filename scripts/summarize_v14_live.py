@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import decimal
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -30,6 +31,29 @@ LIVE_DIR = ROOT / "runs" / "v14" / "live"
 LEDGER = LIVE_DIR / "web" / "_ledger" / "web_ledger.jsonl"
 
 VALID = {"completed_success", "mechanism_failure", "budget_censored"}
+
+#: 基础设施中断：不计入效果分母，也**不**算作场景机制失败。
+INTERRUPTED = {"provider_error", "cancelled"}
+
+def classify_state(*, success: bool, state: str | None) -> str:
+    """把一局的 `state` 映射成聚合口径的分类。
+
+    - `completed_success` / `mechanism_failure` / `budget_censored` 计入 `valid` 分母；
+    - `provider_error` / `cancelled` 属于**基础设施中断**，单独计数、不进分母。
+
+    修正前 Provider 5xx 会被归成 `mechanism_failure`，既污染分母又把
+    "模型没答完" 写成 "场景机制失败"（V14.1 修复，见 DCR-V14-11）。
+    """
+    if success:
+        return "completed_success"
+    normalized = (state or "").upper()
+    if normalized == "BUDGET_REACHED":
+        return "budget_censored"
+    if normalized == "PROVIDER_ERROR":
+        return "provider_error"
+    if normalized == "CANCELLED":
+        return "cancelled"
+    return "mechanism_failure"
 
 def _ledger() -> dict[str, Any]:
     if not LEDGER.is_file():
@@ -115,6 +139,7 @@ def _record(child: dict[str, Any], experiment: dict[str, Any]) -> dict[str, Any]
     group, arm = _group_of(str(experiment["agent_id"]), experiment["config"])
     return {
         "run_id": run_id,
+        "experiment_id": experiment.get("experiment_id"),
         "group": group,
         "arm": arm,
         "experiment_kind": experiment.get("experiment_kind"),
@@ -123,12 +148,8 @@ def _record(child: dict[str, Any], experiment: dict[str, Any]) -> dict[str, Any]
         "map_id": result.get("map_id"),
         "environment_seed": int(result.get("environment_seed") or 0),
         "replicate_index": int(result.get("replicate_index") or 0),
-        "category": "completed_success"
-        if result.get("success")
-        else (
-            "budget_censored"
-            if result.get("state") == "BUDGET_REACHED"
-            else "mechanism_failure"
+        "category": classify_state(
+            success=bool(result.get("success")), state=result.get("state")
         ),
         "success": bool(result.get("success")),
         "state": result.get("state"),
@@ -191,6 +212,10 @@ def _arm_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
             1 for item in valid if item["category"] == "mechanism_failure"
         ),
         "censored": len(censored),
+        "provider_errors": sum(
+            1 for item in records if item["category"] == "provider_error"
+        ),
+        "cancelled": sum(1 for item in records if item["category"] == "cancelled"),
         "mean_requests": _mean([float(item["requests"]) for item in records]),
         "mean_input_tokens": _mean([float(item["input_tokens"]) for item in records]),
         "mean_decisions": _mean([float(item["decisions"]) for item in records]),
@@ -263,7 +288,7 @@ def _pairs(records: list[dict[str, Any]], group: str) -> dict[str, Any]:
         ],
     }
 
-def collect() -> dict[str, Any]:
+def _collect_records() -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     experiments = _experiments()
     records: list[dict[str, Any]] = []
     for experiment in experiments:
@@ -271,12 +296,16 @@ def collect() -> dict[str, Any]:
             record = _record(child, experiment)
             if record is not None:
                 records.append(record)
+    return records, experiments
+
+def collect() -> dict[str, Any]:
+    records, experiments = _collect_records()
     groups: dict[str, list[dict[str, Any]]] = {}
     for record in records:
         key = f"{record['group']}|req={record['request_cap']}"
         groups.setdefault(key, []).append(record)
     report = {
-        "schema": "v14-live-results-1",
+        "schema": "v14-live-results-2",
         "ledger": _ledger(),
         "experiments": len(experiments),
         "records": len(records),
@@ -308,13 +337,16 @@ def collect() -> dict[str, Any]:
         for item in items:
             arm = table.setdefault(item["arm"], {})
             bucket = arm.setdefault(
-                str(item["environment_seed"]), {"runs": 0, "successes": 0, "censored": 0}
+                str(item["environment_seed"]),
+                {"runs": 0, "successes": 0, "censored": 0, "provider_errors": 0},
             )
             bucket["runs"] += 1
             if item["success"]:
                 bucket["successes"] += 1
             if item["category"] == "budget_censored":
                 bucket["censored"] += 1
+            if item["category"] in INTERRUPTED:
+                bucket["provider_errors"] += 1
         report["by_seed"][key] = table
     for group, items in sorted(groups.items()):
         arms: dict[str, list[dict[str, Any]]] = {}
@@ -370,14 +402,15 @@ def markdown(report: dict[str, Any]) -> str:
         lines += [
             f"### {group}",
             "",
-            "| 臂 | 局数 | 有效 | 成功 | 机制失败 | 截尾 | 成功率 "
+            "| 臂 | 局数 | 有效 | 成功 | 机制失败 | 截尾 | 中断 | 成功率 "
             "| 平均请求 | 平均决策 | 平均费用 CNY |",
-            "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+            "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
         ]
         for name, arm in payload["arms"].items():
             lines.append(
                 f"| `{name}` | {arm['runs']} | {arm['valid']} | {arm['successes']} | "
                 f"{arm['mechanism_failures']} | {arm['censored']} | "
+                f"{arm['provider_errors'] + arm['cancelled']} | "
                 f"{arm['success_rate'] if arm['success_rate'] is not None else '—'} | "
                 f"{arm['mean_requests']} | {arm['mean_decisions']} | {arm['mean_cost_cny']} |"
             )
@@ -405,7 +438,13 @@ def markdown(report: dict[str, Any]) -> str:
             lines += ["", f"机制：`{json.dumps(mechanism, ensure_ascii=False)}`"]
         lines.append("")
     lines += [
-        "## 3. 读法（不许夸大）",
+        "## 3. 口径",
+        "",
+        "- `局数` = 账本里已结算的全部局；`有效` = 局数 − `中断`（Provider 错误/取消）。",
+        "- `成功率` = `成功 / 有效`；`截尾`（`BUDGET_REACHED`）保留在分母里，不当作失败机制。",
+        "- `中断` 单独计数：Provider 5xx 不是场景机制失败，也不进分母。",
+        "",
+        "## 4. 读法（不许夸大）",
         "",
         "- 每组只有 3 个环境 seed × 3 次重复；重复是**模型采样波动**，不是新环境样本。",
         "- 两臂差异必须同时看成功率与成本；0 成功的条件下不得写“某策略更好”。",
@@ -415,11 +454,129 @@ def markdown(report: dict[str, Any]) -> str:
     ]
     return "\n".join(lines)
 
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+def build_manifest() -> dict[str, Any]:
+    """逐局证据索引（可提交）：只包含 run_id、条件、结局、请求、费用与文件 sha256。
+
+    原始 `result.json` / `events.jsonl` / 账本体积大且含本机绝对路径，
+    仍留在本机 `runs/v14/live/`（gitignore）；本文件是它们与 `docs/` 里
+    那些聚合数字之间的可核对索引。
+    """
+    records, experiments = _collect_records()
+    runs: list[dict[str, Any]] = []
+    for record in sorted(
+        records, key=lambda item: (str(item["experiment_id"]), str(item["run_id"]))
+    ):
+        run_id = str(record["run_id"])
+        directory = LIVE_DIR / "web" / run_id
+        events_path = directory / "events.jsonl"
+        runs.append(
+            {
+                "run_id": run_id,
+                "experiment_id": record["experiment_id"],
+                "group": record["group"],
+                "arm": record["arm"],
+                "agent": record["agent_id"],
+                "map_id": record["map_id"],
+                "environment_seed": record["environment_seed"],
+                "replicate_index": record["replicate_index"],
+                "model": record["model"],
+                "request_cap": record["request_cap"],
+                "state": record["state"],
+                "termination": record["termination"],
+                "category": record["category"],
+                "success": record["success"],
+                "requests": record["requests"],
+                "cost_cny": round(float(record["cost_cny"]), 8),
+                "cost_known": record["cost_known"],
+                "result_sha256": _sha256(directory / "result.json"),
+                "events_sha256": _sha256(events_path) if events_path.is_file() else None,
+            }
+        )
+    valid = [item for item in runs if item["category"] in VALID]
+    ledger = _ledger()
+    if LEDGER.is_file():
+        ledger["sha256"] = _sha256(LEDGER)
+    return {
+        "schema": "v14-live-manifest-1",
+        "note": (
+            "逐局证据索引。原始 result.json / events.jsonl / 账本留在本机 "
+            "runs/v14/live（gitignore，约 29 MB）；本文件只提交索引与 sha256。"
+            "校验：`uv run python scripts/summarize_v14_live.py --check-manifest "
+            "docs/v14/live-manifest.json`"
+        ),
+        "ledger": ledger,
+        "totals": {
+            "experiments": len(experiments),
+            "runs": len(runs),
+            "valid": len(valid),
+            "successes": sum(1 for item in valid if item["success"]),
+            "censored": sum(1 for item in valid if item["category"] == "budget_censored"),
+            "provider_errors": sum(
+                1 for item in runs if item["category"] in INTERRUPTED
+            ),
+            "requests": sum(int(item["requests"]) for item in runs),
+            "cost_cny": round(sum(float(item["cost_cny"]) for item in runs), 8),
+        },
+        "experiments": [
+            {
+                "experiment_id": experiment["experiment_id"],
+                "agent_id": experiment["agent_id"],
+                "experiment_kind": experiment["experiment_kind"],
+                "maps": experiment["maps"],
+                "environment_seeds": experiment["seeds"],
+                "replicates": experiment["replicates"],
+                "runs": sum(
+                    1
+                    for record in records
+                    if record["experiment_id"] == experiment["experiment_id"]
+                ),
+            }
+            for experiment in experiments
+        ],
+        "runs": runs,
+    }
+
+def _compare_manifest(path: Path) -> dict[str, Any]:
+    if not LIVE_DIR.is_dir():
+        return {"available": False, "reason": "本机没有 runs/v14/live，跳过"}
+    if not path.is_file():
+        return {"available": True, "match": False, "reason": f"缺少 {path}"}
+    expected = json.loads(path.read_text(encoding="utf-8"))
+    actual = build_manifest()
+    if expected == actual:
+        return {"available": True, "match": True, "runs": len(actual["runs"])}
+    mismatches: list[str] = []
+    for key in ("ledger", "totals", "experiments"):
+        if expected.get(key) != actual.get(key):
+            mismatches.append(key)
+    old_runs = {item["run_id"]: item for item in expected.get("runs") or []}
+    new_runs = {item["run_id"]: item for item in actual["runs"]}
+    for run_id in sorted(set(old_runs) | set(new_runs)):
+        if old_runs.get(run_id) != new_runs.get(run_id):
+            mismatches.append(f"run:{run_id}")
+    return {"available": True, "match": False, "mismatches": mismatches[:20]}
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--write", action="store_true")
     parser.add_argument("--out", type=Path, default=ROOT / "docs" / "v14")
+    parser.add_argument("--manifest", type=Path, default=None, help="写逐局证据索引 JSON")
+    parser.add_argument(
+        "--check-manifest", type=Path, default=None, help="把本机原始数据与已提交的索引对账"
+    )
     args = parser.parse_args()
+
+    if args.check_manifest is not None:
+        result = _compare_manifest(args.check_manifest)
+        print(json.dumps(result, ensure_ascii=False, indent=1))
+        return 0 if result.get("match") or not result.get("available") else 1
 
     report = collect()
     if args.write:
@@ -427,6 +584,13 @@ def main() -> int:
         (args.out / "live-results.md").write_text(markdown(report), encoding="utf-8", newline="\n")
         (args.out / "live-results.json").write_text(
             json.dumps(report, ensure_ascii=False, indent=1, sort_keys=True) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+    if args.manifest is not None:
+        args.manifest.parent.mkdir(parents=True, exist_ok=True)
+        args.manifest.write_text(
+            json.dumps(build_manifest(), ensure_ascii=False, indent=1, sort_keys=True) + "\n",
             encoding="utf-8",
             newline="\n",
         )

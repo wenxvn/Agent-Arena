@@ -2,6 +2,7 @@
  "by_kind": {
   "E1-a|ablation|mimo-v2.6-flash": {
    "E1-a/off": {
+    "cancelled": 0,
     "censored": 0,
     "invalid_actions": 1,
     "mean_cost_cny": 0.024203,
@@ -9,6 +10,7 @@
     "mean_input_tokens": 44607.1,
     "mean_requests": 49.2,
     "mechanism_failures": 10,
+    "provider_errors": 0,
     "rejected_actions": 0,
     "replicates": [
      0,
@@ -28,6 +30,7 @@
     "valid": 10
    },
    "E1-a/on": {
+    "cancelled": 0,
     "censored": 1,
     "invalid_actions": 0,
     "mean_cost_cny": 0.030208,
@@ -35,6 +38,7 @@
     "mean_input_tokens": 55691.7,
     "mean_requests": 53.3,
     "mechanism_failures": 9,
+    "provider_errors": 0,
     "rejected_actions": 0,
     "replicates": [
      0,
@@ -56,13 +60,15 @@
   },
   "E1-a|budget_extension|mimo-v2.6-flash": {
    "E1-a/off": {
+    "cancelled": 0,
     "censored": 0,
     "invalid_actions": 18,
     "mean_cost_cny": 0.021728,
     "mean_decisions": 48.884615,
     "mean_input_tokens": 44668.538462,
     "mean_requests": 48.884615,
-    "mechanism_failures": 24,
+    "mechanism_failures": 23,
+    "provider_errors": 1,
     "rejected_actions": 0,
     "replicates": [
      0,
@@ -78,13 +84,14 @@
      2,
      3
     ],
-    "success_rate": 0.0769,
+    "success_rate": 0.08,
     "successes": 2,
     "total_cost_cny": 0.56491848,
     "unknown_cost_runs": 1,
-    "valid": 26
+    "valid": 25
    },
    "E1-a/on": {
+    "cancelled": 0,
     "censored": 0,
     "invalid_actions": 10,
     "mean_cost_cny": 0.027212,
@@ -92,6 +99,7 @@
     "mean_input_tokens": 45200.5,
     "mean_requests": 43.285714,
     "mechanism_failures": 20,
+    "provider_errors": 0,
     "rejected_actions": 0,
     "replicates": [
      0,
@@ -114,6 +122,7 @@
     "valid": 28
    },
    "E1-a/on-we1": {
+    "cancelled": 0,
     "censored": 0,
     "invalid_actions": 1,
     "mean_cost_cny": 0.024826,
@@ -121,6 +130,7 @@
     "mean_input_tokens": 50308.111111,
     "mean_requests": 48.888889,
     "mechanism_failures": 9,
+    "provider_errors": 0,
     "rejected_actions": 0,
     "replicates": [
      0,
@@ -142,6 +152,7 @@
   },
   "E2-a|ablation|mimo-v2.6-flash": {
    "E2-a/off": {
+    "cancelled": 0,
     "censored": 0,
     "invalid_actions": 0,
     "mean_cost_cny": 0.002356,
@@ -149,6 +160,7 @@
     "mean_input_tokens": 5606.9,
     "mean_requests": 6.2,
     "mechanism_failures": 10,
+    "provider_errors": 0,
     "rejected_actions": 1,
     "replicates": [
      0,
@@ -168,13 +180,15 @@
     "valid": 10
    },
    "E2-a/on": {
+    "cancelled": 0,
     "censored": 0,
     "invalid_actions": 0,
     "mean_cost_cny": 0.015804,
     "mean_decisions": 12.428571,
     "mean_input_tokens": 19282.428571,
     "mean_requests": 15.857143,
-    "mechanism_failures": 4,
+    "mechanism_failures": 3,
+    "provider_errors": 1,
     "rejected_actions": 4,
     "replicates": [
      0,
@@ -186,15 +200,16 @@
      0,
      1
     ],
-    "success_rate": 0.4286,
+    "success_rate": 0.5,
     "successes": 3,
     "total_cost_cny": 0.11062788,
     "unknown_cost_runs": 1,
-    "valid": 7
+    "valid": 6
    }
   },
   "E2-a|matrix|mimo-v2.6-flash": {
    "E2-a/off": {
+    "cancelled": 0,
     "censored": 0,
     "invalid_actions": 0,
     "mean_cost_cny": 0.007277,
@@ -202,6 +217,7 @@
     "mean_input_tokens": 12524.518519,
     "mean_requests": 12.592593,
     "mechanism_failures": 16,
+    "provider_errors": 0,
     "rejected_actions": 58,
     "replicates": [
      0,
@@ -221,6 +237,7 @@
     "valid": 27
    },
    "E2-a/on": {
+    "cancelled": 0,
     "censored": 2,
     "invalid_actions": 0,
     "mean_cost_cny": 0.026101,
@@ -228,6 +245,7 @@
     "mean_input_tokens": 27986.407407,
     "mean_requests": 21.925926,
     "mechanism_failures": 12,
+    "provider_errors": 0,
     "rejected_actions": 53,
     "replicates": [
      0,
@@ -249,6 +267,7 @@
   },
   "E2-a|matrix|mimo-v2.6-pro": {
    "E2-a/off": {
+    "cancelled": 0,
     "censored": 0,
     "invalid_actions": 0,
     "mean_cost_cny": 0.004441,
@@ -256,6 +275,7 @@
     "mean_input_tokens": 9331.75,
     "mean_requests": 10.0,
     "mechanism_failures": 10,
+    "provider_errors": 0,
     "rejected_actions": 27,
     "replicates": [
      0,
@@ -276,6 +296,7 @@
     "valid": 12
    },
    "E2-a/on": {
+    "cancelled": 0,
     "censored": 0,
     "invalid_actions": 0,
     "mean_cost_cny": 0.020896,
@@ -283,6 +304,7 @@
     "mean_input_tokens": 24857.5,
     "mean_requests": 19.75,
     "mechanism_failures": 0,
+    "provider_errors": 0,
     "rejected_actions": 3,
     "replicates": [
      0,
@@ -305,6 +327,7 @@
   },
   "E2-a|supplement|mimo-v2.6-flash": {
    "E2-a/off": {
+    "cancelled": 0,
     "censored": 0,
     "invalid_actions": 0,
     "mean_cost_cny": 0.001272,
@@ -312,6 +335,7 @@
     "mean_input_tokens": 5476.066667,
     "mean_requests": 6.066667,
     "mechanism_failures": 15,
+    "provider_errors": 0,
     "rejected_actions": 0,
     "replicates": [
      0,
@@ -333,6 +357,7 @@
     "valid": 15
    },
    "E2-a/on": {
+    "cancelled": 0,
     "censored": 3,
     "invalid_actions": 5,
     "mean_cost_cny": 0.03651,
@@ -340,6 +365,7 @@
     "mean_input_tokens": 48286.133333,
     "mean_requests": 38.0,
     "mechanism_failures": 1,
+    "provider_errors": 0,
     "rejected_actions": 89,
     "replicates": [
      0,
@@ -363,6 +389,7 @@
   },
   "E3|ablation|mimo-v2.6-flash": {
    "E3/off": {
+    "cancelled": 0,
     "censored": 0,
     "invalid_actions": 1,
     "mean_cost_cny": 0.026803,
@@ -370,6 +397,7 @@
     "mean_input_tokens": 43850.0,
     "mean_requests": 61.0,
     "mechanism_failures": 1,
+    "provider_errors": 0,
     "rejected_actions": 0,
     "replicates": [
      0
@@ -385,6 +413,7 @@
     "valid": 1
    },
    "E3/on": {
+    "cancelled": 0,
     "censored": 0,
     "invalid_actions": 0,
     "mean_cost_cny": 0.019269,
@@ -392,6 +421,7 @@
     "mean_input_tokens": 39261.0,
     "mean_requests": 54.0,
     "mechanism_failures": 1,
+    "provider_errors": 0,
     "rejected_actions": 0,
     "replicates": [
      0
@@ -407,13 +437,15 @@
     "valid": 1
    },
    "E3/trigger_only": {
+    "cancelled": 0,
     "censored": 0,
     "invalid_actions": 1,
     "mean_cost_cny": 0.004468,
     "mean_decisions": 9.8,
     "mean_input_tokens": 9025.4,
     "mean_requests": 9.8,
-    "mechanism_failures": 5,
+    "mechanism_failures": 4,
+    "provider_errors": 1,
     "rejected_actions": 0,
     "replicates": [
      0,
@@ -429,11 +461,12 @@
     "successes": 0,
     "total_cost_cny": 0.02234236,
     "unknown_cost_runs": 1,
-    "valid": 5
+    "valid": 4
    }
   },
   "E3|budget_extension|mimo-v2.6-flash": {
    "E3/off": {
+    "cancelled": 0,
     "censored": 0,
     "invalid_actions": 2,
     "mean_cost_cny": 0.004318,
@@ -441,6 +474,7 @@
     "mean_input_tokens": 7500.555556,
     "mean_requests": 9.222222,
     "mechanism_failures": 9,
+    "provider_errors": 0,
     "rejected_actions": 0,
     "replicates": [
      0,
@@ -460,6 +494,7 @@
     "valid": 9
    },
    "E3/on": {
+    "cancelled": 0,
     "censored": 3,
     "invalid_actions": 4,
     "mean_cost_cny": 0.022437,
@@ -467,6 +502,7 @@
     "mean_input_tokens": 43899.4,
     "mean_requests": 45.355556,
     "mechanism_failures": 27,
+    "provider_errors": 0,
     "rejected_actions": 0,
     "replicates": [
      0,
@@ -493,13 +529,15 @@
     "valid": 45
    },
    "E3/trigger_only": {
+    "cancelled": 0,
     "censored": 1,
     "invalid_actions": 11,
     "mean_cost_cny": 0.011297,
     "mean_decisions": 42.948718,
     "mean_input_tokens": 30956.358974,
     "mean_requests": 42.948718,
-    "mechanism_failures": 22,
+    "mechanism_failures": 21,
+    "provider_errors": 1,
     "rejected_actions": 0,
     "replicates": [
      0,
@@ -518,11 +556,11 @@
      0,
      2
     ],
-    "success_rate": 0.4103,
+    "success_rate": 0.4211,
     "successes": 16,
     "total_cost_cny": 0.4405968,
     "unknown_cost_runs": 1,
-    "valid": 39
+    "valid": 38
    }
   }
  },
@@ -531,21 +569,25 @@
    "E1-a/off": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 6,
      "successes": 0
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 6,
      "successes": 0
     },
     "2": {
      "censored": 0,
+     "provider_errors": 1,
      "runs": 9,
      "successes": 2
     },
     "3": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 5,
      "successes": 0
     }
@@ -553,21 +595,25 @@
    "E1-a/on": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 6,
      "successes": 0
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 6,
      "successes": 0
     },
     "2": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 8,
      "successes": 8
     },
     "3": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 8,
      "successes": 0
     }
@@ -575,16 +621,19 @@
    "E1-a/on-we1": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "3": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     }
@@ -594,16 +643,19 @@
    "E1-a/off": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 4,
      "successes": 0
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "2": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     }
@@ -611,16 +663,19 @@
    "E1-a/on": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 4,
      "successes": 0
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "2": {
      "censored": 1,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     }
@@ -630,16 +685,19 @@
    "E2-a/off": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "2": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     }
@@ -647,16 +705,19 @@
    "E2-a/on": {
     "0": {
      "censored": 1,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "1": {
      "censored": 1,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "2": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     }
@@ -666,16 +727,19 @@
    "E2-a/off": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 9,
      "successes": 0
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 8,
      "successes": 0
     },
     "2": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 8,
      "successes": 0
     }
@@ -683,16 +747,19 @@
    "E2-a/on": {
     "0": {
      "censored": 2,
+     "provider_errors": 0,
      "runs": 9,
      "successes": 5
     },
     "1": {
      "censored": 0,
+     "provider_errors": 1,
      "runs": 8,
      "successes": 6
     },
     "2": {
      "censored": 1,
+     "provider_errors": 0,
      "runs": 5,
      "successes": 3
     }
@@ -702,21 +769,25 @@
    "E2-a/off": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 1
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "2": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 1
     },
     "3": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     }
@@ -724,21 +795,25 @@
    "E2-a/on": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 3
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 3
     },
     "2": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 3
     },
     "3": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 3
     }
@@ -748,16 +823,19 @@
    "E2-a/off": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "2": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 2
     }
@@ -765,16 +843,19 @@
    "E2-a/on": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 1
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "2": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 3
     }
@@ -784,16 +865,19 @@
    "E2-a/off": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 3
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 3
     },
     "2": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 3
     }
@@ -801,16 +885,19 @@
    "E2-a/on": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 3
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 3
     },
     "2": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 3
     }
@@ -820,11 +907,13 @@
    "E3/trigger_only": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "1": {
      "censored": 0,
+     "provider_errors": 1,
      "runs": 2,
      "successes": 0
     }
@@ -834,16 +923,19 @@
    "E3/off": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "2": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     }
@@ -851,16 +943,19 @@
    "E3/on": {
     "0": {
      "censored": 2,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "1": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "2": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     }
@@ -870,11 +965,13 @@
    "E3/on": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "2": {
      "censored": 1,
+     "provider_errors": 0,
      "runs": 33,
      "successes": 15
     }
@@ -882,11 +979,13 @@
    "E3/trigger_only": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 3,
      "successes": 0
     },
     "2": {
      "censored": 1,
+     "provider_errors": 1,
      "runs": 36,
      "successes": 16
     }
@@ -896,6 +995,7 @@
    "E3/off": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 1,
      "successes": 0
     }
@@ -903,6 +1003,7 @@
    "E3/on": {
     "0": {
      "censored": 0,
+     "provider_errors": 0,
      "runs": 1,
      "successes": 0
     }
@@ -914,13 +1015,15 @@
   "E1-a|req=150": {
    "arms": {
     "E1-a/off": {
+     "cancelled": 0,
      "censored": 0,
      "invalid_actions": 18,
      "mean_cost_cny": 0.021728,
      "mean_decisions": 48.884615,
      "mean_input_tokens": 44668.538462,
      "mean_requests": 48.884615,
-     "mechanism_failures": 24,
+     "mechanism_failures": 23,
+     "provider_errors": 1,
      "rejected_actions": 0,
      "replicates": [
       0,
@@ -936,13 +1039,14 @@
       2,
       3
      ],
-     "success_rate": 0.0769,
+     "success_rate": 0.08,
      "successes": 2,
      "total_cost_cny": 0.56491848,
      "unknown_cost_runs": 1,
-     "valid": 26
+     "valid": 25
     },
     "E1-a/on": {
+     "cancelled": 0,
      "censored": 0,
      "invalid_actions": 10,
      "mean_cost_cny": 0.027212,
@@ -950,6 +1054,7 @@
      "mean_input_tokens": 45200.5,
      "mean_requests": 43.285714,
      "mechanism_failures": 20,
+     "provider_errors": 0,
      "rejected_actions": 0,
      "replicates": [
       0,
@@ -972,6 +1077,7 @@
      "valid": 28
     },
     "E1-a/on-we1": {
+     "cancelled": 0,
      "censored": 0,
      "invalid_actions": 1,
      "mean_cost_cny": 0.024826,
@@ -979,6 +1085,7 @@
      "mean_input_tokens": 50308.111111,
      "mean_requests": 48.888889,
      "mechanism_failures": 9,
+     "provider_errors": 0,
      "rejected_actions": 0,
      "replicates": [
       0,
@@ -1044,6 +1151,11 @@
       2,
       0,
       "mechanism_failure"
+     ],
+     [
+      2,
+      0,
+      "provider_error"
      ],
      [
       2,
@@ -1235,6 +1347,7 @@
   "E1-a|req=90": {
    "arms": {
     "E1-a/off": {
+     "cancelled": 0,
      "censored": 0,
      "invalid_actions": 1,
      "mean_cost_cny": 0.024203,
@@ -1242,6 +1355,7 @@
      "mean_input_tokens": 44607.1,
      "mean_requests": 49.2,
      "mechanism_failures": 10,
+     "provider_errors": 0,
      "rejected_actions": 0,
      "replicates": [
       0,
@@ -1261,6 +1375,7 @@
      "valid": 10
     },
     "E1-a/on": {
+     "cancelled": 0,
      "censored": 1,
      "invalid_actions": 0,
      "mean_cost_cny": 0.030208,
@@ -1268,6 +1383,7 @@
      "mean_input_tokens": 55691.7,
      "mean_requests": 53.3,
      "mechanism_failures": 9,
+     "provider_errors": 0,
      "rejected_actions": 0,
      "replicates": [
       0,
@@ -1575,6 +1691,7 @@
   "E2-a|req=90": {
    "arms": {
     "E2-a/off": {
+     "cancelled": 0,
      "censored": 0,
      "invalid_actions": 0,
      "mean_cost_cny": 0.004569,
@@ -1582,6 +1699,7 @@
      "mean_input_tokens": 9193.015625,
      "mean_requests": 9.578125,
      "mechanism_failures": 51,
+     "provider_errors": 0,
      "rejected_actions": 86,
      "replicates": [
       0,
@@ -1604,13 +1722,15 @@
      "valid": 64
     },
     "E2-a/on": {
+     "cancelled": 0,
      "censored": 5,
      "invalid_actions": 5,
      "mean_cost_cny": 0.026455,
      "mean_decisions": 20.885246,
      "mean_input_tokens": 31363.803279,
      "mean_requests": 24.754098,
-     "mechanism_failures": 17,
+     "mechanism_failures": 16,
+     "provider_errors": 1,
      "rejected_actions": 149,
      "replicates": [
       0,
@@ -1626,11 +1746,11 @@
       2,
       3
      ],
-     "success_rate": 0.6393,
+     "success_rate": 0.65,
      "successes": 39,
      "total_cost_cny": 1.61374472,
      "unknown_cost_runs": 1,
-     "valid": 61
+     "valid": 60
     }
    },
    "mechanism": {},
@@ -1791,7 +1911,7 @@
       "left_cost": 0.00054668,
       "pair_key": "MAP-16|seed=1|rep=2",
       "reason": "采样参数未登记（历史 CSV 无 sampling 列）：不声称同采样。；effective prompt 不同但共享提示主体相同：这是被测机制（记忆/计划/反思文本）造成的差异。",
-      "right_category": "mechanism_failure",
+      "right_category": "provider_error",
       "right_cost": 0.01197408,
       "verdict": "DESCRIPTIVE_ONLY"
      },
@@ -2360,9 +2480,9 @@
      "note": "只有 COMPARABLE 的对进入方向统计；DESCRIPTIVE_ONLY 与 INCOMPARABLE 单独计数且不得当作效果证据。同一 seed 的重复观测不是新的环境样本，不能据此宣称跨环境泛化。",
      "pairs": 45,
      "right_censored": 4,
-     "right_mechanism_failures": 16,
+     "right_mechanism_failures": 15,
      "right_successes": 25,
-     "right_valid_runs": 45
+     "right_valid_runs": 44
     }
    },
    "seed_detail": {
@@ -2591,6 +2711,11 @@
      ],
      [
       1,
+      2,
+      "provider_error"
+     ],
+     [
+      1,
       3,
       "OK"
      ],
@@ -2660,6 +2785,7 @@
   "E3|req=150": {
    "arms": {
     "E3/on": {
+     "cancelled": 0,
      "censored": 1,
      "invalid_actions": 2,
      "mean_cost_cny": 0.02643,
@@ -2667,6 +2793,7 @@
      "mean_input_tokens": 48117.277778,
      "mean_requests": 50.083333,
      "mechanism_failures": 20,
+     "provider_errors": 0,
      "rejected_actions": 0,
      "replicates": [
       0,
@@ -2692,13 +2819,15 @@
      "valid": 36
     },
     "E3/trigger_only": {
+     "cancelled": 0,
      "censored": 1,
      "invalid_actions": 11,
      "mean_cost_cny": 0.011297,
      "mean_decisions": 42.948718,
      "mean_input_tokens": 30956.358974,
      "mean_requests": 42.948718,
-     "mechanism_failures": 22,
+     "mechanism_failures": 21,
+     "provider_errors": 1,
      "rejected_actions": 0,
      "replicates": [
       0,
@@ -2717,11 +2846,11 @@
       0,
       2
      ],
-     "success_rate": 0.4103,
+     "success_rate": 0.4211,
      "successes": 16,
      "total_cost_cny": 0.4405968,
      "unknown_cost_runs": 1,
-     "valid": 39
+     "valid": 38
     }
    },
    "mechanism": {},
@@ -3078,6 +3207,11 @@
      ],
      [
       2,
+      2,
+      "provider_error"
+     ],
+     [
+      2,
       3,
       "OK"
      ],
@@ -3157,6 +3291,7 @@
   "E3|req=90": {
    "arms": {
     "E3/off": {
+     "cancelled": 0,
      "censored": 0,
      "invalid_actions": 3,
      "mean_cost_cny": 0.006566,
@@ -3164,6 +3299,7 @@
      "mean_input_tokens": 11135.5,
      "mean_requests": 14.4,
      "mechanism_failures": 10,
+     "provider_errors": 0,
      "rejected_actions": 0,
      "replicates": [
       0,
@@ -3183,6 +3319,7 @@
      "valid": 10
     },
     "E3/on": {
+     "cancelled": 0,
      "censored": 2,
      "invalid_actions": 2,
      "mean_cost_cny": 0.007743,
@@ -3190,6 +3327,7 @@
      "mean_input_tokens": 28251.2,
      "mean_requests": 29.2,
      "mechanism_failures": 8,
+     "provider_errors": 0,
      "rejected_actions": 0,
      "replicates": [
       0,
@@ -3209,13 +3347,15 @@
      "valid": 10
     },
     "E3/trigger_only": {
+     "cancelled": 0,
      "censored": 0,
      "invalid_actions": 1,
      "mean_cost_cny": 0.004468,
      "mean_decisions": 9.8,
      "mean_input_tokens": 9025.4,
      "mean_requests": 9.8,
-     "mechanism_failures": 5,
+     "mechanism_failures": 4,
+     "provider_errors": 1,
      "rejected_actions": 0,
      "replicates": [
       0,
@@ -3231,7 +3371,7 @@
      "successes": 0,
      "total_cost_cny": 0.02234236,
      "unknown_cost_runs": 1,
-     "valid": 5
+     "valid": 4
     }
    },
    "mechanism": {},
@@ -3368,7 +3508,7 @@
      [
       1,
       1,
-      "mechanism_failure"
+      "provider_error"
      ]
     ]
    }
@@ -3386,5 +3526,5 @@
   "unknown_cost_runs": 4
  },
  "records": 308,
- "schema": "v14-live-results-1"
+ "schema": "v14-live-results-2"
 }

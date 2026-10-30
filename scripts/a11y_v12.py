@@ -149,7 +149,8 @@ def _browser_audit(url: str, *, color_scheme: str) -> dict[str, Any]:
             viewport={"width": 1440, "height": 1200}, color_scheme=color_scheme
         )
         for view, marker in PAGES:
-            page.goto(f"{url}/?view={quote(view)}", wait_until="networkidle")
+            # 显式 60s：Windows 冷启动实测单页 6–8s，默认 30s 会偶发超时（V14.1 记录）。
+            page.goto(f"{url}/?view={quote(view)}", wait_until="networkidle", timeout=60_000)
             try:
                 page.get_by_text(marker, exact=True).first.wait_for(timeout=20_000)
             except Exception:  # noqa: BLE001 - 标记文本可能因空状态不同
