@@ -158,7 +158,9 @@
 
 ## DCR-V14-08 · 记忆的瓶颈是"记录未被使用"，不是"记不住"
 
-- **数据**（`docs/v14/map22-instances.md`，只读公开轨迹，65 局 `memory.v2`）：
+- **数据**（`docs/v14/map22-instances.md`，只读公开轨迹，**当时快照 65 局**；
+  V14.1 全量 83 局复核后 seed=3 on 为 8 局（折返 23.5 / recall 0.690）、
+  seed=1 on 为 6 局（折返 28.0 / recall 0.674），**结论不变**）：
 
 | 分桶 | 局数 | 成功 | 平均折返 | 平均重复访问步 | 平均 `route_recall` | 最大已用移动 |
 |---|---:|---:|---:|---:|---:|---:|
@@ -231,3 +233,32 @@
   原始逐局 trace 的审计缺口由 `docs/v14/stage2-closure.md` §8 明确标注为已知限制。
 - **可回滚**：是（`git rm -r --cached results` 并恢复 `.gitignore`；历史仍会保留体积）。
 - **同步**：`AGENTS.md` 项目约束、`docs/scope/scope.md` 第 26 项、`results/README.md`。
+
+## DCR-V14-11 · 聚合把 Provider 中断算成"机制失败"（V14.1 修复）
+
+- **发现**（V14.1 交付前审计）：`scripts/summarize_v14_live.py` 的分类只有三档
+  `completed_success / budget_censored / mechanism_failure`，凡是 `state` 不是
+  `BUDGET_REACHED` 且未成功的局都落到 `mechanism_failure` —— 包括
+  `state = PROVIDER_ERROR` 的 4 局基础设施中断。
+- **影响**：这 4 局既被写成"场景机制失败"，又留在 `valid` 分母里，
+  使 `docs/v14/live-results.md` 的成功率偏低、机制失败数偏高。
+  受影响的最大项是 `E2-a MAP-16 flash on`：14/22 = 0.6364（旧）→ **14/21 = 0.6667**（新）。
+- **修复**：新增 `classify_state()`，`PROVIDER_ERROR` / `CANCELLED` 单独成类、
+  不进 `valid` 分母；表格增加"中断"列；`tests/test_v14_live_summary.py` 覆盖四档分类。
+- **不变量**：方向与结论未变（E3 仍 p=1.0；planning 仍 p < 1e-6 量级）；
+  账本、原始 trace、历史数字均未改写，只重新聚合与重新表述。
+- **可回滚**：是（回退该函数即恢复旧口径，但会重新引入分母污染）。
+
+## D-V14-007 · 同一指标只允许一个权威来源（V14.1）
+
+- **背景**：V14 期间同一指标在不同轮次被手写进不同文档，出现了 65 / 83、121 / 125、
+  19 / 28、33–36 / 36–39 等不一致（逐项判定见 `live-numbers-reconciliation.md`）。
+- **决定**：
+  1. 所有 LIVE 数字以 `docs/v14/live-results.json` + `live-manifest.json` 为唯一权威，
+     正文只允许引用、不允许手算；
+  2. 历史快照数字必须标注"快照"与对应 commit；
+  3. 每次新增真实局后必须重跑
+     `scripts/summarize_v14_live.py --write --manifest docs/v14/live-manifest.json`
+     并跑 `--check-manifest` 对账；
+  4. 子集口径（seed 限定 / 图限定 / 单因子臂）必须在表头写明范围。
+- **可回滚**：不适用（流程约定）。

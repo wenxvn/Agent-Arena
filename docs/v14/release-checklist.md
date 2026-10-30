@@ -15,7 +15,7 @@
 | 1 | 依赖锁 | `uv lock --check` | 通过 |
 | 2 | 代码规范 | `uv run ruff check .` | 通过 |
 | 3 | 类型检查 | `uv run mypy src` | 334 files，0 issues |
-| 4 | 离线测试 | `uv run pytest -q` | **1791 passed** |
+| 4 | 离线测试 | `uv run pytest -q` | **1796 passed**（本机；CI 1795 + 1 skipped） |
 | 5 | V8/V9/V10 冻结 | `uv run python -m agent_arena.v10.freeze verify` | 全部 unchanged |
 | 6 | 公式级复算 | `uv run python -m agent_arena.v10.recompute --check` | 1093/1093 |
 | 7 | 指标独立复核 | `uv run python -m agent_arena.v10.independent_check --check` | 0 违规 |
@@ -53,15 +53,15 @@
 | 4 | 首次分歧高亮 | `screenshots/03-lab-first-divergence.png` | 通过 |
 | 5 | MAP-22 探索不画被拒移动 | `screenshots/02-lab-map22-exploration.png` | 通过 |
 | 6 | 不可比时禁用排名 | 结果页门禁横幅（`comparison_gate`） | 通过 |
-| 7 | 中文文档 | `docs/v14/` 全套 16 份 | 通过 |
+| 7 | 中文文档 | `docs/v14/` 25 份 Markdown + 9 份 JSON + 7 张截图 | 通过 |
 
 ## 4. 明确未完成 / 不适用
 
 | 项 | 状态 | 原因 |
 |---|---|---|
-| `memory.v2` 真实效果 | 已测（65 局）| 90 请求 0/10 vs 0/10；150 请求 seed 2 **2/9 → 8/8**，seed 0/1/3 两臂全败 → **条件性** |
-| `planning.v2` 真实效果 | 已测（121 局 / 4 图 × 2 模型）| MAP-16 flash 0/25 → 14/22；**pro 2/12 → 12/12（含留出 seed）**；MAP-18 2/9 → 4/9；MAP-26 9/9→9/9（天花板）；MAP-14 0/9→0/9（地板） |
-| `reflection.v2` 真实效果 | 无可检出差异 | MAP-22@150 seed 2 每臂 33–36 局：16/36 vs 15/33（p=1.0）；n=13 的 3/13→7/13 已证伪 |
+| `memory.v2` 真实效果 | 已测（83 局）| 90 请求 0/10 vs 0/10；150 请求 seed 2 **2/9 → 8/8**，seed 0/1/3 两臂全败 → **条件性** |
+| `planning.v2` 真实效果 | 已测（125 局 / 4 图 × 2 模型）| MAP-16 flash 0/25 → 14/21 有效；**pro 2/12 → 12/12（含留出 seed）**；MAP-18 2/9 → 4/9；MAP-26 9/9→9/9（天花板）；MAP-14 0/9→0/9（地板） |
+| `reflection.v2` 真实效果 | 无可检出差异 | MAP-22@150 seed 2：`trigger_only` 16/35 有效 vs `on` 15/33（p=1.0）；n=13 的 3/13→7/13 已证伪 |
 | 外部账单对账 | `BLOCKED_EXTERNAL` | 用户未提供脱敏账单 CSV |
 | 本机 Playwright 自带 chromium 复现 | `NOT_VERIFIED` | CDN 下载受限；CI 侧已真实验证 |
 | 真机读屏软件 | `NOT_VERIFIED` | 无读屏环境（自动化 a11y 已 0 严重问题） |
@@ -73,6 +73,10 @@
 > 2026-10-28：本阶段按用户决定**收尾**，标记 `EXPLORATORY_COMPLETE`
 > （tag `v14-stage2-exploratory-complete`）。收尾声明、用户接受的 3 项非阻断例外与
 > 第三阶段候选见 `docs/v14/stage2-closure.md`。
+>
+> 2026-10-29：V14.1 完成交付前审计与规范化（不改实验、不改冻结资产），
+> 逐项复验与最终数字见 `docs/v14/V14.1-final-acceptance.md`；
+> 本清单的工程/数据项已由该轮重跑确认。
 
 - `ENGINEERING_VERIFIED`：**满足**。
 - `LIVE_EVIDENCE_VERIFIED`：**不满足（部分达成）**——308 局；规划已可复现、记忆瓶颈已定位、反思无差异；仍缺外部账单核对。

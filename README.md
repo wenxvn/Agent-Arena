@@ -4,11 +4,11 @@ Agent Arena 是一个用于学习、运行和比较 LLM Agent 行为的本地实
 
 ![地图大厅](docs/v11/screenshots/01-home.png)
 
-## V14：第二阶段探索收尾（现状）
+## V14.1：第二阶段交付冻结（现状）
 
-第二阶段（V12 Lab 1.0 → V13 Lab 1.1 → V14 Lab 1.2）的**阶段性探索已收尾**：
-状态 `EXPLORATORY_COMPLETE` / `ENGINEERING_VERIFIED` / `LIVE_PARTIAL`
-（tag `v14-stage2-exploratory-complete`）。
+第二阶段（V12 Lab 1.0 → V13 Lab 1.1 → V14 Lab 1.2 → V14.1 交付整理）已**冻结**：
+状态 `ENGINEERING_VERIFIED` / `EXPLORATORY_COMPLETE` / `LIVE_PARTIAL`
+（tag `v14-stage2-exploratory-complete` 为 V14 收尾；V14.1 另打交付 tag）。
 
 ```bash
 uv run python scripts/verify_v14.py      # 15 项事实边界检查（零请求）
@@ -19,13 +19,15 @@ uv run python scripts/verify_v14.py      # 15 项事实边界检查（零请求�
 
 | 策略 | 结论 | 证据 |
 |---|---|---|
-| `planning.v2` | **唯一可复现的正向结论** | MAP-16 flash `0/25 → 14/22`；**pro `2/12 → 12/12`**（含留出 seed `0/3 → 3/3`）；MAP-18 `2/9 → 4/9`；天花板 MAP-26 `9/9 → 9/9`、地板 MAP-14 `0/9 → 0/9` |
+| `planning.v2` | **唯一可复现的正向结论** | MAP-16 flash `0/25 → 14/21 有效`；**pro `2/12 → 12/12`**（含留出 seed `0/3 → 3/3`）；MAP-18 `2/9 → 4/9`；天花板 MAP-26 `9/9 → 9/9`、地板 MAP-14 `0/9 → 0/9` |
 | `memory.v2` `route_log` | **瓶颈是「记了不用」** | 仅 MAP-22 seed 2 且 ≥150 请求 `2/9 → 8/8`；写入在全部 seed 成立（recall 0.19–1.0），但 `route_write_every=1` 把 recall 抬到 0.977 仍不降折返（负向结果） |
-| `reflection.v2` | **暴露稳定、效果无可检出差异** | `trigger_only` 16/36 vs `on` 15/33，Fisher p=1.0；早先 n=13 的「方向性正向」已自我更正 |
+| `reflection.v2` | **暴露稳定、效果无可检出差异** | seed 2 上 `trigger_only` 16/35 有效 vs `on` 15/33，Fisher p=1.0；早先 n=13 的「方向性正向」已自我更正 |
 
 **这不是 `STAGE_II_FINAL_READY`**：缺显著性/因果级证据与 Provider 账单核对，
 三项非阻断例外已由用户接受。全部结论为描述性（采样支持状态 `UNKNOWN`）。
-详见 [收尾声明](docs/v14/stage2-closure.md)、[真实结果](docs/v14/live-report.md)、
+V14.1 只做交付前审计、数字对账与规范化，**未新增任何付费请求、未改冻结规则**。
+详见 [V14.1 验收](docs/v14/V14.1-final-acceptance.md)、[收尾声明](docs/v14/stage2-closure.md)、
+[真实结果](docs/v14/live-report.md)、[数字对账](docs/v14/live-numbers-reconciliation.md)、
 [最终报告](docs/v14/final-report.md)、[差距清单](docs/v14/gap-audit.md)。
 
 ## V13：Agent Arena Lab 1.1（可信、可复现、可诊断）
@@ -218,10 +220,11 @@ uv run python scripts/verify_v13.py
 uv run python scripts/verify_v14.py
 ```
 
-当前 V14 结果：**1791 pytest passed**、mypy 334 文件 0 issues、ruff clean、lock 0、
+当前 V14.1 结果：**1796 pytest passed**（本机；CI 1795 + 1 skipped）、mypy 334 文件 0 issues、ruff clean、lock 0、
 freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、
-`verify_v11/12/13/14` = **7/15/18/15**、`lab-e2e` 为阻断门禁且切换后连续 24 次以上成功。
-详见 [V14 验证报告](docs/v14/validation-report.md) 与 [V14 交付清单](docs/v14/release-checklist.md)。
+`verify_v11/12/13/14` = **7/15/18/15**、`lab-e2e` 为阻断门禁（V14.1 提交后远端 CI 两个 Job 均 success）。
+详见 [V14 验证报告](docs/v14/validation-report.md)、[V14.1 验收](docs/v14/V14.1-final-acceptance.md)
+与 [V14 交付清单](docs/v14/release-checklist.md)。
 
 ## 研究背景（简版）
 
@@ -230,7 +233,7 @@ freeze 9/9 unchanged、recompute 1093/1093、independent 0 violations、
 - V11 真实 MiMo 冒烟：3 局（MAP-01/19/30），58 次已记录请求，结算 ¥0.04637556，未知预留 ¥0.073728；0 成功为环境规则/预算终局，未修改规则凑成功。
 - V12 完成多架构实验层（父实验 + 子局、三种架构 + 反思、六图诊断与可视化、第三方 SDK）；真实 MiMo 共 **20 个实验 / 159 局**，结算 **¥5.43680012**、未知消费 ¥0（批准 ¥6.00）。主矩阵 24/53 成功，同条件重复的结局翻转率 22.2%（2 次观测 4/18）/ 25.0%（3 次观测 3/12）——**1 次/条件不足以为架构排名**。四个测量缺陷（DCR-V12-01…04）与一个"触发器未激活"（DCR-V12-05）都已定位并记录。
 - V13 完成 Lab 1.1 深化层（重复身份、可比性协议、三个 v2 策略、七层归因、模板报告、账本审计）；本轮 0 局真实付费请求，全部 LIVE 留给下一轮。
-- V14 完成第二阶段探索收尾：修掉 6 个会误导结论的测量口径缺陷、完成 308 局真实 MiMo 对照（¥5.55809328）。结论是 planning 可复现、memory 瓶颈在「记了不用」、reflection 无可检出差异；**不宣称任何架构更优，也不宣称 `STAGE_II_FINAL_READY`**。第三阶段候选尚未启动。
+- V14 完成第二阶段探索收尾：修掉 6 个会误导结论的测量口径缺陷、完成 308 局真实 MiMo 对照（¥5.55809328）。结论是 planning 可复现、memory 瓶颈在「记了不用」、reflection 无可检出差异；**不宣称任何架构更优，也不宣称 `STAGE_II_FINAL_READY`**。V14.1 完成交付前审计、LIVE 数字对账（65/83、121/125 等）与规范化封装，第二阶段自此冻结；第三阶段候选尚未启动。
 - 完整实验历史见 [开发进度](docs/scope/scope.md)、[工程记录](docs/engineering-log.md)、[V12 真实结果](docs/v12/mimo-results.md) 与 `docs/v8`–`docs/v12`。哪些提纲项没做见 [V12 差距清单](docs/v12/gap-audit.md)。
 
 ## 边界

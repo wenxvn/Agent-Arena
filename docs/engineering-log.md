@@ -2231,3 +2231,45 @@ freeze 9/9 unchanged、recompute 1093/1093、independent 0 违规、
 `verify_v11/12/13/14` = **7/15/18/15**；全仓 628 份 Markdown 相对链接扫描无项目性断链。
 
 未复跑：浏览器 E2E / a11y（Playwright CDN 受限），以本地最近一次通过 + 远端 CI 双 job success 为准。
+
+## 2026-10-29 · V14.1 第二阶段交付整理与冻结
+
+触发：用户要求对 V14 做交付前审计与规范化封装，只收尾、不开第三阶段、不加新功能或付费实验。
+起点 `ba7f7ef`（工作区干净、与 `origin/main` 同步）。
+
+审计（用代码与原始数据，而不是旧报告）：
+
+1. **证据完整性**：43 父实验 → 308 个 `children` → 308 个 `web/<run_id>/result.json`
+   （+ 308 个 `events.jsonl`）→ 账本 616 条事件（308 started / 308 settled）。
+   双向差集为 0、孤儿 0、重复结算 0、请求数 10 034 在账本与结果两侧一致。
+2. **数字对账**（新增 `docs/v14/live-numbers-reconciliation.md`）：
+   - E1-a **65 → 83**：65 是 227 局快照（90 档 20 + 150 档 off 26 + on 19），
+     后续写入频率单因子 +18 局未回写 → 历史子集；
+   - E2-a **121 → 125**：121 无法由任何子集复现，同一提交的 JSON 已是 125 → 手工求和错误；
+   - Memory 150 档 on **19 → 28**：19 是补充前快照（seed 0/1/2/3 = 3/3/8/5）；
+   - E3 的 **33–36 / 69 / 95** 分别是 seed 2 子集、seed 2 子集、MAP-22+MAP-19 子集 → 口径差异，不是错误；
+   - MAP-16 flash on「有效 15 / 14/15 = 0.9333」是两父实验合并时**列错位** → 14/21 = 0.6667；
+   - 「25 局全部 `NODE_CAPACITY_CONFLICT`」实为 24 + 1 `SIDING_CAPACITY_CONFLICT`；
+   - `unknown_spend`「×3」实为 **4 局**（逐局列在 `live-report.md` §5）。
+3. **缺陷修复 DCR-V14-11**：`summarize_v14_live.py` 把 `state = PROVIDER_ERROR` 归成
+   `mechanism_failure` 并计入有效分母（等于把"模型没答完"写成"场景机制失败"）。
+   新增 `classify_state()`，中断单独计数、不进分母；`live-results.md` 增"中断"列；
+   新增 `tests/test_v14_live_summary.py`（5 项，含逐局索引与脱敏检查）。
+   受影响最大项：E2-a MAP-16 flash on 14/22 → **14/21**；E3 trigger_only 16/39 → **16/38**。
+   方向与结论不变（E3 仍 Fisher p = 1.0；planning 仍 p < 1e-6 量级）。
+4. **过期状态**：`experiment-protocol.md` 的「V14 未获任何批准 → 一律 `LIVE_PENDING`」
+   保留为历史登记，新增 §6.1「登记时 vs 当前」对照；`agent-studies.md` §3.5 同步标注。
+5. **证据可审计性**：新增 `docs/v14/live-manifest.json`（308 条逐局索引 +
+   `result.json`/`events.jsonl`/账本 sha256）与 `--check-manifest` 对账命令；
+   29 MB 原始 trace 仍不入库（`runs/` 被 gitignore），文档说明校验方式。
+6. **工具稳健性**：`a11y_v12.py` 的 `goto` 用默认 30s 超时，本机冷启动（单页 6–8s）
+   连续两次 `Timeout 30000ms`（视图「挑战配置」）→ 显式 `timeout=60_000`，复跑两次通过。
+
+验证（本轮实测）：**1796 pytest passed**（135.66s；CI 1795 + 1 skipped）、mypy 334 文件 0 issues、
+ruff clean、freeze 9/9 unchanged、recompute 1093/1093、independent 0 违规、
+`verify_v11/12/13/14` = **7/15/18/15**、`e2e_lab` 通过（report 8 963 B / 139 行）、
+`a11y` 浅/深色 0 critical/serious/moderate、`--check-manifest` match。
+
+边界：**0 真实付费请求**；未改 `worlds/scenario_v8/`、`v10/runtime/`、V8/V9/V10 账本与历史 trace；
+未启动第三阶段。状态仍为 `ENGINEERING_VERIFIED` / `EXPLORATORY_COMPLETE` / `LIVE_PARTIAL`，
+**不是** `STAGE_II_FINAL_READY`；交付见 `docs/v14/V14.1-final-acceptance.md`，tag `v14.1-final-delivery`。

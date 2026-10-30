@@ -5,6 +5,8 @@
 - Tag：`v14-stage2-exploratory-complete`
 - 执行者：Pi Agent（DeepSeek V4.1 Flash 通道）
 - 用户决定：明确要求收尾；并由用户接受下文 §4 列出的 3 项非阻断例外
+- 后续：V14.1（2026-10-29）在不改实验、不改冻结资产的前提下重核计数与状态，
+  见 `V14.1-final-acceptance.md`；本文的结论与例外不变，仅个别计数已对齐最终值。
 
 ## 1. 收尾结论（一句话）
 
@@ -26,7 +28,7 @@
 | 父实验 | 43 | 同上 |
 | 账本完整性 | started 308 = settled 308；**0 重复结算、0 孤儿** | 同上 |
 | 未知消费 | 4 局（`unknown_spend`，按预留保留、**未重试**） | DCR-V14-05 |
-| 离线测试 | **1791 passed** | `docs/v14/validation-report.md` |
+| 离线测试 | **1791 passed**（收尾时；V14.1 重跑 1796） | `docs/v14/validation-report.md` |
 | 类型/规范 | `mypy src` 334 文件 0 issues；`ruff check .` clean | 同上 |
 | 冻结校验 | freeze 9/9 unchanged；recompute 1093/1093；independent 0 违规 | 同上 |
 | 验收脚本 | `verify_v11` 7/7、`verify_v12` 15/15、`verify_v13` 18/18、**`verify_v14` 15/15** | 同上 |
@@ -39,21 +41,22 @@
 
 | 地图 | 模型 | 关闭 | 开启 | 备注 |
 |---|---|---:|---:|---|
-| MAP-16 | `mimo-v2.6-flash` | 0/25 | **14/22** | 7 局截尾（请求上限），不计作失败 |
+| MAP-16 | `mimo-v2.6-flash` | 0/25 | **14/21 有效** | 22 局 = 14 成功 + 4 机制失败 + 3 截尾 + 1 Provider 中断 |
 | MAP-16 | `mimo-v2.6-pro` | 2/12 | **12/12** | 含**留出 seed 3**：`0/3 → 3/3` |
 | MAP-18 | flash | 2/9 | 4/9 | 方向一致、幅度小 |
 | MAP-26（天花板） | flash | 9/9 | 9/9 | **无增益也无损害** |
 | MAP-14（推理地板） | flash | 0/9 | 0/9 | **救不回来** |
 
-失败模式可解释：`off` 臂在 MAP-16 上 25 局全部 `NODE_CAPACITY_CONFLICT`，
-`pro` 在留出 seed 上 **2–3 次决策即 `DEADLOCK`**。成本：每成功局 ¥0.021–0.050。
+失败模式可解释：`off` 臂在 MAP-16 上 25 局中 24 局 `NODE_CAPACITY_CONFLICT`、
+1 局 `SIDING_CAPACITY_CONFLICT`（同一机制族）；
+`pro` 在留出 seed 上 **2–3 次决策即 `DEADLOCK`**。成本：每成功局 ¥0.021–0.047。
 
 **边界**：单机制（会车/侧线/重调度）× 2 模型；缺“规划有害”的对照图。
 
 ### 3.2 记忆（`memory.v2 route_log`）：瓶颈是“记了不用”，不是“记不住”
 
 - 90 请求：两臂 0/10；150 请求：seed 2 **2/9 → 8/8**，seed 0/1/3 两臂全 0。
-- 公开轨迹归因（65 局）：写入在所有 seed 都成功（`route_recall` 0.19–1.0），
+- 公开轨迹归因（83 局）：写入在所有 seed 都成功（`route_recall` 0.19–1.0），
   但**只有 seed 2 的折返数下降**（16.4 → 5.0）。
 - **负向实验**：`route_write_every` 2→1 把 recall 提到 **0.977**，折返数不降（28.0 vs 25.2）、成功 0/9。
 - 结论：**记录可用性不是瓶颈，策略是否据此行动才是**（DCR-V14-08/09）。
@@ -70,7 +73,7 @@
 | MAP-22 @90（Pilot） | `triggered = 0` → `NO_TREATMENT_EXPOSURE`（DCR-V14-04） |
 | MAP-19 @90（换图，先离线诊断 8/9/9 次触发） | on 臂 3/9 局触发，但两臂 0/9（该图为地板） |
 | MAP-22 @150，n=13/臂 | 3/13 vs 7/13（当时误读为“方向性正向”） |
-| **MAP-22 @150，n≈33–36/臂（最终）** | **16/36 (44.4%) vs 15/33 (45.5%)，Fisher p = 1.0** |
+| **MAP-22 @150，seed 2，n≈33/臂（最终）** | **16/35 (45.7%) vs 15/33 (45.5%)，Fisher p = 1.0** |
 
 **自我更正（DCR-V14-10）**：n=13 的“正向”是噪声，已改为 `NO_DIFFERENCE`。
 该样本量足以检出 54% vs 23% 量级效应（约需 37/臂），所以“未重现”本身有信息量；
@@ -143,7 +146,7 @@ uv run python scripts/analyze_v14_map22.py --write
 uv run --with playwright python scripts/e2e_lab.py --start --port 8512
 ```
 
-期望：`verify_v14` 15/15；pytest 1791 passed；freeze unchanged；recompute 1093/1093；
+期望：`verify_v14` 15/15；pytest 1796 passed（V14 收尾时为 1791）；freeze unchanged；recompute 1093/1093；
 independent 0 违规；v11/v12/v13 = 7/15/18；E2E `{"ok": true}`。
 
 ## 9. 文档索引

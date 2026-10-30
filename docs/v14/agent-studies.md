@@ -193,7 +193,8 @@
 | 激活门禁 | ``reflection_on`` 臂必须至少出现一次真实反思请求（``triggered > 0``）；否则记录 NO_TREATMENT_EXPOSURE 并改选地图，不得按「反思无效」报告。 |
 
 - 候选地图（需先做离线公开诊断）：MAP-22（PRIMARY）；MAP-19（CANDIDATE）；MAP-20（CANDIDATE）；MAP-29（CANDIDATE）
-- V14 未获用户对模型/矩阵/总额的批准，本计划不得执行；所有真实效果保持 LIVE_PENDING。
+- **历史登记（2026-10-27）**：当时未获用户对模型/矩阵/总额的批准，计划未执行、效果标 `LIVE_PENDING`。
+  该状态已被实际执行取代：MAP-19 / MAP-22 均已在用户逐轮授权下跑过，结果见 `live-report.md` 第 4 节。
 
 
 ## 4. 汇总状态
@@ -201,8 +202,8 @@
 | 机制 | 离线机制证据 | 单因子臂 | LIVE 预检登记 | 真实效果（LIVE，2026-10-28） |
 |---|---|---|---|---|
 | Memory（`memory.v2`） | `SUPPORTED` | E1-a / E1-b | 已执行 | `CONDITIONAL`：仅 MAP-22 seed 2 且 ≥150 请求 `2/9 → 8/8`；seed 0/1/3 两臂全 0；瓶颈是「记了不用」（DCR-V14-08/09） |
-| Planning（`planning.v2`） | `SUPPORTED` | E2-a / E2-b / E2-c | 已执行 | `POSITIVE`：MAP-16 flash `0/25 → 14/22`、pro `2/12 → 12/12`；MAP-18 `2/9 → 4/9`；天花板 9/9→9/9、地板 0/9→0/9 |
-| Reflection（`reflection.v2`） | `SUPPORTED` | E3 三臂 | 已执行 | `NO_DIFFERENCE`：暴露稳定，`trigger_only` 16/36 vs `on` 15/33，Fisher p=1.0 |
+| Planning（`planning.v2`） | `SUPPORTED` | E2-a / E2-b / E2-c | 已执行 | `POSITIVE`：MAP-16 flash `0/25 → 14/21 有效`、pro `2/12 → 12/12`；MAP-18 `2/9 → 4/9`；天花板 9/9→9/9、地板 0/9→0/9 |
+| Reflection（`reflection.v2`） | `SUPPORTED` | E3 三臂 | 已执行 | `NO_DIFFERENCE`：暴露稳定，seed 2 上 `trigger_only` 16/35 有效 vs `on` 15/33，Fisher p=1.0 |
 
 全部为**描述性**结论（采样支持状态 `UNKNOWN` → 配对 `DESCRIPTIVE_ONLY`），不构成因果断言。
 

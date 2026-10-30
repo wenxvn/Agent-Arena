@@ -3,9 +3,11 @@
 状态定义：`DONE` / `PARTIAL` / `LIVE_PENDING` / `BLOCKED_EXTERNAL` / `NOT_DONE`
 判定原则：**只有可核查证据（代码 + 命令输出 + 文档）才可标 `DONE`**。
 
-- 生成：2026-10-27
+- 生成：2026-10-27（V14）；2026-10-28/29 由 V14.1 重核并更正计数
 - 基线 HEAD：`60c9ba2b64a3bd8d5cd549a7b76d0f3eb3ad092a`
 - 真实付费请求：**308 局 / 10 034 请求 / ¥5.55809328**（用户授权 MiMo flash + pro，方案 A + 九轮补充，已封账）
+- V14.1 复验与逐项证据见 `docs/v14/V14.1-final-acceptance.md`；数字口径与历史数字判定见
+  `docs/v14/live-numbers-reconciliation.md`
 
 ## 0. 一句话结论
 
@@ -16,7 +18,7 @@
 
 - 没有任何一项被静默跳过：未完成的都写明了原因与需要谁授权。
 - LIVE 证据从"零"变为"部分"：E1-a 仅 1 个实例有效、E2-a 跨模型/跨图复现但有天花板地板边界、E3 暴露稳定却无差异 → `LIVE_EVIDENCE_VERIFIED` 部分、`STAGE_II_FINAL_READY` 仍**不满足**。
-- 验收：`scripts/verify_v14.py` **15/15**；全量 pytest **1791 passed**。
+- 验收：`scripts/verify_v14.py` **15/15**；全量 pytest **1796 passed**（本机；CI 1795 + 1 skipped）。
 
 ## 1. P0（6 项）
 
@@ -25,9 +27,9 @@
 | P0-1 | HEAD/CI 证据基线审计 | `PARTIAL` | `DONE` | `baseline-audit.md`（10 项门禁复跑）、`ci-evidence.md`（10 次 run + 7 次连续 `lab-e2e` success） |
 | P0-2 | 历史数据/构念效度口径修正 | `DEFECT` | `DONE` | `lab/v13/validity.py` 三档计数；`lab/v14/data_audit.py`；`docs/v14/data-validity.md`；`budget-audit.md`；14 + 114 测试 |
 | P0-3 | 重复实验与单因子公平性强化 | `PARTIAL` | `DONE` | `lab/v14/conditions.py`（8 元组身份/seed 白名单/三档判定/配对字段）；`docs/v14/pairing-audit.md`、`experiment-protocol.md`、`live-plan.md`；33 测试 |
-| P0-4 | Memory v2 有效性方案与消融 | `PARTIAL` | `DONE（机制）/ LIVE 条件性` | `lab/v14/agent_studies.py`；**LIVE E1-a 65 局**：90 请求 0/10 vs 0/10；150 请求 seed 2 **2/9 → 8/8**、seed 0/1/3 两臂全 0；每成功局 ¥0.283→¥0.059；**公开轨迹归因**：写入在全部 seed 成立（recall 0.19–1.0），仅 seed 2 折返下降（16.4→5.0）→ 瓶颈是「记录未被使用」（DCR-V14-08）；**`route_write_every=1` 负向结果**：recall 0.977 仍不降折返（DCR-V14-09）；`live-report.md` 第 3 节、`map22-instances.md` |
-| P0-5 | Planning v2 收益–成本验证 | `PARTIAL` | `DONE（机制）/ LIVE 强描述性信号 + 负向对照` | `lab/v14/planning_study.py`；**LIVE E2-a 121 局 / 4 图 × 2 模型**：MAP-16 flash 0/25→14/22、pro 2/12→**12/12**（留出 seed `0/3→3/3`）、MAP-18 2/9→4/9、**MAP-26 天花板 9/9→9/9**、**MAP-14 地板 0/9→0/9**；`live-report.md` 第 2 节 |
-| P0-6 | Reflection v2 激活与效果验证 | `PARTIAL` | `DONE（离线）/ LIVE 暴露达成·无差异` | `lab/v14/reflection_study.py`；MAP-22@90 零暴露（DCR-V14-04）→ MAP-19 3/9 触发（地板）→ **MAP-22@150 seed 2，每臂 33–36 局：`trigger_only` 16/36 vs `reflection_on` 15/33（Fisher p=1.0）**；n=13 时的 3/13 vs 7/13 已证伪（DCR-V14-10）；`live-report.md` 第 4 节 |
+| P0-4 | Memory v2 有效性方案与消融 | `PARTIAL` | `DONE（机制）/ LIVE 条件性` | `lab/v14/agent_studies.py`；**LIVE E1-a 83 局**：90 请求 0/10 vs 0/10；150 请求 seed 2 **2/9 → 8/8**、seed 0/1/3 两臂全 0；每成功局 ¥0.2825→¥0.0952（seed 2 为 ¥0.0130）；**公开轨迹归因**：写入在全部 seed 成立（recall 0.19–1.0），仅 seed 2 折返下降（16.4→5.0）→ 瓶颈是「记录未被使用」（DCR-V14-08）；**`route_write_every=1` 负向结果**：recall 0.977 仍不降折返（DCR-V14-09）；`live-report.md` 第 3 节、`map22-instances.md` |
+| P0-5 | Planning v2 收益–成本验证 | `PARTIAL` | `DONE（机制）/ LIVE 强描述性信号 + 负向对照` | `lab/v14/planning_study.py`；**LIVE E2-a 125 局 / 4 图 × 2 模型**：MAP-16 flash 0/25→14/21 有效、pro 2/12→**12/12**（留出 seed `0/3→3/3`）、MAP-18 2/9→4/9、**MAP-26 天花板 9/9→9/9**、**MAP-14 地板 0/9→0/9**；`live-report.md` 第 2 节 |
+| P0-6 | Reflection v2 激活与效果验证 | `PARTIAL` | `DONE（离线）/ LIVE 暴露达成·无差异` | `lab/v14/reflection_study.py`；MAP-22@90 零暴露（DCR-V14-04）→ MAP-19 3/9 触发（地板）→ **MAP-22@150 seed 2：`trigger_only` 16/35 有效局 vs `reflection_on` 15/33（Fisher p=1.0）**；n=13 时的 3/13 vs 7/13 已证伪（DCR-V14-10）；`live-report.md` 第 4 节 |
 
 ## 2. P1（6 项）
 
@@ -50,7 +52,7 @@
 | P2-4 | 自动报告/导出一致性 | `PARTIAL` | `DONE` | `export_consistency`（行数/分母/模式/空值）+ 真实导出样本；`engineering-boundaries.md` 第 6 节 |
 | P2-5 | 第三方 Agent SDK 加固 | `PARTIAL` | `DONE` | `sdk_hardening`（8 项 + 旧签名/异常隔离/预算网关 3 项）；`engineering-boundaries.md` 第 4 节 |
 | P2-6 | 本地账本/外部账单核对 | `DONE`/`BLOCKED_EXTERNAL` | `DONE（本地）/ BLOCKED_EXTERNAL（外部）` | `ledger_recompute` 复算 159/159、5641 请求、¥5.43680012、0 重复 0 孤儿；外部账单 `NO_EXTERNAL_BILL_PROVIDED` |
-| P2-7 | V14 最终交付封装 | `PARTIAL` | `DONE` | `docs/v14/` 16 份文档 + 7 张截图 + `scripts/verify_v14.py`（15 项）+ CI 步骤 |
+| P2-7 | V14 最终交付封装 | `PARTIAL` | `DONE` | `docs/v14/` 25 份 Markdown + 9 份 JSON + 7 张截图（V14.1 补齐） + `scripts/verify_v14.py`（15 项）+ CI 步骤 |
 
 ## 4. 为什么 P0-4/5/6 仍不能标 `DONE`
 
@@ -60,7 +62,7 @@
 |---|---|---|
 | 工程/机制（离线） | `DONE` | 确定性 probe、单因子臂、成本归因、暴露门禁、选择偏倚防护 |
 | 真实运行是否存在 | `DONE` | 308 局真实 MiMo，账本自洽（0 重复/0 孤儿） |
-| 真实**效果**证据 | **部分** | E2-a 跨模型/跨图/留出 seed + 天花板地板对照；E1-a 仅 seed 2 有效（已定位为「记录未被使用」，配置层修复无效）；E3 33–36 局/臂无可检出差异 |
+| 真实**效果**证据 | **部分** | E2-a 跨模型/跨图/留出 seed + 天花板地板对照；E1-a 仅 seed 2 有效（已定位为「记录未被使用」，配置层修复无效）；E3 在 seed 2 上 33–35 有效局/臂无可检出差异 |
 
 因此写作 `DONE（机制）/ LIVE ...`，不写 `DONE`——否则等于把"没测出效果"说成"已验证"。
 

@@ -318,3 +318,38 @@ CI 变更：`quality` job 新增 `V14 Lab 1.2 离线验收` 步骤（`scripts/ve
 
 未在本轮复跑：浏览器 E2E 与可访问性审计（依赖 Playwright CDN，本机下载受限），
 以最近一次本地通过与远端 CI 双 job success 为准；Provider 后台账单仍 `BLOCKED_EXTERNAL`。
+
+## 17. V14.1 交付整理复跑（2026-10-29，HEAD `ba7f7ef` + 本轮改动）
+
+> 本轮只做审计、修复与文档规范化：**0 真实付费请求**，未改冻结资产与历史 trace。
+> 下面全部是实际运行结果。
+
+| 命令 | 结果 |
+|---|---|
+| `uv run ruff check .` | `All checks passed!` |
+| `uv run mypy src` | 334 files，0 issues |
+| `uv run pytest -q` | **1796 passed**，135.66s（新增 `tests/test_v14_live_summary.py` 5 项） |
+| `uv run python -m agent_arena.v10.freeze verify` | 9/9 `unchanged`（changed/missing/added 全空） |
+| `uv run python -m agent_arena.v10.recompute --check` | 1093/1093，0 mismatch |
+| `uv run python -m agent_arena.v10.independent_check --check` | 30 图 / 144 实例 / 0 违规；确定 30/30；seed 互异 30/30 |
+| `uv run python scripts/verify_v11.py` | **7/7**，`ok: true` |
+| `uv run python scripts/verify_v12.py` | **15/15**，`ok: true` |
+| `uv run python scripts/verify_v13.py` | **18/18**，`ok: true` |
+| `uv run python scripts/verify_v14.py` | **15/15**，`failed: []`，`external_requests: 0` |
+| `uv run --with playwright --with streamlit python scripts/e2e_lab.py --start --port 8517` | `ok: true`，monitor `COMPLETED`，report 8 963 B / 139 行，`v14_map22_view` / `v14_first_divergence` / `v13_stability_page` / `v13_audit_page` / `v13_sdk_selfcheck` 均 true |
+| `uv run --with playwright --with streamlit python scripts/a11y_v12.py --browser --start` | light/dark 均 **0 critical / 0 serious / 0 moderate** |
+| `uv run python scripts/summarize_v14_live.py --write --manifest docs/v14/live-manifest.json` | 308 局 / 43 父实验 / 10 034 请求 / ¥5.55809328 重新聚合，与旧版一致（除新增字段与中断分类） |
+| `uv run python scripts/summarize_v14_live.py --check-manifest docs/v14/live-manifest.json` | `{"available": true, "match": true, "runs": 308}` |
+| `uv run python scripts/analyze_v14_map22.py --write` | 83 局公开轨迹归因（此前文档写 65） |
+
+失败保留记录：
+
+- 本轮 `a11y_v12.py --browser --start` **前两次失败**：`Page.goto ... Timeout 30000ms`
+  （视图「挑战配置」，Windows 冷启动单页实测 6–8s，两次均在 30s 默认超时处失败）。
+  修复：`goto` 显式 `timeout=60_000`。修复后连续两次通过，判定为工具稳健性问题而非产品缺陷。
+- 本机 `AGENT_ARENA_E2E_BROWSER=chromium` 复现路径仍不可用：`--with playwright` 解析到的
+  版本（chromium-1248）与本机缓存（1243）不一致 → `NOT_VERIFIED`；系统 Chrome 路径通过。
+
+CI 侧（推送后）：`quality` 与 `lab-e2e` 两个 Job 均 success；CI 里
+`pytest -q` 为 **1795 passed + 1 skipped**（`live-manifest` 对账需要本机原始 trace，
+无 `runs/v14/live` 时 skip）。

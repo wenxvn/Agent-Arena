@@ -1,16 +1,17 @@
 # V14 · Agent Arena Lab 1.2 / Stage II Final Evidence & Delivery
 
-> **当前状态：`EXPLORATORY_COMPLETE`（第二阶段探索已收尾）/ `ENGINEERING_VERIFIED` / `LIVE_PARTIAL`。**
-> Tag：`v14-stage2-exploratory-complete`。收尾声明见 `stage2-closure.md`。
+> **当前状态：`ENGINEERING_VERIFIED` / `EXPLORATORY_COMPLETE` / `LIVE_PARTIAL`（第二阶段已冻结）。**
+> Tag：`v14-stage2-exploratory-complete`（V14 收尾）、`v14.1-final-delivery`（交付整理）。
+> V14.1 验收见 `V14.1-final-acceptance.md`；收尾声明见 `stage2-closure.md`。
 > 真实 MiMo 已执行 **308 局 / ¥5.55809328**（flash + pro，方案 A + 九轮补充）：
-> `planning.v2` 跨模型/跨图/留出 seed 复现（MAP-16 flash 0/25→14/22；pro 2/12→**12/12**；
+> `planning.v2` 跨模型/跨图/留出 seed 复现（MAP-16 flash 0/25→14/21 有效；pro 2/12→**12/12**；
 > MAP-18 2/9→4/9），并有负向对照（MAP-26 天花板 9/9→9/9、MAP-14 地板 0/9→0/9）；
 > `route_log` 仅在 MAP-22 seed 2 且 ≥150 请求时有效（2/9→8/8）；
-> `reflection.v2` 暴露已稳定，但 33–36 局/臂上**无可检出差异**（16/36 vs 15/33，p=1.0）。
-> 因此 **不是** `STAGE_II_FINAL_READY`——缺负向对照与账单核对，不得宣称收官。
+> `reflection.v2` 暴露已稳定，但 seed 2 上 33–35 有效局/臂**无可检出差异**（16/35 vs 15/33，p=1.0）。
+> 因此 **不是** `STAGE_II_FINAL_READY`——缺显著性级证据与账单核对，不得宣称收官。
 >
 > 验收：`uv run python scripts/verify_v14.py` → **15/15 通过**；
-> 全量 `uv run pytest -q` → **1791 passed**。
+> 全量 `uv run pytest -q` → **1796 passed**（本机；CI 1795 + 1 skipped）。
 
 ## 这是什么
 
@@ -29,11 +30,14 @@ CI 与产品交付验收。不新增世界、不改冻结规则、不做公网�
 
 | 文件 | 内容 |
 |---|---|
+| `V14.1-final-acceptance.md` | **V14.1 最终验收**（19 项、测试、真实数据、遗留项、交付结论） |
 | `stage2-closure.md` | **第二阶段收尾声明**（结论、用户接受的例外、第三阶段候选） |
 | `baseline-audit.md` | 最新 HEAD、门禁复跑、V13→V14 真实增量、19 项起点 |
 | `live-plan.md` | LIVE 方案 A 预注册（54 局 / ¥2.11 预估 / ¥5.00 上限） |
 | `live-report.md` | **真实 MiMo 执行报告**（308 局、账本、三组结果、停批事件） |
 | `live-results.md` / `.json` | 逐组数据明细（只读聚合生成） |
+| `live-numbers-reconciliation.md` | **LIVE 数字对账**（65/83、121/125、19/28 等的逐项判定） |
+| `live-manifest.json` | 逐局证据索引（308 条 run_id + 结局 + sha256） |
 | `map22-instances.md` / `.json` | MAP-22 实例差异归因（公开轨迹，解释「为什么只有 seed 2」） |
 | `engineering-boundaries.md` | 冷启动、异常负载、长历史导出、SDK 加固、账本复算 |
 | `pairing-audit.md` | V12 三组消融按 8 元组条件身份重新配对 |
@@ -59,6 +63,8 @@ CI 与产品交付验收。不新增世界、不改冻结规则、不做公网�
 uv sync --extra web
 uv run agent-arena web          # 单机 Lab（无 Key 可跑 SIMULATED 全流程）
 uv run python scripts/verify_v14.py                 # 15 项 V14 事实边界
+uv run python scripts/summarize_v14_live.py --write --manifest docs/v14/live-manifest.json
+uv run python scripts/summarize_v14_live.py --check-manifest docs/v14/live-manifest.json
 uv run python scripts/audit_v14_data.py --write
 uv run python scripts/audit_v14_agents.py --write
 uv run python scripts/audit_v14_maps.py --write

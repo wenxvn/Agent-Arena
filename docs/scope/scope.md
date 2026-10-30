@@ -36,6 +36,7 @@
 | V10 30 图核心机制重构与多 Seed 验证 | Research Core | done（30 VALIDATED） |
 | V13 Lab 1.1 深化：重复稳定性 / 可比性 / 消融 / 效度 / 归因 / 画像 / 报告 / 审计 | Release 4 / V13 | done（`LAB_1_1_ENGINEERING_READY`；本输 0 局，LIVE 由 V14 承接） |
 | V14 Lab 1.2：第二阶段探索收尾（308 局 LIVE、口径修正、v2 策略实证） | Release 5 / V14 | done（`EXPLORATORY_COMPLETE`；**不是** `STAGE_II_FINAL_READY`） |
+| V14.1：第二阶段交付整理与冻结（数字对账、证据索引、状态规范化） | Release 5 / V14.1 | done（`v14.1-final-delivery`；0 付费请求；第二阶段冻结） |
 
 ## Foundation
 
@@ -547,19 +548,25 @@ Tag：`v14-stage2-exploratory-complete`；收尾 HEAD `d11bd97`。
 - [x] Batch 12（P2-7）：`scripts/verify_v14.py` **15 项**事实边界；`docs/v14/` 全套 + CI 步骤 + 交付定稿。
 - [x] Batch 13–20（LIVE，用户授权 MiMo）：方案 A + 九轮补充，**308 局 / 10 034 请求 / CNY 5.55809328**
   （43 父实验、0 重复、0 孤儿、4 次 `unknown_spend` 各自封账未重试）。
-  - **planning.v2**：MAP-16 flash `0/25 → 14/22`、**pro `2/12 → 12/12`**（留出 seed `0/3 → 3/3`）、
+  - **planning.v2**：MAP-16 flash `0/25 → 14/21 有效`、**pro `2/12 → 12/12`**（留出 seed `0/3 → 3/3`）、
     MAP-18 `2/9 → 4/9`；负向对照 MAP-26 天花板 `9/9 → 9/9`、MAP-14 地板 `0/9 → 0/9`。
   - **memory.v2 `route_log`**：150 请求下仅 seed 2 `2/9 → 8/8`；公开轨迹归因显示写入全部成立
     （recall 0.19–1.0）而仅 seed 2 折返下降 → 瓶颈是「记了不用」（DCR-V14-08）；
     `route_write_every=1` 把 recall 提到 0.977 仍不降折返（**负向结果**，DCR-V14-09）。
-  - **reflection.v2**：暴露已解决（seed 2 两臂各 33–36 局全部触发），但
-    `trigger_only` **16/36** vs `reflection_on` **15/33**（Fisher p=1.0）→ **无可检出差异**；
+  - **reflection.v2**：暴露已解决（seed 2 两臂各 33/36 局），但
+    `trigger_only` **16/35 有效** vs `reflection_on` **15/33**（Fisher p=1.0）→ **无可检出差异**；
     n=13 时的 3/13 vs 7/13 已自我更正（DCR-V14-10）。
-- [x] 验证：**1791 pytest passed**、`mypy src` 334 文件 0 issues、`ruff check .` clean、lock 0、
+- [x] 验证：**1796 pytest passed**（本机；CI 1795 + 1 skipped）、`mypy src` 334 文件 0 issues、`ruff check .` clean、lock 0、
   freeze 9/9 unchanged、recompute 1093/1093、independent 0 违规、
   `verify_v11` 7/7、`verify_v12` 15/15、`verify_v13` 18/18、**`verify_v14` 15/15**、
   `e2e_lab` 通过、`a11y` 0 critical/serious/moderate、CI 连续 24 次以上阻断门禁成功。
 - [x] 收尾：`docs/v14/stage2-closure.md` 记录结论、用户接受的 3 项非阻断例外与第三阶段候选清单。
+- [x] Batch 21（V14.1，2026-10-29）：交付前审计与冻结——19/19 项复核达标；LIVE 数字逐项对账
+  （E1-a 65→83、E2-a 121→125、Memory 150 档 on 19→28；E3 的 33–36/69/95 判定为 seed/图子集口径）；
+  修复 DCR-V14-11（Provider 中断被算成机制失败）、`experiment-protocol.md` 过期 `LIVE_PENDING`、
+  a11y 脚本 30s 超时抖动；新增 `live-manifest.json`（308 条逐局索引 + sha256）+ `--check-manifest`
+  与 `tests/test_v14_live_summary.py`。**0 真实付费请求**，未改冻结规则/历史 trace；
+  见 `docs/v14/V14.1-final-acceptance.md`。
 - [x] 仓库规则变更（用户 2026-10-28 决定）：**`results/` 纳入版本库**，用于让 `docs/` 引用的历史基准数字可核对；`runs/` 与 `logs/` 继续不入库（487M / 3.8M，且 `runs/` 含本机绝对路径）。排除 `*.lock` / `__pycache__/` / `*.pyc`；说明见 `results/README.md`。
 
 边界：`EXPLORATORY_COMPLETE` 表示**阶段性探索完成、工程可信、研究问题已答**，

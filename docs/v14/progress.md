@@ -409,3 +409,31 @@
 - 验证（本轮实测）：`uv lock --check`、ruff、mypy、**1791 pytest passed**（162.33s）、freeze 9/9、
   recompute 1093/1093、independent 0 违规、`verify_v11/12/13/14` = **7/15/18/15**。
 - 未复跑：浏览器 E2E / a11y（Playwright CDN 受限），沿用本地最近通过 + 远端 CI 双 job success。
+
+## Batch 25 · V14.1 交付整理与冻结（2026-10-29）
+
+- 触发：用户要求「V14.1 第二阶段最终交付整理与验收；只收尾，不开第三阶段，不加新功能或付费实验」。
+- 起点：`ba7f7ef`（工作区干净、与 `origin/main` 同步）。
+- **审计结论（实际代码/数据，不依赖旧报告）**：
+  - 证据完整性：43 父实验 / 308 局 / 308 `result.json` / 308 `events.jsonl` /
+    账本 616 事件（308 started + 308 settled）/ 0 孤儿 / 0 重复 / 10 034 请求两侧一致。
+  - 数字对账：E1-a 65→**83**（历史快照）、E2-a 121→**125**（算术错误）、
+    Memory 150 档 on 19→**28**（快照）；E3 的 33–36 / 69 / 95 判定为 seed/图**子集口径**；
+    MAP-16 flash on「有效 15 / 0.9333」为**列错位**（实为 14/21 = 0.6667）；
+    「25 局全部 NODE_CAPACITY_CONFLICT」实为 24 + 1 `SIDING_CAPACITY_CONFLICT`。
+    逐项判定见新增 `docs/v14/live-numbers-reconciliation.md`。
+- **修复**：
+  - DCR-V14-11：`summarize_v14_live.py` 把 `PROVIDER_ERROR` 归成 `mechanism_failure` 并计入分母
+    → 新增 `classify_state()`，中断单列、不进分母；表格加"中断"列；新增 5 项测试。
+  - `experiment-protocol.md` §6 增加「历史登记 vs 当前状态」对照表；
+    `agent-studies.md` §3.5 标注历史登记。
+  - `a11y_v12.py` 的 `goto` 显式 60s 超时（本机两次 30s 超时）。
+  - 新增 `docs/v14/live-manifest.json`（308 条逐局索引 + `result.json`/`events.jsonl`/账本 sha256）
+    与 `--check-manifest` 对账；原始 29 MB trace 仍不入库。
+  - 新增 `docs/v14/V14.1-final-acceptance.md`（19 项验收、测试、真实数据、遗留项、复现命令、结论）。
+- 验证（本轮实测）：**1796 pytest passed**（135.66s）、mypy 334 文件 0 issues、ruff clean、
+  freeze 9/9、recompute 1093/1093、independent 0 违规、`verify_v11/12/13/14` = 7/15/18/15、
+  `e2e_lab` 通过、`a11y` 0 critical/serious/moderate、`--check-manifest` match。
+- 边界：**0 真实付费请求**；未改 `worlds/scenario_v8/`、`v10/runtime/`、V8/V9/V10 账本与历史 trace；
+  未启动第三阶段。结论仍为 `ENGINEERING_VERIFIED` / `EXPLORATORY_COMPLETE` / `LIVE_PARTIAL`，
+  **不是** `STAGE_II_FINAL_READY`。
