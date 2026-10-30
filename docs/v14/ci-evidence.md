@@ -137,3 +137,19 @@ CI 侧通过真实运行验证。
 | 当前门禁状态 | **阻断**（`lab-e2e` 失败会让整个 workflow 红） |
 | `verify_v14` 步骤 | 已在 `quality` job 中通过（自 `40487657690` 起每次都在跑） |
 
+
+## 6. V14.1 交付提交（2026-10-30）
+
+| run ID | head SHA | `quality` | `lab-e2e` | 说明 |
+|---|---|---|---|---|
+| **41042980131** | `7102378d42f4` | **success**（10:44:45→10:46:27Z） | **success**（10:44:45→10:45:44Z） | V14.1 交付提交（代码 + 文档，run_number 216） |
+
+- 查询：`GET /repos/wenxvn/Agent-Arena/actions/runs?head_sha=7102378d42f4…` 与
+  `/actions/runs/41042980131/jobs`（未认证只读，无 Token）。
+- `quality` 的 16 个步骤全部 success（含 ruff、mypy、pytest、freeze、recompute、independent、
+  `verify_v11`–`verify_v14`）；`lab-e2e` 的 5 个步骤全部 success（含 Chromium 安装与 E2E）。
+- **`lab-e2e` 仍是阻断门禁**：workflow 里没有 `continue-on-error`，该 job 失败即整体红。
+- 本轮 `pytest` 在 CI 上为 **1795 passed + 1 skipped**（`live-manifest` 对账需要本机
+  `runs/v14/live`，CI 没有该目录时 skip；不是失败）。
+
+> 计数口径与第 5 节一致：此后每推一次 CI 都会 +1，本文档只记录里程碑提交。
